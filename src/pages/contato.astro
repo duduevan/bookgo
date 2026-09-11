@@ -1,0 +1,52 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import PlaceholderNotice from '../components/site/PlaceholderNotice.astro';
+---
+
+<SiteLayout
+  title="Contato"
+  description="Como falar com a BookGo."
+  noindex
+>
+  <article class="container legal">
+    <h1>Contato</h1>
+    <PlaceholderNotice />
+
+    <div class="prose">
+      <p>
+        Para dúvidas sobre um material, problemas de acesso ou pedidos de
+        reembolso dentro do prazo de garantia, use o canal abaixo.
+      </p>
+
+      <h2>E-mail</h2>
+      <p><span class="fill">[PREENCHER: endereço de e-mail de atendimento]</span></p>
+
+      <h2>Prazo de resposta</h2>
+      <p><span class="fill">[PREENCHER: prazo, por exemplo em até 2 dias úteis]</span></p>
+
+      <h2>Compras e reembolso</h2>
+      <p>
+        Pedidos processados pela plataforma de checkout também podem ser
+        tratados diretamente por ela.
+        <span class="fill">[PREENCHER: link ou instrução da central de compras da
+        plataforma]</span>
+      </p>
+
+      <h2>Dados da empresa</h2>
+      <p>
+        <span class="fill">[PREENCHER: razão social, CNPJ e endereço]</span>
+      </p>
+    </div>
+  </article>
+</SiteLayout>
+
+<style>
+  .legal {
+    padding-block: var(--section-y-tight) var(--section-y);
+  }
+
+  .legal h1 {
+    font-size: var(--t-4);
+    margin-bottom: var(--s-7);
+  }
+</style>

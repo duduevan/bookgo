@@ -7,11 +7,69 @@ Princípio do projeto: **conteúdo é dado, componente é apresentação**. Nenh
 específica de produto vive dentro de componente.
 
 ```
-content/     conteúdo editorial (YAML + MDX)
-src/         componentes, layouts, páginas, estilos
-public/      arquivos servidos como estão (.htaccess, robots.txt, imagens)
-materials/   fontes dos entregáveis — nunca é publicado
+content/              conteúdo editorial (YAML + MDX)
+src/                  componentes, layouts, páginas, estilos
+brand/                arquivos oficiais do logo (não publicado)
+public/fonts/         Inter Variable auto-hospedada
+materials/            fontes dos entregáveis — nunca é publicado
 ```
+
+---
+
+## Sistema visual
+
+### Tokens em três camadas (`src/styles/tokens.css`)
+
+| Camada | Prefixo | Muda por produto? |
+|---|---|---|
+| Primitivas — espaço, tipografia, raio, motion | `--s-*`, `--t-*`, `--radius-*` | Não |
+| Marca BookGo | `--bookgo-*` | Não |
+| Papéis — o que os componentes usam | `--color-*` | **Sim** |
+
+Regra única: **componente só referencia `--color-*`.** Nunca `--bookgo-*`, nunca
+cor literal. É isso que permite a mesma engenharia servir o site institucional
+(azul) e cada LP (paleta própria) sem duplicar componente.
+
+### Dois layouts
+
+| Layout | Onde | Navbar | Rodapé |
+|---|---|---|---|
+| `SiteLayout` | home, blog, páginas legais | BookGo completa | institucional completo |
+| `ProductLayout` | landing pages | **nenhuma** | assinatura discreta |
+
+A LP não tem navbar, logo no hero nem links para blog e outros produtos: cada
+saída custa conversão em campanha paga. A marca aparece só na assinatura do
+rodapé, junto dos links legais.
+
+### Marca
+
+- **Azul oficial:** `#004ED1`, extraído do símbolo oficial. Tons auxiliares
+  (`-dark`, `-light`) derivam dele só para hover e fundo suave.
+- **Originais** ficam em `brand/`, **fora de `public/`**: eles exibem a
+  tagline "SEU AGENDAMENTO", que não pertence ao posicionamento atual e não
+  pode ser servida nem por URL direta.
+- **Assets da aplicação** ficam em `src/assets/brand/`, derivados dos originais
+  por `npm run brand:assets`. O script apaga a região da tagline e isola o
+  check — nenhum traço é redesenhado.
+- **Favicon e apple-touch-icon** saem do mesmo script, a partir do check
+  isolado (`public/images/icons/`).
+- **OG images:** `npm run brand:og` renderiza no Chromium usando a tipografia
+  real e o logo oficial. Cada produto ganha a sua a partir do tema do YAML.
+
+Quando a versão oficial sem tagline chegar, substitua os arquivos em
+`src/assets/brand/` e o script deixa de ser necessário.
+
+### Tipografia
+
+Inter Variable (OFL), auto-hospedada em `public/fonts/`, subsets latin e
+latin-ext, com preload do subset principal. Nenhuma requisição externa bloqueia
+a renderização. O eixo óptico (`opsz`) fecha o desenho nos títulos grandes.
+
+### Animação
+
+Só CSS: marquee, hover e pequenas transformações. `prefers-reduced-motion` é
+tratado uma vez, globalmente, em `src/styles/global.css`, e o marquee vira uma
+lista estática rolável.
 
 ---
 
@@ -60,6 +118,32 @@ Com `url: null`, todos os CTAs são renderizados mas **não viram link** (e o bu
 avisa no log). Basta preencher a URL para que todos os botões da LP e o CTA
 contextual do blog passem a apontar para ela — um único lugar.
 
+## Definir a identidade visual de um produto
+
+A LP **não** usa o azul institucional. A paleta vive no YAML do produto e vira
+custom properties no `<body>` da página (`src/lib/theme.ts`):
+
+```yaml
+theme:
+  primary: "#758A72"       # CTAs e destaques
+  primaryDark: "#34483A"   # hover e contraste
+  accent: "#C88D5A"        # acento pontual
+  background: "#FAF8F4"    # fundo da página
+  surface: "#FFFFFF"       # cartões
+  text: "#262825"
+  muted: "#697068"
+  border: "#E8E2D8"
+  onPrimary: "#FFFFFF"     # opcional, padrão branco
+```
+
+Dois papéis são **derivados** e não entram no YAML: a faixa alternada das seções
+e o fundo suave de destaque, ambos calculados a partir de `primary`. Isso evita
+campo redundante e mantém a paleta coerente sozinha.
+
+Ao escolher as cores, verifique o contraste de `text` sobre `background` e de
+`onPrimary` sobre `primary` — o mínimo é 4.5:1 para texto corrido.
+
+
 ## Criar uma categoria
 
 Crie `content/categories/<slug>.yaml`:
@@ -97,6 +181,127 @@ Texto do artigo em Markdown.
 URL resultante: `/blog/<categoria>/<slug>/`.
 
 Campos opcionais: `updated`, `author`, `draft: true` (exclui do site).
+
+## Campos editoriais do artigo
+
+Além de `title`, `description`, `slug` e `category`:
+
+```yaml
+date: 2026-09-11        # = datePublished
+updated: 2026-10-02     # = dateModified (opcional)
+
+summary:                # 3 a 6 pontos, conteúdo editorial explícito
+  - Primeiro ponto útil.
+  - Segundo ponto útil.
+  - Terceiro ponto útil.
+
+primaryKeyword: como manter a casa organizada   # interno, orienta a redação
+searchIntent: informacional                     # informacional | comercial | transacional | navegacional
+
+sources:                # vazio quando o texto não precisa de referência externa
+  - title: Nome da publicação
+    url: https://exemplo.org/artigo
+    publisher: Organização
+
+ogImage: /images/og-artigo.png   # opcional; sem ele usa a institucional
+ogImageAlt: Descrição da imagem
+```
+
+`primaryKeyword` e `searchIntent` são **metadados internos**: não viram meta
+keywords nem qualquer tag no HTML. `summary` nunca é gerado automaticamente —
+se não estiver no frontmatter, o bloco não aparece.
+
+O índice do artigo é montado sozinho a partir dos H2 e H3 do MDX, com âncoras
+HTML reais e nenhum JavaScript. Escreva H2 bem nomeados e ele se resolve.
+
+**Modelo answer-first:** responda à intenção principal nos primeiros parágrafos,
+antes do aprofundamento. A ordem na página é H1 → deck → resumo → índice →
+resposta → desenvolvimento.
+
+## Artigos relacionados
+
+Aparecem sozinhos ao final do artigo, no máximo três. A seleção é
+determinística (`getRelatedPosts`): mesma categoria primeiro, depois mesmo
+produto. O próprio artigo nunca entra e não há sorteio.
+
+## Categoria como hub
+
+Além de `name` e `description`, o YAML da categoria aceita:
+
+```yaml
+headline: Organização que cabe na rotina    # título editorial do hub
+intro:                                       # um ou dois parágrafos
+  - Primeiro parágrafo.
+subtopics:                                   # recortes que a categoria cobre
+  - title: Rotina e manutenção
+    text: Frase curta.
+relatedProduct: casa-organizada-em-15-minutos
+```
+
+## Publicidade
+
+Hoje **desligada por inteiro**: `ADS.enabled = false` em `src/config/site.ts`.
+Nada é renderizado, nenhum script é carregado e o site segue com 0 KB de
+JavaScript no cliente.
+
+```ts
+ADS = {
+  enabled: false,
+  adsenseClient: null,
+  placements: {
+    'article-inline': false,   // fim do corpo editorial do artigo
+    'article-end': false,      // fim da página do artigo
+    'product-page-end': false, // fim da LP, depois do CTA final
+  },
+}
+```
+
+Cada posição liga sozinha. A LP exige **duas** chaves: a posição global e o
+`ads.pageEnd` do próprio produto — para decidir material a material se vale a
+pena monetizar.
+
+Ligar o AdSense de verdade tem um passo a mais e deliberado: injetar o script
+do Google, que custa o "zero JS" do projeto. `AdSlot.astro` não faz isso.
+
+**Formatos que a BookGo não usa:** popup, modal, vignette, anchor ad, side
+rail, sticky ou qualquer anúncio que cubra conteúdo. Só in-page discreto, sem
+sidebar. O rótulo é `Publicidade` e nada mais — nunca "clique aqui",
+"recomendado" ou "veja esta oferta".
+
+**Onde nunca entra:** home, `/blog/`, páginas de categoria, páginas legais e
+404. E, dentro do artigo, nunca antes do primeiro parágrafo — nem entre H1,
+deck, resumo e índice.
+
+Quando ligar, o `reserve` do `AdSlot` guarda a altura antes da carga, para o
+anúncio não empurrar o conteúdo e gerar CLS.
+
+Afiliados serão um sistema separado (`<AffiliateProduct>`), sem relação com
+este.
+
+## Layout do artigo
+
+Coluna única centralizada, largura confortável de leitura. **Sem sidebar, sem
+índice lateral, sem coluna sticky.** A ordem é fixa:
+
+```
+H1 → deck → resumo rápido → índice → conteúdo
+```
+
+O índice é inline no fluxo, numerado e com links em azul da marca — a
+afordância não depende de `:hover`, que não existe em toque. No mobile os H3
+saem e sobra a espinha de H2.
+
+## Imagem do hero do produto
+
+```yaml
+hero:
+  image: hero.jpg          # arquivo em src/assets/products/<slug>/
+  imageAlt: Descrição objetiva da cena
+```
+
+Com imagem, o hero vira duas colunas no desktop; sem ela, fica em coluna única
+com a ambientação em CSS. A imagem passa por `astro:assets` com `srcset`,
+`fetchpriority="high"` e dimensões reais — é o elemento de LCP da página.
 
 ## Relacionar artigo a produto
 
@@ -199,6 +404,19 @@ dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false
 
 ---
 
+## Páginas legais
+
+`/termos/`, `/privacidade/` e `/contato/` existem com texto de referência e
+marcações `[PREENCHER]`. Enquanto estiverem assim:
+
+- as páginas estão em `noindex`;
+- ficam fora do sitemap (filtro em `astro.config.mjs`);
+- exibem o aviso `PlaceholderNotice`.
+
+Ao publicar o conteúdo definitivo, desfaça os três — nenhum dado jurídico ou
+empresarial foi inventado.
+
+
 ## Regras de conteúdo (não negociáveis)
 
 Não escreva, em nenhuma página:
@@ -214,9 +432,71 @@ conteúdo." Sem interpretação jurídica.
 
 ## SEO
 
-Implementado e automático: title, meta description, canonical absoluto, Open
-Graph, Twitter Card, `sitemap-index.xml`, `robots.txt`, BreadcrumbList em todas as
-páginas internas, Article nos artigos, Product + Offer na LP, Organization no site.
+Automático em toda página: title, meta description, canonical absoluto, Open
+Graph com `og:image:alt` próprio, Twitter Card, `sitemap-index.xml` e
+`robots.txt`. JSON-LD: `Organization` + `WebSite` no site, `BreadcrumbList` nas
+páginas internas, `Article` completo nos artigos (com `citation` quando há
+fontes reais) e `Product` + `Offer` na LP — sem `aggregateRating`, `review` ou
+`FAQPage`, que não têm dado real por trás.
 
-Domínio canônico: `https://bookgo.com.br` (definido em `astro.config.mjs` e
+Domínio canônico: `https://bookgo.com.br` (em `astro.config.mjs` e
 `src/config/site.ts`).
+
+### SEO QA
+
+```bash
+npm run qa:seo    # roda sobre dist/, também no CI
+```
+
+**Falha** em erro estrutural: página indexável sem title, description, canonical
+ou H1; canonical fora do domínio; mais de um H1; imagem sem `alt`; JSON-LD
+inválido; `Article` sem `datePublished`, `articleSection` ou `publisher`; fonte
+com URL inválida; link interno quebrado.
+
+**Avisa sem bloquear** sobre title longo ou description curta. Não existe limite
+oficial de caracteres — tratar número redondo como requisito só gera ruído.
+
+### Performance
+
+```bash
+npm run qa:perf   # relatório, também no CI
+```
+
+Mede CSS, JS de cliente, fontes, páginas e maiores imagens, e aponta o que
+cresceu fora do padrão. Não bloqueia: orçamento rígido escolhido cedo atrapalha
+mais do que ajuda. Metas de campo — LCP ≤ 2,5s, INP ≤ 200ms, CLS ≤ 0,1 — são
+objetivos de engenharia, medidos em campo.
+
+Padrão do projeto: **zero JavaScript no cliente**.
+
+### Rascunhos
+
+`draft: true` no frontmatter tira o artigo de tudo: sem URL gerada, sem sitemap,
+sem categoria, sem `llms.txt`. Não existe página oculta.
+
+### llms.txt
+
+`/llms.txt` é um índice **curado** — hubs, conteúdos, produtos ativos e links
+institucionais prontos, não todas as URLs. Gerado por `src/pages/llms.txt.ts`.
+
+Camada complementar e experimental: não há relação comprovada com ranqueamento
+e não deve ser tratada como se houvesse.
+
+### Markdown alternativo
+
+Cada artigo tem uma versão em texto puro em `<url-do-artigo>index.md`, sem
+header, footer, CSS ou tracking, apontada por
+`<link rel="alternate" type="text/markdown">`. Fica fora do sitemap; a versão
+HTML continua sendo a principal. Implementado só para artigos — LPs ficam para
+depois de validarmos o modelo.
+
+### Search Console
+
+Em `src/config/site.ts`, `googleSiteVerification` é `null` e nada é renderizado.
+Para verificar o domínio, cole o valor do método "tag HTML" nesse campo — a meta
+aparece sozinha. Nunca preencha com valor fictício.
+
+### Analytics
+
+Nenhum GA4, GTM ou Meta Pixel instalado nesta fase. Se for adicionar, atualize
+antes a Política de Privacidade, que hoje declara ausência de cookies próprios.

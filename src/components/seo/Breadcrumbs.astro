@@ -33,22 +33,30 @@ const last = items.length - 1;
     padding: 0;
     margin: 0;
     font-size: var(--t--1);
-    color: var(--c-muted);
+    color: var(--color-muted);
   }
 
   .crumbs li + li::before {
     content: '/';
     margin-right: var(--s-2);
-    color: var(--c-line-strong);
+    color: var(--color-border);
   }
 
   .crumbs a {
-    color: var(--c-muted);
+    color: var(--color-muted);
     text-decoration: none;
   }
 
   .crumbs a:hover {
-    color: var(--c-accent);
+    color: var(--color-primary);
     text-decoration: underline;
+  }
+
+  /* Mobile: o último item é o título da página, que o H1 logo abaixo já
+     diz. Esconder só no visual — o JSON-LD segue com a trilha inteira. */
+  @media (max-width: 46rem) {
+    .crumbs li:last-child:not(:only-child) {
+      display: none;
+    }
   }
 </style>

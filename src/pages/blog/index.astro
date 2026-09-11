@@ -1,9 +1,9 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import Section from '../../components/ui/Section.astro';
+import SiteLayout from '../../layouts/SiteLayout.astro';
 import Breadcrumbs from '../../components/seo/Breadcrumbs.astro';
 import PostCard from '../../components/blog/PostCard.astro';
-import { getPosts, getCategories, categoryUrl } from '../../lib/content';
+import CategoryChips from '../../components/blog/CategoryChips.astro';
+import { getPosts, getCategories } from '../../lib/content';
 import * as schema from '../../lib/schema';
 
 const posts = await getPosts();
@@ -17,69 +17,86 @@ const crumbs = [
 ];
 ---
 
-<BaseLayout
+<SiteLayout
   title="Blog"
   description="Artigos práticos sobre organização e rotina, para aplicar com o tempo que você realmente tem."
   schema={[schema.organization(), schema.breadcrumbs(crumbs)]}
 >
-  <div class="crumb-bar container">
+  <div class="container crumb-bar">
     <Breadcrumbs items={crumbs} />
   </div>
 
-  <Section title="Blog" intro="Artigos práticos para aplicar na rotina real." narrow>
-    {
-      categories.length > 0 && (
-        <nav class="cats" aria-label="Categorias">
-          <ul>
-            {categories.map((category) => (
-              <li>
-                <a href={categoryUrl(category.id)}>{category.data.name}</a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      )
-    }
+  <header class="container page-head">
+    <h1>Blog</h1>
+    <p class="lede">
+      Artigos práticos para aplicar na rotina real — sem teoria desnecessária.
+    </p>
+    <CategoryChips categories={categories} />
+  </header>
 
+  <div class="container posts-wrap">
     {
       posts.length > 0 ? (
-        posts.map((post) => (
-          <PostCard post={post} categoryName={categoryName(post.data.category.id)} />
-        ))
+        <ul class="posts">
+          {posts.map((post, index) => (
+            <li class:list={{ wide: index === 0 }}>
+              <PostCard
+                post={post}
+                categoryName={categoryName(post.data.category.id)}
+                featured={index === 0}
+              />
+            </li>
+          ))}
+        </ul>
       ) : (
-        <p>Nenhum artigo publicado ainda.</p>
+        <p class="empty">Nenhum artigo publicado ainda.</p>
       )
     }
-  </Section>
-</BaseLayout>
+  </div>
+</SiteLayout>
 
 <style>
   .crumb-bar {
-    padding-block: var(--s-4);
+    padding-block: var(--s-5) var(--s-2);
   }
 
-  .cats ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--s-3);
+  .page-head {
+    padding-block: var(--section-y-tight) var(--s-8);
+  }
+
+  .page-head h1 {
+    font-size: var(--t-4);
+  }
+
+  .page-head .lede {
+    margin-block: var(--s-4) var(--s-7);
+    max-width: 44ch;
+  }
+
+  .posts-wrap {
+    padding-bottom: var(--section-y);
+  }
+
+  .posts {
     list-style: none;
+    margin: 0;
     padding: 0;
-    margin: 0 0 var(--s-5);
+    display: grid;
+    gap: var(--s-4);
   }
 
-  .cats a {
-    display: inline-block;
-    padding: 0.4rem 0.9rem;
-    border: 1px solid var(--c-line);
-    border-radius: var(--radius-pill);
-    background: var(--c-surface);
-    font-size: var(--t--1);
-    color: var(--c-ink-2);
-    text-decoration: none;
+  .empty {
+    color: var(--color-muted);
   }
 
-  .cats a:hover {
-    border-color: var(--c-accent-line);
-    color: var(--c-accent);
+  @media (min-width: 52rem) {
+    .posts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    /* O artigo mais recente ocupa a linha inteira. */
+    .posts .wide {
+      grid-column: 1 / -1;
+    }
   }
 </style>

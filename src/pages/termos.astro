@@ -1,0 +1,81 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import PlaceholderNotice from '../components/site/PlaceholderNotice.astro';
+---
+
+<SiteLayout
+  title="Termos de Uso"
+  description="Termos de uso da BookGo."
+  noindex
+>
+  <article class="container legal">
+    <h1>Termos de Uso</h1>
+    <PlaceholderNotice />
+
+    <div class="prose">
+      <p>
+        Estes termos regulam o uso do site e a compra dos materiais digitais
+        oferecidos por <span class="fill">[PREENCHER: razão social]</span>, inscrita no
+        CNPJ sob o nº <span class="fill">[PREENCHER: CNPJ]</span>, com sede em
+        <span class="fill">[PREENCHER: endereço]</span>.
+      </p>
+
+      <h2>1. Objeto</h2>
+      <p>
+        A BookGo comercializa materiais digitais de caráter educacional,
+        entregues em formato eletrônico após a confirmação do pagamento.
+      </p>
+
+      <h2>2. Pagamento e entrega</h2>
+      <p>
+        O pagamento é processado pela plataforma de checkout indicada na página
+        do produto. A liberação do acesso ocorre após a confirmação do
+        pagamento pela plataforma. <span class="fill">[PREENCHER: prazo de liberação e
+        forma de entrega, conforme configurado na plataforma]</span>
+      </p>
+
+      <h2>3. Garantia e reembolso</h2>
+      <p>
+        Os produtos possuem 7 dias de garantia contados a partir da confirmação
+        da compra. O pedido de reembolso dentro desse prazo deve ser feito
+        por <span class="fill">[PREENCHER: canal de solicitação]</span>.
+      </p>
+
+      <h2>4. Uso do conteúdo</h2>
+      <p>
+        Os materiais são de uso pessoal e não podem ser redistribuídos,
+        revendidos ou compartilhados publicamente.
+        <span class="fill">[PREENCHER: demais restrições, se houver]</span>
+      </p>
+
+      <h2>5. Limitação de responsabilidade</h2>
+      <p>
+        O conteúdo é educacional. Os resultados dependem da aplicação individual
+        e variam de pessoa para pessoa.
+        <span class="fill">[PREENCHER: revisão jurídica desta cláusula]</span>
+      </p>
+
+      <h2>6. Alterações</h2>
+      <p>
+        Estes termos podem ser atualizados. A versão vigente é sempre a
+        publicada nesta página.
+      </p>
+
+      <h2>7. Foro</h2>
+      <p><span class="fill">[PREENCHER: foro eleito]</span></p>
+
+      <p><em>Última atualização:</em> <span class="fill">[PREENCHER: data]</span></p>
+    </div>
+  </article>
+</SiteLayout>
+
+<style>
+  .legal {
+    padding-block: var(--section-y-tight) var(--section-y);
+  }
+
+  .legal h1 {
+    font-size: var(--t-4);
+    margin-bottom: var(--s-7);
+  }
+</style>

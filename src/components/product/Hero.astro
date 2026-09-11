@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import Cta from '../ui/Cta.astro';
 
 interface Props {
@@ -8,29 +9,65 @@ interface Props {
   ctaLabel: string;
   ctaHref: string | null;
   price: string;
+  /** Imagem editorial opcional. Sem ela o hero fica em coluna única. */
+  image?: ImageMetadata;
+  imageAlt?: string;
 }
 
-const { headline, subheadline, highlights, ctaLabel, ctaHref, price } =
-  Astro.props;
+const {
+  headline,
+  subheadline,
+  highlights,
+  ctaLabel,
+  ctaHref,
+  price,
+  image,
+  imageAlt,
+} = Astro.props;
 ---
 
-<section class="hero">
-  <div class="container inner">
-    <h1>{headline}</h1>
-    <p class="sub">{subheadline}</p>
+<section class:list={['hero', { 'has-image': image }]}>
+  <div class="art" aria-hidden="true">
+    <span class="blob b1"></span>
+    <span class="blob b2"></span>
+  </div>
 
-    <div class="action">
-      <Cta href={ctaHref} label={ctaLabel} size="lg" />
-      <p class="price">{price} · pagamento único</p>
+  <div class="container grid">
+    <div class="inner">
+      <h1>{headline}</h1>
+      <p class="sub">{subheadline}</p>
+
+      <div class="action">
+        <Cta href={ctaHref} label={ctaLabel} size="lg" />
+        <p class="price">{price} · pagamento único</p>
+      </div>
+
+      {
+        highlights.length > 0 && (
+          <ul class="highlights">
+            {highlights.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        )
+      }
     </div>
 
     {
-      highlights.length > 0 && (
-        <ul class="highlights">
-          {highlights.map((item) => (
-            <li>{item}</li>
-          ))}
-        </ul>
+      image && (
+        <div class="media">
+          {/* Elemento de LCP: carrega cedo e com prioridade, e já reserva
+              o espaço com width/height reais. */}
+          <Image
+            src={image}
+            alt={imageAlt ?? ''}
+            widths={[520, 760, 1040]}
+            sizes="(min-width: 62rem) 40vw, 100vw"
+            loading="eager"
+            fetchpriority="high"
+            quality={78}
+          />
+        </div>
       )
     }
   </div>
@@ -38,30 +75,73 @@ const { headline, subheadline, highlights, ctaLabel, ctaHref, price } =
 
 <style>
   .hero {
-    padding-block: clamp(3rem, 2rem + 6vw, 6.5rem);
-    background:
-      radial-gradient(
-        60rem 30rem at 50% -10%,
-        var(--c-accent-soft) 0%,
-        transparent 70%
-      ),
-      var(--c-bg);
-    border-bottom: 1px solid var(--c-line);
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding-block: clamp(3.5rem, 2.2rem + 6vw, 7rem);
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  /* Ambientação abstrata com as cores do próprio produto — nenhuma cor
+     literal aqui, só os papéis do tema. */
+  .art {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .blob {
+    position: absolute;
+    aspect-ratio: 1;
+    border-radius: 50%;
+  }
+
+  .b1 {
+    width: min(44rem, 90vw);
+    right: -12%;
+    top: -34%;
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--color-primary) 16%, transparent) 0%,
+      transparent 68%
+    );
+  }
+
+  .b2 {
+    width: min(26rem, 62vw);
+    right: 6%;
+    bottom: -32%;
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--color-accent) 18%, transparent) 0%,
+      transparent 66%
+    );
+  }
+
+  .grid {
+    display: grid;
+    gap: var(--s-8);
+    align-items: center;
   }
 
   .inner {
-    max-width: 52rem;
+    max-width: 46rem;
   }
 
   h1 {
-    max-width: 20ch;
+    /* Menor que o display institucional: a headline do produto é longa e
+       precisa caber em poucas linhas sem dominar a dobra. */
+    font-size: var(--t-4);
+    max-width: 22ch;
+    text-wrap: balance;
   }
 
   .sub {
     margin-top: var(--s-5);
     font-size: var(--t-1);
-    color: var(--c-ink-2);
-    max-width: 54ch;
+    color: var(--color-muted);
+    max-width: 52ch;
   }
 
   .action {
@@ -74,7 +154,7 @@ const { headline, subheadline, highlights, ctaLabel, ctaHref, price } =
 
   .price {
     font-size: var(--t-0);
-    color: var(--c-muted);
+    color: var(--color-muted);
   }
 
   .highlights {
@@ -85,7 +165,7 @@ const { headline, subheadline, highlights, ctaLabel, ctaHref, price } =
     flex-wrap: wrap;
     gap: var(--s-3) var(--s-5);
     font-size: var(--t--1);
-    color: var(--c-ink-2);
+    color: var(--color-muted);
   }
 
   .highlights li {
@@ -100,7 +180,35 @@ const { headline, subheadline, highlights, ctaLabel, ctaHref, price } =
     height: 0.375rem;
     margin-top: 0.55em;
     border-radius: 50%;
-    background: var(--c-accent);
+    background: var(--color-primary);
     flex: none;
+  }
+
+  .media {
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    background: var(--color-surface);
+  }
+
+  .media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: 4 / 5;
+  }
+
+  @media (min-width: 62rem) {
+    .has-image .grid {
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+      gap: var(--s-9);
+    }
+
+    .has-image .inner {
+      max-width: 34rem;
+    }
+
+    .has-image h1 {
+      max-width: 18ch;
+    }
   }
 </style>

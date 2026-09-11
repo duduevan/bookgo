@@ -1,0 +1,47 @@
+---
+import { Image } from 'astro:assets';
+import { BRAND, type BrandVariant } from '../../lib/brand';
+
+interface Props {
+  variant?: BrandVariant;
+  /** Altura renderizada, em px. A largura acompanha a proporção original. */
+  height?: number;
+  alt?: string;
+  /** O logo do topo é o primeiro paint; o do rodapé pode esperar. */
+  loading?: 'eager' | 'lazy';
+  class?: string;
+}
+
+const {
+  variant = 'blue',
+  height = 28,
+  alt = 'BookGo',
+  loading = 'eager',
+  class: className,
+} = Astro.props;
+
+const source = BRAND[variant];
+// Largura derivada da proporção real do arquivo: `width`/`height` saem no
+// HTML e reservam o espaço antes do download, então não há CLS.
+const width = Math.round((source.width / source.height) * height);
+---
+
+<Image
+  class:list={['logo', className]}
+  src={source}
+  alt={alt}
+  width={width}
+  height={height}
+  densities={[1, 2]}
+  quality={92}
+  loading={loading}
+  decoding="async"
+/>
+
+<style>
+  .logo {
+    width: auto;
+    height: auto;
+    max-height: 100%;
+  }
+</style>

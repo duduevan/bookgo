@@ -9,6 +9,22 @@ name: Casa Organizada em 15 Minutos por Dia
 tagline: Um método simples para manter a casa organizada em sessões curtas, sem mutirão de fim de semana.
 promise: Ensinar uma rotina simples para manter a casa mais organizada usando pequenos ciclos de 15 minutos, sem depender de grandes períodos de organização.
 
+# ── Identidade visual da LP ──────────────────────────────────
+# Acolhedor, adulto e editorial. A LP não usa o azul institucional
+# da BookGo; estes valores viram custom properties no escopo da página.
+theme:
+  # Sálvia escurecido em relação ao #758A72 original: mantém matiz (113°)
+  # e saturação, e passa a atender 4.5:1 como texto sobre o creme e com
+  # o branco por cima (CTAs).
+  primary: "#647662"       # verde sálvia — CTAs e destaques
+  primaryDark: "#34483A"   # verde profundo — hover e contraste
+  accent: "#C88D5A"        # terracota — acento pontual
+  background: "#FAF8F4"    # creme — fundo da página
+  surface: "#FFFFFF"       # branco — cartões
+  text: "#262825"
+  muted: "#697068"
+  border: "#E8E2D8"
+
 # ── Comercial ────────────────────────────────────────────────
 price:
   amount: 37

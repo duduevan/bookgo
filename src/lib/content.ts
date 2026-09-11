@@ -11,6 +11,9 @@ export const categoryUrl = (categoryId: string) => `/blog/${categoryId}/`;
 export const postUrl = (post: Post) =>
   `/blog/${post.data.category.id}/${post.data.slug}/`;
 
+/** Versão Markdown do artigo, servida ao lado da HTML. */
+export const markdownUrl = (post: Post) => `${postUrl(post)}index.md`;
+
 /* ── Produtos ────────────────────────────────────────────────── */
 
 export const getProducts = () => getCollection('products');
@@ -50,6 +53,43 @@ export async function getPostsByCategory(categoryId: string): Promise<Post[]> {
 export async function getPostsByProduct(productId: string): Promise<Post[]> {
   const posts = await getPosts();
   return posts.filter((post) => post.data.product?.id === productId);
+}
+
+/**
+ * Artigos relacionados, em ordem determinística:
+ * 1. mesma categoria, do mais recente para o mais antigo;
+ * 2. mesmo produto, para cobrir quando a categoria não basta.
+ * O próprio artigo nunca entra e não há sorteio.
+ */
+export async function getRelatedPosts(post: Post, limit = 3): Promise<Post[]> {
+  const posts = (await getPosts()).filter((p) => p.id !== post.id);
+  const picked: Post[] = [];
+
+  const add = (candidates: Post[]) => {
+    for (const candidate of candidates) {
+      if (picked.length >= limit) return;
+      if (!picked.some((p) => p.id === candidate.id)) picked.push(candidate);
+    }
+  };
+
+  add(posts.filter((p) => p.data.category.id === post.data.category.id));
+  if (post.data.product) {
+    add(posts.filter((p) => p.data.product?.id === post.data.product?.id));
+  }
+
+  return picked;
+}
+
+/** Contagem de palavras do corpo, para `wordCount` no JSON-LD. */
+export function countWords(body: string | undefined): number | undefined {
+  if (!body) return undefined;
+  const text = body
+    .replace(/^---[\s\S]*?---/, '')       // frontmatter
+    .replace(/```[\s\S]*?```/g, ' ')      // blocos de código
+    .replace(/!?\[([^\]]*)\]\([^)]*\)/g, '$1') // links e imagens
+    .replace(/[#>*_`|-]/g, ' ');
+  const words = text.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w));
+  return words.length > 0 ? words.length : undefined;
 }
 
 /* ── Formatação ──────────────────────────────────────────────── */

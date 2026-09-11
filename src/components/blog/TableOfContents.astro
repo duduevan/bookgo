@@ -1,0 +1,152 @@
+---
+/**
+ * Índice do artigo, inline no fluxo editorial — nunca uma coluna lateral.
+ *
+ * Montado a partir dos headings devolvidos pelo render do MDX, com âncoras
+ * HTML reais e zero JavaScript. Os itens são numerados e em azul da marca
+ * para que a afordância de link exista sem depender de `:hover`, que não
+ * existe em toque.
+ *
+ * H2 é a espinha do índice. H3 entra apenas quando a seção realmente se
+ * divide — um H3 sozinho sob um H2 não ajuda ninguém, então é descartado.
+ */
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+  title?: string;
+}
+
+const { headings, title = 'Neste artigo' } = Astro.props;
+
+const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
+
+const tree = items
+  .filter((h) => h.depth === 2)
+  .map((h2) => {
+    const start = items.indexOf(h2);
+    const children: MarkdownHeading[] = [];
+    for (let i = start + 1; i < items.length; i++) {
+      if (items[i]!.depth === 2) break;
+      children.push(items[i]!);
+    }
+    return { ...h2, children: children.length > 1 ? children : [] };
+  });
+---
+
+{
+  tree.length > 1 && (
+    <nav class="toc" aria-labelledby="indice-artigo">
+      <h2 id="indice-artigo">{title}</h2>
+      <ol>
+        {tree.map((h2, index) => (
+          <li>
+            <a href={`#${h2.slug}`}>
+              <span class="num" aria-hidden="true">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <span class="label">{h2.text}</span>
+            </a>
+            {h2.children.length > 0 && (
+              <ul>
+                {h2.children.map((h3) => (
+                  <li>
+                    <a href={`#${h3.slug}`}>{h3.text}</a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}
+
+<style>
+  .toc {
+    padding: var(--s-5) 0;
+    border-block: 1px solid var(--color-border);
+  }
+
+  h2 {
+    font-size: var(--t--1);
+    font-weight: var(--w-semibold);
+    letter-spacing: var(--tr-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-muted);
+    margin: 0 0 var(--s-2);
+  }
+
+  ol,
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  ol > li + li {
+    border-top: 1px solid
+      color-mix(in srgb, var(--color-border) 60%, transparent);
+  }
+
+  ol > li > a {
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    align-items: baseline;
+    gap: var(--s-2);
+    /* Alvo de toque confortável, sem virar menu. */
+    padding-block: 0.7rem;
+    color: var(--color-primary);
+    text-decoration: none;
+    font-size: var(--t-0);
+    line-height: 1.4;
+  }
+
+  .num {
+    font-size: var(--t--1);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-muted);
+  }
+
+  .label {
+    text-decoration: underline;
+    text-decoration-color: color-mix(
+      in srgb,
+      var(--color-primary) 32%,
+      transparent
+    );
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+  }
+
+  ol > li > a:hover .label,
+  ol > li > a:focus-visible .label {
+    text-decoration-color: currentColor;
+  }
+
+  ul {
+    padding: 0 0 var(--s-3) 2.5rem;
+    display: grid;
+    gap: var(--s-1);
+  }
+
+  ul a {
+    display: inline-block;
+    padding-block: 0.25rem;
+    font-size: var(--t--1);
+    color: var(--color-primary);
+    opacity: 0.85;
+  }
+
+  /* Mobile: compacto. Os H3 saem e sobra a espinha de H2. */
+  @media (max-width: 46rem) {
+    ul {
+      display: none;
+    }
+
+    ol > li > a {
+      padding-block: 0.6rem;
+    }
+  }
+</style>

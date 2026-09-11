@@ -4,27 +4,67 @@ import { formatDate, postUrl, type Post } from '../../lib/content';
 interface Props {
   post: Post;
   categoryName?: string;
+  /** Destaque: ocupa mais espaço na grade e usa tipografia maior. */
+  featured?: boolean;
 }
 
-const { post, categoryName } = Astro.props;
+const { post, categoryName, featured = false } = Astro.props;
 const href = postUrl(post);
 ---
 
-<article class="card">
+<article class:list={['card', { featured }]}>
   <p class="meta">
     {categoryName && <span class="cat">{categoryName}</span>}
     <time datetime={post.data.date.toISOString()}>
       {formatDate(post.data.date)}
     </time>
   </p>
-  <h3><a href={href}>{post.data.title}</a></h3>
+
+  <h3>
+    {/* O link cobre o card inteiro, mantendo um só alvo de foco. */}
+    <a href={href}>
+      <span class="overlay"></span>
+      {post.data.title}
+    </a>
+  </h3>
+
   <p class="desc">{post.data.description}</p>
+
+  <span class="more" aria-hidden="true">
+    Ler artigo
+    <svg viewBox="0 0 16 16" focusable="false">
+      <path
+        d="M3.5 8h9M9 4.5L12.5 8 9 11.5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </span>
 </article>
 
 <style>
   .card {
-    padding-block: var(--s-6);
-    border-bottom: 1px solid var(--c-line);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-raised);
+    transition:
+      border-color var(--dur) var(--ease),
+      transform var(--dur) var(--ease),
+      box-shadow var(--dur) var(--ease);
+  }
+
+  .card:hover {
+    border-color: color-mix(in srgb, var(--color-primary) 32%, var(--color-border));
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
   }
 
   .meta {
@@ -33,31 +73,65 @@ const href = postUrl(post);
     align-items: center;
     gap: var(--s-3);
     font-size: var(--t--1);
-    color: var(--c-muted);
+    color: var(--color-muted);
   }
 
   .cat {
-    color: var(--c-accent);
-    font-weight: 600;
+    color: var(--color-primary);
+    font-weight: var(--w-semibold);
   }
 
   h3 {
-    margin-top: var(--s-3);
+    margin-top: var(--s-4);
     font-size: var(--t-2);
   }
 
+  .featured h3 {
+    font-size: var(--t-3);
+  }
+
   h3 a {
-    color: var(--c-ink);
+    color: var(--color-text);
     text-decoration: none;
   }
 
-  h3 a:hover {
-    color: var(--c-accent);
+  .overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
   }
 
   .desc {
     margin-top: var(--s-3);
-    color: var(--c-ink-2);
-    max-width: 68ch;
+    color: var(--color-muted);
+    max-width: 60ch;
+  }
+
+  .more {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    margin-top: var(--s-6);
+    padding-top: var(--s-5);
+    border-top: 1px solid var(--color-border);
+    font-size: var(--t--1);
+    font-weight: var(--w-semibold);
+    color: var(--color-primary);
+  }
+
+  .more svg {
+    width: 1rem;
+    height: 1rem;
+    transition: transform var(--dur) var(--ease);
+  }
+
+  .card:hover .more svg {
+    transform: translateX(3px);
+  }
+
+  /* Empurra o rodapé do card para baixo, alinhando cards de alturas
+     diferentes na mesma linha da grade. */
+  .desc {
+    flex: 1;
   }
 </style>

@@ -1,0 +1,85 @@
+---
+/**
+ * Referências externas do artigo.
+ * Só renderiza quando o frontmatter traz fontes reais — nunca há
+ * lista vazia nem fonte inventada para preencher espaço.
+ */
+interface Source {
+  title: string;
+  url: string;
+  publisher?: string;
+}
+
+interface Props {
+  sources: Source[];
+  title?: string;
+}
+
+const { sources, title = 'Fontes' } = Astro.props;
+
+const hostOf = (url: string) => {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return url;
+  }
+};
+---
+
+{
+  sources.length > 0 && (
+    <section class="sources" aria-labelledby="fontes-artigo">
+      <h2 id="fontes-artigo">{title}</h2>
+      <ol>
+        {sources.map((source) => (
+          <li>
+            <a href={source.url} rel="nofollow noopener" target="_blank">
+              {source.title}
+            </a>
+            <span class="pub">{source.publisher ?? hostOf(source.url)}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )
+}
+
+<style>
+  .sources {
+    max-width: var(--w-prose);
+    margin-top: var(--s-9);
+    padding-top: var(--s-6);
+    border-top: 1px solid var(--color-border);
+  }
+
+  h2 {
+    font-size: var(--t--1);
+    font-weight: var(--w-semibold);
+    letter-spacing: var(--tr-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-muted);
+    margin: 0 0 var(--s-4);
+  }
+
+  ol {
+    display: grid;
+    gap: var(--s-4);
+    margin: 0;
+    padding-left: 1.2em;
+  }
+
+  li::marker {
+    color: var(--color-muted);
+    font-size: var(--t--1);
+  }
+
+  a {
+    font-size: var(--t-0);
+  }
+
+  .pub {
+    display: block;
+    font-size: var(--t--1);
+    color: var(--color-muted);
+  }
+</style>

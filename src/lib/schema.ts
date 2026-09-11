@@ -3,23 +3,40 @@
  *
  * Regra do projeto: só emitimos dados estruturados sustentados por informação
  * real. Nada de aggregateRating, review, número de alunos ou FAQPage — não
- * temos avaliações e marcar dado inexistente é penalidade, não vantagem.
+ * temos avaliações, e marcar dado inexistente é penalidade, não vantagem.
+ * `citation` só aparece quando o artigo declara fontes de verdade.
  */
 import { SITE, absoluteUrl } from '../config/site';
+import { BRAND_LOGO_URL } from './brand';
 import type { Post, Product } from './content';
 import { isoDate } from './content';
 
 type Json = Record<string, unknown>;
 
+const ORG_ID = `${SITE.url}/#organization`;
+const SITE_ID = `${SITE.url}/#website`;
+
 export const organization = (): Json => ({
   '@type': 'Organization',
-  '@id': `${SITE.url}/#organization`,
+  '@id': ORG_ID,
   name: SITE.name,
   url: `${SITE.url}/`,
   logo: {
     '@type': 'ImageObject',
-    url: absoluteUrl('/images/logo.png'),
+    url: absoluteUrl(BRAND_LOGO_URL),
+    width: 600,
+    height: 216,
   },
+});
+
+export const website = (): Json => ({
+  '@type': 'WebSite',
+  '@id': SITE_ID,
+  name: SITE.name,
+  url: `${SITE.url}/`,
+  description: SITE.description,
+  inLanguage: SITE.lang,
+  publisher: { '@id': ORG_ID },
 });
 
 export const breadcrumbs = (
@@ -58,22 +75,41 @@ export const productSchema = (product: Product, path: string): Json => {
 export const articleSchema = (
   post: Post,
   path: string,
-  categoryName: string
+  categoryName: string,
+  extra: { wordCount?: number; categoryPath?: string } = {}
 ): Json => {
-  const { title, description, date, updated, author, keywords } = post.data;
+  const d = post.data;
+  const image = absoluteUrl(d.ogImage ?? SITE.ogImage);
+
   return {
     '@type': 'Article',
-    headline: title,
-    description,
+    '@id': `${absoluteUrl(path)}#article`,
+    headline: d.title,
+    description: d.description,
     inLanguage: SITE.lang,
-    datePublished: isoDate(date),
-    dateModified: isoDate(updated ?? date),
+    datePublished: isoDate(d.date),
+    ...(d.updated ? { dateModified: isoDate(d.updated) } : {}),
     articleSection: categoryName,
-    ...(keywords.length > 0 ? { keywords: keywords.join(', ') } : {}),
-    author: { '@type': 'Organization', name: author },
-    publisher: { '@id': `${SITE.url}/#organization` },
+    ...(d.keywords.length > 0 ? { keywords: d.keywords.join(', ') } : {}),
+    ...(extra.wordCount ? { wordCount: extra.wordCount } : {}),
+    author: { '@type': 'Organization', name: d.author },
+    publisher: { '@id': ORG_ID },
+    isPartOf: { '@id': SITE_ID },
     mainEntityOfPage: { '@type': 'WebPage', '@id': absoluteUrl(path) },
-    image: absoluteUrl(SITE.ogImage),
+    image,
+    // Só referências declaradas pelo artigo. Nunca sintetizadas.
+    ...(d.sources.length > 0
+      ? {
+          citation: d.sources.map((source) => ({
+            '@type': 'CreativeWork',
+            name: source.title,
+            url: source.url,
+            ...(source.publisher
+              ? { publisher: { '@type': 'Organization', name: source.publisher } }
+              : {}),
+          })),
+        }
+      : {}),
   };
 };
 

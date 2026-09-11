@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import ProductLayout from '../layouts/ProductLayout.astro';
 import Breadcrumbs from '../components/seo/Breadcrumbs.astro';
 import Section from '../components/ui/Section.astro';
 import Cta from '../components/ui/Cta.astro';
@@ -11,6 +11,8 @@ import ModuleList from '../components/product/ModuleList.astro';
 import OfferBox from '../components/product/OfferBox.astro';
 import Faq from '../components/product/Faq.astro';
 import PostCard from '../components/blog/PostCard.astro';
+import AdSlot from '../components/ads/AdSlot.astro';
+import { productImage } from '../lib/product-images';
 import {
   getProducts,
   getPostsByProduct,
@@ -45,6 +47,7 @@ const d = product.data;
 const path = productUrl(d.slug);
 const checkoutHref = hasCheckout(product) ? d.checkout.url : null;
 const relatedPosts = await getPostsByProduct(product.id);
+const heroImage = productImage(d.slug, d.hero.image);
 
 const crumbs = [
   { name: 'Início', path: '/' },
@@ -52,10 +55,11 @@ const crumbs = [
 ];
 ---
 
-<BaseLayout
+<ProductLayout
   title={d.seo.title}
   description={d.seo.description}
   ogImage={d.seo.ogImage}
+  theme={d.theme}
   schema={[
     schema.organization(),
     schema.productSchema(product, path),
@@ -69,6 +73,8 @@ const crumbs = [
     ctaLabel={d.checkout.cta}
     ctaHref={checkoutHref}
     price={d.price.display}
+    image={heroImage}
+    imageAlt={d.hero.imageAlt}
   />
 
   <div class="crumb-bar container">
@@ -181,25 +187,40 @@ const crumbs = [
       <p class="final-price">{d.price.display} · pagamento único</p>
     </div>
   </Section>
-</BaseLayout>
+
+  {/* Publicidade só depois de toda a argumentação, da oferta e do CTA
+      final — nunca no hero, entre benefícios ou perto do preço. Exige a
+      posição global ligada E o opt-in deste produto. */}
+  {
+    d.ads.pageEnd && (
+      <div class="container ad-wrap">
+        <AdSlot placement="product-page-end" />
+      </div>
+    )
+  }
+</ProductLayout>
 
 <style>
   .crumb-bar {
     padding-block: var(--s-4);
   }
 
+  .ad-wrap {
+    padding-bottom: var(--section-y);
+  }
+
   .close {
     margin-top: var(--s-6);
     font-size: var(--t-1);
     font-weight: 600;
-    color: var(--c-ink);
+    color: var(--color-text);
     max-width: 58ch;
   }
 
   .note {
     margin-top: var(--s-6);
     font-size: var(--t--1);
-    color: var(--c-muted);
+    color: var(--color-muted);
     max-width: 68ch;
   }
 
@@ -214,8 +235,8 @@ const crumbs = [
   }
 
   .guarantee {
-    background: var(--c-surface);
-    border: 1px solid var(--c-line);
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     padding: var(--s-6);
   }
@@ -226,7 +247,7 @@ const crumbs = [
 
   .guarantee p {
     margin-top: var(--s-3);
-    color: var(--c-ink-2);
+    color: var(--color-muted);
   }
 
   .final {
@@ -236,7 +257,7 @@ const crumbs = [
   .final p {
     margin-top: var(--s-4);
     margin-bottom: var(--s-6);
-    color: color-mix(in srgb, var(--c-on-accent) 84%, transparent);
+    color: color-mix(in srgb, var(--color-on-primary) 84%, transparent);
     max-width: 56ch;
     margin-inline: auto;
   }

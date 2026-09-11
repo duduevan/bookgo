@@ -1,135 +1,386 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Section from '../components/ui/Section.astro';
-import PostCard from '../components/blog/PostCard.astro';
-import {
-  getProducts,
-  getPosts,
-  getCategories,
-  productUrl,
-} from '../lib/content';
-import { SITE } from '../config/site';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import PillButton from '../components/ui/PillButton.astro';
+import Marquee from '../components/ui/Marquee.astro';
+import { SITE, NAV_CTA } from '../config/site';
+import { getCategories, categoryUrl } from '../lib/content';
 import * as schema from '../lib/schema';
 
-const products = await getProducts();
-const posts = (await getPosts()).slice(0, 3);
+const HERO_TOPICS = [
+  'Organização',
+  'Tecnologia',
+  'Família',
+  '50+',
+  'Dinheiro',
+  'Carreira',
+  'Empreendedorismo',
+] as const;
+
+const FORMATS = [
+  'Cursos rápidos',
+  'Guias práticos',
+  'Checklists',
+  'Planners',
+  'Templates',
+  'Materiais digitais',
+] as const;
+
+const PILLARS = [
+  {
+    title: 'Aprenda rápido',
+    text: 'Conteúdo direto ao ponto, sem horas de teoria desnecessária.',
+  },
+  {
+    title: 'Coloque em prática',
+    text: 'Guias, checklists e materiais para acompanhar o aprendizado.',
+  },
+  {
+    title: 'No seu ritmo',
+    text: 'Acesse quando quiser e avance de acordo com sua rotina.',
+  },
+];
+
+/** Vitrine de categorias. Hoje só organização existe; o componente já
+ *  aceita as próximas sem mudança de código. */
 const categories = await getCategories();
-const categoryName = (id: string) =>
-  categories.find((c) => c.id === id)?.data.name;
+const featured = categories.slice(0, 1).map((category) => ({
+  name: 'Casa e organização',
+  text: 'Métodos simples e materiais práticos para deixar a rotina mais leve.',
+  cta: 'Explorar organização',
+  href: categoryUrl(category.id),
+}));
 ---
 
-<BaseLayout
+<SiteLayout
   title={SITE.name}
   description={SITE.description}
-  schema={[schema.organization()]}
+  schema={[schema.organization(), schema.website()]}
 >
+  {/* ── Hero ─────────────────────────────────────────────── */}
   <section class="hero">
     <div class="container">
-      <h1>Conhecimento prático para o que atrapalha o seu dia a dia.</h1>
-      <p class="lede">
-        Materiais diretos, feitos para aplicar na rotina real — e não para
-        acumular sem uso.
-      </p>
+      <div class="hero-card">
+        <div class="hero-art" aria-hidden="true">
+          <span class="ring r1"></span>
+          <span class="ring r2"></span>
+          <span class="ring r3"></span>
+        </div>
+
+        <div class="hero-body">
+          <h1>
+            <span>Aprenda algo útil.</span>
+            <span>Coloque em prática.</span>
+          </h1>
+          <p class="hero-sub">
+            Cursos rápidos, guias e materiais práticos para resolver problemas
+            reais do dia a dia, no seu ritmo.
+          </p>
+          <PillButton
+            href={NAV_CTA.href}
+            label={NAV_CTA.label}
+            variant="inverse"
+            size="lg"
+            arrow
+          />
+        </div>
+
+        <div class="hero-marquee">
+          <Marquee items={HERO_TOPICS} variant="hero" duration="38s" />
+        </div>
+      </div>
     </div>
   </section>
 
-  <Section title="Materiais">
-    <ul class="products">
-      {
-        products.map((product) => (
-          <li>
-            <a href={productUrl(product.data.slug)}>
-              <h3>{product.data.name}</h3>
-              <p>{product.data.tagline}</p>
-              <span class="price">{product.data.price.display}</span>
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-  </Section>
-
-  {
-    posts.length > 0 && (
-      <Section tone="warm" title="No blog" narrow>
-        {posts.map((post) => (
-          <PostCard post={post} categoryName={categoryName(post.data.category.id)} />
-        ))}
-        <p class="more">
-          <a href="/blog/">Ver todos os artigos</a>
+  {/* ── Proposta ─────────────────────────────────────────── */}
+  <section class="section" id="sobre">
+    <div class="container">
+      <header class="head">
+        <h2>Conhecimento para a vida real.</h2>
+        <p class="lede">
+          A BookGo transforma assuntos importantes em conteúdos objetivos,
+          organizados e fáceis de colocar em prática.
         </p>
-      </Section>
-    )
-  }
-</BaseLayout>
+      </header>
+
+      <ul class="pillars">
+        {
+          PILLARS.map((pillar) => (
+            <li>
+              <h3>{pillar.title}</h3>
+              <p>{pillar.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  {/* ── Faixa de formatos ────────────────────────────────── */}
+  <section class="band" aria-label="Formatos disponíveis">
+    <Marquee items={FORMATS} variant="band" duration="52s" />
+  </section>
+
+  {/* ── Explorar ─────────────────────────────────────────── */}
+  <section class="section" id="explorar">
+    <div class="container">
+      <header class="head">
+        <p class="eyebrow">Explore a BookGo</p>
+        <h2>Encontre algo para você.</h2>
+        <p class="lede">
+          Conteúdos criados para diferentes momentos, objetivos e rotinas.
+        </p>
+      </header>
+
+      <ul class="categories">
+        {
+          featured.map((category) => (
+            <li class="category">
+              <div class="category-body">
+                <h3>{category.name}</h3>
+                <p>{category.text}</p>
+                <PillButton href={category.href} label={category.cta} arrow />
+              </div>
+              <div class="category-art" aria-hidden="true">
+                <span class="sheet s1"></span>
+                <span class="sheet s2"></span>
+                <span class="sheet s3"></span>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</SiteLayout>
 
 <style>
+  /* ── Hero ─────────────────────────────────────────────────── */
   .hero {
-    padding-block: clamp(3rem, 2rem + 6vw, 6rem);
-    border-bottom: 1px solid var(--c-line);
+    padding-block: var(--s-2) var(--s-6);
   }
 
-  .hero h1 {
-    max-width: 18ch;
+  .hero-card {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: var(--radius-xl);
+    background: var(--bookgo-blue);
+    color: #ffffff;
+    min-height: min(46rem, calc(100svh - 6.5rem));
+    padding: clamp(1.75rem, 1.2rem + 2.4vw, 3.5rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: var(--s-8);
   }
 
-  .hero .lede {
-    margin-top: var(--s-5);
-    max-width: 50ch;
+  /* Composição abstrata própria: anéis concêntricos recortados pela
+     borda do card, sobre um brilho suave. Puro CSS, nenhuma imagem. */
+  .hero-art {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(
+        44rem 30rem at 88% 6%,
+        color-mix(in srgb, #ffffff 16%, transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        30rem 30rem at 6% 96%,
+        color-mix(in srgb, #000000 14%, transparent),
+        transparent 68%
+      );
   }
 
-  .products {
+  .ring {
+    position: absolute;
+    right: -14%;
+    top: 50%;
+    translate: 0 -50%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 1px solid color-mix(in srgb, #ffffff 22%, transparent);
+  }
+
+  .r1 {
+    width: min(58rem, 108vw);
+  }
+
+  .r2 {
+    width: min(42rem, 82vw);
+    border-color: color-mix(in srgb, #ffffff 16%, transparent);
+  }
+
+  .r3 {
+    width: min(26rem, 56vw);
+    background: color-mix(in srgb, #ffffff 6%, transparent);
+    border-color: color-mix(in srgb, #ffffff 12%, transparent);
+  }
+
+  .hero-body {
+    /* Larga o bastante para "Coloque em prática." caber numa linha só
+       no tamanho máximo da fonte. */
+    max-width: 40rem;
+    margin-top: auto;
+  }
+
+  .hero-body h1 {
+    display: grid;
+  }
+
+  .hero-sub {
+    margin-block: var(--s-5) var(--s-7);
+    font-size: var(--t-1);
+    color: color-mix(in srgb, #ffffff 82%, transparent);
+    max-width: 32rem;
+  }
+
+  .hero-marquee {
+    margin-inline: calc(-1 * clamp(1.75rem, 1.2rem + 2.4vw, 3.5rem));
+  }
+
+  /* ── Seções ───────────────────────────────────────────────── */
+  .section {
+    padding-block: var(--section-y);
+  }
+
+  .head {
+    max-width: var(--w-text);
+    margin-bottom: var(--s-9);
+  }
+
+  .head > * + * {
+    margin-top: var(--s-4);
+  }
+
+  /* ── Pilares: um card alto e dois empilhados ──────────────── */
+  .pillars {
     list-style: none;
-    padding: 0;
     margin: 0;
+    padding: 0;
     display: grid;
     gap: var(--s-4);
-    grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr));
   }
 
-  .products a {
-    display: block;
-    height: 100%;
-    padding: var(--s-6);
-    background: var(--c-surface);
-    border: 1px solid var(--c-line);
-    border-radius: var(--radius);
-    text-decoration: none;
-    color: inherit;
-    transition:
-      border-color 0.15s ease,
-      box-shadow 0.15s ease;
+  .pillars li {
+    padding: clamp(1.5rem, 1.1rem + 1.6vw, 2.5rem);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    transition: border-color var(--dur) var(--ease);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 13rem;
   }
 
-  .products a:hover {
-    border-color: var(--c-accent-line);
-    box-shadow: var(--shadow);
+  .pillars li:first-child {
+    background: var(--bookgo-blue-light);
+    border-color: color-mix(in srgb, var(--bookgo-blue) 14%, transparent);
+    /* Centraliza no card alto: o vazio se divide em cima e embaixo em vez
+       de acumular no topo e parecer falha de renderização. */
+    justify-content: center;
   }
 
-  .products h3 {
-    font-size: var(--t-2);
+  .pillars h3 {
+    font-size: var(--t-3);
   }
 
-  .products p {
+  .pillars p {
     margin-top: var(--s-3);
-    color: var(--c-ink-2);
-    font-size: var(--t-0);
+    color: var(--color-muted);
+    max-width: 32ch;
   }
 
-  .price {
-    display: inline-block;
-    margin-top: var(--s-5);
-    font-weight: 620;
-    color: var(--c-accent);
+  /* ── Faixa institucional ──────────────────────────────────── */
+  .band {
+    padding-block: var(--s-6);
+    border-block: 1px solid var(--color-border);
   }
 
-  .more {
-    margin-top: var(--s-6);
+  /* ── Categorias ───────────────────────────────────────────── */
+  .categories {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-5);
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .products a {
-      transition: none;
+  .category {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    gap: var(--s-8);
+    padding: clamp(1.75rem, 1.2rem + 2.4vw, 3.5rem);
+    border-radius: var(--radius-xl);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+
+  .category-body {
+    max-width: 30rem;
+    align-self: center;
+  }
+
+  .category h3 {
+    font-size: var(--t-4);
+    letter-spacing: var(--tr-heading);
+  }
+
+  .category-body p {
+    margin-block: var(--s-4) var(--s-7);
+    color: var(--color-muted);
+    font-size: var(--t-1);
+  }
+
+  /* Folhas empilhadas: sugerem material sem recorrer a ícone. */
+  .category-art {
+    position: relative;
+    min-height: 11rem;
+  }
+
+  .sheet {
+    position: absolute;
+    border-radius: var(--radius);
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+  }
+
+  .s1 {
+    inset: 18% 30% 6% 4%;
+    rotate: -5deg;
+  }
+
+  .s2 {
+    inset: 10% 16% 14% 18%;
+    rotate: 3deg;
+  }
+
+  .s3 {
+    inset: 4% 4% 22% 32%;
+    rotate: 9deg;
+    background: var(--bookgo-blue);
+    border-color: transparent;
+  }
+
+  @media (min-width: 60rem) {
+    .pillars {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .pillars li:first-child {
+      grid-row: span 2;
+    }
+
+    .category {
+      grid-template-columns: 1fr 0.85fr;
+      align-items: center;
+    }
+
+    .category-art {
+      min-height: 15rem;
     }
   }
 </style>

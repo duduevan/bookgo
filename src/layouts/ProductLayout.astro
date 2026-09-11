@@ -1,0 +1,30 @@
+---
+/**
+ * Layout de landing page de produto.
+ *
+ * Sem navbar institucional, sem logo no hero e sem links para blog ou outros
+ * produtos no topo — a página existe para converter tráfego de campanha, e
+ * cada saída custa conversão. A assinatura BookGo fica só no rodapé.
+ */
+import BaseLayout from './BaseLayout.astro';
+import ProductFooter from '../components/product/ProductFooter.astro';
+import { themeToStyle, type ProductTheme } from '../lib/theme';
+
+interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+  schema?: Record<string, unknown>[];
+  theme: ProductTheme;
+}
+
+const { theme, ...base } = Astro.props;
+---
+
+<BaseLayout {...base} bodyStyle={themeToStyle(theme)}>
+  <slot name="head" slot="head" />
+  <main id="conteudo">
+    <slot />
+  </main>
+  <ProductFooter />
+</BaseLayout>

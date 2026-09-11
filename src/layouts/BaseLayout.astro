@@ -3,25 +3,30 @@ import '../styles/global.css';
 import { SITE } from '../config/site';
 import Seo from '../components/seo/Seo.astro';
 import JsonLd from '../components/seo/JsonLd.astro';
-import Header from '../components/site/Header.astro';
-import Footer from '../components/site/Footer.astro';
 
 interface Props {
   title: string;
   description: string;
   ogImage?: string;
+  ogImageAlt?: string;
   ogType?: 'website' | 'article';
   noindex?: boolean;
+  canonical?: boolean;
   schema?: Record<string, unknown>[];
+  /** Custom properties de tema aplicadas ao <body> (LPs de produto). */
+  bodyStyle?: string;
 }
 
 const {
   title,
   description,
   ogImage,
+  ogImageAlt,
   ogType,
   noindex,
+  canonical,
   schema = [],
+  bodyStyle,
 } = Astro.props;
 ---
 
@@ -30,30 +35,36 @@ const {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <meta name="theme-color" content="#fcfbf9" />
+    <link rel="icon" href="/images/icons/icon-32.png" sizes="32x32" type="image/png" />
+    <link rel="icon" href="/images/icons/icon-512.png" sizes="512x512" type="image/png" />
+    <link rel="apple-touch-icon" href="/images/icons/icon-180.png" />
+    <meta name="theme-color" content="#004ed1" />
+    <link
+      rel="preload"
+      href="/fonts/inter-latin-var.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <Seo
       title={title}
       description={description}
       ogImage={ogImage}
+      ogImageAlt={ogImageAlt}
       ogType={ogType}
       noindex={noindex}
+      canonical={canonical}
     />
+    {
+      SITE.googleSiteVerification && (
+        <meta name="google-site-verification" content={SITE.googleSiteVerification} />
+      )
+    }
     {schema.length > 0 && <JsonLd nodes={schema} />}
+    <slot name="head" />
   </head>
-  <body>
+  <body style={bodyStyle}>
     <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
-    <Header />
-    <main id="conteudo">
-      <slot />
-    </main>
-    <Footer />
-    <style is:global>
-      body {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-      }
-    </style>
+    <slot />
   </body>
 </html>

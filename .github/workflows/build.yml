@@ -34,3 +34,11 @@ jobs:
           test -d dist || { echo "::error::dist/ não foi gerado."; exit 1; }
           test -f dist/index.html || { echo "::error::dist/index.html ausente."; exit 1; }
           echo "Arquivos gerados: $(find dist -type f | wc -l)"
+
+      # Falha apenas em erro estrutural (title, canonical, H1, alt, JSON-LD,
+      # link interno quebrado). Observações editoriais saem como aviso.
+      - name: SEO QA
+        run: npm run qa:seo
+
+      - name: Relatório de performance
+        run: npm run qa:perf

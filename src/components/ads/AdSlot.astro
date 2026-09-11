@@ -1,0 +1,71 @@
+---
+/**
+ * Espaço de anúncio in-page.
+ *
+ * Com `ADS.enabled` false — o estado atual — este componente não renderiza
+ * absolutamente nada: sem marcação, sem script, sem requisição externa.
+ * O "0 KB de JavaScript no cliente" do projeto não é afetado.
+ *
+ * Quando for ligado, o espaço é reservado antes da carga (`min-height`),
+ * para que o anúncio não empurre o conteúdo e gere CLS. O carregador do
+ * AdSense é um passo separado e consciente — não vive aqui.
+ *
+ * Regras que este componente assume, e que o template deve respeitar ao
+ * posicioná-lo: nunca colado em CTA, botão, navegação, preço ou checkout,
+ * e nunca antes de conteúdo editorial substancial.
+ */
+import { ADS, type AdPlacement } from '../../config/site';
+
+interface Props {
+  placement: AdPlacement;
+  /** Altura reservada, em px. Evita deslocamento quando o anúncio carrega. */
+  reserve?: number;
+}
+
+const { placement, reserve = 280 } = Astro.props;
+
+const active =
+  ADS.enabled && ADS.placements[placement] && Boolean(ADS.adsenseClient);
+---
+
+{
+  active && (
+    <aside class="ad" data-placement={placement} aria-label="Publicidade">
+      <p class="ad-label">Publicidade</p>
+      <div class="ad-box" style={`min-height:${reserve}px`}>
+        <ins
+          class="adsbygoogle"
+          style="display:block"
+          data-ad-client={ADS.adsenseClient}
+          data-ad-format="auto"
+          data-full-width-responsive="true"
+        />
+      </div>
+    </aside>
+  )
+}
+
+<style>
+  /* Separação clara do conteúdo editorial: o anúncio não se confunde
+     com o texto nem com nenhum elemento de conversão. */
+  .ad {
+    max-width: var(--w-prose);
+    margin-block: var(--s-9);
+    padding-top: var(--s-5);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .ad-label {
+    font-size: var(--t--1);
+    letter-spacing: var(--tr-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-muted);
+    opacity: 0.7;
+    margin-bottom: var(--s-3);
+  }
+
+  .ad-box {
+    display: block;
+    width: 100%;
+  }
+</style>

@@ -1,6 +1,31 @@
 name: Organização
 description: Ideias práticas para organizar e manter a casa em ordem com o tempo que você realmente tem.
+
+headline: Organização que cabe na rotina
+intro:
+  - >-
+    A maior parte do conteúdo sobre organização parte de um pressuposto que quase
+    nunca se confirma: o de que existe um dia livre esperando por você. Aqui a
+    premissa é outra — a casa é usada todos os dias, o tempo é curto e picado, e o
+    método precisa sobreviver a isso.
+  - >-
+    Os textos desta seção tratam de manutenção, não de reforma. São rotinas curtas,
+    critérios de prioridade e formas de decidir por onde começar quando tudo parece
+    precisar de atenção ao mesmo tempo.
+
+subtopics:
+  - title: Rotina e manutenção
+    text: Como sustentar a casa durante a semana em vez de acumular tudo para o fim de semana.
+  - title: Pontos de acúmulo
+    text: Bancada, mesa da sala, cadeira do quarto — os lugares que definem se a casa parece organizada.
+  - title: Organização com pouco tempo
+    text: O que dá para fazer em janelas de 15 minutos e o que realmente exige um bloco maior.
+  - title: Casa habitada
+    text: Métodos que continuam funcionando com crianças, trabalho e a casa em uso o dia inteiro.
+
+relatedProduct: casa-organizada-em-15-minutos
+
 seo:
   title: Organização da casa
-  description: Artigos práticos sobre rotina, manutenção e organização da casa para quem tem pouco tempo.
+  description: Artigos práticos sobre rotina, manutenção e organização da casa para quem tem pouco tempo e não quer passar o fim de semana arrumando.
 order: 10

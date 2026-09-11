@@ -1,0 +1,30 @@
+---
+/** Layout institucional: navbar e rodapé BookGo completos. */
+import BaseLayout from './BaseLayout.astro';
+import SiteHeader from '../components/site/SiteHeader.astro';
+import SiteFooter from '../components/site/SiteFooter.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+  ogImageAlt?: string;
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+  canonical?: boolean;
+  schema?: Record<string, unknown>[];
+  /** Navbar sobre fundo escuro usa o logo branco. */
+  headerOnDark?: boolean;
+}
+
+const { headerOnDark = false, ...base } = Astro.props;
+---
+
+<BaseLayout {...base}>
+  <slot name="head" slot="head" />
+  <SiteHeader onDark={headerOnDark} />
+  <main id="conteudo">
+    <slot />
+  </main>
+  <SiteFooter />
+</BaseLayout>
