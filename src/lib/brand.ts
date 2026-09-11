@@ -9,12 +9,9 @@ import fs from 'node:fs';
  * caminho abaixo — nenhum código muda.
  */
 export const BRAND_ASSETS = {
-  /** Logo completo, para fundos claros. */
-  blue: '/images/brand/bookgo-blue.svg',
-  /** Logo completo, para fundos azuis ou escuros. */
-  white: '/images/brand/bookgo-white.svg',
-  /** Símbolo/versão compacta, para favicon e avatar. */
-  symbol: '/images/brand/bookgo-symbol.svg',
+blue: '/images/brand/bookgo-blue.webp',
+white: '/images/brand/bookgo-white.webp',
+symbol: '/images/brand/bookgo-symbol.webp',
 } as const;
 
 export type BrandVariant = keyof typeof BRAND_ASSETS;
