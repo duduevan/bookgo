@@ -37,6 +37,17 @@ export const shouldLoadGa4Directly = (): boolean =>
   TRACKING.ga4.loadDirectlyWithoutGtm &&
   Boolean(TRACKING.ga4.measurementId);
 
+/**
+ * AdSense.
+ *
+ * Ter o publisher ID **não** autoriza carregar nada. O script só entra com
+ * `ADS.enabled` true — e, mesmo assim, apenas depois do aceite da categoria
+ * `advertising`. Hoje devolve false, e é por isso que o ID real em
+ * `src/config/site.ts` não custa um byte ao visitante.
+ */
+export const shouldLoadAdsense = (): boolean =>
+  ADS.enabled && Boolean(ADS.adsenseClient);
+
 /** Meta Pixel direto. Preferência é entrar pelo GTM; ver docs/tracking.md. */
 export const shouldLoadMetaPixelDirectly = (): boolean =>
   TRACKING.enabled && !TRACKING.gtm.id && Boolean(TRACKING.meta.pixelId);

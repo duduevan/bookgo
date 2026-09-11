@@ -89,14 +89,19 @@ benefits:
   title: O que muda na prática
   items:
     - title: Começar deixa de ser o problema
+      icon: spark
       text: Quinze minutos é um compromisso pequeno o suficiente para caber em quase qualquer dia — e isso reduz a paralisia de não saber por onde começar.
     - title: O fim de semana volta a ser seu
+      icon: calendar
       text: Quando a manutenção acontece durante a semana, o sábado deixa de ser o dia de correr atrás do prejuízo.
     - title: Menos decisão, mais execução
+      icon: list
       text: Com o que fazer já definido em checklist, sua energia vai para a ação em vez de ir para o planejamento.
     - title: Sensação de controle
+      icon: compass
       text: Ver um ponto resolvido por dia muda a relação com a casa, mesmo quando ela ainda não está do jeito ideal.
     - title: Pensado para casa habitada
+      icon: home
       text: O método parte do princípio de que a casa é usada todos os dias, inclusive por crianças, e não espera que ela fique intocada.
 
 # ── Como funciona ────────────────────────────────────────────
@@ -139,12 +144,16 @@ materials:
   intro: Quatro materiais em PDF para usar no celular, no computador ou impressos.
   items:
     - title: Checklist Diário de 15 Minutos
+      icon: checklist
       text: O alvo de cada sessão, para você começar sem perder tempo decidindo.
     - title: Planner Semanal da Casa
+      icon: calendar-week
       text: Uma visão simples da semana para distribuir as sessões sem sobrecarregar um único dia.
     - title: Plano Casa Organizada em 7 Dias
+      icon: roadmap
       text: Um roteiro inicial de sete dias para colocar o método em prática já na primeira semana.
     - title: Checklist por Ambiente
+      icon: rooms
       text: Listas separadas por cômodo para usar quando sobrar um tempo extra.
 
 # ── Público ──────────────────────────────────────────────────
@@ -180,7 +189,22 @@ offer:
   priceNote: Materiais digitais em PDF. Pagamento processado pela Kiwify.
 
 # ── Garantia ─────────────────────────────────────────────────
+# Prova social — desligada.
+#
+# Não existe depoimento real autorizado até aqui, e depoimento não se
+# inventa. Com `enabled: false` a seção não é renderizada: a LP não ganha
+# título, espaço vazio nem CSS por causa deste bloco.
+#
+# Para ligar: colete aqui só texto que uma pessoa real escreveu e autorizou
+# a publicar, e vire `enabled` para true. Formatos disponíveis por item:
+# `type: card` (texto corrido) e `type: phone` (conversa).
+testimonials:
+  enabled: false
+  title: O que diz quem já usou
+  items: []
+
 guarantee:
+  icon: shield
   title: Garantia de 7 dias
   text: Você terá 7 dias de garantia para conhecer o conteúdo. Se não for para você, basta pedir o reembolso dentro desse prazo.
 

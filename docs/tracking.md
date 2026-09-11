@@ -1,7 +1,24 @@
 # Tracking, consentimento e medição
 
-Estado atual: **tudo desligado**. Nenhum script de terceiro, nenhum ID
-configurado, nenhum cookie próprio, 0 KB de JavaScript no cliente.
+Estado atual:
+
+| Fornecedor | ID | Estado |
+|---|---|---|
+| GA4 | `G-W41286ERFZ` | **ligado**, só depois do aceite em `analytics` |
+| Search Console | token real | meta renderizada em toda página |
+| AdSense | `ca-pub-6552313195053069` | **ID guardado, script não carregado** |
+| GTM | — | não existe contêiner ainda |
+| Meta Pixel | — | não configurado |
+| Google Ads | — | não configurado |
+
+Consequência honesta: o site **deixou de ser 0 KB de JavaScript**. Cada página
+passou a carregar ~4,3 KB inline (runtime de medição + banner). `npm run qa:perf`
+mede e reporta esse número — ele não é escondido atrás da contagem de arquivos
+`.js`, que continua zero. Voltar `TRACKING.enabled` para `false` devolve a
+página a 0 KB.
+
+Antes do visitante decidir, **nenhuma requisição sai para o Google**. Recusar
+significa que nada é carregado.
 
 Este documento diz onde cada ID entra e o que acontece quando entra.
 
@@ -55,14 +72,49 @@ a medição de quem navega sem JavaScript a coletar sem permissão.
 
 ## GA4
 
-**Decisão: o GA4 é gerenciado pelo GTM.**
+Propriedade em uso: **`G-W41286ERFZ`**.
 
-Com `gtm.id` preenchido, este projeto **não** carrega o `gtag.js`. Carregar o
-GA4 pelo GTM e diretamente ao mesmo tempo dispara `page_view` duas vezes e
-infla a contagem de sessões.
+**Hoje: gtag.js direto, pela camada central.** Não existe contêiner GTM, então
+`ga4.loadDirectlyWithoutGtm` está `true` e o runtime carrega o `gtag.js`. O
+snippet **não** foi colado página a página: ele é emitido uma vez por
+`TrackingHead.astro`, a partir da configuração.
 
-`ga4.measurementId` continua aqui para documentar qual propriedade está em uso.
-`ga4.loadDirectlyWithoutGtm` só tem efeito quando **não** existe GTM.
+**Migrar para GTM depois é uma linha.** Preencher `gtm.id` faz
+`shouldLoadGa4Directly()` devolver false sozinho: o site para de carregar o
+`gtag.js`, o GA4 vira uma tag dentro do contêiner e **nenhuma página muda**.
+É exatamente por isso que a decisão mora na configuração e não no markup.
+
+### A ponte de eventos
+
+A camada de eventos da BookGo publica **objetos** no dataLayer
+(`{event: 'checkout_click', ...}`), que é o formato que o GTM lê. O `gtag.js`
+não lê esse formato — ele só entende o protocolo de argumentos. Sem uma ponte,
+os eventos existiriam no dataLayer e nunca chegariam ao GA4.
+
+`TrackingHead.astro` faz essa ponte: cada `bookgo.track()` também vira
+`gtag('event', nome, params)` enquanto o GA4 direto estiver ativo. Com GTM, a
+ponte se desliga junto com o gtag.js e o contêiner volta a ser o único leitor.
+
+**`page_view` fica de fora da ponte, de propósito.** O `gtag('config', ID)` já
+envia um `page_view` automático; repetir pela ponte dobraria a contagem.
+
+### Eventos antes do aceite
+
+Um `product_view` dispara no carregamento, antes de qualquer decisão. Ele fica
+numa fila **em memória** (no máximo 20), que:
+
+- é enviada ao GA4 se a pessoa aceitar `analytics`;
+- morre com a navegação se ela recusar.
+
+Nada é gravado em disco e nada é enviado sem permissão.
+
+### Comportamento verificado no navegador
+
+| Situação | Requisições ao Google |
+|---|---|
+| Carga, sem decisão | nenhuma |
+| Recusar | nenhuma |
+| Aceitar | `gtag/js?id=G-W41286ERFZ`, uma vez |
 
 Configuração no GTM:
 
@@ -140,9 +192,22 @@ de JavaScript.
 
 ## AdSense
 
-Configurado em `src/config/site.ts` (`ADS`), desligado. Quando for ligado, ele
-passa a contar como motivo para o banner aparecer, e a categoria `advertising`
-é quem deve controlá-lo. Ver a seção "Publicidade" do `CLAUDE.md`.
+Publisher ID real: **`ca-pub-6552313195053069`**, em `ADS.adsenseClient`
+(`src/config/site.ts`).
+
+**Ter o ID não liga nada.** `ADS.enabled` continua `false` e os três placements
+continuam desligados, então o `adsbygoogle.js` não é carregado e o ID **nem
+chega ao HTML** — `R.adsense` sai `null` no runtime. Custo hoje: zero byte.
+
+Para ligar de verdade são três chaves, e nessa ordem:
+
+1. `ADS.enabled = true`;
+2. o placement específico em `ADS.placements`;
+3. na LP, também o `ads.pageEnd` do próprio produto.
+
+Só então o runtime carrega o script — e ainda assim apenas depois do aceite na
+categoria `advertising`, junto com o Consent Mode. Ver a seção "Publicidade" do
+`CLAUDE.md` para os formatos que a BookGo não usa.
 
 ---
 
@@ -199,7 +264,14 @@ campanha que trouxe a pessoa.
 
 ## Search Console
 
-1. Em `src/config/site.ts`, preencha `googleSiteVerification` com o valor do
+Já verificado: `googleSiteVerification` em `src/config/site.ts` carrega o token
+real, e `BaseLayout.astro` é o **único** lugar que lê esse campo — a meta sai
+uma vez por página, nunca duas. O token é público por natureza: ele só prova
+posse do domínio para quem já tem acesso à conta.
+
+Para trocar a propriedade ou refazer a verificação:
+
+1. Em `src/config/site.ts`, troque `googleSiteVerification` pelo valor do
    método **"tag HTML"** do Search Console — só o conteúdo do `content`, não a
    tag inteira. Com `null`, nada é renderizado.
 2. `npm run build` e publique.

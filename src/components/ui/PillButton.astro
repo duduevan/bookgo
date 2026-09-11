@@ -4,6 +4,8 @@
  * Usado no site institucional; o checkout das LPs usa Cta.astro,
  * que precisa lidar com URL ainda não configurada.
  */
+import Icon from './Icon.astro';
+
 interface Props {
   href: string;
   label: string;
@@ -31,16 +33,7 @@ const {
   {
     arrow && (
       <span class="circle" aria-hidden="true">
-        <svg viewBox="0 0 16 16" focusable="false">
-          <path
-            d="M4 12L12 4M12 4H6M12 4v6"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.6"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
+        <Icon name="arrow-up-right" />
       </span>
     )
   }
@@ -147,9 +140,8 @@ const {
     height: 2.25rem;
   }
 
-  .circle svg {
-    width: 55%;
-    height: 55%;
+  .circle :global(.icon) {
+    --icon-size: 55%;
   }
 
   .v-primary .circle {

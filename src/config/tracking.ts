@@ -77,13 +77,24 @@ export interface TrackingConfig {
 }
 
 export const TRACKING: TrackingConfig = {
-  enabled: false,
+  enabled: true,
 
+  /**
+   * Ainda não existe contêiner GTM. Quando existir, basta preencher o ID
+   * aqui: `shouldLoadGa4Directly` passa a devolver false sozinho, o gtag.js
+   * deixa de ser carregado pelo site e o GA4 vira uma tag dentro do
+   * contêiner. Nenhuma página muda — a decisão mora inteira neste arquivo.
+   */
   gtm: { id: null },
 
   ga4: {
-    measurementId: null,
-    loadDirectlyWithoutGtm: false,
+    measurementId: 'G-W41286ERFZ',
+    /**
+     * Sem GTM, o GA4 entra direto pelo gtag.js — mas ainda assim pela
+     * camada central, nunca colado página a página. Este campo é ignorado
+     * assim que `gtm.id` existir, o que torna a migração um passo só.
+     */
+    loadDirectlyWithoutGtm: true,
   },
 
   meta: { pixelId: null },

@@ -15,9 +15,11 @@
  * Nenhum ID é escrito aqui: todos vêm de src/config/tracking.ts.
  */
 import { TRACKING } from '../../config/tracking';
+import { ADS } from '../../config/site';
 import {
   isTrackingActive,
   needsConsentBanner,
+  shouldLoadAdsense,
   shouldLoadGa4Directly,
   shouldLoadMetaPixelDirectly,
   shouldLoadGtm,
@@ -25,14 +27,65 @@ import {
 
 const render = isTrackingActive() || needsConsentBanner();
 
+const gtm = shouldLoadGtm() ? TRACKING.gtm.id : null;
+const ga4 = shouldLoadGa4Directly() ? TRACKING.ga4.measurementId : null;
+const meta = shouldLoadMetaPixelDirectly() ? TRACKING.meta.pixelId : null;
+const googleAds = TRACKING.enabled ? TRACKING.googleAds.id : null;
+const adsense = shouldLoadAdsense() ? ADS.adsenseClient : null;
+
 const runtime = {
   key: TRACKING.consent.storageKey,
   requireConsent: TRACKING.consent.required,
-  gtm: shouldLoadGtm() ? TRACKING.gtm.id : null,
-  ga4: shouldLoadGa4Directly() ? TRACKING.ga4.measurementId : null,
-  meta: shouldLoadMetaPixelDirectly() ? TRACKING.meta.pixelId : null,
-  ads: TRACKING.enabled ? TRACKING.googleAds.id : null,
+  gtm,
+  ga4,
+  meta,
+  ads: googleAds,
+  adsense,
 };
+
+/**
+ * Cada fornecedor só entra no código emitido quando tem ID.
+ *
+ * Sem isso, a URL do adsbygoogle e do fbevents viajaria em toda página como
+ * código morto: bytes a mais e, pior, um HTML em que alguém lendo encontra
+ * "adsbygoogle" e conclui que o AdSense está ligado. Sem ID, o trecho
+ * simplesmente não existe.
+ */
+const gtmSource = gtm
+  ? `if(R.gtm&&mayLoad&&!done.gtm){done.gtm=1;
+    w.dataLayer.push({'gtm.start':Date.now(),event:'gtm.js'});
+    load('https://www.googletagmanager.com/gtm.js?id='+R.gtm);}`
+  : '';
+
+/* GA4 direto só existe quando não há GTM: evita page_view duplicado. */
+const ga4Source = ga4
+  ? `if(R.ga4&&c.analytics&&!done.ga4){done.ga4=1;
+    load('https://www.googletagmanager.com/gtag/js?id='+R.ga4);
+    push('js',new Date());push('config',R.ga4);flush();}`
+  : '';
+
+const googleAdsSource = googleAds
+  ? `if(R.ads&&c.advertising&&!done.ads){done.ads=1;
+    if(!R.ga4)load('https://www.googletagmanager.com/gtag/js?id='+R.ads);
+    push('config',R.ads);}`
+  : '';
+
+/* AdSense: o ID existir não basta. Só entra com a publicidade ligada na
+   configuração e com a categoria aceita. */
+const adsenseSource = adsense
+  ? `if(R.adsense&&c.advertising&&!done.adsense){done.adsense=1;
+    load('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client='+R.adsense,true);}`
+  : '';
+
+const metaSource = meta
+  ? `if(R.meta&&c.advertising&&!done.meta){done.meta=1;
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
+    (w,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    w.fbq('init',R.meta);w.fbq('track','PageView');}`
+  : '';
 
 const source = `(function(){
 var R=${JSON.stringify(runtime)},w=window;
@@ -47,30 +100,39 @@ functionality_storage:'granted',security_storage:'granted',wait_for_update:500})
 
 function read(){try{return JSON.parse(localStorage.getItem(R.key)||'null');}catch(e){return null;}}
 var done={};
-function load(src){var s=document.createElement('script');s.async=true;s.src=src;document.head.appendChild(s);}
+function load(src,cross){var s=document.createElement('script');s.async=true;s.src=src;
+if(cross)s.crossOrigin='anonymous';document.head.appendChild(s);}
+
+/* Ponte para o GA4 direto.
+
+   A camada de eventos da BookGo publica objetos no dataLayer, que é o
+   formato que o GTM lê. O gtag.js não lê esse formato: ele só entende o
+   protocolo de argumentos — gtag('event',...). Sem esta ponte, os eventos
+   existiriam no dataLayer e não chegariam ao GA4.
+
+   page_view fica de fora de propósito: o config abaixo já envia um, e
+   repetir aqui dobraria a contagem de visualizações. */
+var pending=[];
+function ga4Event(name,params){
+  if(!R.ga4||name==='page_view')return;
+  /* Antes do aceite não existe GA4 para receber. Guardamos na memória da
+     página — nada é gravado em disco — e só enviamos se o consentimento
+     vier. Se o visitante recusar, a fila morre com a navegação. */
+  if(!done.ga4){if(pending.length<20)pending.push([name,params]);return;}
+  push('event',name,params||{});
+}
+function flush(){while(pending.length){var e=pending.shift();push('event',e[0],e[1]||{});}}
 
 function providers(c){
   /* Com consentimento exigido, o container só entra depois de um "sim" em
      alguma categoria. Recusar significa não carregar nada — inclusive o
      GTM, que sozinho já abre conexão com o Google. */
   var mayLoad=!R.requireConsent||c.analytics||c.advertising;
-  if(R.gtm&&mayLoad&&!done.gtm){done.gtm=1;
-    w.dataLayer.push({'gtm.start':Date.now(),event:'gtm.js'});
-    load('https://www.googletagmanager.com/gtm.js?id='+R.gtm);}
-  /* GA4 direto só existe quando não há GTM: evita page_view duplicado. */
-  if(R.ga4&&c.analytics&&!done.ga4){done.ga4=1;
-    load('https://www.googletagmanager.com/gtag/js?id='+R.ga4);
-    push('js',new Date());push('config',R.ga4);}
-  if(R.ads&&c.advertising&&!done.ads){done.ads=1;
-    if(!R.ga4)load('https://www.googletagmanager.com/gtag/js?id='+R.ads);
-    push('config',R.ads);}
-  if(R.meta&&c.advertising&&!done.meta){done.meta=1;
-    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
-    (w,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-    w.fbq('init',R.meta);w.fbq('track','PageView');}
+  ${gtmSource}
+  ${ga4Source}
+  ${googleAdsSource}
+  ${adsenseSource}
+  ${metaSource}
 }
 
 function apply(c){
@@ -89,6 +151,7 @@ w.bookgo.track=function(name,params){
   var p={event:name};
   if(params)for(var k in params)p[k]=params[k];
   w.dataLayer.push(p);
+  ga4Event(name,params);
 };
 w.bookgo.setConsent=function(c){
   var v={analytics:!!c.analytics,advertising:!!c.advertising,ts:new Date().toISOString()};

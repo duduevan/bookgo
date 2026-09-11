@@ -1,0 +1,117 @@
+---
+/**
+ * Depoimento no formato de conversa de celular.
+ *
+ * Só Astro + HTML + CSS: nenhum framework, nenhuma biblioteca de animação,
+ * zero JavaScript no cliente. A referência que originou este componente foi
+ * feita em React com Framer Motion; aqui a entrada em cascata é
+ * `animation-delay` calculado no build, um número por bolha.
+ *
+ * Sem `<style>` próprio de propósito — ver src/styles/testimonials.css.ts.
+ *
+ * Acessibilidade e honestidade da leitura:
+ *  - a conversa é uma citação (`figure` + `blockquote`), não enfeite;
+ *  - a moldura, a barra de status e a caixa de digitar são `aria-hidden`:
+ *    são cenário, e nada ali é interativo — não há input, nem botão, nem
+ *    foco por teclado que leve a lugar nenhum;
+ *  - cada bolha diz de quem é, para o áudio não virar um bloco só.
+ *
+ * O componente não conhece nenhum depoimento: tudo entra por props.
+ */
+import { initialsOf } from '../../lib/testimonials';
+
+export interface PhoneMessage {
+  side: 'incoming' | 'outgoing';
+  text: string;
+  time?: string;
+  read?: boolean;
+}
+
+interface Props {
+  name: string;
+  avatar?: string;
+  status?: string;
+  messages: PhoneMessage[];
+  /** Rótulo de quem envia as mensagens `outgoing`. */
+  outgoingName?: string;
+}
+
+const {
+  name,
+  avatar,
+  status,
+  messages,
+  outgoingName = 'BookGo',
+} = Astro.props;
+
+/* Cascata: cada bolha entra 90ms depois da anterior, e a última encerra.
+   Não existe laço — a animação roda uma vez e o estado final é o normal. */
+const STEP = 0.09;
+---
+
+<figure class="tst-phone">
+  <div class="tst-frame">
+    {/* Ilha/entalhe e barra de status: cenário puro. */}
+    <div class="tst-statusbar" aria-hidden="true">
+      <span class="tst-island"></span>
+      <span class="tst-signal">
+        <i style="--h:35%"></i><i style="--h:55%"></i><i style="--h:75%"></i><i style="--h:100%"></i>
+      </span>
+      <span class="tst-battery"><b></b></span>
+    </div>
+
+    <header class="tst-header">
+      {
+        avatar ? (
+          <img class="tst-avatar" src={avatar} alt="" width="36" height="36" loading="lazy" decoding="async" />
+        ) : (
+          <span class="tst-avatar tst-initials" aria-hidden="true">{initialsOf(name)}</span>
+        )
+      }
+      <span class="tst-who">
+        <span class="tst-name">{name}</span>
+        {status && <span class="tst-status">{status}</span>}
+      </span>
+    </header>
+
+    <blockquote class="tst-thread">
+      {
+        messages.map((m, i) => (
+          <p
+            class:list={['tst-bubble', m.side === 'incoming' ? 'tst-in' : 'tst-out']}
+            style={`--delay:${(i * STEP).toFixed(2)}s`}
+          >
+            <span class="tst-sr">
+              {m.side === 'incoming' ? `${name}:` : `${outgoingName}:`}
+            </span>
+            <span class="tst-text">{m.text}</span>
+            {
+              (m.time || (m.side === 'outgoing' && m.read)) && (
+                <span class="tst-meta" aria-hidden="true">
+                  {m.time && <span>{m.time}</span>}
+                  {m.side === 'outgoing' && m.read && (
+                    <svg class="tst-ticks" viewBox="0 0 20 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                      <path d="M2 6.5 5 9.5 10.5 3" />
+                      <path d="M8.5 6.5 11.5 9.5 17 3" />
+                    </svg>
+                  )}
+                </span>
+              )
+            }
+          </p>
+        ))
+      }
+    </blockquote>
+
+    {/* Caixa de digitar: desenho, não campo. Sem input, sem botão, sem foco. */}
+    <div class="tst-composer" aria-hidden="true">
+      <span class="tst-field"></span>
+      <span class="tst-send">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+          <path d="M4 12h14" /><path d="M12.5 6.5 18 12l-5.5 5.5" />
+        </svg>
+      </span>
+    </div>
+  </div>
+</figure>
+

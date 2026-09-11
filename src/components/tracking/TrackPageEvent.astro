@@ -4,6 +4,12 @@
  *
  * Usado para `product_view` (LP) e `view_content` (artigo). Não renderiza
  * nada com o tracking desligado — nenhum script extra nas páginas hoje.
+ *
+ * O script é montado como string e emitido com `set:html`. Com
+ * `<script is:inline>{...}</script>`, a expressão JSX vai parar **dentro**
+ * do JavaScript gerado (`{\`...\`}` literal) e o navegador rejeita o bloco
+ * inteiro por erro de sintaxe — o evento simplesmente nunca dispara, sem
+ * nada aparecer no build.
  */
 import { isTrackingActive } from '../../lib/tracking';
 
@@ -14,12 +20,12 @@ interface Props {
 
 const { event, params = {} } = Astro.props;
 const active = isTrackingActive();
+
+/* `window.bookgo` é definido pelo runtime no <head>, que é síncrono e vem
+   antes deste bloco. A guarda cobre o caso de o runtime não existir. */
+const source = `window.bookgo&&window.bookgo.track(${JSON.stringify(
+  event
+)},${JSON.stringify(params)});`;
 ---
 
-{
-  active && (
-    <script is:inline define:vars={{ event, params }}>
-      {`window.bookgo && window.bookgo.track(event, params);`}
-    </script>
-  )
-}
+{active && <script is:inline set:html={source} />}

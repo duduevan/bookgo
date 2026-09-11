@@ -1,19 +1,101 @@
 import { defineCollection, reference, z } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { ICON_NAMES } from './lib/icons';
 
 /* ------------------------------------------------------------------ */
 /*  Blocos reutilizáveis                                               */
 /* ------------------------------------------------------------------ */
 
+/**
+ * Nome de ícone da grade da BookGo.
+ *
+ * Validado contra `src/lib/icons.ts`: nome inexistente quebra o build, em vez
+ * de renderizar um buraco na página. É opcional de propósito — sem ícone, o
+ * cartão fica só com título e texto, que é o padrão.
+ */
+const iconName = z.enum(ICON_NAMES as [string, ...string[]]);
+
 const titledItem = z.object({
   title: z.string(),
   text: z.string(),
+  /** Opcional. Só onde o ícone acrescenta leitura; ver src/lib/icons.ts. */
+  icon: iconName.optional(),
 });
 
 const section = z.object({
   title: z.string(),
   intro: z.string().optional(),
 });
+
+
+/* ------------------------------------------------------------------ */
+/*  Depoimentos                                                        */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Prova social.
+ *
+ * Regra do projeto, sem exceção: **nenhum depoimento é inventado**. Só entra
+ * aqui texto que uma pessoa real escreveu e autorizou a publicar. Enquanto
+ * isso não existir, `enabled` fica false e a seção não é renderizada — a LP
+ * sai byte por byte igual à de hoje.
+ *
+ * O refinamento abaixo impede o pior dos casos: ligar a seção sem ter o que
+ * mostrar. `enabled: true` com `items` vazio quebra o build.
+ */
+const testimonialBase = {
+  /** Nome como a pessoa autorizou publicar. */
+  name: z.string(),
+  /**
+   * Arquivo em `src/assets/testimonials/`. Sem avatar, o componente usa as
+   * iniciais do nome — derivar é honesto, gerar um rosto não seria.
+   */
+  avatar: z.string().optional(),
+};
+
+const testimonialCard = z.object({
+  type: z.literal('card'),
+  ...testimonialBase,
+  /** Contexto curto da pessoa, quando ela autorizou. */
+  role: z.string().optional(),
+  text: z.string(),
+});
+
+const testimonialPhone = z.object({
+  type: z.literal('phone'),
+  ...testimonialBase,
+  /** Linha sob o nome no cabeçalho da conversa. Decorativa. */
+  status: z.string().optional(),
+  messages: z
+    .array(
+      z.object({
+        /** `incoming` = a pessoa; `outgoing` = a BookGo. */
+        side: z.enum(['incoming', 'outgoing']),
+        text: z.string(),
+        /** Horário exibido na bolha. Decorativo. */
+        time: z.string().optional(),
+        /** Confirmação de leitura. Só faz sentido em `outgoing`. */
+        read: z.boolean().default(false),
+      })
+    )
+    .min(1),
+});
+
+const testimonials = z
+  .object({
+    /** Chave mestra da seção. Sem depoimento real, fica false. */
+    enabled: z.boolean().default(false),
+    title: z.string().optional(),
+    intro: z.string().optional(),
+    items: z
+      .array(z.discriminatedUnion('type', [testimonialCard, testimonialPhone]))
+      .default([]),
+  })
+  .default({ enabled: false, items: [] })
+  .refine((t) => !t.enabled || t.items.length > 0, {
+    message:
+      'testimonials.enabled é true mas items está vazio. Depoimento não se inventa: preencha com texto real e autorizado, ou volte enabled para false.',
+  });
 
 /* ------------------------------------------------------------------ */
 /*  Produtos — content/products/<slug>/index.yaml                      */
@@ -146,7 +228,11 @@ const products = defineCollection({
 
     guarantee: section.extend({
       text: z.string(),
+      icon: iconName.optional(),
     }),
+
+    /** Desligado por padrão; ver o bloco `testimonials` acima. */
+    testimonials,
 
     faq: section.extend({
       items: z.array(z.object({ q: z.string(), a: z.string() })),
