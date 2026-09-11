@@ -12,6 +12,8 @@ interface Props {
   /** Imagem editorial opcional. Sem ela o hero fica em coluna única. */
   image?: ImageMetadata;
   imageAlt?: string;
+  /** Atributos de evento de clique, vindos de `eventAttrs()`. */
+  track?: Record<string, string>;
 }
 
 const {
@@ -23,6 +25,7 @@ const {
   price,
   image,
   imageAlt,
+  track = {},
 } = Astro.props;
 ---
 
@@ -38,7 +41,7 @@ const {
       <p class="sub">{subheadline}</p>
 
       <div class="action">
-        <Cta href={ctaHref} label={ctaLabel} size="lg" />
+        <Cta href={ctaHref} label={ctaLabel} size="lg" track={track} />
         <p class="price">{price} · pagamento único</p>
       </div>
 

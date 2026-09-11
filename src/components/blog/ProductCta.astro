@@ -5,6 +5,7 @@
  */
 import Cta from '../ui/Cta.astro';
 import { hasCheckout, productUrl, type Product } from '../../lib/content';
+import { eventAttrs } from '../../lib/tracking';
 
 interface Props {
   product: Product;
@@ -13,6 +14,14 @@ interface Props {
 const { product } = Astro.props;
 const { name, tagline, price, checkout } = product.data;
 const href = productUrl(product.data.slug);
+
+const checkoutEvent = eventAttrs('checkout_click', {
+  product_slug: product.data.slug,
+  product_name: name,
+  value: price.amount,
+  currency: price.currency,
+  placement: 'article_cta',
+});
 ---
 
 <aside class="promo" aria-label="Produto relacionado">
@@ -23,6 +32,7 @@ const href = productUrl(product.data.slug);
     <Cta
       href={hasCheckout(product) ? checkout.url : null}
       label={checkout.cta}
+      track={checkoutEvent}
     />
     <a class="details" href={href}>Ver detalhes — {price.display}</a>
   </div>

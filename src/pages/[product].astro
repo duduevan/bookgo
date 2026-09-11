@@ -13,6 +13,8 @@ import Faq from '../components/product/Faq.astro';
 import PostCard from '../components/blog/PostCard.astro';
 import AdSlot from '../components/ads/AdSlot.astro';
 import { productImage } from '../lib/product-images';
+import TrackPageEvent from '../components/tracking/TrackPageEvent.astro';
+import { eventAttrs } from '../lib/tracking';
 import {
   getProducts,
   getPostsByProduct,
@@ -49,6 +51,17 @@ const checkoutHref = hasCheckout(product) ? d.checkout.url : null;
 const relatedPosts = await getPostsByProduct(product.id);
 const heroImage = productImage(d.slug, d.hero.image);
 
+/**
+ * Clique no checkout. É intenção, não compra: nenhum `Purchase` sai daqui —
+ * quem conhece a transação é a Kiwify. Ver docs/tracking.md.
+ */
+const checkoutEvent = eventAttrs('checkout_click', {
+  product_slug: d.slug,
+  product_name: d.name,
+  value: d.price.amount,
+  currency: d.price.currency,
+});
+
 const crumbs = [
   { name: 'Início', path: '/' },
   { name: d.name, path },
@@ -75,6 +88,17 @@ const crumbs = [
     price={d.price.display}
     image={heroImage}
     imageAlt={d.hero.imageAlt}
+    track={checkoutEvent}
+  />
+
+  <TrackPageEvent
+    event="product_view"
+    params={{
+      product_slug: d.slug,
+      product_name: d.name,
+      value: d.price.amount,
+      currency: d.price.currency,
+    }}
   />
 
   <div class="crumb-bar container">
@@ -146,6 +170,7 @@ const crumbs = [
       priceNote={d.offer.priceNote}
       ctaLabel={d.checkout.cta}
       ctaHref={checkoutHref}
+      track={checkoutEvent}
     />
   </Section>
 
@@ -183,6 +208,7 @@ const crumbs = [
         label={d.checkout.cta}
         variant="inverse"
         size="lg"
+        track={checkoutEvent}
       />
       <p class="final-price">{d.price.display} · pagamento único</p>
     </div>

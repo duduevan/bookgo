@@ -8,6 +8,7 @@ import SourcesList from '../../../components/blog/SourcesList.astro';
 import RelatedPosts from '../../../components/blog/RelatedPosts.astro';
 import ProductCta from '../../../components/blog/ProductCta.astro';
 import AdSlot from '../../../components/ads/AdSlot.astro';
+import TrackPageEvent from '../../../components/tracking/TrackPageEvent.astro';
 import {
   getPosts,
   getCategories,
@@ -77,6 +78,16 @@ const crumbs = [
     type="text/markdown"
     href={markdownUrl(post)}
     title={`${d.title} (Markdown)`}
+  />
+
+  <TrackPageEvent
+    event="view_content"
+    params={{
+      content_type: 'article',
+      content_slug: d.slug,
+      content_title: d.title,
+      category: categoryName,
+    }}
   />
 
   <div class="container crumb-bar">

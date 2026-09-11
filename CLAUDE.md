@@ -494,9 +494,33 @@ depois de validarmos o modelo.
 
 Em `src/config/site.ts`, `googleSiteVerification` é `null` e nada é renderizado.
 Para verificar o domínio, cole o valor do método "tag HTML" nesse campo — a meta
-aparece sozinha. Nunca preencha com valor fictício.
+aparece sozinha. Nunca preencha com valor fictício. Sitemap a enviar:
+`https://bookgo.com.br/sitemap-index.xml`.
 
-### Analytics
+---
 
-Nenhum GA4, GTM ou Meta Pixel instalado nesta fase. Se for adicionar, atualize
-antes a Política de Privacidade, que hoje declara ausência de cookies próprios.
+## Tracking e consentimento
+
+**Tudo desligado hoje.** `TRACKING.enabled = false` em
+`src/config/tracking.ts`, todos os IDs `null`, nenhum script de terceiro,
+0 KB de JavaScript no cliente.
+
+Todos os IDs vivem num arquivo só: `src/config/tracking.ts` — GTM, GA4, Meta
+Pixel e Google Ads. Com ID `null`, aquele fornecedor não renderiza nada.
+
+Eventos da BookGo, independentes de fornecedor: `page_view`, `view_content`,
+`product_view`, `checkout_click`, `consent_update` (e `affiliate_click`
+reservado). Entram no `dataLayer`; quem escuta é o GTM.
+
+**`Purchase` nunca sai do site.** Clique no checkout é intenção, não compra —
+quem conhece a transação é a Kiwify.
+
+O banner de consentimento só existe quando há algo a consentir. Sem fornecedor
+configurado e sem AdSense ligado, ele não é renderizado — é isso que preserva
+o zero JS.
+
+Como configurar cada fornecedor, como integrar a Kiwify e como evitar contar a
+mesma conversão duas vezes: **[docs/tracking.md](docs/tracking.md)**.
+
+Antes de ligar qualquer coisa, atualize a Política de Privacidade, que hoje
+declara ausência de cookies próprios.

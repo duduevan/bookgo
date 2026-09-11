@@ -1,0 +1,25 @@
+---
+/**
+ * Dispara um evento da BookGo no carregamento da página.
+ *
+ * Usado para `product_view` (LP) e `view_content` (artigo). Não renderiza
+ * nada com o tracking desligado — nenhum script extra nas páginas hoje.
+ */
+import { isTrackingActive } from '../../lib/tracking';
+
+interface Props {
+  event: string;
+  params?: Record<string, string | number>;
+}
+
+const { event, params = {} } = Astro.props;
+const active = isTrackingActive();
+---
+
+{
+  active && (
+    <script is:inline define:vars={{ event, params }}>
+      {`window.bookgo && window.bookgo.track(event, params);`}
+    </script>
+  )
+}

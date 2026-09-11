@@ -3,6 +3,9 @@ import '../styles/global.css';
 import { SITE } from '../config/site';
 import Seo from '../components/seo/Seo.astro';
 import JsonLd from '../components/seo/JsonLd.astro';
+import TrackingHead from '../components/tracking/TrackingHead.astro';
+import TrackingBody from '../components/tracking/TrackingBody.astro';
+import ConsentBanner from '../components/tracking/ConsentBanner.astro';
 
 interface Props {
   title: string;
@@ -62,9 +65,13 @@ const {
     }
     {schema.length > 0 && <JsonLd nodes={schema} />}
     <slot name="head" />
+    {/* Não renderiza nada enquanto não houver fornecedor configurado. */}
+    <TrackingHead />
   </head>
   <body style={bodyStyle}>
+    <TrackingBody />
     <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
     <slot />
+    <ConsentBanner />
   </body>
 </html>

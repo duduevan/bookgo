@@ -1,0 +1,118 @@
+---
+/**
+ * Runtime de tracking da BookGo.
+ *
+ * Renderiza **nada** quando não há fornecedor configurado — que é o estado
+ * atual. O site segue com 0 KB de JavaScript no cliente.
+ *
+ * Quando houver configuração, este é o único script de entrada. Ele:
+ *  1. inicializa o dataLayer e os defaults do Google Consent Mode (tudo
+ *     negado, antes de qualquer tag);
+ *  2. expõe a API de eventos da BookGo (`window.bookgo.track`), que é
+ *     independente de fornecedor — a camada dispara, os provedores escutam;
+ *  3. carrega os fornecedores só depois do consentimento, quando exigido.
+ *
+ * Nenhum ID é escrito aqui: todos vêm de src/config/tracking.ts.
+ */
+import { TRACKING } from '../../config/tracking';
+import {
+  isTrackingActive,
+  needsConsentBanner,
+  shouldLoadGa4Directly,
+  shouldLoadMetaPixelDirectly,
+  shouldLoadGtm,
+} from '../../lib/tracking';
+
+const render = isTrackingActive() || needsConsentBanner();
+
+const runtime = {
+  key: TRACKING.consent.storageKey,
+  requireConsent: TRACKING.consent.required,
+  gtm: shouldLoadGtm() ? TRACKING.gtm.id : null,
+  ga4: shouldLoadGa4Directly() ? TRACKING.ga4.measurementId : null,
+  meta: shouldLoadMetaPixelDirectly() ? TRACKING.meta.pixelId : null,
+  ads: TRACKING.enabled ? TRACKING.googleAds.id : null,
+};
+
+const source = `(function(){
+var R=${JSON.stringify(runtime)},w=window;
+w.dataLayer=w.dataLayer||[];
+function push(){w.dataLayer.push(arguments);}
+
+/* Consent Mode: defaults negados antes de qualquer tag. Quem entrar pelo GTM
+   já encontra o estado correto e não grava nada sem permissão. */
+push('consent','default',{ad_storage:'denied',ad_user_data:'denied',
+ad_personalization:'denied',analytics_storage:'denied',
+functionality_storage:'granted',security_storage:'granted',wait_for_update:500});
+
+function read(){try{return JSON.parse(localStorage.getItem(R.key)||'null');}catch(e){return null;}}
+var done={};
+function load(src){var s=document.createElement('script');s.async=true;s.src=src;document.head.appendChild(s);}
+
+function providers(c){
+  /* Com consentimento exigido, o container só entra depois de um "sim" em
+     alguma categoria. Recusar significa não carregar nada — inclusive o
+     GTM, que sozinho já abre conexão com o Google. */
+  var mayLoad=!R.requireConsent||c.analytics||c.advertising;
+  if(R.gtm&&mayLoad&&!done.gtm){done.gtm=1;
+    w.dataLayer.push({'gtm.start':Date.now(),event:'gtm.js'});
+    load('https://www.googletagmanager.com/gtm.js?id='+R.gtm);}
+  /* GA4 direto só existe quando não há GTM: evita page_view duplicado. */
+  if(R.ga4&&c.analytics&&!done.ga4){done.ga4=1;
+    load('https://www.googletagmanager.com/gtag/js?id='+R.ga4);
+    push('js',new Date());push('config',R.ga4);}
+  if(R.ads&&c.advertising&&!done.ads){done.ads=1;
+    if(!R.ga4)load('https://www.googletagmanager.com/gtag/js?id='+R.ads);
+    push('config',R.ads);}
+  if(R.meta&&c.advertising&&!done.meta){done.meta=1;
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
+    (w,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    w.fbq('init',R.meta);w.fbq('track','PageView');}
+}
+
+function apply(c){
+  push('consent','update',{
+    ad_storage:c.advertising?'granted':'denied',
+    ad_user_data:c.advertising?'granted':'denied',
+    ad_personalization:c.advertising?'granted':'denied',
+    analytics_storage:c.analytics?'granted':'denied'});
+  providers(c);
+}
+
+/* API de eventos da BookGo: independente de fornecedor. O evento entra no
+   dataLayer; quem escuta é problema do GTM, não do site. */
+w.bookgo=w.bookgo||{};
+w.bookgo.track=function(name,params){
+  var p={event:name};
+  if(params)for(var k in params)p[k]=params[k];
+  w.dataLayer.push(p);
+};
+w.bookgo.setConsent=function(c){
+  var v={analytics:!!c.analytics,advertising:!!c.advertising,ts:new Date().toISOString()};
+  try{localStorage.setItem(R.key,JSON.stringify(v));}catch(e){}
+  apply(v);
+  w.bookgo.track('consent_update',{consent_analytics:v.analytics,consent_advertising:v.advertising});
+  document.documentElement.removeAttribute('data-consent-pending');
+};
+
+var stored=read();
+if(stored){apply(stored);}
+else if(!R.requireConsent){apply({analytics:true,advertising:true});}
+else{document.documentElement.setAttribute('data-consent-pending','');}
+
+document.addEventListener('click',function(e){
+  var el=e.target&&e.target.closest?e.target.closest('[data-bookgo-event]'):null;
+  if(!el)return;
+  var p={};
+  try{p=JSON.parse(el.getAttribute('data-bookgo-params')||'{}');}catch(err){}
+  w.bookgo.track(el.getAttribute('data-bookgo-event'),p);
+},{passive:true});
+
+w.bookgo.track('page_view',{page_path:location.pathname,page_title:document.title});
+})();`;
+---
+
+{render && <script is:inline set:html={source} />}

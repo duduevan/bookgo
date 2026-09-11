@@ -1,0 +1,78 @@
+---
+/**
+ * Banner de consentimento.
+ *
+ * Só existe quando há algo a consentir (ver `needsConsentBanner`). Hoje não
+ * é renderizado — sem fornecedor configurado, não há decisão a pedir.
+ *
+ * Sem dark pattern: as duas ações têm o mesmo peso visual e o mesmo tamanho
+ * de alvo. Recusar não é escondido, não é um link cinza, não exige passos
+ * extras. Enquanto não houver decisão, nada de analytics ou publicidade
+ * carrega — o botão "Aceitar" não vem pré-selecionado nem destacado como
+ * caminho único.
+ */
+import { needsConsentBanner } from '../../lib/tracking';
+
+const show = needsConsentBanner();
+
+const css = `
+/* Barra discreta no rodapé. Não cobre o conteúdo nem bloqueia a leitura.
+   Inline e dentro da condição: com o banner desligado, zero CSS é emitido. */
+.consent-bar{position:fixed;inset:auto 0 0 0;z-index:60;
+padding:var(--s-4) var(--gutter) calc(var(--s-4) + env(safe-area-inset-bottom));
+background:var(--color-bg);border-top:1px solid var(--color-border);box-shadow:var(--shadow-lg)}
+.consent-inner{max-width:var(--w-container);margin-inline:auto;display:grid;gap:var(--s-4)}
+.consent-title{font-weight:var(--w-semibold);font-size:var(--t-0);margin-bottom:var(--s-1)}
+.consent-text p:last-child{font-size:var(--t--1);color:var(--color-muted);max-width:62ch}
+.consent-actions{display:flex;flex-wrap:wrap;gap:var(--s-3)}
+/* Os dois botões têm o mesmo tamanho e o mesmo peso: recusar não é
+   penalizado visualmente. */
+.consent-actions button{flex:1 1 auto;min-height:2.75rem;padding:.7rem 1.25rem;
+border-radius:var(--radius-pill);border:1px solid var(--color-border);
+background:var(--color-surface-raised);color:var(--color-text);
+font-size:var(--t-0);font-weight:var(--w-medium);cursor:pointer}
+.consent-actions button:hover{border-color:var(--color-text)}
+@media (min-width:52rem){
+.consent-inner{grid-template-columns:1fr auto;align-items:center;gap:var(--s-7)}
+.consent-actions button{flex:0 0 auto}}
+`;
+
+const js = `(function(){
+var el=document.getElementById('consent-banner');
+if(!el)return;
+/* Só aparece quando ainda não houve decisão. */
+if(!document.documentElement.hasAttribute('data-consent-pending')){el.hidden=true;return;}
+el.addEventListener('click',function(e){
+  var btn=e.target.closest('[data-consent]');
+  if(!btn)return;
+  var accept=btn.getAttribute('data-consent')==='accept';
+  window.bookgo.setConsent({analytics:accept,advertising:accept});
+  el.hidden=true;
+});
+})();`;
+
+---
+
+{
+  show && (
+    <div class="consent-bar" id="consent-banner" role="dialog" aria-labelledby="consent-title" aria-describedby="consent-text">
+      <div class="consent-inner">
+        <div class="consent-text">
+          <p id="consent-title" class="consent-title">Cookies e medição</p>
+          <p id="consent-text">
+            Usamos cookies para entender como o site é usado e para medir
+            campanhas. Você decide. Detalhes na{' '}
+            <a href="/privacidade/">Política de Privacidade</a>.
+          </p>
+        </div>
+        <div class="consent-actions">
+          <button type="button" data-consent="reject">Recusar não essenciais</button>
+          <button type="button" data-consent="accept">Aceitar</button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+{show && <style is:inline set:html={css} />}
+{show && <script is:inline set:html={js} />}
