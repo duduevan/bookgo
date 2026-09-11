@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/ui/Section.astro';
+---
+
+<BaseLayout
+  title="Página não encontrada"
+  description="A página que você procurou não existe ou foi movida."
+  noindex
+>
+  <Section title="Página não encontrada" narrow>
+    <p class="lede">
+      A página que você procurou não existe ou mudou de endereço.
+    </p>
+    <p class="links">
+      <a href="/">Ir para a página inicial</a> · <a href="/blog/">Ver o blog</a>
+    </p>
+  </Section>
+</BaseLayout>
+
+<style>
+  .links {
+    margin-top: var(--s-5);
+  }
+</style>

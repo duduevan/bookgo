@@ -1,0 +1,74 @@
+---
+import { SITE, NAV } from '../../config/site';
+
+const path = Astro.url.pathname;
+---
+
+<header class="site-header">
+  <div class="container bar">
+    <a class="wordmark" href="/">{SITE.name}</a>
+    <nav aria-label="Principal">
+      <ul>
+        {
+          NAV.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                aria-current={path.startsWith(item.href) ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    border-bottom: 1px solid var(--c-line);
+    background: color-mix(in srgb, var(--c-bg) 88%, transparent);
+    backdrop-filter: saturate(1.2) blur(8px);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-5);
+    min-height: 3.75rem;
+  }
+
+  .wordmark {
+    font-size: var(--t-1);
+    font-weight: 680;
+    letter-spacing: -0.03em;
+    color: var(--c-ink);
+    text-decoration: none;
+  }
+
+  nav ul {
+    display: flex;
+    align-items: center;
+    gap: var(--s-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  nav a {
+    font-size: var(--t-0);
+    color: var(--c-ink-2);
+    text-decoration: none;
+  }
+
+  nav a:hover,
+  nav a[aria-current='page'] {
+    color: var(--c-accent);
+  }
+</style>

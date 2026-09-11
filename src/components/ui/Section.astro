@@ -1,0 +1,87 @@
+---
+interface Props {
+  id?: string;
+  eyebrow?: string;
+  title?: string;
+  intro?: string;
+  tone?: 'default' | 'warm' | 'soft' | 'accent';
+  align?: 'start' | 'center';
+  narrow?: boolean;
+}
+
+const {
+  id,
+  eyebrow,
+  title,
+  intro,
+  tone = 'default',
+  align = 'start',
+  narrow = false,
+} = Astro.props;
+---
+
+<section id={id} class:list={['section', `tone-${tone}`, `align-${align}`]}>
+  <div class="container">
+    {
+      (eyebrow || title || intro) && (
+        <header class="head">
+          {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+          {title && <h2>{title}</h2>}
+          {intro && <p class="lede">{intro}</p>}
+        </header>
+      )
+    }
+    <div class:list={['body', { narrow }]}>
+      <slot />
+    </div>
+  </div>
+</section>
+
+<style>
+  .section {
+    padding-block: var(--section-y);
+  }
+
+  .tone-warm {
+    background: var(--c-surface-warm);
+  }
+
+  .tone-soft {
+    background: var(--c-accent-soft);
+  }
+
+  .tone-accent {
+    background: var(--c-accent);
+    color: var(--c-on-accent);
+  }
+
+  .tone-accent :global(h2) {
+    color: var(--c-on-accent);
+  }
+
+  .tone-accent .lede {
+    color: color-mix(in srgb, var(--c-on-accent) 82%, transparent);
+  }
+
+  .body.narrow {
+    max-width: var(--w-text);
+  }
+
+  .head {
+    max-width: var(--w-text);
+    margin-bottom: var(--s-7);
+  }
+
+  .head > * + * {
+    margin-top: var(--s-3);
+  }
+
+  .align-center .head {
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .align-center .body.narrow {
+    margin-inline: auto;
+  }
+</style>

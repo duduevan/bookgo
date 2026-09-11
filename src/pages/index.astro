@@ -1,0 +1,135 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/ui/Section.astro';
+import PostCard from '../components/blog/PostCard.astro';
+import {
+  getProducts,
+  getPosts,
+  getCategories,
+  productUrl,
+} from '../lib/content';
+import { SITE } from '../config/site';
+import * as schema from '../lib/schema';
+
+const products = await getProducts();
+const posts = (await getPosts()).slice(0, 3);
+const categories = await getCategories();
+const categoryName = (id: string) =>
+  categories.find((c) => c.id === id)?.data.name;
+---
+
+<BaseLayout
+  title={SITE.name}
+  description={SITE.description}
+  schema={[schema.organization()]}
+>
+  <section class="hero">
+    <div class="container">
+      <h1>Conhecimento prático para o que atrapalha o seu dia a dia.</h1>
+      <p class="lede">
+        Materiais diretos, feitos para aplicar na rotina real — e não para
+        acumular sem uso.
+      </p>
+    </div>
+  </section>
+
+  <Section title="Materiais">
+    <ul class="products">
+      {
+        products.map((product) => (
+          <li>
+            <a href={productUrl(product.data.slug)}>
+              <h3>{product.data.name}</h3>
+              <p>{product.data.tagline}</p>
+              <span class="price">{product.data.price.display}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  {
+    posts.length > 0 && (
+      <Section tone="warm" title="No blog" narrow>
+        {posts.map((post) => (
+          <PostCard post={post} categoryName={categoryName(post.data.category.id)} />
+        ))}
+        <p class="more">
+          <a href="/blog/">Ver todos os artigos</a>
+        </p>
+      </Section>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .hero {
+    padding-block: clamp(3rem, 2rem + 6vw, 6rem);
+    border-bottom: 1px solid var(--c-line);
+  }
+
+  .hero h1 {
+    max-width: 18ch;
+  }
+
+  .hero .lede {
+    margin-top: var(--s-5);
+    max-width: 50ch;
+  }
+
+  .products {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--s-4);
+    grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr));
+  }
+
+  .products a {
+    display: block;
+    height: 100%;
+    padding: var(--s-6);
+    background: var(--c-surface);
+    border: 1px solid var(--c-line);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: inherit;
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .products a:hover {
+    border-color: var(--c-accent-line);
+    box-shadow: var(--shadow);
+  }
+
+  .products h3 {
+    font-size: var(--t-2);
+  }
+
+  .products p {
+    margin-top: var(--s-3);
+    color: var(--c-ink-2);
+    font-size: var(--t-0);
+  }
+
+  .price {
+    display: inline-block;
+    margin-top: var(--s-5);
+    font-weight: 620;
+    color: var(--c-accent);
+  }
+
+  .more {
+    margin-top: var(--s-6);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .products a {
+      transition: none;
+    }
+  }
+</style>

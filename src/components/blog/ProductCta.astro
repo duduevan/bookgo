@@ -1,0 +1,73 @@
+---
+/**
+ * CTA contextual exibido no artigo quando o frontmatter define `product`.
+ * Toda a copy vem do produto — nada é escrito aqui.
+ */
+import Cta from '../ui/Cta.astro';
+import { hasCheckout, productUrl, type Product } from '../../lib/content';
+
+interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+const { name, tagline, price, checkout } = product.data;
+const href = productUrl(product.data.slug);
+---
+
+<aside class="promo" aria-label="Produto relacionado">
+  <p class="eyebrow">Material relacionado</p>
+  <h2><a href={href}>{name}</a></h2>
+  <p class="tagline">{tagline}</p>
+  <div class="actions">
+    <Cta
+      href={hasCheckout(product) ? checkout.url : null}
+      label={checkout.cta}
+    />
+    <a class="details" href={href}>Ver detalhes — {price.display}</a>
+  </div>
+</aside>
+
+<style>
+  .promo {
+    margin-top: var(--s-9);
+    padding: var(--s-6);
+    background: var(--c-accent-soft);
+    border: 1px solid var(--c-accent-line);
+    border-radius: var(--radius-lg);
+    max-width: var(--w-prose);
+  }
+
+  h2 {
+    margin-top: var(--s-2);
+    font-size: var(--t-2);
+  }
+
+  h2 a {
+    color: var(--c-ink);
+    text-decoration: none;
+  }
+
+  h2 a:hover {
+    color: var(--c-accent);
+  }
+
+  .tagline {
+    margin-top: var(--s-3);
+    color: var(--c-ink-2);
+    font-size: var(--t-0);
+  }
+
+  .actions {
+    margin-top: var(--s-5);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-4) var(--s-5);
+  }
+
+  .details {
+    font-size: var(--t--1);
+    color: var(--c-accent);
+  }
+</style>

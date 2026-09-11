@@ -1,0 +1,69 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Section from '../../../components/ui/Section.astro';
+import Breadcrumbs from '../../../components/seo/Breadcrumbs.astro';
+import PostCard from '../../../components/blog/PostCard.astro';
+import {
+  getCategories,
+  getPostsByCategory,
+  categoryUrl,
+  type Category,
+  type Post,
+} from '../../../lib/content';
+import * as schema from '../../../lib/schema';
+
+export async function getStaticPaths() {
+  const categories = await getCategories();
+
+  return Promise.all(
+    categories.map(async (category) => ({
+      params: { category: category.id },
+      props: {
+        category,
+        posts: await getPostsByCategory(category.id),
+      },
+    }))
+  );
+}
+
+interface Props {
+  category: Category;
+  posts: Post[];
+}
+
+const { category, posts } = Astro.props;
+const d = category.data;
+const path = categoryUrl(category.id);
+
+const crumbs = [
+  { name: 'Início', path: '/' },
+  { name: 'Blog', path: '/blog/' },
+  { name: d.name, path },
+];
+---
+
+<BaseLayout
+  title={d.seo.title ?? d.name}
+  description={d.seo.description ?? d.description}
+  schema={[schema.organization(), schema.breadcrumbs(crumbs)]}
+>
+  <div class="crumb-bar container">
+    <Breadcrumbs items={crumbs} />
+  </div>
+
+  <Section title={d.name} intro={d.description} narrow>
+    {
+      posts.length > 0 ? (
+        posts.map((post) => <PostCard post={post} />)
+      ) : (
+        <p>Nenhum artigo publicado nesta categoria ainda.</p>
+      )
+    }
+  </Section>
+</BaseLayout>
+
+<style>
+  .crumb-bar {
+    padding-block: var(--s-4);
+  }
+</style>

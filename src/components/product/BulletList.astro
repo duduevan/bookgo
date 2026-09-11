@@ -1,0 +1,82 @@
+---
+/** Lista simples reutilizada em problema, público-alvo e itens da oferta. */
+interface Props {
+  items: string[];
+  marker?: 'check' | 'dot' | 'dash';
+  columns?: boolean;
+}
+
+const { items, marker = 'dot', columns = false } = Astro.props;
+---
+
+<ul class:list={['list', `m-${marker}`, { columns }]}>
+  {
+    items.map((item) => (
+      <li>
+        {marker === 'check' ? (
+          <svg class="icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+            <path
+              d="M4.5 10.5l3.5 3.5 7.5-8"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        ) : (
+          <span class="mark" aria-hidden="true" />
+        )}
+        <span>{item}</span>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  li {
+    display: grid;
+    grid-template-columns: 1.25rem 1fr;
+    gap: var(--s-3);
+    align-items: start;
+    color: var(--c-ink-2);
+  }
+
+  .icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 0.15em;
+    color: var(--c-accent);
+  }
+
+  .mark {
+    margin-top: 0.66em;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--c-line-strong);
+  }
+
+  .m-dot .mark {
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 50%;
+    margin-top: 0.62em;
+    margin-left: 0.42rem;
+    background: var(--c-neutral-mark);
+  }
+
+  @media (min-width: 46rem) {
+    .columns {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--s-4) var(--s-7);
+    }
+  }
+</style>

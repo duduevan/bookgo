@@ -1,0 +1,86 @@
+---
+/** FAQ com <details> nativo — acessível e sem JavaScript. */
+interface Props {
+  items: Array<{ q: string; a: string }>;
+}
+
+const { items } = Astro.props;
+---
+
+<div class="faq">
+  {
+    items.map((item) => (
+      <details>
+        <summary>
+          <span>{item.q}</span>
+          <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+            <path
+              d="M3.5 6L8 10.5 12.5 6"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </summary>
+        <p>{item.a}</p>
+      </details>
+    ))
+  }
+</div>
+
+<style>
+  .faq {
+    max-width: var(--w-text);
+    border-top: 1px solid var(--c-line);
+  }
+
+  details {
+    border-bottom: 1px solid var(--c-line);
+  }
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+    padding-block: var(--s-5);
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--c-ink);
+    list-style: none;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary:hover {
+    color: var(--c-accent);
+  }
+
+  summary svg {
+    width: 1rem;
+    height: 1rem;
+    flex: none;
+    color: var(--c-muted);
+    transition: transform 0.15s ease;
+  }
+
+  details[open] summary svg {
+    transform: rotate(180deg);
+  }
+
+  details p {
+    padding-bottom: var(--s-5);
+    color: var(--c-ink-2);
+    max-width: 68ch;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    summary svg {
+      transition: none;
+    }
+  }
+</style>

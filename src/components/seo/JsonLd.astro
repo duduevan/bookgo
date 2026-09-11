@@ -1,0 +1,15 @@
+---
+interface Props {
+  nodes: Record<string, unknown>[];
+}
+
+const { nodes } = Astro.props;
+
+// `<` escapado para que nenhum valor possa encerrar o <script> antes da hora.
+const json = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@graph': nodes,
+}).replace(/</g, '\\u003c');
+---
+
+<script type="application/ld+json" is:inline set:html={json} />

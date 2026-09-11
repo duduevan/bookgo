@@ -1,0 +1,85 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Section from '../../components/ui/Section.astro';
+import Breadcrumbs from '../../components/seo/Breadcrumbs.astro';
+import PostCard from '../../components/blog/PostCard.astro';
+import { getPosts, getCategories, categoryUrl } from '../../lib/content';
+import * as schema from '../../lib/schema';
+
+const posts = await getPosts();
+const categories = await getCategories();
+const categoryName = (id: string) =>
+  categories.find((c) => c.id === id)?.data.name;
+
+const crumbs = [
+  { name: 'Início', path: '/' },
+  { name: 'Blog', path: '/blog/' },
+];
+---
+
+<BaseLayout
+  title="Blog"
+  description="Artigos práticos sobre organização e rotina, para aplicar com o tempo que você realmente tem."
+  schema={[schema.organization(), schema.breadcrumbs(crumbs)]}
+>
+  <div class="crumb-bar container">
+    <Breadcrumbs items={crumbs} />
+  </div>
+
+  <Section title="Blog" intro="Artigos práticos para aplicar na rotina real." narrow>
+    {
+      categories.length > 0 && (
+        <nav class="cats" aria-label="Categorias">
+          <ul>
+            {categories.map((category) => (
+              <li>
+                <a href={categoryUrl(category.id)}>{category.data.name}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
+
+    {
+      posts.length > 0 ? (
+        posts.map((post) => (
+          <PostCard post={post} categoryName={categoryName(post.data.category.id)} />
+        ))
+      ) : (
+        <p>Nenhum artigo publicado ainda.</p>
+      )
+    }
+  </Section>
+</BaseLayout>
+
+<style>
+  .crumb-bar {
+    padding-block: var(--s-4);
+  }
+
+  .cats ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--s-5);
+  }
+
+  .cats a {
+    display: inline-block;
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--c-line);
+    border-radius: var(--radius-pill);
+    background: var(--c-surface);
+    font-size: var(--t--1);
+    color: var(--c-ink-2);
+    text-decoration: none;
+  }
+
+  .cats a:hover {
+    border-color: var(--c-accent-line);
+    color: var(--c-accent);
+  }
+</style>

@@ -1,0 +1,54 @@
+---
+interface Props {
+  items: Array<{ name: string; path: string }>;
+}
+
+const { items } = Astro.props;
+const last = items.length - 1;
+---
+
+<nav class="crumbs" aria-label="Você está aqui">
+  <ol>
+    {
+      items.map((item, index) => (
+        <li>
+          {index === last ? (
+            <span aria-current="page">{item.name}</span>
+          ) : (
+            <a href={item.path}>{item.name}</a>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</nav>
+
+<style>
+  .crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-2);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: var(--t--1);
+    color: var(--c-muted);
+  }
+
+  .crumbs li + li::before {
+    content: '/';
+    margin-right: var(--s-2);
+    color: var(--c-line-strong);
+  }
+
+  .crumbs a {
+    color: var(--c-muted);
+    text-decoration: none;
+  }
+
+  .crumbs a:hover {
+    color: var(--c-accent);
+    text-decoration: underline;
+  }
+</style>

@@ -1,0 +1,55 @@
+---
+/** Grade de cartões título + texto: pilares do método, benefícios, materiais. */
+interface Props {
+  items: Array<{ title: string; text: string }>;
+  variant?: 'card' | 'plain';
+  min?: string;
+}
+
+const { items, variant = 'card', min = '17rem' } = Astro.props;
+---
+
+<ul class:list={['grid', `v-${variant}`]} style={`--min:${min}`}>
+  {
+    items.map((item) => (
+      <li>
+        <h3>{item.title}</h3>
+        <p>{item.text}</p>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--s-4);
+    grid-template-columns: repeat(auto-fit, minmax(min(var(--min), 100%), 1fr));
+  }
+
+  h3 {
+    font-size: var(--t-1);
+    color: var(--c-ink);
+  }
+
+  p {
+    margin-top: var(--s-2);
+    color: var(--c-ink-2);
+    font-size: var(--t-0);
+  }
+
+  .v-card li {
+    background: var(--c-surface);
+    border: 1px solid var(--c-line);
+    border-radius: var(--radius);
+    padding: var(--s-5);
+  }
+
+  .v-plain li {
+    padding-top: var(--s-4);
+    border-top: 2px solid var(--c-accent-line);
+  }
+</style>

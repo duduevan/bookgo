@@ -1,0 +1,256 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/seo/Breadcrumbs.astro';
+import Section from '../components/ui/Section.astro';
+import Cta from '../components/ui/Cta.astro';
+import Hero from '../components/product/Hero.astro';
+import BulletList from '../components/product/BulletList.astro';
+import CardGrid from '../components/product/CardGrid.astro';
+import StepList from '../components/product/StepList.astro';
+import ModuleList from '../components/product/ModuleList.astro';
+import OfferBox from '../components/product/OfferBox.astro';
+import Faq from '../components/product/Faq.astro';
+import PostCard from '../components/blog/PostCard.astro';
+import {
+  getProducts,
+  getPostsByProduct,
+  hasCheckout,
+  productUrl,
+  type Product,
+} from '../lib/content';
+import * as schema from '../lib/schema';
+
+export async function getStaticPaths() {
+  const products = await getProducts();
+
+  return products.map((product) => {
+    if (!hasCheckout(product)) {
+      console.warn(
+        `[bookgo] Checkout pendente para "${product.id}": o CTA será renderizado sem link.`
+      );
+    }
+    return {
+      params: { product: product.data.slug },
+      props: { product },
+    };
+  });
+}
+
+interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+const d = product.data;
+const path = productUrl(d.slug);
+const checkoutHref = hasCheckout(product) ? d.checkout.url : null;
+const relatedPosts = await getPostsByProduct(product.id);
+
+const crumbs = [
+  { name: 'Início', path: '/' },
+  { name: d.name, path },
+];
+---
+
+<BaseLayout
+  title={d.seo.title}
+  description={d.seo.description}
+  ogImage={d.seo.ogImage}
+  schema={[
+    schema.organization(),
+    schema.productSchema(product, path),
+    schema.breadcrumbs(crumbs),
+  ]}
+>
+  <Hero
+    headline={d.hero.headline}
+    subheadline={d.hero.subheadline}
+    highlights={[...d.hero.highlights]}
+    ctaLabel={d.checkout.cta}
+    ctaHref={checkoutHref}
+    price={d.price.display}
+  />
+
+  <div class="crumb-bar container">
+    <Breadcrumbs items={crumbs} />
+  </div>
+
+  {/* Problema */}
+  <Section title={d.problem.title} intro={d.problem.intro} narrow>
+    <BulletList items={[...d.problem.items]} marker="dot" />
+    {d.problem.close && <p class="close">{d.problem.close}</p>}
+  </Section>
+
+  {/* Mecanismo */}
+  <Section
+    tone="warm"
+    eyebrow={d.method.name}
+    title={d.method.title}
+    intro={d.method.intro}
+  >
+    <CardGrid items={[...d.method.pillars]} variant="plain" min="18rem" />
+    {d.method.note && <p class="note">{d.method.note}</p>}
+  </Section>
+
+  {/* Benefícios */}
+  <Section title={d.benefits.title} intro={d.benefits.intro}>
+    <CardGrid items={[...d.benefits.items]} />
+  </Section>
+
+  {/* Como funciona */}
+  <Section tone="warm" title={d.howItWorks.title} intro={d.howItWorks.intro}>
+    <StepList steps={[...d.howItWorks.steps]} />
+  </Section>
+
+  {/* Conteúdo do produto */}
+  <Section title={d.contents.title} intro={d.contents.intro}>
+    <ModuleList modules={[...d.contents.modules]} />
+  </Section>
+
+  {/* Materiais incluídos */}
+  <Section tone="warm" title={d.materials.title} intro={d.materials.intro}>
+    <CardGrid items={[...d.materials.items]} min="24rem" />
+  </Section>
+
+  {/* Público */}
+  <Section>
+    <div class="audience">
+      <div>
+        <h2>{d.forWho.title}</h2>
+        <BulletList items={[...d.forWho.items]} marker="check" />
+      </div>
+      <div>
+        <h2>{d.notForWho.title}</h2>
+        <BulletList items={[...d.notForWho.items]} marker="dash" />
+      </div>
+    </div>
+  </Section>
+
+  {/* Oferta */}
+  <Section
+    id="oferta"
+    tone="soft"
+    title={d.offer.title}
+    intro={d.offer.intro}
+    align="center"
+  >
+    <OfferBox
+      includes={[...d.offer.includes]}
+      price={d.price.display}
+      priceNote={d.offer.priceNote}
+      ctaLabel={d.checkout.cta}
+      ctaHref={checkoutHref}
+    />
+  </Section>
+
+  {/* Garantia */}
+  <Section narrow>
+    <div class="guarantee">
+      <h2>{d.guarantee.title}</h2>
+      <p>{d.guarantee.text}</p>
+    </div>
+  </Section>
+
+  {/* FAQ */}
+  <Section tone="warm" title={d.faq.title}>
+    <Faq items={[...d.faq.items]} />
+  </Section>
+
+  {/* Artigos relacionados */}
+  {
+    relatedPosts.length > 0 && (
+      <Section title="Leia também" narrow>
+        {relatedPosts.map((post) => (
+          <PostCard post={post} />
+        ))}
+      </Section>
+    )
+  }
+
+  {/* CTA final */}
+  <Section tone="accent" align="center" narrow>
+    <div class="final">
+      <h2>{d.finalCta.title}</h2>
+      <p>{d.finalCta.text}</p>
+      <Cta
+        href={checkoutHref}
+        label={d.checkout.cta}
+        variant="inverse"
+        size="lg"
+      />
+      <p class="final-price">{d.price.display} · pagamento único</p>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .crumb-bar {
+    padding-block: var(--s-4);
+  }
+
+  .close {
+    margin-top: var(--s-6);
+    font-size: var(--t-1);
+    font-weight: 600;
+    color: var(--c-ink);
+    max-width: 58ch;
+  }
+
+  .note {
+    margin-top: var(--s-6);
+    font-size: var(--t--1);
+    color: var(--c-muted);
+    max-width: 68ch;
+  }
+
+  .audience {
+    display: grid;
+    gap: var(--s-8);
+  }
+
+  .audience h2 {
+    font-size: var(--t-2);
+    margin-bottom: var(--s-5);
+  }
+
+  .guarantee {
+    background: var(--c-surface);
+    border: 1px solid var(--c-line);
+    border-radius: var(--radius-lg);
+    padding: var(--s-6);
+  }
+
+  .guarantee h2 {
+    font-size: var(--t-2);
+  }
+
+  .guarantee p {
+    margin-top: var(--s-3);
+    color: var(--c-ink-2);
+  }
+
+  .final {
+    text-align: center;
+  }
+
+  .final p {
+    margin-top: var(--s-4);
+    margin-bottom: var(--s-6);
+    color: color-mix(in srgb, var(--c-on-accent) 84%, transparent);
+    max-width: 56ch;
+    margin-inline: auto;
+  }
+
+  .final-price {
+    margin-top: var(--s-5);
+    margin-bottom: 0;
+    font-size: var(--t--1);
+  }
+
+  @media (min-width: 46rem) {
+    .audience {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--s-9);
+    }
+  }
+</style>

@@ -1,0 +1,106 @@
+---
+import Cta from '../ui/Cta.astro';
+
+interface Props {
+  headline: string;
+  subheadline: string;
+  highlights: string[];
+  ctaLabel: string;
+  ctaHref: string | null;
+  price: string;
+}
+
+const { headline, subheadline, highlights, ctaLabel, ctaHref, price } =
+  Astro.props;
+---
+
+<section class="hero">
+  <div class="container inner">
+    <h1>{headline}</h1>
+    <p class="sub">{subheadline}</p>
+
+    <div class="action">
+      <Cta href={ctaHref} label={ctaLabel} size="lg" />
+      <p class="price">{price} · pagamento único</p>
+    </div>
+
+    {
+      highlights.length > 0 && (
+        <ul class="highlights">
+          {highlights.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-block: clamp(3rem, 2rem + 6vw, 6.5rem);
+    background:
+      radial-gradient(
+        60rem 30rem at 50% -10%,
+        var(--c-accent-soft) 0%,
+        transparent 70%
+      ),
+      var(--c-bg);
+    border-bottom: 1px solid var(--c-line);
+  }
+
+  .inner {
+    max-width: 52rem;
+  }
+
+  h1 {
+    max-width: 20ch;
+  }
+
+  .sub {
+    margin-top: var(--s-5);
+    font-size: var(--t-1);
+    color: var(--c-ink-2);
+    max-width: 54ch;
+  }
+
+  .action {
+    margin-top: var(--s-7);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-4) var(--s-5);
+  }
+
+  .price {
+    font-size: var(--t-0);
+    color: var(--c-muted);
+  }
+
+  .highlights {
+    margin-top: var(--s-7);
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3) var(--s-5);
+    font-size: var(--t--1);
+    color: var(--c-ink-2);
+  }
+
+  .highlights li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--s-2);
+  }
+
+  .highlights li::before {
+    content: '';
+    width: 0.375rem;
+    height: 0.375rem;
+    margin-top: 0.55em;
+    border-radius: 50%;
+    background: var(--c-accent);
+    flex: none;
+  }
+</style>

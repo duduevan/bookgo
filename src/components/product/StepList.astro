@@ -1,0 +1,71 @@
+---
+/** Passos numerados: usado em "Como funciona". */
+interface Props {
+  steps: Array<{ title: string; text: string }>;
+}
+
+const { steps } = Astro.props;
+---
+
+<ol class="steps">
+  {
+    steps.map((step, index) => (
+      <li>
+        <span class="num" aria-hidden="true">
+          {index + 1}
+        </span>
+        <div>
+          <h3>{step.title}</h3>
+          <p>{step.text}</p>
+        </div>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .steps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--s-5);
+    counter-reset: step;
+  }
+
+  li {
+    display: grid;
+    grid-template-columns: 2.25rem 1fr;
+    gap: var(--s-4);
+    align-items: start;
+  }
+
+  .num {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: var(--c-accent-soft);
+    color: var(--c-accent);
+    font-size: var(--t-0);
+    font-weight: 660;
+    font-variant-numeric: tabular-nums;
+  }
+
+  h3 {
+    font-size: var(--t-1);
+  }
+
+  p {
+    margin-top: var(--s-2);
+    color: var(--c-ink-2);
+  }
+
+  @media (min-width: 46rem) {
+    .steps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--s-6) var(--s-7);
+    }
+  }
+</style>
