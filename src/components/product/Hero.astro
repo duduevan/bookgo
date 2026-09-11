@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import Cta from '../ui/Cta.astro';
 
 interface Props {
@@ -8,37 +9,67 @@ interface Props {
   ctaLabel: string;
   ctaHref: string | null;
   price: string;
+  /** Imagem editorial opcional. Sem ela o hero fica em coluna única. */
+  image?: ImageMetadata;
+  imageAlt?: string;
 }
 
-const { headline, subheadline, highlights, ctaLabel, ctaHref, price } =
-  Astro.props;
+const {
+  headline,
+  subheadline,
+  highlights,
+  ctaLabel,
+  ctaHref,
+  price,
+  image,
+  imageAlt,
+} = Astro.props;
 ---
 
-<section class="hero">
+<section class:list={['hero', { 'has-image': image }]}>
   <div class="art" aria-hidden="true">
     <span class="blob b1"></span>
     <span class="blob b2"></span>
   </div>
-  <div class="container">
-    <div class="inner">
-    <h1>{headline}</h1>
-    <p class="sub">{subheadline}</p>
 
-    <div class="action">
-      <Cta href={ctaHref} label={ctaLabel} size="lg" />
-      <p class="price">{price} · pagamento único</p>
+  <div class="container grid">
+    <div class="inner">
+      <h1>{headline}</h1>
+      <p class="sub">{subheadline}</p>
+
+      <div class="action">
+        <Cta href={ctaHref} label={ctaLabel} size="lg" />
+        <p class="price">{price} · pagamento único</p>
+      </div>
+
+      {
+        highlights.length > 0 && (
+          <ul class="highlights">
+            {highlights.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        )
+      }
     </div>
 
     {
-      highlights.length > 0 && (
-        <ul class="highlights">
-          {highlights.map((item) => (
-            <li>{item}</li>
-          ))}
-        </ul>
+      image && (
+        <div class="media">
+          {/* Elemento de LCP: carrega cedo e com prioridade, e já reserva
+              o espaço com width/height reais. */}
+          <Image
+            src={image}
+            alt={imageAlt ?? ''}
+            widths={[520, 760, 1040]}
+            sizes="(min-width: 62rem) 40vw, 100vw"
+            loading="eager"
+            fetchpriority="high"
+            quality={78}
+          />
+        </div>
       )
     }
-    </div>
   </div>
 </section>
 
@@ -64,7 +95,6 @@ const { headline, subheadline, highlights, ctaLabel, ctaHref, price } =
     position: absolute;
     aspect-ratio: 1;
     border-radius: 50%;
-    filter: blur(0.5px);
   }
 
   .b1 {
@@ -89,22 +119,29 @@ const { headline, subheadline, highlights, ctaLabel, ctaHref, price } =
     );
   }
 
+  .grid {
+    display: grid;
+    gap: var(--s-8);
+    align-items: center;
+  }
+
   .inner {
-    max-width: 52rem;
+    max-width: 46rem;
   }
 
   h1 {
     /* Menor que o display institucional: a headline do produto é longa e
        precisa caber em poucas linhas sem dominar a dobra. */
     font-size: var(--t-4);
-    max-width: 19ch;
+    max-width: 22ch;
+    text-wrap: balance;
   }
 
   .sub {
     margin-top: var(--s-5);
     font-size: var(--t-1);
     color: var(--color-muted);
-    max-width: 54ch;
+    max-width: 52ch;
   }
 
   .action {
@@ -145,5 +182,33 @@ const { headline, subheadline, highlights, ctaLabel, ctaHref, price } =
     border-radius: 50%;
     background: var(--color-primary);
     flex: none;
+  }
+
+  .media {
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    background: var(--color-surface);
+  }
+
+  .media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: 4 / 5;
+  }
+
+  @media (min-width: 62rem) {
+    .has-image .grid {
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+      gap: var(--s-9);
+    }
+
+    .has-image .inner {
+      max-width: 34rem;
+    }
+
+    .has-image h1 {
+      max-width: 18ch;
+    }
   }
 </style>

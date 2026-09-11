@@ -84,7 +84,23 @@ const products = defineCollection({
       subheadline: z.string(),
       /** Reforços curtos abaixo do CTA (fatos sobre o produto, não provas sociais). */
       highlights: z.array(z.string()).default([]),
+      /**
+       * Imagem editorial do hero. Nome do arquivo dentro de
+       * `src/assets/products/<slug>/`. Sem ela, o hero usa só a
+       * ambientação em CSS.
+       */
+      image: z.string().optional(),
+      imageAlt: z.string().optional(),
     }),
+
+    /**
+     * Publicidade nesta LP. Decisão produto a produto: um material pode
+     * valer a pena monetizar e outro não. Desligado por padrão, e ainda
+     * assim só aparece se a posição global estiver ligada.
+     */
+    ads: z
+      .object({ pageEnd: z.boolean().default(false) })
+      .default({ pageEnd: false }),
 
     problem: section.extend({
       items: z.array(z.string()),

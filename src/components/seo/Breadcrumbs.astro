@@ -51,4 +51,12 @@ const last = items.length - 1;
     color: var(--color-primary);
     text-decoration: underline;
   }
+
+  /* Mobile: o último item é o título da página, que o H1 logo abaixo já
+     diz. Esconder só no visual — o JSON-LD segue com a trilha inteira. */
+  @media (max-width: 46rem) {
+    .crumbs li:last-child:not(:only-child) {
+      display: none;
+    }
+  }
 </style>

@@ -1,8 +1,14 @@
 ---
 /**
  * Botão de checkout.
+ *
  * Quando `href` é null (checkout ainda não configurado) o CTA é renderizado,
  * mas não vira link — nunca aponta para uma URL inválida.
+ *
+ * O estado pendente NÃO é sinalizado por transparência: baixar a opacidade
+ * derrubava o contraste para 2,2:1 e fazia o botão principal parecer
+ * quebrado. Agora o botão mantém preenchimento e contraste plenos, e a
+ * condição é comunicada por `aria-disabled`, cursor e a nota abaixo.
  */
 interface Props {
   href: string | null;
@@ -35,7 +41,14 @@ const classes = ['cta', `v-${variant}`, `s-${size}`, block ? 'block' : ''];
       </span>
     )
   }
-  {!href && <p class="pending-note">Checkout em configuração.</p>}
+  {
+    !href && (
+      <p class="pending-note">
+        <span class="dot" aria-hidden="true" />
+        Checkout em configuração.
+      </p>
+    )
+  }
 </div>
 
 <style>
@@ -100,16 +113,35 @@ const classes = ['cta', `v-${variant}`, `s-${size}`, block ? 'block' : ''];
     box-shadow: var(--shadow);
   }
 
+  /* Sem opacity: o contraste do texto sobre o botão é preservado.
+     A borda tracejada e o cursor comunicam que ainda não é clicável. */
   .pending {
     cursor: not-allowed;
-    opacity: 0.55;
+    border-style: dashed;
+    border-color: color-mix(in srgb, var(--color-on-primary) 55%, transparent);
+  }
+
+  .v-inverse.pending {
+    border-color: color-mix(in srgb, var(--color-primary) 45%, transparent);
   }
 
   .pending-note {
-    margin-top: var(--s-2);
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    margin-top: var(--s-3);
     font-size: var(--t--1);
     color: inherit;
-    opacity: 0.65;
+    opacity: 0.82;
+  }
+
+  .dot {
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: currentColor;
+    flex: none;
+    opacity: 0.55;
   }
 
   @media (prefers-reduced-motion: reduce) {

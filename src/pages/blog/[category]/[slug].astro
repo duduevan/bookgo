@@ -7,6 +7,7 @@ import TableOfContents from '../../../components/blog/TableOfContents.astro';
 import SourcesList from '../../../components/blog/SourcesList.astro';
 import RelatedPosts from '../../../components/blog/RelatedPosts.astro';
 import ProductCta from '../../../components/blog/ProductCta.astro';
+import AdSlot from '../../../components/ads/AdSlot.astro';
 import {
   getPosts,
   getCategories,
@@ -82,7 +83,9 @@ const crumbs = [
     <Breadcrumbs items={crumbs} />
   </div>
 
-  <article class="container">
+  {/* Coluna única, centralizada. Sem sidebar, sem coluna sticky, sem nada
+      disputando atenção com a leitura. */}
+  <article class="container article">
     <header class="head">
       <p class="meta">
         <a href={categoryUrl(d.category.id)}>{categoryName}</a>
@@ -101,11 +104,18 @@ const crumbs = [
       <Content />
     </div>
 
+    {/* Posição in-page só depois de todo o corpo editorial: nunca entre
+        H1, deck, resumo, índice ou primeiro parágrafo. */}
+    <AdSlot placement="article-inline" />
+
     <SourcesList sources={d.sources} />
 
     {product && <ProductCta product={product} />}
 
     <RelatedPosts posts={related} />
+
+    {/* Fim da página, depois dos relacionados e longe do CTA. */}
+    <AdSlot placement="article-end" />
   </article>
 </SiteLayout>
 
@@ -114,16 +124,26 @@ const crumbs = [
     padding-block: var(--s-5) var(--s-2);
   }
 
-  article {
+  .article {
     padding-bottom: var(--section-y);
+    /* Largura confortável de leitura, centralizada na página. */
+    max-width: var(--w-text);
   }
 
-  article > :global(* + *) {
+  .article > :global(* + *) {
     margin-top: var(--s-7);
   }
 
+  /* Os blocos internos herdam a coluna: nada escapa para os lados. */
+  .article :global(.prose),
+  .article :global(.summary),
+  .article :global(.sources),
+  .article :global(.promo),
+  .article :global(.ad) {
+    max-width: none;
+  }
+
   .head {
-    max-width: var(--w-text);
     padding-block: var(--s-6) var(--s-7);
     border-bottom: 1px solid var(--color-border);
   }
@@ -149,7 +169,6 @@ const crumbs = [
     margin-top: var(--s-4);
     font-size: var(--t-1);
     color: var(--color-muted);
-    max-width: 58ch;
   }
 
   /* Âncoras do índice não podem parar embaixo do header fixo. */

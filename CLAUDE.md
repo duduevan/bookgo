@@ -9,7 +9,7 @@ específica de produto vive dentro de componente.
 ```
 content/              conteúdo editorial (YAML + MDX)
 src/                  componentes, layouts, páginas, estilos
-public/images/brand/  arquivos oficiais do logo
+brand/                arquivos oficiais do logo (não publicado)
 public/fonts/         Inter Variable auto-hospedada
 materials/            fontes dos entregáveis — nunca é publicado
 ```
@@ -45,8 +45,9 @@ rodapé, junto dos links legais.
 
 - **Azul oficial:** `#004ED1`, extraído do símbolo oficial. Tons auxiliares
   (`-dark`, `-light`) derivam dele só para hover e fundo suave.
-- **Originais** ficam em `public/images/brand/`. Eles exibem a tagline
-  "SEU AGENDAMENTO", que **não pertence ao posicionamento atual**.
+- **Originais** ficam em `brand/`, **fora de `public/`**: eles exibem a
+  tagline "SEU AGENDAMENTO", que não pertence ao posicionamento atual e não
+  pode ser servida nem por URL direta.
 - **Assets da aplicação** ficam em `src/assets/brand/`, derivados dos originais
   por `npm run brand:assets`. O script apaga a região da tagline e isola o
   check — nenhum traço é redesenhado.
@@ -236,6 +237,71 @@ subtopics:                                   # recortes que a categoria cobre
     text: Frase curta.
 relatedProduct: casa-organizada-em-15-minutos
 ```
+
+## Publicidade
+
+Hoje **desligada por inteiro**: `ADS.enabled = false` em `src/config/site.ts`.
+Nada é renderizado, nenhum script é carregado e o site segue com 0 KB de
+JavaScript no cliente.
+
+```ts
+ADS = {
+  enabled: false,
+  adsenseClient: null,
+  placements: {
+    'article-inline': false,   // fim do corpo editorial do artigo
+    'article-end': false,      // fim da página do artigo
+    'product-page-end': false, // fim da LP, depois do CTA final
+  },
+}
+```
+
+Cada posição liga sozinha. A LP exige **duas** chaves: a posição global e o
+`ads.pageEnd` do próprio produto — para decidir material a material se vale a
+pena monetizar.
+
+Ligar o AdSense de verdade tem um passo a mais e deliberado: injetar o script
+do Google, que custa o "zero JS" do projeto. `AdSlot.astro` não faz isso.
+
+**Formatos que a BookGo não usa:** popup, modal, vignette, anchor ad, side
+rail, sticky ou qualquer anúncio que cubra conteúdo. Só in-page discreto, sem
+sidebar. O rótulo é `Publicidade` e nada mais — nunca "clique aqui",
+"recomendado" ou "veja esta oferta".
+
+**Onde nunca entra:** home, `/blog/`, páginas de categoria, páginas legais e
+404. E, dentro do artigo, nunca antes do primeiro parágrafo — nem entre H1,
+deck, resumo e índice.
+
+Quando ligar, o `reserve` do `AdSlot` guarda a altura antes da carga, para o
+anúncio não empurrar o conteúdo e gerar CLS.
+
+Afiliados serão um sistema separado (`<AffiliateProduct>`), sem relação com
+este.
+
+## Layout do artigo
+
+Coluna única centralizada, largura confortável de leitura. **Sem sidebar, sem
+índice lateral, sem coluna sticky.** A ordem é fixa:
+
+```
+H1 → deck → resumo rápido → índice → conteúdo
+```
+
+O índice é inline no fluxo, numerado e com links em azul da marca — a
+afordância não depende de `:hover`, que não existe em toque. No mobile os H3
+saem e sobra a espinha de H2.
+
+## Imagem do hero do produto
+
+```yaml
+hero:
+  image: hero.jpg          # arquivo em src/assets/products/<slug>/
+  imageAlt: Descrição objetiva da cena
+```
+
+Com imagem, o hero vira duas colunas no desktop; sem ela, fica em coluna única
+com a ambientação em CSS. A imagem passa por `astro:assets` com `srcset`,
+`fetchpriority="high"` e dimensões reais — é o elemento de LCP da página.
 
 ## Relacionar artigo a produto
 

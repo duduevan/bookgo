@@ -138,6 +138,20 @@ ol {
   border-radius: 3px;
 }
 
+/* Alvos de âncora param abaixo do header fixo (4.5rem), não atrás dele. */
+[id] {
+  scroll-margin-top: 5.5rem;
+}
+
+/* Lacuna de conteúdo em páginas legais: visível, sem gritar como ênfase. */
+.fill {
+  padding: 0.1em 0.4em;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--color-muted) 10%, transparent);
+  color: var(--color-muted);
+  font-size: 0.94em;
+}
+
 /* ── Utilitários ────────────────────────────────────────────── */
 .container {
   width: 100%;

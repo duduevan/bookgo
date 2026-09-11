@@ -53,6 +53,35 @@ export const FOOTER = {
   note: 'Conteúdo educacional. Os resultados variam de pessoa para pessoa.',
 } as const;
 
+/**
+ * Publicidade.
+ *
+ * Nada é renderizado e nenhum recurso externo é carregado enquanto
+ * `enabled` for false. O script do AdSense **não** é injetado por este
+ * arquivo: ligá-lo é um passo separado e deliberado, porque ele custa o
+ * "zero JavaScript no cliente" que é padrão do projeto.
+ *
+ * Filosofia (ver CLAUDE.md): só anúncio in-page discreto. Nada de popup,
+ * modal, vignette, anchor, side rail, sticky ou qualquer formato que cubra
+ * o conteúdo. Sem sidebar de publicidade.
+ */
+export type AdPlacement = 'article-inline' | 'article-end' | 'product-page-end';
+
+export const ADS: {
+  enabled: boolean;
+  adsenseClient: string | null;
+  placements: Record<AdPlacement, boolean>;
+} = {
+  enabled: false,
+  adsenseClient: null,
+  /** Cada posição liga e desliga sozinha, mesmo com `enabled` true. */
+  placements: {
+    'article-inline': false,
+    'article-end': false,
+    'product-page-end': false,
+  },
+};
+
 /** Monta uma URL absoluta a partir de um caminho interno. */
 export function absoluteUrl(path: string): string {
   return new URL(path, SITE.url).href;

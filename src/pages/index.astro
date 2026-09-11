@@ -219,7 +219,9 @@ const featured = categories.slice(0, 1).map((category) => ({
   }
 
   .hero-body {
-    max-width: 34rem;
+    /* Larga o bastante para "Coloque em prática." caber numa linha só
+       no tamanho máximo da fonte. */
+    max-width: 40rem;
     margin-top: auto;
   }
 
@@ -231,7 +233,7 @@ const featured = categories.slice(0, 1).map((category) => ({
     margin-block: var(--s-5) var(--s-7);
     font-size: var(--t-1);
     color: color-mix(in srgb, #ffffff 82%, transparent);
-    max-width: 30rem;
+    max-width: 32rem;
   }
 
   .hero-marquee {
@@ -276,6 +278,9 @@ const featured = categories.slice(0, 1).map((category) => ({
   .pillars li:first-child {
     background: var(--bookgo-blue-light);
     border-color: color-mix(in srgb, var(--bookgo-blue) 14%, transparent);
+    /* Centraliza no card alto: o vazio se divide em cima e embaixo em vez
+       de acumular no topo e parecer falha de renderização. */
+    justify-content: center;
   }
 
   .pillars h3 {

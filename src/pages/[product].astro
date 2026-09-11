@@ -11,6 +11,8 @@ import ModuleList from '../components/product/ModuleList.astro';
 import OfferBox from '../components/product/OfferBox.astro';
 import Faq from '../components/product/Faq.astro';
 import PostCard from '../components/blog/PostCard.astro';
+import AdSlot from '../components/ads/AdSlot.astro';
+import { productImage } from '../lib/product-images';
 import {
   getProducts,
   getPostsByProduct,
@@ -45,6 +47,7 @@ const d = product.data;
 const path = productUrl(d.slug);
 const checkoutHref = hasCheckout(product) ? d.checkout.url : null;
 const relatedPosts = await getPostsByProduct(product.id);
+const heroImage = productImage(d.slug, d.hero.image);
 
 const crumbs = [
   { name: 'Início', path: '/' },
@@ -70,6 +73,8 @@ const crumbs = [
     ctaLabel={d.checkout.cta}
     ctaHref={checkoutHref}
     price={d.price.display}
+    image={heroImage}
+    imageAlt={d.hero.imageAlt}
   />
 
   <div class="crumb-bar container">
@@ -182,11 +187,26 @@ const crumbs = [
       <p class="final-price">{d.price.display} · pagamento único</p>
     </div>
   </Section>
+
+  {/* Publicidade só depois de toda a argumentação, da oferta e do CTA
+      final — nunca no hero, entre benefícios ou perto do preço. Exige a
+      posição global ligada E o opt-in deste produto. */}
+  {
+    d.ads.pageEnd && (
+      <div class="container ad-wrap">
+        <AdSlot placement="product-page-end" />
+      </div>
+    )
+  }
 </ProductLayout>
 
 <style>
   .crumb-bar {
     padding-block: var(--s-4);
+  }
+
+  .ad-wrap {
+    padding-bottom: var(--section-y);
   }
 
   .close {

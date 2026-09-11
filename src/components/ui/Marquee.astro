@@ -35,11 +35,11 @@ const style = duration ? `--marquee-duration:${duration}` : undefined;
   .marquee {
     --gap: var(--s-6);
     overflow: hidden;
-    /* Esmaece as bordas para o loop não ter começo nem fim visível. */
+    /* Esmaece só a borda de saída. Fade à esquerda cortava o primeiro
+       item já na carga, o que lê como erro e não como esmaecimento. */
     mask-image: linear-gradient(
       to right,
-      transparent,
-      #000 var(--fade, 8%),
+      #000 0,
       #000 calc(100% - var(--fade, 8%)),
       transparent
     );
