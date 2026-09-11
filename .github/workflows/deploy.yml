@@ -1,0 +1,116 @@
+name: Deploy para produção (FTPS)
+
+# Disparo manual apenas. Enquanto não validarmos o primeiro envio real,
+# nenhum push publica automaticamente.
+#
+# O GitHub só oferece "Run workflow" quando este arquivo já existe na branch
+# padrão (main). Numa branch de feature o workflow não aparece em Actions —
+# faça o merge antes de tentar o primeiro dry-run.
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Simular o envio sem alterar o servidor'
+        type: boolean
+        required: true
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-producao
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Publicar dist/ no cPanel
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Falha antes de qualquer conexão se a configuração estiver incompleta.
+      # Nenhum valor de usuário ou senha é impresso — apenas se existe ou não.
+      - name: Validar configuração de deploy
+        env:
+          FTP_SERVER: ${{ vars.BOOKGO_FTP_SERVER }}
+          FTP_PATH: ${{ vars.BOOKGO_FTP_PATH }}
+          FTP_USERNAME: ${{ secrets.BOOKGO_FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.BOOKGO_FTP_PASSWORD }}
+        run: |
+          set -u
+          falhou=0
+
+          exigir() {
+            if [ -z "${2:-}" ]; then
+              echo "::error::$1 não está definido."
+              falhou=1
+            else
+              echo "$1: definido"
+            fi
+          }
+
+          exigir BOOKGO_FTP_SERVER "$FTP_SERVER"
+          exigir BOOKGO_FTP_PATH "$FTP_PATH"
+          exigir BOOKGO_FTP_USERNAME "$FTP_USERNAME"
+          exigir BOOKGO_FTP_PASSWORD "$FTP_PASSWORD"
+
+          # O FTP aponta direto para o document root do BookGo.
+          if [ "$FTP_PATH" != "./" ]; then
+            echo "::error::BOOKGO_FTP_PATH deve ser './' neste projeto (recebido: '$FTP_PATH')."
+            falhou=1
+          fi
+
+          if [ "$falhou" -ne 0 ]; then
+            echo "::error::Configuração inválida. Nenhuma conexão FTP foi tentada."
+            exit 1
+          fi
+
+          echo "Configuração validada."
+
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # O deploy só pode acontecer com um build válido em dist/.
+      - name: Conferir dist/
+        run: |
+          test -d dist || { echo "::error::dist/ não foi gerado."; exit 1; }
+          test -f dist/index.html || { echo "::error::dist/index.html ausente."; exit 1; }
+          test -f dist/.htaccess || echo "::warning::dist/.htaccess ausente."
+          echo "Arquivos a enviar: $(find dist -type f | wc -l)"
+
+      - name: Enviar via FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server: ${{ vars.BOOKGO_FTP_SERVER }}
+          username: ${{ secrets.BOOKGO_FTP_USERNAME }}
+          password: ${{ secrets.BOOKGO_FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          security: strict
+          local-dir: ./dist/
+          server-dir: ${{ vars.BOOKGO_FTP_PATH }}
+          dangerous-clean-slate: false
+          dry-run: ${{ inputs.dry_run }}
+          log-level: ${{ inputs.dry_run && 'verbose' || 'standard' }}
+
+      - name: Resumo
+        run: |
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            echo "### Dry-run concluído" >> "$GITHUB_STEP_SUMMARY"
+            echo "Nenhum arquivo foi alterado no servidor." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "### Deploy concluído" >> "$GITHUB_STEP_SUMMARY"
+            echo "Conteúdo de dist/ publicado no document root." >> "$GITHUB_STEP_SUMMARY"
+          fi

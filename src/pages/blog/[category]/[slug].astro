@@ -1,0 +1,124 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../../components/seo/Breadcrumbs.astro';
+import ProductCta from '../../../components/blog/ProductCta.astro';
+import {
+  getPosts,
+  getCategories,
+  getProduct,
+  formatDate,
+  postUrl,
+  categoryUrl,
+  type Post,
+} from '../../../lib/content';
+import * as schema from '../../../lib/schema';
+
+export async function getStaticPaths() {
+  const [posts, categories] = await Promise.all([getPosts(), getCategories()]);
+
+  return posts.map((post) => {
+    const category = categories.find((c) => c.id === post.data.category.id);
+    return {
+      params: { category: post.data.category.id, slug: post.data.slug },
+      props: { post, categoryName: category?.data.name ?? post.data.category.id },
+    };
+  });
+}
+
+interface Props {
+  post: Post;
+  categoryName: string;
+}
+
+const { post, categoryName } = Astro.props;
+const d = post.data;
+const path = postUrl(post);
+const { Content } = await render(post);
+
+// CTA contextual só existe quando o artigo aponta para um produto.
+const product = d.product ? await getProduct(d.product.id) : undefined;
+
+const crumbs = [
+  { name: 'Início', path: '/' },
+  { name: 'Blog', path: '/blog/' },
+  { name: categoryName, path: categoryUrl(d.category.id) },
+  { name: d.title, path },
+];
+---
+
+<BaseLayout
+  title={d.title}
+  description={d.description}
+  ogType="article"
+  schema={[
+    schema.organization(),
+    schema.articleSchema(post, path, categoryName),
+    schema.breadcrumbs(crumbs),
+  ]}
+>
+  <div class="crumb-bar container">
+    <Breadcrumbs items={crumbs} />
+  </div>
+
+  <article class="container">
+    <header class="head">
+      <p class="meta">
+        <a href={categoryUrl(d.category.id)}>{categoryName}</a>
+        <time datetime={d.date.toISOString()}>{formatDate(d.date)}</time>
+        {
+          d.updated && (
+            <span>Atualizado em {formatDate(d.updated)}</span>
+          )
+        }
+      </p>
+      <h1>{d.title}</h1>
+      <p class="lede">{d.description}</p>
+    </header>
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    {product && <ProductCta product={product} />}
+  </article>
+</BaseLayout>
+
+<style>
+  .crumb-bar {
+    padding-block: var(--s-4);
+  }
+
+  article {
+    padding-bottom: var(--section-y);
+  }
+
+  .head {
+    max-width: var(--w-text);
+    padding-block: var(--s-6) var(--s-7);
+    border-bottom: 1px solid var(--c-line);
+    margin-bottom: var(--s-7);
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    font-size: var(--t--1);
+    color: var(--c-muted);
+    margin-bottom: var(--s-4);
+  }
+
+  .meta a {
+    font-weight: 600;
+  }
+
+  h1 {
+    font-size: var(--t-4);
+  }
+
+  .head .lede {
+    margin-top: var(--s-4);
+    max-width: 60ch;
+  }
+</style>

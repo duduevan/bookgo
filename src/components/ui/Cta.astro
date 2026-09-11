@@ -1,0 +1,124 @@
+---
+/**
+ * Botão de checkout.
+ * Quando `href` é null (checkout ainda não configurado) o CTA é renderizado,
+ * mas não vira link — nunca aponta para uma URL inválida.
+ */
+interface Props {
+  href: string | null;
+  label: string;
+  variant?: 'primary' | 'inverse';
+  size?: 'md' | 'lg';
+  block?: boolean;
+}
+
+const {
+  href,
+  label,
+  variant = 'primary',
+  size = 'md',
+  block = false,
+} = Astro.props;
+
+const classes = ['cta', `v-${variant}`, `s-${size}`, block ? 'block' : ''];
+---
+
+<div class:list={['wrap', { block }]}>
+  {
+    href ? (
+      <a class:list={classes} href={href}>
+        {label}
+      </a>
+    ) : (
+      <span class:list={[...classes, 'pending']} role="link" aria-disabled="true">
+        {label}
+      </span>
+    )
+  }
+  {!href && <p class="pending-note">Checkout em configuração.</p>}
+</div>
+
+<style>
+  .wrap.block {
+    width: 100%;
+  }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: var(--s-2);
+    font-weight: 620;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    border-radius: var(--radius-pill);
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition:
+      background-color 0.15s ease,
+      transform 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .s-md {
+    padding: 0.85rem 1.6rem;
+    font-size: var(--t-0);
+  }
+
+  .s-lg {
+    padding: 1.05rem 2rem;
+    font-size: var(--t-1);
+  }
+
+  .cta.block {
+    display: flex;
+    width: 100%;
+  }
+
+  .v-primary {
+    background: var(--c-accent);
+    color: var(--c-on-accent);
+    box-shadow: var(--shadow-sm);
+  }
+
+  a.v-primary:hover {
+    background: var(--c-accent-hover);
+    color: var(--c-on-accent);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+  }
+
+  .v-inverse {
+    background: var(--c-surface);
+    color: var(--c-accent);
+  }
+
+  a.v-inverse:hover {
+    color: var(--c-accent-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+  }
+
+  .pending {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .pending-note {
+    margin-top: var(--s-2);
+    font-size: var(--t--1);
+    color: inherit;
+    opacity: 0.65;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta {
+      transition: none;
+    }
+
+    a.cta:hover {
+      transform: none;
+    }
+  }
+</style>

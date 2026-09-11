@@ -1,0 +1,63 @@
+---
+import { formatDate, postUrl, type Post } from '../../lib/content';
+
+interface Props {
+  post: Post;
+  categoryName?: string;
+}
+
+const { post, categoryName } = Astro.props;
+const href = postUrl(post);
+---
+
+<article class="card">
+  <p class="meta">
+    {categoryName && <span class="cat">{categoryName}</span>}
+    <time datetime={post.data.date.toISOString()}>
+      {formatDate(post.data.date)}
+    </time>
+  </p>
+  <h3><a href={href}>{post.data.title}</a></h3>
+  <p class="desc">{post.data.description}</p>
+</article>
+
+<style>
+  .card {
+    padding-block: var(--s-6);
+    border-bottom: 1px solid var(--c-line);
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-3);
+    font-size: var(--t--1);
+    color: var(--c-muted);
+  }
+
+  .cat {
+    color: var(--c-accent);
+    font-weight: 600;
+  }
+
+  h3 {
+    margin-top: var(--s-3);
+    font-size: var(--t-2);
+  }
+
+  h3 a {
+    color: var(--c-ink);
+    text-decoration: none;
+  }
+
+  h3 a:hover {
+    color: var(--c-accent);
+  }
+
+  .desc {
+    margin-top: var(--s-3);
+    color: var(--c-ink-2);
+    max-width: 68ch;
+  }
+</style>

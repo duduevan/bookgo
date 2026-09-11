@@ -1,0 +1,36 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+
+# Nenhuma credencial de deploy é exposta a este workflow.
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build estático
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Conferir saída do build
+        run: |
+          test -d dist || { echo "::error::dist/ não foi gerado."; exit 1; }
+          test -f dist/index.html || { echo "::error::dist/index.html ausente."; exit 1; }
+          echo "Arquivos gerados: $(find dist -type f | wc -l)"

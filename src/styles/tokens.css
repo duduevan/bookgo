@@ -1,0 +1,73 @@
+/* ─────────────────────────────────────────────────────────────
+   BookGo — design tokens
+   Sistema visual mínimo e reaproveitável entre produtos.
+   ───────────────────────────────────────────────────────────── */
+:root {
+  /* Cor — base quente, clara e sóbria */
+  --c-bg: #fcfbf9;
+  --c-surface: #ffffff;
+  --c-surface-warm: #f6f2ec;
+  --c-ink: #1a1917;
+  --c-ink-2: #46413c;
+  --c-muted: #77706a;
+  --c-line: #e7e1d9;
+  --c-line-strong: #d5cec4;
+
+  /* Cor — acento único, verde profundo: organizado e confiável */
+  --c-accent: #1f5e52;
+  --c-accent-hover: #174a40;
+  --c-accent-soft: #eaf2ef;
+  --c-accent-line: #c9ddd6;
+  --c-on-accent: #ffffff;
+
+  /* Sinalização discreta em listas de exclusão */
+  --c-neutral-mark: #9a938c;
+
+  /* Tipografia */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  --font-feature: 'kern' 1, 'liga' 1, 'calt' 1;
+
+  /* Escala fluida (mobile first) */
+  --t--1: clamp(0.8125rem, 0.79rem + 0.12vw, 0.875rem);
+  --t-0: clamp(1rem, 0.97rem + 0.16vw, 1.0625rem);
+  --t-1: clamp(1.125rem, 1.08rem + 0.24vw, 1.25rem);
+  --t-2: clamp(1.3125rem, 1.24rem + 0.38vw, 1.5rem);
+  --t-3: clamp(1.5rem, 1.37rem + 0.66vw, 1.875rem);
+  --t-4: clamp(1.75rem, 1.5rem + 1.25vw, 2.5rem);
+  --t-5: clamp(2.125rem, 1.72rem + 2.02vw, 3.375rem);
+
+  --lh-tight: 1.14;
+  --lh-heading: 1.22;
+  --lh-body: 1.65;
+
+  /* Espaçamento */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.5rem;
+  --s-6: 2rem;
+  --s-7: 2.5rem;
+  --s-8: 3rem;
+  --s-9: 4rem;
+  --s-10: 5rem;
+
+  /* Ritmo vertical das seções, fluido */
+  --section-y: clamp(3rem, 2rem + 5vw, 5.5rem);
+
+  /* Layout */
+  --w-container: 68rem;
+  --w-text: 44rem;
+  --w-prose: 40rem;
+  --gutter: clamp(1.125rem, 0.9rem + 1.2vw, 2rem);
+
+  /* Forma */
+  --radius-sm: 0.5rem;
+  --radius: 0.875rem;
+  --radius-lg: 1.25rem;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 2px rgb(26 25 23 / 0.05);
+  --shadow: 0 2px 4px rgb(26 25 23 / 0.04), 0 8px 24px rgb(26 25 23 / 0.05);
+}

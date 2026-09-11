@@ -1,0 +1,87 @@
+---
+import Cta from '../ui/Cta.astro';
+import BulletList from './BulletList.astro';
+
+interface Props {
+  includes: string[];
+  price: string;
+  priceNote?: string;
+  ctaLabel: string;
+  ctaHref: string | null;
+}
+
+const { includes, price, priceNote, ctaLabel, ctaHref } = Astro.props;
+---
+
+<div class="box">
+  <div class="items">
+    <h3>O que está incluso</h3>
+    <BulletList items={includes} marker="check" />
+  </div>
+
+  <div class="buy">
+    <p class="amount">{price}</p>
+    <p class="terms">pagamento único</p>
+    <Cta href={ctaHref} label={ctaLabel} size="lg" block />
+    {priceNote && <p class="note">{priceNote}</p>}
+  </div>
+</div>
+
+<style>
+  .box {
+    display: grid;
+    gap: var(--s-6);
+    background: var(--c-surface);
+    border: 1px solid var(--c-line);
+    border-radius: var(--radius-lg);
+    padding: var(--s-6);
+    box-shadow: var(--shadow);
+  }
+
+  h3 {
+    font-size: var(--t-1);
+    margin-bottom: var(--s-5);
+  }
+
+  .buy {
+    border-top: 1px solid var(--c-line);
+    padding-top: var(--s-6);
+    text-align: center;
+  }
+
+  .amount {
+    font-size: var(--t-4);
+    font-weight: 680;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+
+  .terms {
+    margin-top: var(--s-1);
+    font-size: var(--t--1);
+    color: var(--c-muted);
+    margin-bottom: var(--s-5);
+  }
+
+  .note {
+    margin-top: var(--s-4);
+    font-size: var(--t--1);
+    color: var(--c-muted);
+  }
+
+  @media (min-width: 52rem) {
+    .box {
+      grid-template-columns: 1fr minmax(16rem, 20rem);
+      gap: var(--s-8);
+      padding: var(--s-8);
+      align-items: start;
+    }
+
+    .buy {
+      border-top: 0;
+      border-left: 1px solid var(--c-line);
+      padding-top: 0;
+      padding-left: var(--s-8);
+    }
+  }
+</style>

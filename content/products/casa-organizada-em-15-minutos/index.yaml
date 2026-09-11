@@ -1,0 +1,195 @@
+# ─────────────────────────────────────────────────────────────
+#  Casa Organizada em 15 Minutos por Dia
+#  Toda a copy da landing page vive neste arquivo.
+#  Para alterar preço, checkout ou headline, edite apenas aqui.
+# ─────────────────────────────────────────────────────────────
+
+slug: casa-organizada-em-15-minutos
+name: Casa Organizada em 15 Minutos por Dia
+tagline: Um método simples para manter a casa organizada em sessões curtas, sem mutirão de fim de semana.
+promise: Ensinar uma rotina simples para manter a casa mais organizada usando pequenos ciclos de 15 minutos, sem depender de grandes períodos de organização.
+
+# ── Comercial ────────────────────────────────────────────────
+price:
+  amount: 37
+  currency: BRL
+  display: R$ 37,00
+
+checkout:
+  provider: kiwify
+  # PENDENTE: substituir por null pela URL de checkout da Kiwify.
+  # Enquanto for null, o CTA é renderizado sem link (não aponta para URL inválida).
+  url: null
+  cta: QUERO COMEÇAR AGORA
+
+# ── SEO ──────────────────────────────────────────────────────
+seo:
+  title: Casa Organizada em 15 Minutos por Dia
+  description: Um método simples para manter a casa mais organizada em sessões de 15 minutos, sem depender de mutirões de fim de semana. Materiais práticos em PDF por R$ 37,00.
+  ogImage: /images/og-casa-organizada-em-15-minutos.png
+
+# ── Hero ─────────────────────────────────────────────────────
+hero:
+  headline: Sua casa não precisa de horas de organização. Precisa de 15 minutos de cada vez.
+  subheadline: Aprenda um método simples para manter sua casa mais organizada mesmo com uma rotina corrida, sem transformar seu fim de semana em uma maratona de arrumação.
+  highlights:
+    - 5 módulos em texto direto, feitos para ler rápido
+    - 4 materiais práticos em PDF
+    - Acesso imediato após a confirmação do pagamento
+
+# ── Problema ─────────────────────────────────────────────────
+problem:
+  title: Você organiza, e pouco tempo depois parece que ninguém organizou nada
+  items:
+    - Você arruma a cozinha à noite e, no dia seguinte, ela já está do mesmo jeito.
+    - A organização vira assunto de sábado — e o fim de semana desaparece.
+    - Você olha para a bagunça, não sabe por onde começar e acaba adiando.
+    - Quando um ambiente finalmente fica pronto, outro já desandou.
+    - Os métodos que você encontra pedem dias inteiros, caixas novas e uma casa vazia.
+    - Planners detalhados funcionam por uma semana e depois são abandonados.
+  close: O problema quase nunca é falta de esforço. É que organizar tudo de uma vez não foi feito para uma rotina que não para.
+
+# ── Mecanismo ────────────────────────────────────────────────
+method:
+  title: Existe um caminho mais simples
+  name: O Método dos 15 Minutos
+  intro: >-
+    Em vez de esperar por um dia livre que dificilmente chega, você organiza em sessões
+    curtas de 15 minutos distribuídas na sua rotina. Uma sessão não organiza a casa inteira —
+    e não precisa organizar. O que mantém a casa em ordem é a repetição dessas janelas curtas.
+  pillars:
+    - title: Um ponto de cada vez
+      text: Você escolhe um alvo específico para a sessão — a bancada, uma gaveta, o sofá — em vez de encarar o cômodo inteiro.
+    - title: Prioridade antes de perfeição
+      text: Primeiro o que mais atrapalha o dia a dia. O detalhe fica para quando houver tempo extra.
+    - title: Manutenção no lugar de mutirão
+      text: Pequenas sessões frequentes evitam o acúmulo que transforma organização em um projeto de fim de semana.
+    - title: Encaixe na rotina real
+      text: Os 15 minutos entram em brechas que já existem no seu dia, sem exigir que você reorganize a agenda.
+  note: O método não promete uma casa de revista nem resolve tudo em uma única sessão. Ele propõe uma forma de organização que cabe em dias corridos.
+
+# ── Benefícios ───────────────────────────────────────────────
+benefits:
+  title: O que muda na prática
+  items:
+    - title: Começar deixa de ser o problema
+      text: Quinze minutos é um compromisso pequeno o suficiente para caber em quase qualquer dia — e isso reduz a paralisia de não saber por onde começar.
+    - title: O fim de semana volta a ser seu
+      text: Quando a manutenção acontece durante a semana, o sábado deixa de ser o dia de correr atrás do prejuízo.
+    - title: Menos decisão, mais execução
+      text: Com o que fazer já definido em checklist, sua energia vai para a ação em vez de ir para o planejamento.
+    - title: Sensação de controle
+      text: Ver um ponto resolvido por dia muda a relação com a casa, mesmo quando ela ainda não está do jeito ideal.
+    - title: Pensado para casa habitada
+      text: O método parte do princípio de que a casa é usada todos os dias, inclusive por crianças, e não espera que ela fique intocada.
+
+# ── Como funciona ────────────────────────────────────────────
+howItWorks:
+  title: Como funciona no seu dia
+  steps:
+    - title: Escolha a sua janela
+      text: Defina onde os 15 minutos cabem — antes do banho, depois do jantar, enquanto o café passa.
+    - title: Siga o checklist do dia
+      text: O Checklist Diário indica o alvo da sessão, para você não gastar a janela decidindo o que fazer.
+    - title: Pare quando o tempo acabar
+      text: Terminaram os 15 minutos, você para. Esticar a sessão é justamente o que transforma organização em cansaço.
+    - title: Repita e ajuste
+      text: Com o Planner Semanal você distribui as sessões ao longo da semana e adapta conforme a rotina muda.
+
+# ── Conteúdo do produto ──────────────────────────────────────
+contents:
+  title: O que você vai aprender
+  intro: Cinco módulos objetivos, em texto direto, para ler e aplicar no mesmo dia.
+  modules:
+    - number: 1
+      title: Pare de tentar organizar tudo
+      objective: Entender por que grandes mutirões de organização geram cansaço e não resolvem o problema da manutenção.
+    - number: 2
+      title: O Método dos 15 Minutos
+      objective: Aprender a escolher prioridades e a trabalhar em pequenas janelas de organização.
+    - number: 3
+      title: Organizando ambiente por ambiente
+      objective: Aplicar o método na cozinha, na sala, nos quartos, no banheiro e na área de serviço.
+    - number: 4
+      title: Sua rotina semanal
+      objective: Definir o que fazer diariamente, semanalmente e quando houver tempo extra.
+    - number: 5
+      title: Como evitar que a bagunça volte
+      objective: Criar hábitos simples de manutenção, identificar pontos de acúmulo e devolver rapidamente os objetos ao lugar.
+
+# ── Materiais incluídos ──────────────────────────────────────
+materials:
+  title: Materiais incluídos
+  intro: Quatro materiais em PDF para usar no celular, no computador ou impressos.
+  items:
+    - title: Checklist Diário de 15 Minutos
+      text: O alvo de cada sessão, para você começar sem perder tempo decidindo.
+    - title: Planner Semanal da Casa
+      text: Uma visão simples da semana para distribuir as sessões sem sobrecarregar um único dia.
+    - title: Plano Casa Organizada em 7 Dias
+      text: Um roteiro inicial de sete dias para colocar o método em prática já na primeira semana.
+    - title: Checklist por Ambiente
+      text: Listas separadas por cômodo para usar quando sobrar um tempo extra.
+
+# ── Público ──────────────────────────────────────────────────
+forWho:
+  title: Para quem é
+  items:
+    - Quem tem rotina corrida e quase nunca consegue blocos livres de tempo.
+    - Quem sente que arruma a casa e ela desarruma pouco tempo depois.
+    - Quem quer uma organização possível, e não uma casa de revista.
+    - Quem já tentou planners detalhados e não conseguiu manter.
+    - Quem divide a casa com outras pessoas, inclusive crianças, e precisa de um método que aguente o uso diário.
+
+notForWho:
+  title: Para quem não é
+  items:
+    - Quem procura transformar a casa inteira em um único dia.
+    - Quem busca um projeto de design de interiores ou uma reforma.
+    - Quem espera um resultado que se mantenha sem nenhuma constância.
+    - Quem quer indicação de caixas, móveis e produtos organizadores.
+    - Quem prefere longas aulas em vídeo a materiais objetivos para aplicar.
+
+# ── Oferta ───────────────────────────────────────────────────
+offer:
+  title: Comece hoje
+  intro: Pagamento único. Sem mensalidade e sem renovação.
+  includes:
+    - Os 5 módulos com o Método dos 15 Minutos
+    - Checklist Diário de 15 Minutos
+    - Planner Semanal da Casa
+    - Plano Casa Organizada em 7 Dias
+    - Checklist por Ambiente
+    - Acesso imediato após a confirmação do pagamento
+  priceNote: Materiais digitais em PDF. Pagamento processado pela Kiwify.
+
+# ── Garantia ─────────────────────────────────────────────────
+guarantee:
+  title: Garantia de 7 dias
+  text: Você terá 7 dias de garantia para conhecer o conteúdo. Se não for para você, basta pedir o reembolso dentro desse prazo.
+
+# ── FAQ ──────────────────────────────────────────────────────
+faq:
+  title: Perguntas frequentes
+  items:
+    - q: Eu realmente não tenho tempo. Isso funciona para mim?
+      a: O método foi pensado exatamente para quem não tem blocos livres de tempo. A proposta é usar janelas de 15 minutos dentro da rotina que você já tem, em vez de esperar por um dia inteiro disponível.
+    - q: Funciona com criança em casa?
+      a: A casa continua sendo usada, e o método parte disso. Em vez de tentar deixar tudo pronto de uma vez, ele trabalha com manutenção curta e frequente, que é o que costuma sustentar a organização quando a casa é habitada o dia todo.
+    - q: Já tentei me organizar antes e não consegui manter.
+      a: Métodos que exigem muito tempo de uma vez tendem a ser abandonados. Aqui o compromisso diário é pequeno de propósito, e existe um checklist indicando o que fazer, para você não depender de motivação.
+    - q: Minha família não ajuda. Ainda assim vale?
+      a: O método é escrito para ser aplicado por uma pessoa. O Módulo 5 trata de pontos de acúmulo e hábitos simples que reduzem a bagunça recorrente, mesmo quando a colaboração da casa é limitada.
+    - q: Preciso assistir a aulas?
+      a: Não. O conteúdo é em texto e em materiais práticos em PDF, feitos para leitura rápida e aplicação direta.
+    - q: É mais um planner que eu vou abandonar?
+      a: O Planner Semanal é uma peça de apoio, não o centro do método. Ele é simples e pode ser usado impresso ou no celular — e, se você parar de usá-lo, o método continua funcionando.
+    - q: Preciso comprar caixas ou organizadores?
+      a: Não. O método trabalha com o que você já tem em casa.
+    - q: Como recebo os materiais?
+      a: Após a confirmação do pagamento, o acesso é liberado pela Kiwify, plataforma responsável pelo checkout.
+
+# ── CTA final ────────────────────────────────────────────────
+finalCta:
+  title: Quinze minutos hoje custam menos que um sábado inteiro depois
+  text: Se a sua casa parece voltar à estaca zero toda semana, provavelmente o problema não é falta de esforço — é o formato. Comece por uma janela curta e veja como a sua rotina responde.
