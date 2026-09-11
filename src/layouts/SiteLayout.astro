@@ -8,8 +8,10 @@ interface Props {
   title: string;
   description: string;
   ogImage?: string;
+  ogImageAlt?: string;
   ogType?: 'website' | 'article';
   noindex?: boolean;
+  canonical?: boolean;
   schema?: Record<string, unknown>[];
   /** Navbar sobre fundo escuro usa o logo branco. */
   headerOnDark?: boolean;
@@ -19,6 +21,7 @@ const { headerOnDark = false, ...base } = Astro.props;
 ---
 
 <BaseLayout {...base}>
+  <slot name="head" slot="head" />
   <SiteHeader onDark={headerOnDark} />
   <main id="conteudo">
     <slot />

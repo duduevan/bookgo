@@ -87,11 +87,12 @@
 
   /* ── 2. Marca BookGo ────────────────────────────────────── */
 
-  /* TODO(marca): confirmar o azul exato a partir do arquivo oficial.
-     Valor atual estimado a partir das imagens enviadas no chat. */
-  --bookgo-blue: #0b4fd8;
-  --bookgo-blue-dark: #083aa3;
-  --bookgo-blue-light: #eef3fe;
+  /* Azul oficial, extraído do fundo chapado de bookgo-symbol.webp.
+     Tons auxiliares derivados apenas para hover e fundo suave — sem
+     ampliar a paleta. Contraste com branco: 6.98:1 (blue) e 10.47:1 (dark). */
+  --bookgo-blue: #004ed1;
+  --bookgo-blue-dark: #003896;
+  --bookgo-blue-light: #f0f4fc;
   --bookgo-background: #ffffff;
   --bookgo-surface: #f6f7f9;
   --bookgo-text: #0e1116;

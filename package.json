@@ -9,12 +9,20 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "qa:seo": "node scripts/seo-qa.mjs",
+    "qa:perf": "node scripts/perf-report.mjs",
+    "brand:assets": "node scripts/derive-brand-assets.mjs",
+    "brand:og": "node scripts/generate-og.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.14",
     "@astrojs/sitemap": "^3.7.4",
     "astro": "^5.18.2",
     "sharp": "^0.35.4"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.63.0",
+    "yaml": "^2.9.0"
   }
 }

@@ -1,68 +1,47 @@
 ---
-import {
-  BRAND_ASSETS,
-  hasBrandAsset,
-  warnMissingBrandAssets,
-  type BrandVariant,
-} from '../../lib/brand';
+import { Image } from 'astro:assets';
+import { BRAND, type BrandVariant } from '../../lib/brand';
 
 interface Props {
   variant?: BrandVariant;
-  /** Altura renderizada do logo. A largura acompanha a proporção. */
-  height?: string;
-  /** Texto alternativo. Vazio quando o logo é puramente decorativo. */
+  /** Altura renderizada, em px. A largura acompanha a proporção original. */
+  height?: number;
   alt?: string;
+  /** O logo do topo é o primeiro paint; o do rodapé pode esperar. */
+  loading?: 'eager' | 'lazy';
   class?: string;
 }
 
 const {
   variant = 'blue',
-  height = '1.75rem',
+  height = 28,
   alt = 'BookGo',
+  loading = 'eager',
   class: className,
 } = Astro.props;
 
-warnMissingBrandAssets();
-const ready = hasBrandAsset(variant);
+const source = BRAND[variant];
+// Largura derivada da proporção real do arquivo: `width`/`height` saem no
+// HTML e reservam o espaço antes do download, então não há CLS.
+const width = Math.round((source.width / source.height) * height);
 ---
 
-{
-  ready ? (
-    <img
-      class:list={['logo', className]}
-      src={BRAND_ASSETS[variant]}
-      alt={alt}
-      style={`height:${height}`}
-      decoding="async"
-    />
-  ) : (
-    /* Substituto temporário até o arquivo oficial ser fornecido.
-       Não é o logo — é um marcador que some sozinho quando o
-       arquivo existir em public/images/brand/. */
-    <span
-      class:list={['logo-fallback', `is-${variant}`, className]}
-      style={`font-size:${height}`}
-      data-brand-placeholder={variant}
-    >
-      {alt}
-    </span>
-  )
-}
+<Image
+  class:list={['logo', className]}
+  src={source}
+  alt={alt}
+  width={width}
+  height={height}
+  densities={[1, 2]}
+  quality={92}
+  loading={loading}
+  decoding="async"
+/>
 
 <style>
   .logo {
     width: auto;
-  }
-
-  .logo-fallback {
-    display: inline-block;
-    font-weight: var(--w-bold);
-    letter-spacing: -0.04em;
-    line-height: 1;
-    color: var(--bookgo-blue);
-  }
-
-  .logo-fallback.is-white {
-    color: #ffffff;
+    height: auto;
+    max-height: 100%;
   }
 </style>

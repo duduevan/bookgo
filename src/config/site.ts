@@ -11,7 +11,13 @@ export const SITE = {
   locale: 'pt-BR',
   lang: 'pt-BR',
   ogImage: '/images/og-default.png',
-  ogImageAlt: 'BookGo',
+  ogImageAlt: 'BookGo — aprenda algo útil e coloque em prática',
+  /**
+   * Verificação do Google Search Console.
+   * `null` enquanto não houver token real: nada é renderizado.
+   * Para ativar, cole aqui o valor do método "tag HTML" do Search Console.
+   */
+  googleSiteVerification: null as string | null,
 } as const;
 
 /** Navegação institucional. `Explorar` e `Sobre` são âncoras da home
@@ -28,11 +34,18 @@ export const NAV_CTA = {
   href: '/#explorar',
 } as const;
 
-/** Links legais — usados no rodapé institucional e no rodapé das LPs. */
+/**
+ * Links legais — rodapé institucional e rodapé das LPs.
+ *
+ * `ready: false` enquanto a página ainda tem marcações [PREENCHER]: ela
+ * continua acessível e linkada no rodapé, mas fica em noindex, fora do
+ * sitemap e fora do llms.txt. Vire para `true` junto com a publicação do
+ * texto definitivo.
+ */
 export const LEGAL_NAV = [
-  { label: 'Termos de Uso', href: '/termos/' },
-  { label: 'Política de Privacidade', href: '/privacidade/' },
-  { label: 'Contato', href: '/contato/' },
+  { label: 'Termos de Uso', href: '/termos/', ready: false },
+  { label: 'Política de Privacidade', href: '/privacidade/', ready: false },
+  { label: 'Contato', href: '/contato/', ready: false },
 ] as const;
 
 export const FOOTER = {

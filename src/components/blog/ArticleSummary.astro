@@ -1,0 +1,60 @@
+---
+/**
+ * Resumo rápido do artigo — 3 a 6 pontos.
+ *
+ * É conteúdo editorial explícito, vindo do frontmatter. Nada é resumido
+ * automaticamente, nem no build nem no navegador.
+ */
+interface Props {
+  points: string[];
+  title?: string;
+}
+
+const { points, title = 'Resumo rápido' } = Astro.props;
+---
+
+{
+  points.length > 0 && (
+    <aside class="summary" aria-labelledby="resumo-rapido">
+      <h2 id="resumo-rapido">{title}</h2>
+      <ul>
+        {points.map((point) => (
+          <li>{point}</li>
+        ))}
+      </ul>
+    </aside>
+  )
+}
+
+<style>
+  .summary {
+    max-width: var(--w-prose);
+    padding: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-primary);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+  }
+
+  h2 {
+    font-size: var(--t--1);
+    font-weight: var(--w-semibold);
+    letter-spacing: var(--tr-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin: 0 0 var(--s-4);
+  }
+
+  ul {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+    padding-left: 1.1em;
+    font-size: var(--t-0);
+    color: var(--color-text);
+  }
+
+  li::marker {
+    color: var(--color-primary);
+  }
+</style>

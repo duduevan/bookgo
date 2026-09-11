@@ -1,53 +1,29 @@
-import fs from 'node:fs';
-
 /**
- * Arquivos oficiais da marca. São a única fonte da identidade:
- * o logo nunca é redesenhado nem recriado em código.
+ * Assets de marca usados pela aplicação.
  *
- * Enquanto um arquivo não existir, <Logo> renderiza um substituto
- * temporário em texto e o build avisa. Basta colocar o arquivo no
- * caminho abaixo — nenhum código muda.
+ * Os arquivos oficiais em `public/images/brand/` exibem a tagline
+ * "SEU AGENDAMENTO", que não pertence ao posicionamento atual. Os arquivos
+ * abaixo são derivados deles por `scripts/derive-brand-assets.mjs`, que
+ * apenas apaga a tagline e isola o check — nenhum traço é redesenhado.
+ *
+ * Quando a versão oficial sem tagline existir, basta substituir estes
+ * arquivos: nada no código muda.
  */
-export const BRAND_ASSETS = {
-blue: '/images/brand/bookgo-blue.webp',
-white: '/images/brand/bookgo-white.webp',
-symbol: '/images/brand/bookgo-symbol.webp',
+import wordmarkBlue from '../assets/brand/bookgo-wordmark-blue.webp';
+import wordmarkWhite from '../assets/brand/bookgo-wordmark-white.webp';
+import icon from '../assets/brand/bookgo-icon.webp';
+
+export const BRAND = {
+  /** Logo para fundos claros. */
+  blue: wordmarkBlue,
+  /** Logo para fundos azuis ou escuros. */
+  white: wordmarkWhite,
+  /** Check isolado, para favicon e aplicações compactas. */
+  icon,
 } as const;
 
-export type BrandVariant = keyof typeof BRAND_ASSETS;
+export type BrandVariant = keyof typeof BRAND;
 
-const PUBLIC_DIR = new URL('../../public', import.meta.url);
-
-const resolve = (publicPath: string) =>
-  new URL(`.${publicPath}`, `${PUBLIC_DIR}/`);
-
-/** Um arquivo de marca já foi fornecido? Avaliado em tempo de build. */
-export function hasBrandAsset(variant: BrandVariant): boolean {
-  try {
-    return fs.existsSync(resolve(BRAND_ASSETS[variant]));
-  } catch {
-    return false;
-  }
-}
-
-let warned = false;
-
-/** Avisa uma única vez por build sobre os arquivos de marca ausentes. */
-export function warnMissingBrandAssets(): void {
-  if (warned) return;
-  warned = true;
-
-  const missing = (Object.keys(BRAND_ASSETS) as BrandVariant[]).filter(
-    (variant) => !hasBrandAsset(variant)
-  );
-
-  if (missing.length === 0) return;
-
-  console.warn(
-    `[bookgo] Arquivos de marca ausentes: ${missing
-      .map((variant) => BRAND_ASSETS[variant])
-      .join(', ')}\n` +
-      '         O logo está sendo substituído por um texto temporário.\n' +
-      '         Coloque os arquivos oficiais em public/images/brand/ para resolver.'
-  );
-}
+/** URL estável do logo para JSON-LD e Open Graph (fora do pipeline de hash). */
+export const BRAND_LOGO_URL = '/images/bookgo-logo.png';
+export const BRAND_ICON_URL = '/images/bookgo-icon.png';

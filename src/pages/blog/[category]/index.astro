@@ -3,9 +3,11 @@ import SiteLayout from '../../../layouts/SiteLayout.astro';
 import Breadcrumbs from '../../../components/seo/Breadcrumbs.astro';
 import PostCard from '../../../components/blog/PostCard.astro';
 import CategoryChips from '../../../components/blog/CategoryChips.astro';
+import ProductCta from '../../../components/blog/ProductCta.astro';
 import {
   getCategories,
   getPostsByCategory,
+  getProduct,
   categoryUrl,
   type Category,
   type Post,
@@ -37,6 +39,11 @@ const { category, categories, posts } = Astro.props;
 const d = category.data;
 const path = categoryUrl(category.id);
 
+// Produto da categoria, quando houver — fecha o hub sem virar página de venda.
+const product = d.relatedProduct
+  ? await getProduct(d.relatedProduct.id)
+  : undefined;
+
 const crumbs = [
   { name: 'Início', path: '/' },
   { name: 'Blog', path: '/blog/' },
@@ -47,19 +54,47 @@ const crumbs = [
 <SiteLayout
   title={d.seo.title ?? d.name}
   description={d.seo.description ?? d.description}
-  schema={[schema.organization(), schema.breadcrumbs(crumbs)]}
+  schema={[
+    schema.organization(),
+    schema.website(),
+    schema.breadcrumbs(crumbs),
+  ]}
 >
   <div class="container crumb-bar">
     <Breadcrumbs items={crumbs} />
   </div>
 
   <header class="container page-head">
-    <h1>{d.name}</h1>
-    <p class="lede">{d.description}</p>
+    <p class="eyebrow">Categoria</p>
+    <h1>{d.headline ?? d.name}</h1>
+    {d.intro.length > 0 ? (
+      <div class="intro">
+        {d.intro.map((paragraph) => <p>{paragraph}</p>)}
+      </div>
+    ) : (
+      <p class="lede">{d.description}</p>
+    )}
     <CategoryChips categories={categories} current={category.id} />
   </header>
 
-  <div class="container posts-wrap">
+  {
+    d.subtopics.length > 0 && (
+      <section class="container subtopics" aria-labelledby="o-que-voce-encontra">
+        <h2 id="o-que-voce-encontra">O que você encontra aqui</h2>
+        <ul>
+          {d.subtopics.map((topic) => (
+            <li>
+              <h3>{topic.title}</h3>
+              <p>{topic.text}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  <section class="container posts-wrap" aria-labelledby="artigos">
+    <h2 id="artigos">Artigos</h2>
     {
       posts.length > 0 ? (
         <ul class="posts">
@@ -73,7 +108,15 @@ const crumbs = [
         <p class="empty">Nenhum artigo publicado nesta categoria ainda.</p>
       )
     }
-  </div>
+  </section>
+
+  {
+    product && (
+      <div class="container product-wrap">
+        <ProductCta product={product} />
+      </div>
+    )
+  }
 </SiteLayout>
 
 <style>
@@ -86,16 +129,63 @@ const crumbs = [
   }
 
   .page-head h1 {
+    margin-block: var(--s-3) var(--s-5);
     font-size: var(--t-4);
+    max-width: 18ch;
+  }
+
+  .intro {
+    display: grid;
+    gap: var(--s-4);
+    max-width: var(--w-text);
+    margin-bottom: var(--s-7);
+    font-size: var(--t-1);
+    color: var(--color-muted);
+    line-height: 1.58;
   }
 
   .page-head .lede {
-    margin-block: var(--s-4) var(--s-7);
+    margin-bottom: var(--s-7);
+    max-width: 46ch;
+  }
+
+  .subtopics {
+    padding-bottom: var(--s-9);
+  }
+
+  .subtopics h2,
+  .posts-wrap h2 {
+    font-size: var(--t--1);
+    font-weight: var(--w-semibold);
+    letter-spacing: var(--tr-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-muted);
+    margin-bottom: var(--s-5);
+  }
+
+  .subtopics ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-5);
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--s-6);
+  }
+
+  .subtopics h3 {
+    font-size: var(--t-1);
+  }
+
+  .subtopics p {
+    margin-top: var(--s-2);
+    color: var(--color-muted);
+    font-size: var(--t-0);
     max-width: 46ch;
   }
 
   .posts-wrap {
-    padding-bottom: var(--section-y);
+    padding-bottom: var(--s-9);
   }
 
   .posts {
@@ -110,7 +200,16 @@ const crumbs = [
     color: var(--color-muted);
   }
 
+  .product-wrap {
+    padding-bottom: var(--section-y);
+  }
+
   @media (min-width: 52rem) {
+    .subtopics ul {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--s-7) var(--s-8);
+    }
+
     .posts {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }

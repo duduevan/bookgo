@@ -152,6 +152,18 @@ const categories = defineCollection({
   schema: z.object({
     name: z.string(),
     description: z.string(),
+
+    /** Título editorial do hub. Sem ele, usa `name`. */
+    headline: z.string().optional(),
+    /** Um ou dois parágrafos de abertura do hub. */
+    intro: z.array(z.string()).default([]),
+    /** Recortes que a categoria cobre — orienta leitor e rastreador. */
+    subtopics: z
+      .array(z.object({ title: z.string(), text: z.string() }))
+      .default([]),
+    /** Produto da categoria, quando houver. */
+    relatedProduct: reference('products').optional(),
+
     seo: z
       .object({
         title: z.string().optional(),
@@ -184,6 +196,42 @@ const blog = defineCollection({
     keywords: z.array(z.string()).default([]),
     author: z.string().default('BookGo'),
     draft: z.boolean().default(false),
+
+    /**
+     * `date`   = datePublished
+     * `updated` = dateModified (opcional)
+     * Mantidos com estes nomes para não gerar migração desnecessária.
+     */
+
+    /**
+     * Resumo rápido, exibido perto do início do artigo.
+     * Conteúdo editorial explícito — nunca gerado automaticamente.
+     */
+    summary: z.array(z.string()).min(3).max(6).optional(),
+
+    /**
+     * Metadados editoriais internos. Orientam a redação e o QA;
+     * não viram meta keywords nem qualquer tag no HTML.
+     */
+    primaryKeyword: z.string().optional(),
+    searchIntent: z
+      .enum(['informacional', 'comercial', 'transacional', 'navegacional'])
+      .optional(),
+
+    /** Referências externas reais. Vazio quando o texto não precisa delas. */
+    sources: z
+      .array(
+        z.object({
+          title: z.string(),
+          url: z.string().url(),
+          publisher: z.string().optional(),
+        })
+      )
+      .default([]),
+
+    /** Imagem social própria do artigo; sem ela cai na institucional. */
+    ogImage: z.string().optional(),
+    ogImageAlt: z.string().optional(),
   }),
 });
 

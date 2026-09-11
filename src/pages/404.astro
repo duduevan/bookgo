@@ -1,25 +1,43 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
-import Section from '../components/ui/Section.astro';
 ---
 
+<!-- Sem canonical: /404.html não é uma URL canônica de nada. Apenas noindex. -->
 <SiteLayout
   title="Página não encontrada"
-  description="A página que você procurou não existe ou foi movida."
+  description="A página que você procurou não existe ou mudou de endereço."
   noindex
+  canonical={false}
 >
-  <Section title="Página não encontrada" narrow>
+  <section class="container notfound">
+    <p class="eyebrow">Erro 404</p>
+    <h1>Página não encontrada</h1>
     <p class="lede">
       A página que você procurou não existe ou mudou de endereço.
     </p>
     <p class="links">
-      <a href="/">Ir para a página inicial</a> · <a href="/blog/">Ver o blog</a>
+      <a href="/">Ir para a página inicial</a>
+      <span aria-hidden="true">·</span>
+      <a href="/blog/">Ver o blog</a>
     </p>
-  </Section>
+  </section>
 </SiteLayout>
 
 <style>
+  .notfound {
+    padding-block: var(--section-y);
+    max-width: var(--w-text);
+  }
+
+  h1 {
+    margin-block: var(--s-3) var(--s-5);
+    font-size: var(--t-4);
+  }
+
   .links {
-    margin-top: var(--s-5);
+    margin-top: var(--s-6);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
   }
 </style>

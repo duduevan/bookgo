@@ -2,13 +2,20 @@
 import { render } from 'astro:content';
 import SiteLayout from '../../../layouts/SiteLayout.astro';
 import Breadcrumbs from '../../../components/seo/Breadcrumbs.astro';
+import ArticleSummary from '../../../components/blog/ArticleSummary.astro';
+import TableOfContents from '../../../components/blog/TableOfContents.astro';
+import SourcesList from '../../../components/blog/SourcesList.astro';
+import RelatedPosts from '../../../components/blog/RelatedPosts.astro';
 import ProductCta from '../../../components/blog/ProductCta.astro';
 import {
   getPosts,
   getCategories,
   getProduct,
+  getRelatedPosts,
+  countWords,
   formatDate,
   postUrl,
+  markdownUrl,
   categoryUrl,
   type Post,
 } from '../../../lib/content';
@@ -34,10 +41,12 @@ interface Props {
 const { post, categoryName } = Astro.props;
 const d = post.data;
 const path = postUrl(post);
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
 
 // CTA contextual só existe quando o artigo aponta para um produto.
 const product = d.product ? await getProduct(d.product.id) : undefined;
+const related = await getRelatedPosts(post, 3);
+const wordCount = countWords(post.body);
 
 const crumbs = [
   { name: 'Início', path: '/' },
@@ -51,13 +60,25 @@ const crumbs = [
   title={d.title}
   description={d.description}
   ogType="article"
+  ogImage={d.ogImage}
+  ogImageAlt={d.ogImageAlt ?? d.title}
   schema={[
     schema.organization(),
-    schema.articleSchema(post, path, categoryName),
+    schema.website(),
+    schema.articleSchema(post, path, categoryName, { wordCount }),
     schema.breadcrumbs(crumbs),
   ]}
 >
-  <div class="crumb-bar container">
+  {/* Versão Markdown do mesmo conteúdo, para leitura por máquinas. */}
+  <link
+    slot="head"
+    rel="alternate"
+    type="text/markdown"
+    href={markdownUrl(post)}
+    title={`${d.title} (Markdown)`}
+  />
+
+  <div class="container crumb-bar">
     <Breadcrumbs items={crumbs} />
   </div>
 
@@ -66,38 +87,45 @@ const crumbs = [
       <p class="meta">
         <a href={categoryUrl(d.category.id)}>{categoryName}</a>
         <time datetime={d.date.toISOString()}>{formatDate(d.date)}</time>
-        {
-          d.updated && (
-            <span>Atualizado em {formatDate(d.updated)}</span>
-          )
-        }
+        {d.updated && <span>Atualizado em {formatDate(d.updated)}</span>}
       </p>
       <h1>{d.title}</h1>
-      <p class="lede">{d.description}</p>
+      <p class="deck">{d.description}</p>
     </header>
+
+    {d.summary && <ArticleSummary points={d.summary} />}
+
+    <TableOfContents headings={headings} />
 
     <div class="prose">
       <Content />
     </div>
 
+    <SourcesList sources={d.sources} />
+
     {product && <ProductCta product={product} />}
+
+    <RelatedPosts posts={related} />
   </article>
 </SiteLayout>
 
 <style>
   .crumb-bar {
-    padding-block: var(--s-4);
+    padding-block: var(--s-5) var(--s-2);
   }
 
   article {
     padding-bottom: var(--section-y);
   }
 
+  article > :global(* + *) {
+    margin-top: var(--s-7);
+  }
+
   .head {
     max-width: var(--w-text);
     padding-block: var(--s-6) var(--s-7);
     border-bottom: 1px solid var(--color-border);
-    margin-bottom: var(--s-7);
   }
 
   .meta {
@@ -110,15 +138,23 @@ const crumbs = [
   }
 
   .meta a {
-    font-weight: 600;
+    font-weight: var(--w-semibold);
   }
 
   h1 {
     font-size: var(--t-4);
   }
 
-  .head .lede {
+  .deck {
     margin-top: var(--s-4);
-    max-width: 60ch;
+    font-size: var(--t-1);
+    color: var(--color-muted);
+    max-width: 58ch;
+  }
+
+  /* Âncoras do índice não podem parar embaixo do header fixo. */
+  .prose :global(h2),
+  .prose :global(h3) {
+    scroll-margin-top: 6rem;
   }
 </style>

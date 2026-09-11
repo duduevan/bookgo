@@ -22,6 +22,7 @@ const { theme, ...base } = Astro.props;
 ---
 
 <BaseLayout {...base} bodyStyle={themeToStyle(theme)}>
+  <slot name="head" slot="head" />
   <main id="conteudo">
     <slot />
   </main>

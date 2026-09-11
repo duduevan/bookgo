@@ -43,9 +43,20 @@ rodapé, junto dos links legais.
 
 ### Marca
 
-Os arquivos oficiais ficam em `public/images/brand/` — veja o README de lá para
-os nomes exatos. Enquanto um arquivo não existir, `<Logo>` renderiza um texto
-temporário e o build avisa. O logo nunca é redesenhado em código.
+- **Azul oficial:** `#004ED1`, extraído do símbolo oficial. Tons auxiliares
+  (`-dark`, `-light`) derivam dele só para hover e fundo suave.
+- **Originais** ficam em `public/images/brand/`. Eles exibem a tagline
+  "SEU AGENDAMENTO", que **não pertence ao posicionamento atual**.
+- **Assets da aplicação** ficam em `src/assets/brand/`, derivados dos originais
+  por `npm run brand:assets`. O script apaga a região da tagline e isola o
+  check — nenhum traço é redesenhado.
+- **Favicon e apple-touch-icon** saem do mesmo script, a partir do check
+  isolado (`public/images/icons/`).
+- **OG images:** `npm run brand:og` renderiza no Chromium usando a tipografia
+  real e o logo oficial. Cada produto ganha a sua a partir do tema do YAML.
+
+Quando a versão oficial sem tagline chegar, substitua os arquivos em
+`src/assets/brand/` e o script deixa de ser necessário.
 
 ### Tipografia
 
@@ -169,6 +180,62 @@ Texto do artigo em Markdown.
 URL resultante: `/blog/<categoria>/<slug>/`.
 
 Campos opcionais: `updated`, `author`, `draft: true` (exclui do site).
+
+## Campos editoriais do artigo
+
+Além de `title`, `description`, `slug` e `category`:
+
+```yaml
+date: 2026-09-11        # = datePublished
+updated: 2026-10-02     # = dateModified (opcional)
+
+summary:                # 3 a 6 pontos, conteúdo editorial explícito
+  - Primeiro ponto útil.
+  - Segundo ponto útil.
+  - Terceiro ponto útil.
+
+primaryKeyword: como manter a casa organizada   # interno, orienta a redação
+searchIntent: informacional                     # informacional | comercial | transacional | navegacional
+
+sources:                # vazio quando o texto não precisa de referência externa
+  - title: Nome da publicação
+    url: https://exemplo.org/artigo
+    publisher: Organização
+
+ogImage: /images/og-artigo.png   # opcional; sem ele usa a institucional
+ogImageAlt: Descrição da imagem
+```
+
+`primaryKeyword` e `searchIntent` são **metadados internos**: não viram meta
+keywords nem qualquer tag no HTML. `summary` nunca é gerado automaticamente —
+se não estiver no frontmatter, o bloco não aparece.
+
+O índice do artigo é montado sozinho a partir dos H2 e H3 do MDX, com âncoras
+HTML reais e nenhum JavaScript. Escreva H2 bem nomeados e ele se resolve.
+
+**Modelo answer-first:** responda à intenção principal nos primeiros parágrafos,
+antes do aprofundamento. A ordem na página é H1 → deck → resumo → índice →
+resposta → desenvolvimento.
+
+## Artigos relacionados
+
+Aparecem sozinhos ao final do artigo, no máximo três. A seleção é
+determinística (`getRelatedPosts`): mesma categoria primeiro, depois mesmo
+produto. O próprio artigo nunca entra e não há sorteio.
+
+## Categoria como hub
+
+Além de `name` e `description`, o YAML da categoria aceita:
+
+```yaml
+headline: Organização que cabe na rotina    # título editorial do hub
+intro:                                       # um ou dois parágrafos
+  - Primeiro parágrafo.
+subtopics:                                   # recortes que a categoria cobre
+  - title: Rotina e manutenção
+    text: Frase curta.
+relatedProduct: casa-organizada-em-15-minutos
+```
 
 ## Relacionar artigo a produto
 
@@ -299,9 +366,71 @@ conteúdo." Sem interpretação jurídica.
 
 ## SEO
 
-Implementado e automático: title, meta description, canonical absoluto, Open
-Graph, Twitter Card, `sitemap-index.xml`, `robots.txt`, BreadcrumbList em todas as
-páginas internas, Article nos artigos, Product + Offer na LP, Organization no site.
+Automático em toda página: title, meta description, canonical absoluto, Open
+Graph com `og:image:alt` próprio, Twitter Card, `sitemap-index.xml` e
+`robots.txt`. JSON-LD: `Organization` + `WebSite` no site, `BreadcrumbList` nas
+páginas internas, `Article` completo nos artigos (com `citation` quando há
+fontes reais) e `Product` + `Offer` na LP — sem `aggregateRating`, `review` ou
+`FAQPage`, que não têm dado real por trás.
 
-Domínio canônico: `https://bookgo.com.br` (definido em `astro.config.mjs` e
+Domínio canônico: `https://bookgo.com.br` (em `astro.config.mjs` e
 `src/config/site.ts`).
+
+### SEO QA
+
+```bash
+npm run qa:seo    # roda sobre dist/, também no CI
+```
+
+**Falha** em erro estrutural: página indexável sem title, description, canonical
+ou H1; canonical fora do domínio; mais de um H1; imagem sem `alt`; JSON-LD
+inválido; `Article` sem `datePublished`, `articleSection` ou `publisher`; fonte
+com URL inválida; link interno quebrado.
+
+**Avisa sem bloquear** sobre title longo ou description curta. Não existe limite
+oficial de caracteres — tratar número redondo como requisito só gera ruído.
+
+### Performance
+
+```bash
+npm run qa:perf   # relatório, também no CI
+```
+
+Mede CSS, JS de cliente, fontes, páginas e maiores imagens, e aponta o que
+cresceu fora do padrão. Não bloqueia: orçamento rígido escolhido cedo atrapalha
+mais do que ajuda. Metas de campo — LCP ≤ 2,5s, INP ≤ 200ms, CLS ≤ 0,1 — são
+objetivos de engenharia, medidos em campo.
+
+Padrão do projeto: **zero JavaScript no cliente**.
+
+### Rascunhos
+
+`draft: true` no frontmatter tira o artigo de tudo: sem URL gerada, sem sitemap,
+sem categoria, sem `llms.txt`. Não existe página oculta.
+
+### llms.txt
+
+`/llms.txt` é um índice **curado** — hubs, conteúdos, produtos ativos e links
+institucionais prontos, não todas as URLs. Gerado por `src/pages/llms.txt.ts`.
+
+Camada complementar e experimental: não há relação comprovada com ranqueamento
+e não deve ser tratada como se houvesse.
+
+### Markdown alternativo
+
+Cada artigo tem uma versão em texto puro em `<url-do-artigo>index.md`, sem
+header, footer, CSS ou tracking, apontada por
+`<link rel="alternate" type="text/markdown">`. Fica fora do sitemap; a versão
+HTML continua sendo a principal. Implementado só para artigos — LPs ficam para
+depois de validarmos o modelo.
+
+### Search Console
+
+Em `src/config/site.ts`, `googleSiteVerification` é `null` e nada é renderizado.
+Para verificar o domínio, cole o valor do método "tag HTML" nesse campo — a meta
+aparece sozinha. Nunca preencha com valor fictício.
+
+### Analytics
+
+Nenhum GA4, GTM ou Meta Pixel instalado nesta fase. Se for adicionar, atualize
+antes a Política de Privacidade, que hoje declara ausência de cookies próprios.

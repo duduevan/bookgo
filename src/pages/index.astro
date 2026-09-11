@@ -54,7 +54,7 @@ const featured = categories.slice(0, 1).map((category) => ({
 <SiteLayout
   title={SITE.name}
   description={SITE.description}
-  schema={[schema.organization()]}
+  schema={[schema.organization(), schema.website()]}
 >
   {/* ── Hero ─────────────────────────────────────────────── */}
   <section class="hero">

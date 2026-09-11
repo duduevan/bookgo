@@ -1,0 +1,57 @@
+---
+/**
+ * Artigos relacionados.
+ * A seleção é determinística (ver `getRelatedPosts`): mesma categoria
+ * primeiro, depois mesmo produto. Nada é aleatório e o próprio artigo
+ * nunca aparece.
+ */
+import PostCard from './PostCard.astro';
+import type { Post } from '../../lib/content';
+
+interface Props {
+  posts: Post[];
+  title?: string;
+}
+
+const { posts, title = 'Continue lendo' } = Astro.props;
+---
+
+{
+  posts.length > 0 && (
+    <section class="related" aria-labelledby="relacionados">
+      <h2 id="relacionados">{title}</h2>
+      <ul>
+        {posts.map((post) => (
+          <li>
+            <PostCard post={post} />
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+<style>
+  .related {
+    margin-top: var(--s-9);
+  }
+
+  h2 {
+    font-size: var(--t-2);
+    margin-bottom: var(--s-5);
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  @media (min-width: 52rem) {
+    ul {
+      grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
+    }
+  }
+</style>
