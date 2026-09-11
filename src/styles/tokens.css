@@ -1,45 +1,49 @@
 /* ─────────────────────────────────────────────────────────────
    BookGo — design tokens
-   Sistema visual mínimo e reaproveitável entre produtos.
+
+   Três camadas, nesta ordem:
+
+   1. PRIMITIVAS       espaço, tipografia, raio, motion. Nunca mudam
+                       por produto — são a engenharia compartilhada.
+   2. MARCA BOOKGO     --bookgo-*. A identidade institucional.
+   3. PAPÉIS           --color-*. É o que os componentes usam.
+                       No site institucional apontam para a marca BookGo;
+                       numa landing page de produto são sobrescritos pelo
+                       tema do produto (ver src/lib/theme.ts).
+
+   Componente nunca referencia --bookgo-* nem cor literal: só --color-*.
    ───────────────────────────────────────────────────────────── */
+
 :root {
-  /* Cor — base quente, clara e sóbria */
-  --c-bg: #fcfbf9;
-  --c-surface: #ffffff;
-  --c-surface-warm: #f6f2ec;
-  --c-ink: #1a1917;
-  --c-ink-2: #46413c;
-  --c-muted: #77706a;
-  --c-line: #e7e1d9;
-  --c-line-strong: #d5cec4;
+  /* ── 1. Primitivas ──────────────────────────────────────── */
 
-  /* Cor — acento único, verde profundo: organizado e confiável */
-  --c-accent: #1f5e52;
-  --c-accent-hover: #174a40;
-  --c-accent-soft: #eaf2ef;
-  --c-accent-line: #c9ddd6;
-  --c-on-accent: #ffffff;
+  --font-sans:
+    'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, sans-serif;
 
-  /* Sinalização discreta em listas de exclusão */
-  --c-neutral-mark: #9a938c;
+  /* Escala fluida. Grande, mas sem headline ocupando a tela inteira. */
+  --t--1: clamp(0.8125rem, 0.79rem + 0.11vw, 0.875rem);
+  --t-0: clamp(1rem, 0.98rem + 0.1vw, 1.0625rem);
+  --t-1: clamp(1.0625rem, 1.02rem + 0.22vw, 1.1875rem);
+  --t-2: clamp(1.25rem, 1.18rem + 0.34vw, 1.5rem);
+  --t-3: clamp(1.5rem, 1.35rem + 0.73vw, 2rem);
+  --t-4: clamp(1.875rem, 1.55rem + 1.62vw, 3rem);
+  --t-5: clamp(2.375rem, 1.83rem + 2.7vw, 4.25rem);
 
-  /* Tipografia */
-  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
-  --font-feature: 'kern' 1, 'liga' 1, 'calt' 1;
+  --lh-display: 1.05;
+  --lh-heading: 1.14;
+  --lh-body: 1.62;
 
-  /* Escala fluida (mobile first) */
-  --t--1: clamp(0.8125rem, 0.79rem + 0.12vw, 0.875rem);
-  --t-0: clamp(1rem, 0.97rem + 0.16vw, 1.0625rem);
-  --t-1: clamp(1.125rem, 1.08rem + 0.24vw, 1.25rem);
-  --t-2: clamp(1.3125rem, 1.24rem + 0.38vw, 1.5rem);
-  --t-3: clamp(1.5rem, 1.37rem + 0.66vw, 1.875rem);
-  --t-4: clamp(1.75rem, 1.5rem + 1.25vw, 2.5rem);
-  --t-5: clamp(2.125rem, 1.72rem + 2.02vw, 3.375rem);
+  /* Tracking negativo moderado, proporcional ao tamanho. */
+  --tr-display: -0.035em;
+  --tr-heading: -0.026em;
+  --tr-title: -0.018em;
+  --tr-eyebrow: 0.1em;
 
-  --lh-tight: 1.14;
-  --lh-heading: 1.22;
-  --lh-body: 1.65;
+  --w-100: 400;
+  --w-medium: 500;
+  --w-semibold: 590;
+  --w-bold: 680;
 
   /* Espaçamento */
   --s-1: 0.25rem;
@@ -51,23 +55,60 @@
   --s-7: 2.5rem;
   --s-8: 3rem;
   --s-9: 4rem;
-  --s-10: 5rem;
+  --s-10: 5.5rem;
+  --s-11: 7rem;
 
-  /* Ritmo vertical das seções, fluido */
-  --section-y: clamp(3rem, 2rem + 5vw, 5.5rem);
+  /* Respiro vertical das seções — bastante espaço em branco. */
+  --section-y: clamp(4rem, 2.6rem + 6vw, 7.5rem);
+  --section-y-tight: clamp(2.5rem, 1.9rem + 3vw, 4.5rem);
 
   /* Layout */
-  --w-container: 68rem;
-  --w-text: 44rem;
+  --w-container: 78rem;
+  --w-text: 46rem;
   --w-prose: 40rem;
-  --gutter: clamp(1.125rem, 0.9rem + 1.2vw, 2rem);
+  --gutter: clamp(1.25rem, 0.85rem + 1.8vw, 2.5rem);
 
-  /* Forma */
-  --radius-sm: 0.5rem;
-  --radius: 0.875rem;
-  --radius-lg: 1.25rem;
+  /* Forma — cards amplos e bem arredondados */
+  --radius-sm: 0.625rem;
+  --radius: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-xl: clamp(1.5rem, 1rem + 2vw, 2.25rem);
   --radius-pill: 999px;
 
-  --shadow-sm: 0 1px 2px rgb(26 25 23 / 0.05);
-  --shadow: 0 2px 4px rgb(26 25 23 / 0.04), 0 8px 24px rgb(26 25 23 / 0.05);
+  --shadow-sm: 0 1px 2px rgb(14 17 22 / 0.04);
+  --shadow: 0 1px 2px rgb(14 17 22 / 0.04), 0 12px 32px -12px rgb(14 17 22 / 0.12);
+  --shadow-lg: 0 2px 4px rgb(14 17 22 / 0.03), 0 24px 56px -20px rgb(14 17 22 / 0.18);
+
+  /* Motion — sutil, sempre curto */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur-fast: 140ms;
+  --dur: 220ms;
+  --marquee-duration: 42s;
+
+  /* ── 2. Marca BookGo ────────────────────────────────────── */
+
+  /* TODO(marca): confirmar o azul exato a partir do arquivo oficial.
+     Valor atual estimado a partir das imagens enviadas no chat. */
+  --bookgo-blue: #0b4fd8;
+  --bookgo-blue-dark: #083aa3;
+  --bookgo-blue-light: #eef3fe;
+  --bookgo-background: #ffffff;
+  --bookgo-surface: #f6f7f9;
+  --bookgo-text: #0e1116;
+  --bookgo-muted: #5c6371;
+  --bookgo-border: #e4e7ec;
+
+  /* ── 3. Papéis (padrão institucional) ───────────────────── */
+
+  --color-bg: var(--bookgo-background);
+  --color-surface: var(--bookgo-surface);
+  --color-surface-raised: #ffffff;
+  --color-text: var(--bookgo-text);
+  --color-muted: var(--bookgo-muted);
+  --color-border: var(--bookgo-border);
+  --color-primary: var(--bookgo-blue);
+  --color-primary-dark: var(--bookgo-blue-dark);
+  --color-primary-soft: var(--bookgo-blue-light);
+  --color-accent: var(--bookgo-blue);
+  --color-on-primary: #ffffff;
 }

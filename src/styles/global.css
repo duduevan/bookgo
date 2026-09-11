@@ -1,6 +1,32 @@
 @import './tokens.css';
 
-/* ── Reset enxuto ───────────────────────────────────────────── */
+/* ── Tipografia local (Inter Variable, OFL) ─────────────────
+   Auto-hospedada: nenhuma requisição externa bloqueando render.
+   Só os subsets latin e latin-ext são embarcados. */
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-latin-var.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+    U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+    U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-latin-ext-var.woff2') format('woff2-variations');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+    U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F,
+    U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+
+/* ── Reset ──────────────────────────────────────────────────── */
 *,
 *::before,
 *::after {
@@ -16,27 +42,26 @@ html {
   scroll-behavior: smooth;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-}
-
 body {
-  background: var(--c-bg);
-  color: var(--c-ink);
+  background: var(--color-bg);
+  color: var(--color-text);
   font-family: var(--font-sans);
-  font-feature-settings: var(--font-feature);
   font-size: var(--t-0);
+  font-weight: var(--w-100);
   line-height: var(--lh-body);
+  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+  font-variation-settings: 'opsz' 16;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: clip;
 }
 
 img,
 picture,
-svg {
+svg,
+video {
   display: block;
   max-width: 100%;
   height: auto;
@@ -55,29 +80,33 @@ h1,
 h2,
 h3,
 h4 {
+  font-weight: var(--w-semibold);
   line-height: var(--lh-heading);
-  font-weight: 620;
-  letter-spacing: -0.019em;
+  letter-spacing: var(--tr-heading);
   text-wrap: balance;
 }
 
 h1 {
   font-size: var(--t-5);
-  line-height: var(--lh-tight);
-  letter-spacing: -0.028em;
+  line-height: var(--lh-display);
+  letter-spacing: var(--tr-display);
+  /* Eixo óptico do Inter: desenho mais fechado em tamanhos grandes. */
+  font-variation-settings: 'opsz' 32;
 }
 
 h2 {
   font-size: var(--t-4);
-  letter-spacing: -0.024em;
+  font-variation-settings: 'opsz' 28;
 }
 
 h3 {
   font-size: var(--t-2);
+  letter-spacing: var(--tr-title);
 }
 
 h4 {
   font-size: var(--t-1);
+  letter-spacing: var(--tr-title);
 }
 
 p {
@@ -85,17 +114,17 @@ p {
 }
 
 a {
-  color: var(--c-accent);
+  color: var(--color-primary);
   text-decoration-thickness: 1px;
   text-underline-offset: 0.18em;
 }
 
 a:hover {
-  color: var(--c-accent-hover);
+  color: var(--color-primary-dark);
 }
 
 strong {
-  font-weight: 620;
+  font-weight: var(--w-semibold);
 }
 
 ul,
@@ -104,9 +133,9 @@ ol {
 }
 
 :focus-visible {
-  outline: 2px solid var(--c-accent);
+  outline: 2px solid var(--color-primary);
   outline-offset: 3px;
-  border-radius: 2px;
+  border-radius: 3px;
 }
 
 /* ── Utilitários ────────────────────────────────────────────── */
@@ -117,21 +146,18 @@ ol {
   padding-inline: var(--gutter);
 }
 
-.stack > * + * {
-  margin-top: var(--s-4);
-}
-
 .lede {
   font-size: var(--t-1);
-  color: var(--c-ink-2);
+  color: var(--color-muted);
+  line-height: 1.58;
 }
 
 .eyebrow {
   font-size: var(--t--1);
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-weight: var(--w-semibold);
+  letter-spacing: var(--tr-eyebrow);
   text-transform: uppercase;
-  color: var(--c-accent);
+  color: var(--color-primary);
 }
 
 .visually-hidden {
@@ -150,24 +176,24 @@ ol {
   left: var(--s-4);
   top: -4rem;
   z-index: 100;
-  background: var(--c-accent);
-  color: var(--c-on-accent);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
   padding: var(--s-3) var(--s-4);
   border-radius: var(--radius-sm);
   text-decoration: none;
-  transition: top 0.15s ease;
+  transition: top var(--dur) var(--ease);
 }
 
 .skip-link:focus {
   top: var(--s-4);
-  color: var(--c-on-accent);
+  color: var(--color-on-primary);
 }
 
 /* ── Prose: corpo de artigo em MDX ──────────────────────────── */
 .prose {
   max-width: var(--w-prose);
   font-size: var(--t-1);
-  color: var(--c-ink-2);
+  color: color-mix(in srgb, var(--color-text) 82%, transparent);
 }
 
 .prose > * + * {
@@ -176,13 +202,13 @@ ol {
 
 .prose h2 {
   font-size: var(--t-3);
-  color: var(--c-ink);
-  margin-top: var(--s-8);
+  color: var(--color-text);
+  margin-top: var(--s-9);
 }
 
 .prose h3 {
   font-size: var(--t-2);
-  color: var(--c-ink);
+  color: var(--color-text);
   margin-top: var(--s-7);
 }
 
@@ -195,29 +221,29 @@ ol {
 }
 
 .prose li::marker {
-  color: var(--c-muted);
+  color: var(--color-muted);
 }
 
 .prose ol > li::marker {
-  font-weight: 600;
-  color: var(--c-accent);
+  font-weight: var(--w-semibold);
+  color: var(--color-primary);
 }
 
 .prose blockquote {
-  border-left: 3px solid var(--c-accent-line);
+  border-left: 3px solid var(--color-primary);
   padding-left: var(--s-5);
-  color: var(--c-ink-2);
+  color: var(--color-muted);
   font-style: italic;
 }
 
 .prose hr {
   border: 0;
-  border-top: 1px solid var(--c-line);
-  margin-block: var(--s-8);
+  border-top: 1px solid var(--color-border);
+  margin-block: var(--s-9);
 }
 
 .prose code {
-  background: var(--c-surface-warm);
+  background: var(--color-surface);
   padding: 0.15em 0.4em;
   border-radius: var(--radius-sm);
   font-size: 0.9em;
@@ -225,4 +251,20 @@ ol {
 
 .prose img {
   border-radius: var(--radius);
+}
+
+/* ── Movimento reduzido: regra global, uma vez ──────────────── */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

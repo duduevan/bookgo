@@ -1,0 +1,100 @@
+---
+import { SITE, NAV, LEGAL_NAV, FOOTER } from '../../config/site';
+import Logo from './Logo.astro';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container inner">
+    <div class="brand-col">
+      <a href="/" aria-label="BookGo — página inicial">
+        <Logo variant="blue" height="1.75rem" />
+      </a>
+      <p class="note">{FOOTER.note}</p>
+    </div>
+
+    <nav aria-label="Navegação do rodapé">
+      <p class="label">BookGo</p>
+      <ul>
+        {NAV.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <nav aria-label="Links legais">
+      <p class="label">Legal</p>
+      <ul>
+        {LEGAL_NAV.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <p class="copy">© {year} {SITE.name}</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: auto;
+    padding-block: var(--s-10) var(--s-7);
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .inner {
+    display: grid;
+    gap: var(--s-8);
+  }
+
+  .note {
+    margin-top: var(--s-4);
+    font-size: var(--t--1);
+    color: var(--color-muted);
+    max-width: 32ch;
+  }
+
+  .label {
+    font-size: var(--t--1);
+    font-weight: var(--w-semibold);
+    letter-spacing: var(--tr-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-text);
+    margin-bottom: var(--s-4);
+  }
+
+  nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  nav a {
+    font-size: var(--t-0);
+    color: var(--color-muted);
+    text-decoration: none;
+    transition: color var(--dur) var(--ease);
+  }
+
+  nav a:hover {
+    color: var(--color-text);
+  }
+
+  .copy {
+    font-size: var(--t--1);
+    color: var(--color-muted);
+    padding-top: var(--s-6);
+    border-top: 1px solid var(--color-border);
+  }
+
+  @media (min-width: 46rem) {
+    .inner {
+      grid-template-columns: 1.6fr 1fr 1fr;
+      gap: var(--s-9);
+    }
+
+    .copy {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

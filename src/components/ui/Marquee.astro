@@ -1,0 +1,116 @@
+---
+/**
+ * Marquee horizontal contínuo.
+ *
+ * Os itens são duplicados e a trilha desliza -50%: quando a primeira cópia
+ * sai, a segunda está exatamente onde a primeira começou, então o loop é
+ * imperceptível. A cópia é aria-hidden para não duplicar o texto na leitura.
+ *
+ * Com prefers-reduced-motion a animação é removida e a faixa vira uma lista
+ * estática, rolável na horizontal.
+ */
+interface Props {
+  items: readonly string[];
+  variant?: 'hero' | 'band';
+  /** Duração de uma volta. Maior = mais lento. */
+  duration?: string;
+}
+
+const { items, variant = 'band', duration } = Astro.props;
+const style = duration ? `--marquee-duration:${duration}` : undefined;
+---
+
+<div class:list={['marquee', `v-${variant}`]} style={style}>
+  <div class="track">
+    <ul class="group">
+      {items.map((item) => <li>{item}</li>)}
+    </ul>
+    <ul class="group" aria-hidden="true">
+      {items.map((item) => <li>{item}</li>)}
+    </ul>
+  </div>
+</div>
+
+<style>
+  .marquee {
+    --gap: var(--s-6);
+    overflow: hidden;
+    /* Esmaece as bordas para o loop não ter começo nem fim visível. */
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 var(--fade, 8%),
+      #000 calc(100% - var(--fade, 8%)),
+      transparent
+    );
+  }
+
+  .track {
+    display: flex;
+    width: max-content;
+    animation: slide var(--marquee-duration) linear infinite;
+  }
+
+  .group {
+    display: flex;
+    align-items: center;
+    gap: var(--gap);
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 var(--gap);
+  }
+
+  li {
+    white-space: nowrap;
+  }
+
+  @keyframes slide {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* ── Variante do hero: pills discretas sobre o card azul ──── */
+  .v-hero {
+    --gap: var(--s-3);
+    --fade: 6%;
+  }
+
+  .v-hero li {
+    padding: 0.4rem 0.9rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid color-mix(in srgb, var(--color-on-primary) 26%, transparent);
+    color: color-mix(in srgb, var(--color-on-primary) 88%, transparent);
+    font-size: var(--t--1);
+    letter-spacing: -0.004em;
+  }
+
+  /* ── Variante faixa institucional: tipografia seca ────────── */
+  .v-band {
+    --gap: var(--s-9);
+    --fade: 10%;
+  }
+
+  .v-band li {
+    font-size: var(--t--1);
+    font-weight: var(--w-semibold);
+    letter-spacing: var(--tr-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee {
+      overflow-x: auto;
+      mask-image: none;
+    }
+
+    .track {
+      animation: none;
+    }
+
+    .group[aria-hidden='true'] {
+      display: none;
+    }
+  }
+</style>

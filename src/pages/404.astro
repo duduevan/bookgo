@@ -1,9 +1,9 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteLayout from '../layouts/SiteLayout.astro';
 import Section from '../components/ui/Section.astro';
 ---
 
-<BaseLayout
+<SiteLayout
   title="Página não encontrada"
   description="A página que você procurou não existe ou foi movida."
   noindex
@@ -16,7 +16,7 @@ import Section from '../components/ui/Section.astro';
       <a href="/">Ir para a página inicial</a> · <a href="/blog/">Ver o blog</a>
     </p>
   </Section>
-</BaseLayout>
+</SiteLayout>
 
 <style>
   .links {

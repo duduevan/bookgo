@@ -1,0 +1,44 @@
+---
+/**
+ * Aviso visível de conteúdo pendente.
+ *
+ * Fica na página enquanto houver texto a preencher. Quando o conteúdo
+ * definitivo entrar, remova este componente e o `noindex` da página.
+ */
+---
+
+<aside class="notice" role="note">
+  <strong>Conteúdo pendente.</strong>
+  <span>
+    Esta página está com texto de referência e marcações
+    <code>[PREENCHER]</code>. Ela não é indexada por buscadores enquanto
+    estiver assim.
+  </span>
+</aside>
+
+<style>
+  .notice {
+    display: grid;
+    gap: var(--s-2);
+    padding: var(--s-4) var(--s-5);
+    margin-bottom: var(--s-7);
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    font-size: var(--t--1);
+    color: var(--color-muted);
+    max-width: var(--w-prose);
+  }
+
+  strong {
+    color: var(--color-text);
+  }
+
+  code {
+    font-size: 0.95em;
+    padding: 0.1em 0.35em;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+  }
+</style>

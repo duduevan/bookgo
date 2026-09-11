@@ -21,6 +21,27 @@ const section = z.object({
 /*  texto específico de produto.                                       */
 /* ------------------------------------------------------------------ */
 
+/**
+ * Identidade visual do produto.
+ *
+ * As landing pages não usam o azul institucional: cada produto traz sua
+ * paleta, que vira custom properties no escopo da LP (src/lib/theme.ts).
+ * Campos derivados (faixa alternada, fundo suave) não entram aqui — são
+ * calculados a partir do primary para evitar redundância.
+ */
+const theme = z.object({
+  primary: z.string(),
+  primaryDark: z.string(),
+  accent: z.string(),
+  background: z.string(),
+  surface: z.string(),
+  text: z.string(),
+  muted: z.string(),
+  border: z.string(),
+  /** Cor do texto sobre `primary`. Padrão branco. */
+  onPrimary: z.string().optional(),
+});
+
 const products = defineCollection({
   loader: glob({
     pattern: '*/index.yaml',
@@ -33,6 +54,9 @@ const products = defineCollection({
     name: z.string(),
     /** Frase curta usada em cards e no CTA contextual do blog. */
     tagline: z.string(),
+
+    theme,
+
     /** Promessa central — base da descrição do schema Product. */
     promise: z.string(),
 

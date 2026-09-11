@@ -32,24 +32,24 @@ const { items, variant = 'card', min = '17rem' } = Astro.props;
 
   h3 {
     font-size: var(--t-1);
-    color: var(--c-ink);
+    color: var(--color-text);
   }
 
   p {
     margin-top: var(--s-2);
-    color: var(--c-ink-2);
+    color: var(--color-muted);
     font-size: var(--t-0);
   }
 
   .v-card li {
-    background: var(--c-surface);
-    border: 1px solid var(--c-line);
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius);
     padding: var(--s-5);
   }
 
   .v-plain li {
     padding-top: var(--s-4);
-    border-top: 2px solid var(--c-accent-line);
+    border-top: 2px solid var(--color-border);
   }
 </style>

@@ -15,7 +15,12 @@ const { headline, subheadline, highlights, ctaLabel, ctaHref, price } =
 ---
 
 <section class="hero">
-  <div class="container inner">
+  <div class="art" aria-hidden="true">
+    <span class="blob b1"></span>
+    <span class="blob b2"></span>
+  </div>
+  <div class="container">
+    <div class="inner">
     <h1>{headline}</h1>
     <p class="sub">{subheadline}</p>
 
@@ -33,20 +38,55 @@ const { headline, subheadline, highlights, ctaLabel, ctaHref, price } =
         </ul>
       )
     }
+    </div>
   </div>
 </section>
 
 <style>
   .hero {
-    padding-block: clamp(3rem, 2rem + 6vw, 6.5rem);
-    background:
-      radial-gradient(
-        60rem 30rem at 50% -10%,
-        var(--c-accent-soft) 0%,
-        transparent 70%
-      ),
-      var(--c-bg);
-    border-bottom: 1px solid var(--c-line);
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding-block: clamp(3.5rem, 2.2rem + 6vw, 7rem);
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  /* Ambientação abstrata com as cores do próprio produto — nenhuma cor
+     literal aqui, só os papéis do tema. */
+  .art {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .blob {
+    position: absolute;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    filter: blur(0.5px);
+  }
+
+  .b1 {
+    width: min(44rem, 90vw);
+    right: -12%;
+    top: -34%;
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--color-primary) 16%, transparent) 0%,
+      transparent 68%
+    );
+  }
+
+  .b2 {
+    width: min(26rem, 62vw);
+    right: 6%;
+    bottom: -32%;
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--color-accent) 18%, transparent) 0%,
+      transparent 66%
+    );
   }
 
   .inner {
@@ -54,13 +94,16 @@ const { headline, subheadline, highlights, ctaLabel, ctaHref, price } =
   }
 
   h1 {
-    max-width: 20ch;
+    /* Menor que o display institucional: a headline do produto é longa e
+       precisa caber em poucas linhas sem dominar a dobra. */
+    font-size: var(--t-4);
+    max-width: 19ch;
   }
 
   .sub {
     margin-top: var(--s-5);
     font-size: var(--t-1);
-    color: var(--c-ink-2);
+    color: var(--color-muted);
     max-width: 54ch;
   }
 
@@ -74,7 +117,7 @@ const { headline, subheadline, highlights, ctaLabel, ctaHref, price } =
 
   .price {
     font-size: var(--t-0);
-    color: var(--c-muted);
+    color: var(--color-muted);
   }
 
   .highlights {
@@ -85,7 +128,7 @@ const { headline, subheadline, highlights, ctaLabel, ctaHref, price } =
     flex-wrap: wrap;
     gap: var(--s-3) var(--s-5);
     font-size: var(--t--1);
-    color: var(--c-ink-2);
+    color: var(--color-muted);
   }
 
   .highlights li {
@@ -100,7 +143,7 @@ const { headline, subheadline, highlights, ctaLabel, ctaHref, price } =
     height: 0.375rem;
     margin-top: 0.55em;
     border-radius: 50%;
-    background: var(--c-accent);
+    background: var(--color-primary);
     flex: none;
   }
 </style>

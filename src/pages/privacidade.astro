@@ -1,0 +1,78 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import PlaceholderNotice from '../components/site/PlaceholderNotice.astro';
+---
+
+<SiteLayout
+  title="Política de Privacidade"
+  description="Como a BookGo trata dados pessoais."
+  noindex
+>
+  <article class="container legal">
+    <h1>Política de Privacidade</h1>
+    <PlaceholderNotice />
+
+    <div class="prose">
+      <p>
+        Esta política descreve como <strong>[PREENCHER: razão social]</strong>,
+        CNPJ <strong>[PREENCHER: CNPJ]</strong>, trata dados pessoais em
+        conformidade com a Lei nº 13.709/2018 (LGPD).
+      </p>
+
+      <h2>1. Dados coletados</h2>
+      <p>
+        <strong>[PREENCHER: listar o que é efetivamente coletado — por exemplo
+        nome e e-mail informados no checkout, e dados de navegação caso haja
+        analytics ou pixel instalado]</strong>
+      </p>
+
+      <h2>2. Finalidade</h2>
+      <p>
+        Os dados são usados para processar a compra, entregar o material
+        adquirido e prestar suporte.
+        <strong>[PREENCHER: incluir comunicação de marketing, se houver]</strong>
+      </p>
+
+      <h2>3. Compartilhamento</h2>
+      <p>
+        Dados de pagamento são tratados diretamente pela plataforma de checkout,
+        que atua como operadora.
+        <strong>[PREENCHER: nomear a plataforma e demais operadores, como
+        serviços de e-mail ou analytics]</strong>
+      </p>
+
+      <h2>4. Cookies</h2>
+      <p>
+        <strong>[PREENCHER: descrever os cookies em uso. Hoje o site é estático
+        e não instala cookies próprios; isso muda se um pixel de campanha ou
+        ferramenta de analytics for adicionado]</strong>
+      </p>
+
+      <h2>5. Direitos do titular</h2>
+      <p>
+        Você pode solicitar confirmação de tratamento, acesso, correção,
+        anonimização, portabilidade ou eliminação dos seus dados pelo canal
+        indicado na página de <a href="/contato/">contato</a>.
+      </p>
+
+      <h2>6. Retenção</h2>
+      <p><strong>[PREENCHER: prazo de retenção]</strong></p>
+
+      <h2>7. Encarregado (DPO)</h2>
+      <p><strong>[PREENCHER: nome e e-mail do encarregado, se aplicável]</strong></p>
+
+      <p><em>Última atualização: [PREENCHER: data]</em></p>
+    </div>
+  </article>
+</SiteLayout>
+
+<style>
+  .legal {
+    padding-block: var(--section-y-tight) var(--section-y);
+  }
+
+  .legal h1 {
+    font-size: var(--t-4);
+    margin-bottom: var(--s-7);
+  }
+</style>

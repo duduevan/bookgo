@@ -1,0 +1,68 @@
+---
+import {
+  BRAND_ASSETS,
+  hasBrandAsset,
+  warnMissingBrandAssets,
+  type BrandVariant,
+} from '../../lib/brand';
+
+interface Props {
+  variant?: BrandVariant;
+  /** Altura renderizada do logo. A largura acompanha a proporção. */
+  height?: string;
+  /** Texto alternativo. Vazio quando o logo é puramente decorativo. */
+  alt?: string;
+  class?: string;
+}
+
+const {
+  variant = 'blue',
+  height = '1.75rem',
+  alt = 'BookGo',
+  class: className,
+} = Astro.props;
+
+warnMissingBrandAssets();
+const ready = hasBrandAsset(variant);
+---
+
+{
+  ready ? (
+    <img
+      class:list={['logo', className]}
+      src={BRAND_ASSETS[variant]}
+      alt={alt}
+      style={`height:${height}`}
+      decoding="async"
+    />
+  ) : (
+    /* Substituto temporário até o arquivo oficial ser fornecido.
+       Não é o logo — é um marcador que some sozinho quando o
+       arquivo existir em public/images/brand/. */
+    <span
+      class:list={['logo-fallback', `is-${variant}`, className]}
+      style={`font-size:${height}`}
+      data-brand-placeholder={variant}
+    >
+      {alt}
+    </span>
+  )
+}
+
+<style>
+  .logo {
+    width: auto;
+  }
+
+  .logo-fallback {
+    display: inline-block;
+    font-weight: var(--w-bold);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: var(--bookgo-blue);
+  }
+
+  .logo-fallback.is-white {
+    color: #ffffff;
+  }
+</style>

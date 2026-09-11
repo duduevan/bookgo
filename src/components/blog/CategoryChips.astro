@@ -1,0 +1,77 @@
+---
+import { categoryUrl, type Category } from '../../lib/content';
+
+interface Props {
+  categories: Category[];
+  /** Categoria ativa: recebe destaque e perde o link. */
+  current?: string;
+  /** Exibe um item "Todos" apontando para /blog/. */
+  showAll?: boolean;
+}
+
+const { categories, current, showAll = true } = Astro.props;
+---
+
+<nav class="chips" aria-label="Categorias">
+  <ul>
+    {
+      showAll && (
+        <li>
+          <a href="/blog/" aria-current={current ? undefined : 'page'}>
+            Todos
+          </a>
+        </li>
+      )
+    }
+    {
+      categories.map((category) => (
+        <li>
+          <a
+            href={categoryUrl(category.id)}
+            aria-current={current === category.id ? 'page' : undefined}
+          >
+            {category.data.name}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  .chips ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  a {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    background: var(--color-surface-raised);
+    font-size: var(--t--1);
+    font-weight: var(--w-medium);
+    color: var(--color-muted);
+    text-decoration: none;
+    transition:
+      border-color var(--dur) var(--ease),
+      color var(--dur) var(--ease),
+      background-color var(--dur) var(--ease);
+  }
+
+  a:hover {
+    border-color: color-mix(in srgb, var(--color-primary) 36%, var(--color-border));
+    color: var(--color-text);
+  }
+
+  a[aria-current='page'] {
+    background: var(--color-text);
+    border-color: var(--color-text);
+    color: var(--color-bg);
+  }
+</style>

@@ -7,11 +7,57 @@ Princípio do projeto: **conteúdo é dado, componente é apresentação**. Nenh
 específica de produto vive dentro de componente.
 
 ```
-content/     conteúdo editorial (YAML + MDX)
-src/         componentes, layouts, páginas, estilos
-public/      arquivos servidos como estão (.htaccess, robots.txt, imagens)
-materials/   fontes dos entregáveis — nunca é publicado
+content/              conteúdo editorial (YAML + MDX)
+src/                  componentes, layouts, páginas, estilos
+public/images/brand/  arquivos oficiais do logo
+public/fonts/         Inter Variable auto-hospedada
+materials/            fontes dos entregáveis — nunca é publicado
 ```
+
+---
+
+## Sistema visual
+
+### Tokens em três camadas (`src/styles/tokens.css`)
+
+| Camada | Prefixo | Muda por produto? |
+|---|---|---|
+| Primitivas — espaço, tipografia, raio, motion | `--s-*`, `--t-*`, `--radius-*` | Não |
+| Marca BookGo | `--bookgo-*` | Não |
+| Papéis — o que os componentes usam | `--color-*` | **Sim** |
+
+Regra única: **componente só referencia `--color-*`.** Nunca `--bookgo-*`, nunca
+cor literal. É isso que permite a mesma engenharia servir o site institucional
+(azul) e cada LP (paleta própria) sem duplicar componente.
+
+### Dois layouts
+
+| Layout | Onde | Navbar | Rodapé |
+|---|---|---|---|
+| `SiteLayout` | home, blog, páginas legais | BookGo completa | institucional completo |
+| `ProductLayout` | landing pages | **nenhuma** | assinatura discreta |
+
+A LP não tem navbar, logo no hero nem links para blog e outros produtos: cada
+saída custa conversão em campanha paga. A marca aparece só na assinatura do
+rodapé, junto dos links legais.
+
+### Marca
+
+Os arquivos oficiais ficam em `public/images/brand/` — veja o README de lá para
+os nomes exatos. Enquanto um arquivo não existir, `<Logo>` renderiza um texto
+temporário e o build avisa. O logo nunca é redesenhado em código.
+
+### Tipografia
+
+Inter Variable (OFL), auto-hospedada em `public/fonts/`, subsets latin e
+latin-ext, com preload do subset principal. Nenhuma requisição externa bloqueia
+a renderização. O eixo óptico (`opsz`) fecha o desenho nos títulos grandes.
+
+### Animação
+
+Só CSS: marquee, hover e pequenas transformações. `prefers-reduced-motion` é
+tratado uma vez, globalmente, em `src/styles/global.css`, e o marquee vira uma
+lista estática rolável.
 
 ---
 
@@ -59,6 +105,32 @@ checkout:
 Com `url: null`, todos os CTAs são renderizados mas **não viram link** (e o build
 avisa no log). Basta preencher a URL para que todos os botões da LP e o CTA
 contextual do blog passem a apontar para ela — um único lugar.
+
+## Definir a identidade visual de um produto
+
+A LP **não** usa o azul institucional. A paleta vive no YAML do produto e vira
+custom properties no `<body>` da página (`src/lib/theme.ts`):
+
+```yaml
+theme:
+  primary: "#758A72"       # CTAs e destaques
+  primaryDark: "#34483A"   # hover e contraste
+  accent: "#C88D5A"        # acento pontual
+  background: "#FAF8F4"    # fundo da página
+  surface: "#FFFFFF"       # cartões
+  text: "#262825"
+  muted: "#697068"
+  border: "#E8E2D8"
+  onPrimary: "#FFFFFF"     # opcional, padrão branco
+```
+
+Dois papéis são **derivados** e não entram no YAML: a faixa alternada das seções
+e o fundo suave de destaque, ambos calculados a partir de `primary`. Isso evita
+campo redundante e mantém a paleta coerente sozinha.
+
+Ao escolher as cores, verifique o contraste de `text` sobre `background` e de
+`onPrimary` sobre `primary` — o mínimo é 4.5:1 para texto corrido.
+
 
 ## Criar uma categoria
 
@@ -198,6 +270,19 @@ dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false
 ```
 
 ---
+
+## Páginas legais
+
+`/termos/`, `/privacidade/` e `/contato/` existem com texto de referência e
+marcações `[PREENCHER]`. Enquanto estiverem assim:
+
+- as páginas estão em `noindex`;
+- ficam fora do sitemap (filtro em `astro.config.mjs`);
+- exibem o aviso `PlaceholderNotice`.
+
+Ao publicar o conteúdo definitivo, desfaça os três — nenhum dado jurídico ou
+empresarial foi inventado.
+
 
 ## Regras de conteúdo (não negociáveis)
 

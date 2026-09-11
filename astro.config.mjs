@@ -19,7 +19,13 @@ export default defineConfig({
   integrations: [
     mdx(),
     sitemap({
-      filter: (page) => !page.includes('/404'),
+      // Páginas ainda com placeholder estão em noindex; deixá-las fora do
+      // sitemap evita sinal contraditório. Remova o caminho daqui quando o
+      // conteúdo definitivo entrar e o noindex da página sair.
+      filter: (page) =>
+        !['/404', '/termos/', '/privacidade/', '/contato/'].some((path) =>
+          page.includes(path)
+        ),
     }),
   ],
 

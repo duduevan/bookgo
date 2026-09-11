@@ -47,21 +47,21 @@ const { items, marker = 'dot', columns = false } = Astro.props;
     grid-template-columns: 1.25rem 1fr;
     gap: var(--s-3);
     align-items: start;
-    color: var(--c-ink-2);
+    color: var(--color-muted);
   }
 
   .icon {
     width: 1.25rem;
     height: 1.25rem;
     margin-top: 0.15em;
-    color: var(--c-accent);
+    color: var(--color-primary);
   }
 
   .mark {
     margin-top: 0.66em;
     height: 2px;
     border-radius: 2px;
-    background: var(--c-line-strong);
+    background: var(--color-border);
   }
 
   .m-dot .mark {
@@ -70,7 +70,7 @@ const { items, marker = 'dot', columns = false } = Astro.props;
     border-radius: 50%;
     margin-top: 0.62em;
     margin-left: 0.42rem;
-    background: var(--c-neutral-mark);
+    background: var(--color-muted);
   }
 
   @media (min-width: 46rem) {

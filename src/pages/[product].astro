@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import ProductLayout from '../layouts/ProductLayout.astro';
 import Breadcrumbs from '../components/seo/Breadcrumbs.astro';
 import Section from '../components/ui/Section.astro';
 import Cta from '../components/ui/Cta.astro';
@@ -52,10 +52,11 @@ const crumbs = [
 ];
 ---
 
-<BaseLayout
+<ProductLayout
   title={d.seo.title}
   description={d.seo.description}
   ogImage={d.seo.ogImage}
+  theme={d.theme}
   schema={[
     schema.organization(),
     schema.productSchema(product, path),
@@ -181,7 +182,7 @@ const crumbs = [
       <p class="final-price">{d.price.display} · pagamento único</p>
     </div>
   </Section>
-</BaseLayout>
+</ProductLayout>
 
 <style>
   .crumb-bar {
@@ -192,14 +193,14 @@ const crumbs = [
     margin-top: var(--s-6);
     font-size: var(--t-1);
     font-weight: 600;
-    color: var(--c-ink);
+    color: var(--color-text);
     max-width: 58ch;
   }
 
   .note {
     margin-top: var(--s-6);
     font-size: var(--t--1);
-    color: var(--c-muted);
+    color: var(--color-muted);
     max-width: 68ch;
   }
 
@@ -214,8 +215,8 @@ const crumbs = [
   }
 
   .guarantee {
-    background: var(--c-surface);
-    border: 1px solid var(--c-line);
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     padding: var(--s-6);
   }
@@ -226,7 +227,7 @@ const crumbs = [
 
   .guarantee p {
     margin-top: var(--s-3);
-    color: var(--c-ink-2);
+    color: var(--color-muted);
   }
 
   .final {
@@ -236,7 +237,7 @@ const crumbs = [
   .final p {
     margin-top: var(--s-4);
     margin-bottom: var(--s-6);
-    color: color-mix(in srgb, var(--c-on-accent) 84%, transparent);
+    color: color-mix(in srgb, var(--color-on-primary) 84%, transparent);
     max-width: 56ch;
     margin-inline: auto;
   }

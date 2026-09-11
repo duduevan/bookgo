@@ -1,8 +1,8 @@
 ---
-import BaseLayout from '../../../layouts/BaseLayout.astro';
-import Section from '../../../components/ui/Section.astro';
+import SiteLayout from '../../../layouts/SiteLayout.astro';
 import Breadcrumbs from '../../../components/seo/Breadcrumbs.astro';
 import PostCard from '../../../components/blog/PostCard.astro';
+import CategoryChips from '../../../components/blog/CategoryChips.astro';
 import {
   getCategories,
   getPostsByCategory,
@@ -20,6 +20,7 @@ export async function getStaticPaths() {
       params: { category: category.id },
       props: {
         category,
+        categories,
         posts: await getPostsByCategory(category.id),
       },
     }))
@@ -28,10 +29,11 @@ export async function getStaticPaths() {
 
 interface Props {
   category: Category;
+  categories: Category[];
   posts: Post[];
 }
 
-const { category, posts } = Astro.props;
+const { category, categories, posts } = Astro.props;
 const d = category.data;
 const path = categoryUrl(category.id);
 
@@ -42,28 +44,79 @@ const crumbs = [
 ];
 ---
 
-<BaseLayout
+<SiteLayout
   title={d.seo.title ?? d.name}
   description={d.seo.description ?? d.description}
   schema={[schema.organization(), schema.breadcrumbs(crumbs)]}
 >
-  <div class="crumb-bar container">
+  <div class="container crumb-bar">
     <Breadcrumbs items={crumbs} />
   </div>
 
-  <Section title={d.name} intro={d.description} narrow>
+  <header class="container page-head">
+    <h1>{d.name}</h1>
+    <p class="lede">{d.description}</p>
+    <CategoryChips categories={categories} current={category.id} />
+  </header>
+
+  <div class="container posts-wrap">
     {
       posts.length > 0 ? (
-        posts.map((post) => <PostCard post={post} />)
+        <ul class="posts">
+          {posts.map((post, index) => (
+            <li class:list={{ wide: index === 0 }}>
+              <PostCard post={post} featured={index === 0} />
+            </li>
+          ))}
+        </ul>
       ) : (
-        <p>Nenhum artigo publicado nesta categoria ainda.</p>
+        <p class="empty">Nenhum artigo publicado nesta categoria ainda.</p>
       )
     }
-  </Section>
-</BaseLayout>
+  </div>
+</SiteLayout>
 
 <style>
   .crumb-bar {
-    padding-block: var(--s-4);
+    padding-block: var(--s-5) var(--s-2);
+  }
+
+  .page-head {
+    padding-block: var(--section-y-tight) var(--s-8);
+  }
+
+  .page-head h1 {
+    font-size: var(--t-4);
+  }
+
+  .page-head .lede {
+    margin-block: var(--s-4) var(--s-7);
+    max-width: 46ch;
+  }
+
+  .posts-wrap {
+    padding-bottom: var(--section-y);
+  }
+
+  .posts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  .empty {
+    color: var(--color-muted);
+  }
+
+  @media (min-width: 52rem) {
+    .posts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .posts .wide {
+      grid-column: 1 / -1;
+    }
   }
 </style>

@@ -3,8 +3,6 @@ import '../styles/global.css';
 import { SITE } from '../config/site';
 import Seo from '../components/seo/Seo.astro';
 import JsonLd from '../components/seo/JsonLd.astro';
-import Header from '../components/site/Header.astro';
-import Footer from '../components/site/Footer.astro';
 
 interface Props {
   title: string;
@@ -13,6 +11,8 @@ interface Props {
   ogType?: 'website' | 'article';
   noindex?: boolean;
   schema?: Record<string, unknown>[];
+  /** Custom properties de tema aplicadas ao <body> (LPs de produto). */
+  bodyStyle?: string;
 }
 
 const {
@@ -22,6 +22,7 @@ const {
   ogType,
   noindex,
   schema = [],
+  bodyStyle,
 } = Astro.props;
 ---
 
@@ -31,7 +32,14 @@ const {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <meta name="theme-color" content="#fcfbf9" />
+    <meta name="theme-color" content="#ffffff" />
+    <link
+      rel="preload"
+      href="/fonts/inter-latin-var.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <Seo
       title={title}
       description={description}
@@ -41,19 +49,8 @@ const {
     />
     {schema.length > 0 && <JsonLd nodes={schema} />}
   </head>
-  <body>
+  <body style={bodyStyle}>
     <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
-    <Header />
-    <main id="conteudo">
-      <slot />
-    </main>
-    <Footer />
-    <style is:global>
-      body {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-      }
-    </style>
+    <slot />
   </body>
 </html>
