@@ -2,6 +2,10 @@ name: Deploy para produção (FTPS)
 
 # Disparo manual apenas. Enquanto não validarmos o primeiro envio real,
 # nenhum push publica automaticamente.
+#
+# O GitHub só oferece "Run workflow" quando este arquivo já existe na branch
+# padrão (main). Numa branch de feature o workflow não aparece em Actions —
+# faça o merge antes de tentar o primeiro dry-run.
 on:
   workflow_dispatch:
     inputs:

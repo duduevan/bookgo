@@ -131,9 +131,26 @@ npm run preview
 
 ## Deploy
 
-O deploy é manual por enquanto, via GitHub Actions.
+O deploy é manual, via GitHub Actions.
 
-Configuração já esperada no repositório (nenhum valor fica em código):
+> **O workflow precisa estar na `main` antes de poder ser disparado.**
+> O GitHub só lista um `workflow_dispatch` em **Actions → Run workflow** quando o
+> arquivo já existe na branch padrão. Um workflow que vive apenas numa branch de
+> feature não aparece na interface. Por isso a ordem abaixo não pode ser invertida:
+> não tente rodar o dry-run a partir da branch de implementação.
+
+### Ordem de publicação
+
+1. Implementação em uma branch (`claude/...`).
+2. Pull Request para `main`.
+3. CI verde — `build.yml` roda em `push` e `pull_request`.
+4. Revisão.
+5. Merge na `main`. **A partir daqui o workflow de deploy existe na branch padrão.**
+6. Primeiro dry-run manual (`dry_run = true`).
+7. Validação do log.
+8. Deploy real manual (`dry_run = false`).
+
+### Configuração (nenhum valor fica em código)
 
 | Tipo | Nome |
 |---|---|
@@ -142,17 +159,25 @@ Configuração já esperada no repositório (nenhum valor fica em código):
 | Secret | `BOOKGO_FTP_USERNAME` |
 | Secret | `BOOKGO_FTP_PASSWORD` |
 
-### Executar o deploy
+### Passo 6 — dry-run
 
 1. GitHub → **Actions** → **Deploy para produção (FTPS)** → **Run workflow**.
-2. `dry_run = true` para simular: valida configuração, conecta, autentica e lista
-   o que seria enviado — sem alterar o servidor.
-3. Conferido o resultado, rode de novo com `dry_run = false` para publicar.
+2. Em **Use workflow from**, selecione `main`.
+3. Deixe `dry_run` marcado (`true`) e execute.
+4. Confira no log: as quatro linhas `definido`, `Configuração validada`, a
+   contagem de arquivos e a lista do passo FTPS — **confirme que `.htaccess`
+   aparece**, é o arquivo oculto que mais importa validar.
+
+Nada é alterado no servidor em dry-run.
+
+### Passo 8 — deploy real
+
+Mesmo caminho, com `dry_run` **desmarcado** (`false`).
 
 O workflow falha antes de qualquer conexão se alguma variável estiver vazia ou se
 `BOOKGO_FTP_PATH` não for `./`. Usuário e senha nunca são impressos no log.
 
-### Ativar deploy automático (depois da validação)
+### Ativar deploy automático (opcional, só depois da validação)
 
 Em `.github/workflows/deploy.yml`, acrescente o gatilho de push:
 
