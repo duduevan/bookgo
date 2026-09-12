@@ -78,13 +78,24 @@ const thumb = thumbnail
     .featured.has-thumb {
       display: grid;
       grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
-      gap: var(--s-7);
-      align-items: center;
+      gap: 0 var(--s-7);
+      align-content: center;
     }
 
+    /* O cartão não tem um invólucro de texto — meta, título, descrição e
+       link são filhos diretos. Sem estas duas regras eles se espalhariam
+       pelas duas colunas do grid, e o título cairia embaixo da imagem com a
+       descrição ao lado. A miniatura ocupa a coluna 1 inteira; todo o resto
+       empilha na coluna 2. */
     .featured.has-thumb .thumb {
       margin-bottom: 0;
       height: 100%;
+      grid-column: 1;
+      grid-row: 1 / -1;
+    }
+
+    .featured.has-thumb > :not(.thumb) {
+      grid-column: 2;
     }
   }
 
