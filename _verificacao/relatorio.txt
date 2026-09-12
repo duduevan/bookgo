@@ -108,6 +108,15 @@ Origem: https://bookgo.com.br
          · 390×487     hero-planejando-a-semana._69G7D1V_Zresg7.webp
          · 390×219     compras-na-bancada.eNcx7RyX_Z21LIu6.webp
          · 50×18       bookgo-wordmark-blue.CUzJguyw_kOMiD.webp
+         checkout: 3 link(s), destino https://pay.kiwify.com.br/Q2uHeTE
+         links para o blog: 0
+         CTAs: 3 de compra, 1 de continuidade
+         avaliações: 0 aparelho(s) em 0 seção(ões), nomes (nenhum)
+         oferta: preço R$ 14,90, garantia ausente
+  200  lp-colorir/desktop   overflow=0px  imagens=1 quebradas=0
+         · 50×18       bookgo-wordmark-blue.CUzJguyw_kOMiD.webp
+  200  lp-colorir/mobile    overflow=0px  imagens=1 quebradas=0
+         · 50×18       bookgo-wordmark-blue.CUzJguyw_kOMiD.webp
          CTA do curso: /casa-organizada-em-15-minutos/ · checkout=0 · afiliado=0
          coluna=760px  blocos fora=0  avisos=0
   200  artigo/desktop       overflow=0px  imagens=4 quebradas=0
@@ -175,51 +184,51 @@ Origem: https://bookgo.com.br
          · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
          · 352×220     caderno-na-mesa-da-cozinha.BBWAWTxd_1Gdp5p.webp
          · 352×198     capa.BpV5ZOGt_ZmInwq.webp
+         · 352×219     lista-escrita-antes-da-compra.MzTAzexl_Z20UVCq.webp
          · 352×220     geladeira-aberta-fim-do-dia.B9zPtPI6_16F0Um.webp
          · 352×220     potes-com-sobras-na-geladeira.DAWNgVpO_5AGYK.webp
-         · 352×219     lista-escrita-antes-da-compra.MzTAzexl_Z20UVCq.webp
          · 352×220     sala-vivida-fim-de-tarde.BD8Ju4Fs_Z1KUtPI.webp
          · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
   200  pilar/mobile         overflow=0px  imagens=8 quebradas=0
          · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
          · 389×243     caderno-na-mesa-da-cozinha.BBWAWTxd_1Gdp5p.webp
          · 389×219     capa.BpV5ZOGt_ZmInwq.webp
+         · 390×243     lista-escrita-antes-da-compra.MzTAzexl_Z20UVCq.webp
          · 389×243     geladeira-aberta-fim-do-dia.B9zPtPI6_16F0Um.webp
          · 389×243     potes-com-sobras-na-geladeira.DAWNgVpO_5AGYK.webp
-         · 390×243     lista-escrita-antes-da-compra.MzTAzexl_Z20UVCq.webp
          · 389×243     sala-vivida-fim-de-tarde.BD8Ju4Fs_Z1KUtPI.webp
          · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
   200  organizacao/desktop  overflow=0px  imagens=7 quebradas=0
          · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
          · 352×220     sala-vivida-fim-de-tarde.BD8Ju4Fs_Z1KUtPI.webp
          · 352×220     entrada-da-casa-fim-do-dia.C94KtVEW_26k5kW.webp
-         · 352×220     cadeira-quarto-acumulo.Bl-vEajD_ZPoLU0.webp
          · 352×220     bancada-depois-do-jantar.Iv4kEMRy_Z1x2DPt.webp
+         · 352×220     cadeira-quarto-acumulo.Bl-vEajD_ZPoLU0.webp
          · 352×220     bancada-cozinha-em-uso.BdDZlDYS_1MJ9CL.webp
          · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
   200  organizacao/mobile   overflow=0px  imagens=7 quebradas=0
          · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
          · 389×243     sala-vivida-fim-de-tarde.BD8Ju4Fs_Z1KUtPI.webp
          · 389×243     entrada-da-casa-fim-do-dia.C94KtVEW_26k5kW.webp
-         · 389×243     cadeira-quarto-acumulo.Bl-vEajD_ZPoLU0.webp
          · 389×243     bancada-depois-do-jantar.Iv4kEMRy_Z1x2DPt.webp
+         · 389×243     cadeira-quarto-acumulo.Bl-vEajD_ZPoLU0.webp
          · 389×243     bancada-cozinha-em-uso.BdDZlDYS_1MJ9CL.webp
          · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
   200  cozinha/desktop      overflow=0px  imagens=7 quebradas=0
          · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
          · 352×220     caderno-na-mesa-da-cozinha.BBWAWTxd_1Gdp5p.webp
          · 352×198     capa.BpV5ZOGt_ZmInwq.webp
+         · 352×219     lista-escrita-antes-da-compra.MzTAzexl_Z20UVCq.webp
          · 352×220     geladeira-aberta-fim-do-dia.B9zPtPI6_16F0Um.webp
          · 352×220     potes-com-sobras-na-geladeira.DAWNgVpO_5AGYK.webp
-         · 352×219     lista-escrita-antes-da-compra.MzTAzexl_Z20UVCq.webp
          · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
   200  cozinha/mobile       overflow=0px  imagens=7 quebradas=0
          · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
          · 389×243     caderno-na-mesa-da-cozinha.BBWAWTxd_1Gdp5p.webp
          · 389×219     capa.BpV5ZOGt_ZmInwq.webp
+         · 390×243     lista-escrita-antes-da-compra.MzTAzexl_Z20UVCq.webp
          · 389×243     geladeira-aberta-fim-do-dia.B9zPtPI6_16F0Um.webp
          · 389×243     potes-com-sobras-na-geladeira.DAWNgVpO_5AGYK.webp
-         · 390×243     lista-escrita-antes-da-compra.MzTAzexl_Z20UVCq.webp
          · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
          afiliados: 3 link(s)
          · https://meli.la/2CiL2ax  rel="sponsored nofollow noopener"  target=_blank  affiliate_click
@@ -281,4 +290,5 @@ Origem: https://bookgo.com.br
          · 389×243     potes-com-sobras-na-geladeira.DAWNgVpO_ZdveFG.webp
          · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
 
-Nenhum problema encontrado.
+PROBLEMAS (1):
+  ✗ a seção da oferta não traz o bloco do que está incluso
