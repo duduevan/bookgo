@@ -31,18 +31,18 @@ images:
   # ── Artigo: como manter a casa organizada ───────────────────
   - target: src/assets/blog/organizacao/como-manter-a-casa-organizada/bancada-cozinha-em-uso.webp
     provider: freepik
-    assetId: 23591471
+    assetId: 19100536
     license: free
     author: magnific
-    sourcePage: https://www.magnific.com/free-photo/high-angle-dirty-home-concept-with-dishes_23591471.htm
-    previewPath: /free-photo/high-angle-dirty-home-concept-with-dishes_23-2149311296.jpg
+    sourcePage: https://www.magnific.com/free-photo/interiors-homely-kitchen_19100536.htm
+    previewPath: /free-photo/interiors-homely-kitchen_53876-146777.jpg
     ratio: "16:10"
     width: 1400
     note: >-
-      Louça do café da manhã acumulada na bancada de madeira, azulejo branco
-      ao fundo, luz natural. Escolhida entre seis candidatas materializadas e
-      vistas uma a uma — inclusive a anterior (12418721), recusada por ser
-      composição de bandeja sobre azulejo, estética de catálogo.
+      Cozinha de verdade junto à janela: escorredor cheio, canecas, bule,
+      pano na torneira. Diz "acabou de ser usada, falta uma pequena
+      arrumação". Substitui a escolha anterior (23591471), que comunicava
+      louça suja, e vem depois de nove candidatas vistas uma a uma.
 
   - target: src/assets/blog/organizacao/como-manter-a-casa-organizada/cadeira-do-quarto-com-roupas.webp
     provider: freepik
@@ -87,41 +87,3 @@ images:
       Sessão curta de organização. Cozinha real — tijolo aparente, prateleira
       aberta com copos, escorredor, cafeteira — e a pessoa concentrada na
       tarefa, sem posar. É "cabe na minha rotina", não "faxina pesada".
-
-
-# ── Bloco TEMPORÁRIO de candidatas ──────────────────────────
-#  Só a bancada do artigo segue em aberto: a foto atual comunica "louça
-#  suja", e o que a página precisa dizer é "cozinha recém-usada, pequena
-#  arrumação pendente". Estas quatro testam esse registro.
-
-  - target: src/assets/_candidatos/bancada-19100536.webp
-    provider: freepik
-    assetId: 19100536
-    license: free
-    previewPath: /free-photo/interiors-homely-kitchen_53876-146777.jpg
-    ratio: "16:10"
-    width: 1400
-
-  - target: src/assets/_candidatos/bancada-9923303.webp
-    provider: freepik
-    assetId: 9923303
-    license: free
-    previewPath: /free-photo/kitchen-countertop-sink-with-dishes_1153-5786.jpg
-    ratio: "16:10"
-    width: 1400
-
-  - target: src/assets/_candidatos/bancada-1382926.webp
-    provider: freepik
-    assetId: 1382926
-    license: free
-    previewPath: /free-photo/modern-white-kitchen-sink-with-morning-sun-rays_1253-1544.jpg
-    ratio: "16:10"
-    width: 1400
-
-  - target: src/assets/_candidatos/bancada-10108467.webp
-    provider: freepik
-    assetId: 10108467
-    license: free
-    previewPath: /free-photo/modern-stylish-scandinavian-kitchen-interior-with-kitchen-accessories-bright-white-kitchen-with-household-items_169016-4791.jpg
-    ratio: "16:10"
-    width: 1400

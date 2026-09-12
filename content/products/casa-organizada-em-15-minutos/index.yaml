@@ -78,7 +78,7 @@ hero:
   # Imagem do hero. Arquivo ainda não fornecido: sem ele o quadro usa a
   # ambientação em CSS, sem parecer buraco.
   image: hero-cozinha-manha.webp
-  imageAlt: Mulher recolhendo louça na bancada da cozinha em uma manhã de luz natural
+  imageAlt: Mulher lavando um prato na bancada da cozinha, em luz natural
 
 # ── Problema ─────────────────────────────────────────────────
 problem:
@@ -295,7 +295,7 @@ guarantee:
 images:
   - id: sessao-curta-cozinha
     src: sessao-curta-cozinha.webp
-    alt: Mulher guardando louça na bancada da cozinha em uma sessão curta de arrumação
+    alt: Mulher limpando a bancada da cozinha em uma sessão curta de arrumação
     caption: Uma sessão curta tem alvo definido antes de começar.
     placement: after-method
   - id: materiais-impressos-mesa
