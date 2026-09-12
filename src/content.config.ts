@@ -165,6 +165,23 @@ const products = defineCollection({
     tagline: z.string(),
 
     /**
+     * Categoria do material, usada para agrupar na home.
+     *
+     * Vive no dado, e não numa lista dentro da página: é isso que faz um
+     * produto novo aparecer agrupado sozinho, sem ninguém editar a home.
+     * Categoria sem produto publicado não é renderizada, então não existe
+     * prateleira vazia.
+     *
+     * `id` é a chave de agrupamento, `label` é o que o público lê.
+     */
+    category: z.object({
+      id: z
+        .string()
+        .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'id deve ser minúsculo, com hífens'),
+      label: z.string().min(2).max(40),
+    }),
+
+    /**
      * Produto em destaque na home.
      *
      * A home mostra um material só, e com dois produtos no ar "o primeiro

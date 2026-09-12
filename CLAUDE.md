@@ -397,9 +397,50 @@ entra no sitemap, não entra no `llms.txt` e não aparece na home. É o que
 permite deixar a arquitetura de um produto novo pronta sem publicar uma
 página com texto de espera.
 
-Hoje existe um assim: `cardapio-da-semana-em-20-minutos`, com os campos
-pendentes marcados `[PREENCHER]` e a source of truth em
+Nenhum produto está nesse estado hoje. O `cardapio-da-semana-em-20-minutos`
+passou por ele e foi publicado; a source of truth dele vive em
 `docs/cardapio-da-semana-source-of-truth.md`.
+
+### Materiais práticos: a nomenclatura pública
+
+**A área comercial da BookGo se chama "Materiais práticos".** É assim que ela
+aparece na home, e a mesma palavra vale para qualquer texto público: método,
+guia, planner, material. `produto` e `products/` continuam sendo os nomes
+internos, no código e no conteúdo, e não vazam para a página.
+
+**"Curso" não é o nome genérico da área.** Ele descreve um formato específico
+e, usado como rótulo da prateleira, promete aula, turma e plataforma de vídeo
+para algo que é texto e PDF. Quando o formato de um material for de fato um
+curso, o YAML daquele produto pode dizer isso na copy dele. A prateleira, não.
+
+### Categoria do material
+
+Cada produto declara a prateleira em que aparece na home:
+
+```yaml
+category:
+  id: cozinha-planejamento     # minúsculo, com hífens
+  label: Cozinha e planejamento
+```
+
+`getProductsByCategory()` agrupa sozinho, em ordem alfabética do rótulo, e
+**só devolve categoria que tenha produto publicado**: prateleira vazia não
+existe, e produto novo com categoria nova cria a dela sem lista para
+atualizar em lugar nenhum. Rascunho não entra.
+
+O cartão da home leva à **landing page**, nunca ao checkout, e dispara
+`product_click`. É a mesma regra do CTA do artigo, pela mesma razão: quem
+clica ali ainda não viu preço, conteúdo nem garantia.
+
+**A home não é catálogo.** A prateleira existe para mostrar o que a BookGo
+publica, com o destaque editorial continuando acima dela. O produto em
+destaque é escolhido pela flag `featured` do YAML, e não pela ordem
+alfabética: material novo não toma o lugar de ninguém em silêncio.
+
+**Bloco comercial de produto não entra em página legal.** Termos,
+privacidade, política de cookies, termos de compra e contato ficam fora, e
+uma LP não recomenda outro produto: cross-sell dentro de LP é decisão
+separada, e hoje não existe.
 
 **Dois produtos não podem parecer o mesmo produto.** O sistema é o mesmo
 (componentes, tokens, tipografia, régua), a identidade comercial não: a

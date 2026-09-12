@@ -5,6 +5,7 @@ import PillButton from '../components/ui/PillButton.astro';
 import Marquee from '../components/ui/Marquee.astro';
 import Icon from '../components/ui/Icon.astro';
 import PostCard from '../components/blog/PostCard.astro';
+import ProductCard from '../components/product/ProductCard.astro';
 import { SITE, NAV_CTA } from '../config/site';
 import {
   getCategories,
@@ -12,6 +13,7 @@ import {
   getPillars,
   getPostsByPillar,
   getFeaturedProduct,
+  getProductsByCategory,
   pillarUrl,
   productUrl,
 } from '../lib/content';
@@ -30,7 +32,7 @@ const HERO_TOPICS = [
 ] as const;
 
 const FORMATS = [
-  'Cursos rápidos',
+  'Métodos práticos',
   'Guias práticos',
   'Checklists',
   'Planners',
@@ -55,7 +57,7 @@ const PRINCIPLES = [
   {
     icon: 'checklist' as const,
     title: 'Feito para aplicar',
-    text: 'Cada curso vem com checklist, planner ou template. Ler é o meio, usar é o ponto.',
+    text: 'Cada material vem com checklist, planner ou template. Ler é o meio, usar é o ponto.',
   },
   {
     icon: 'shield' as const,
@@ -101,6 +103,9 @@ const categoryNameById = new Map(categories.map((c) => [c.id, c.data.name]));
 
 /** Material em destaque, declarado no YAML do produto. */
 const featuredProduct = await getFeaturedProduct();
+
+/** Materiais práticos, agrupados pela categoria declarada em cada um. */
+const productGroups = await getProductsByCategory();
 ---
 
 <SiteLayout
@@ -124,8 +129,8 @@ const featuredProduct = await getFeaturedProduct();
             <span>Coloque em prática.</span>
           </h1>
           <p class="hero-sub">
-            Cursos rápidos, guias e materiais práticos para resolver problemas
-            reais do dia a dia, no seu ritmo.
+            Métodos, guias e materiais práticos para resolver problemas reais
+            do dia a dia, no seu ritmo.
           </p>
           <PillButton
             href={NAV_CTA.href}
@@ -153,9 +158,9 @@ const featuredProduct = await getFeaturedProduct();
 
       <div class="about-text">
         <p>
-          A BookGo publica cursos curtos, guias e materiais digitais sobre
-          assuntos do dia a dia. Cada material nasce de um problema concreto
-          e entrega um jeito de resolvê-lo.
+          A BookGo publica métodos, guias e materiais digitais sobre assuntos
+          do dia a dia. Cada material nasce de um problema concreto e entrega
+          um jeito de resolvê-lo.
         </p>
         <p>
           O formato é sempre o mesmo: texto direto para entender, checklist
@@ -297,9 +302,85 @@ const featuredProduct = await getFeaturedProduct();
       </section>
     )
   }
+
+  {/* ── Materiais práticos ───────────────────────────────────
+      O catálogo dos produtos próprios, agrupado pela categoria que cada
+      um declara no seu YAML. Nenhum cartão é escrito aqui: material novo
+      entra por existir, e categoria sem material publicado simplesmente
+      não aparece.
+
+      Fica depois do blog de propósito. O destaque já estabelece, lá em
+      cima, que a BookGo tem produtos próprios; repetir o mesmo cartão
+      duas telas antes transformaria a home numa sequência de chamadas
+      comerciais, que é o oposto da hierarquia editorial dela.
+
+      Os cartões levam à landing page, nunca ao checkout. */}
+  {
+    productGroups.length > 0 && (
+      <section class="section tone-warm" id="materiais">
+        <div class="container">
+          <header class="head">
+            <p class="eyebrow">Materiais práticos</p>
+            <h2>Métodos, guias e materiais para colocar em prática no seu ritmo.</h2>
+          </header>
+
+          <div class="groups">
+            {productGroups.map((group) => (
+              <section class="group" aria-labelledby={`grupo-${group.id}`}>
+                <h3 class="group-title" id={`grupo-${group.id}`}>
+                  {group.label}
+                </h3>
+                <ul class="products">
+                  {group.products.map((product) => (
+                    <li>
+                      <ProductCard product={product} />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
 </SiteLayout>
 
 <style>
+  /* Materiais práticos: uma prateleira por categoria. A grade usa
+     `auto-fill`, e não `auto-fit`, para que uma categoria com um material
+     só ocupe uma célula em vez de esticar pela faixa inteira. */
+  .groups {
+    display: grid;
+    gap: var(--s-8);
+  }
+
+  .group-title {
+    font-size: var(--t--1);
+    letter-spacing: var(--tr-eyebrow);
+    text-transform: uppercase;
+    font-weight: var(--w-semibold);
+    color: var(--color-muted);
+    padding-bottom: var(--s-3);
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--s-5);
+  }
+
+  .products {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-5);
+    grid-template-columns: repeat(auto-fill, minmax(min(20rem, 100%), 1fr));
+  }
+
+  @media (min-width: 64rem) {
+    .products {
+      grid-template-columns: repeat(auto-fill, minmax(min(22rem, 100%), 1fr));
+    }
+  }
+
   /* ── Hero ─────────────────────────────────────────────────── */
   .hero {
     padding-block: var(--s-2) var(--s-6);

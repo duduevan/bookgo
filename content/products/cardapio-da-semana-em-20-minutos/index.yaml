@@ -23,6 +23,13 @@
 
 slug: cardapio-da-semana-em-20-minutos
 name: Cardápio da Semana em 20 Minutos
+# Categoria do material na home. Agrupa sozinho: produto novo com uma
+# categoria nova cria a prateleira dela, e categoria sem produto não
+# aparece.
+category:
+  id: cozinha-planejamento
+  label: Cozinha e planejamento
+
 
 tagline: Um jeito de resolver as principais refeições da semana de uma vez, numa sessão de cerca de 20 minutos.
 promise: Reduzir a necessidade de decidir todo dia o que preparar, concentrando o planejamento das principais refeições da semana numa sessão simples de cerca de 20 minutos, que termina em lista de compras.
@@ -284,15 +291,43 @@ offer:
 # (title, text, icon) e ele aparece dentro da oferta.
 
 # ── Avaliações ───────────────────────────────────────────────
-# Omitidas: este produto ainda não tem avaliação própria, e avaliação
-# não se inventa. Sem o bloco, a seção não existe e não custa um byte
-# de CSS nem de JavaScript.
+# Uma avaliação é uma conversa, e uma conversa é um celular. Acrescentar
+# outra é acrescentar um item em `items`: o carrossel ganha mais um
+# aparelho sozinho, sem tocar em componente nem em CSS.
+#
+# O QUE ESTÁ AQUI É LITERAL. O texto da Patrícia é o que ela escreveu, e
+# a resposta é a que a BookGo deu. Nada foi reescrito, encurtado ou
+# "melhorado": avaliação editada e publicada como se fosse a fala da
+# pessoa deixa de ser avaliação.
+#
+# PENDENTES, e por um motivo de conteúdo, não de código: Mariana
+# Sampaio, Camila Duarte, Fernanda Costa e Beatriz Meireles enviaram
+# avaliações em que parte da redação fala de receitas, de prato pronto
+# ou de cozinhar em 20 minutos. Nada disso corresponde a este material,
+# cujos 20 minutos são de planejamento. Enquanto não houver texto final
+# revisado e autorizado por cada uma, elas não entram: nem editadas por
+# nós, nem em versão parcial.
 #
 # Os personagens e os "Exemplos de rotina" dos módulos são didáticos e
 # NÃO viram depoimento.
 #
-# Quando existir mensagem real e autorizada, cada item vira um celular
-# no carrossel global. Ver "Avaliações" no CLAUDE.md.
+# NOTA EM ESTRELAS: as clientes deram 5 estrelas, e a peça não exibe
+# estrela nenhuma hoje. Não foi esquecimento: o formato da BookGo é a
+# conversa no aparelho, e recriar cartão com estrelas só por causa disso
+# desfaria a decisão da rodada anterior.
+reviews:
+  enabled: true
+  title: O que estão dizendo sobre o método
+  subtitle: Publicado com autorização de quem escreveu.
+  items:
+    - id: patricia-lima
+      name: Patrícia Lima
+      messages:
+        - sender: person
+          text: "Prático, direto ao ponto e sem frescura! Eu sou meio perdida na cozinha, mas o passo a passo é muito bem explicado. Consegui planejar a semana inteira no domingo e agora não fico mais com aquela dúvida clássica do 'o que vou fazer pro jantar hoje?'. Maravilhoso! 🥗⏰💖"
+        - sender: bookgo
+          text: "O fim do 'o que fazer pro jantar' é uma verdadeira vitória, né Pati? Haha! Muito bom saber que está curtindo! 🥳🍳"
+          read: true
 
 # ── FAQ ──────────────────────────────────────────────────────
 faq:

@@ -10,6 +10,13 @@ name: Casa Organizada em 15 Minutos por Dia
 # Material em destaque na home. Declarado aqui, e não deduzido da ordem
 # alfabética dos slugs, que mudaria a home sozinha a cada produto novo.
 featured: true
+# Categoria do material na home. Agrupa sozinho: produto novo com uma
+# categoria nova cria a prateleira dela, e categoria sem produto não
+# aparece.
+category:
+  id: casa-rotina
+  label: Casa e rotina
+
 tagline: Um método simples para manter a casa organizada em sessões curtas, sem mutirão de fim de semana.
 promise: Ensinar uma rotina simples para manter a casa mais organizada usando pequenos ciclos de 15 minutos, sem depender de grandes períodos de organização.
 

@@ -265,3 +265,97 @@ images:
       Compra chegando na bancada, com pão, fruta e comida comum. É o fim
       do bloco "listar" e o começo da semana planejada.
 
+
+  # ── Artigos: Casa › Cozinha, planejamento de refeições ──────
+  #
+  # Oito imagens declaradas sem confirmação visual prévia: o ambiente de
+  # edição não alcança o CDN, então a conferência acontece depois da
+  # materialização, sobre os arquivos commitados. O critério de escolha
+  # aqui foi título inequívoco e cena de casa comum, sem estética de
+  # dieta, sem prato de restaurante e sem corpo.
+  - target: src/assets/blog/cozinha/cardapio-semanal-simples/caderno-na-mesa-da-cozinha.webp
+    provider: freepik
+    assetId: 5535808
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/taking-notes-breakfast_5535808.htm
+    previewPath: /free-photo/taking-notes-breakfast_1098-16973.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/cozinha/cardapio-semanal-simples/plano-da-semana-em-papel.webp
+    provider: freepik
+    assetId: 3124129
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/weekly-plan-clipboard-cup-coffee-wooden-desk_3124129.htm
+    previewPath: /free-photo/weekly-plan-clipboard-cup-coffee-wooden-desk_23-2147898418.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/cozinha/lista-de-compras-a-partir-do-cardapio/lista-escrita-antes-da-compra.webp
+    provider: freepik
+    assetId: 81440711
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/portrait-woman-writing-grocery-list-shopping-standing-kitchen-making-notes_81440711.htm
+    previewPath: /free-photo/portrait-woman-writing-grocery-list-shopping-standing-kitchen-making-notes_1258-198117.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/cozinha/lista-de-compras-a-partir-do-cardapio/despensa-com-mantimentos.webp
+    provider: freepik
+    assetId: 29006471
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/pasta-beans-grains-uncooked-cereals-glass-canister-with-labels-wooden-rack_29006471.htm
+    previewPath: /free-photo/pasta-beans-grains-uncooked-cereals-glass-canister-with-labels-wooden-rack_181624-59320.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/cozinha/nao-sei-o-que-fazer-para-o-jantar/geladeira-aberta-fim-do-dia.webp
+    provider: freepik
+    assetId: 18040161
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/woman-checking-interior-her-fridge-home_18040161.htm
+    previewPath: /free-photo/woman-checking-interior-her-fridge-home_23-2149087122.jpg
+    ratio: "16:10"
+    width: 1400
+    note: >-
+      Conferir a geladeira em casa, de dia. A série de lanche noturno foi
+      evitada de propósito: o artigo é sobre decidir o jantar, não sobre
+      beliscar de madrugada.
+
+  - target: src/assets/blog/cozinha/nao-sei-o-que-fazer-para-o-jantar/refeicao-simples-na-mesa.webp
+    provider: freepik
+    assetId: 11106862
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/view-brazilian-food-with-rice_11106862.htm
+    previewPath: /free-photo/view-brazilian-food-with-rice_23-2148751899.jpg
+    ratio: "16:10"
+    width: 1400
+    note: >-
+      Comida caseira brasileira com arroz. Prato de casa, e não montagem
+      de restaurante nem bowl de dieta.
+
+  - target: src/assets/blog/cozinha/planejar-refeicoes-quando-a-semana-muda/agenda-marcada-na-semana.webp
+    provider: freepik
+    assetId: 5637810
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/hand-noting-important-plans-calendar_5637810.htm
+    previewPath: /free-photo/hand-noting-important-plans-calendar_23-2148304848.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/cozinha/planejar-refeicoes-quando-a-semana-muda/potes-com-sobras-na-geladeira.webp
+    provider: freepik
+    assetId: 7389459
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/open-fridge-with-plastic-food-containers-vegetables_7389459.htm
+    previewPath: /free-photo/open-fridge-with-plastic-food-containers-vegetables_23-2148487830.jpg
+    ratio: "16:10"
+    width: 1400
