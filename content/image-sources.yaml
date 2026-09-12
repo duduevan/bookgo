@@ -1,0 +1,58 @@
+# ─────────────────────────────────────────────────────────────
+#  Origem das imagens do site
+#
+#  Declara, para cada arquivo de imagem do projeto, de onde ele vem.
+#  `npm run images:fetch` lê este arquivo, baixa, corta, converte para WebP
+#  e grava no destino. O mesmo script roda no runner do GitHub Actions
+#  (.github/workflows/images.yml), que tem saída de rede sem restrição.
+#
+#  Por que isso existe: o ambiente do Claude tem bloqueio de egress para os
+#  CDNs do Magnific e do Freepik, então os bytes não podem ser materializados
+#  de dentro dele. Isso é infraestrutura, não trabalho manual — a escolha e a
+#  declaração ficam aqui, e a materialização acontece onde a rede permite.
+#
+#  Trocar de imagem é trocar `url` e `credit`. Nada mais muda: o alt, a
+#  legenda e a posição vivem no YAML do produto e no frontmatter do artigo.
+# ─────────────────────────────────────────────────────────────
+
+images:
+  # ── Landing page: Casa Organizada em 15 Minutos por Dia ──────
+  - target: src/assets/products/casa-organizada-em-15-minutos/hero-cozinha-manha.webp
+    # Elemento de LCP da LP.
+    ratio: "4:5"
+    width: 1040
+    url: null
+    credit: null
+    note: >-
+      Mulher adulta guardando louça na bancada da cozinha, manhã, luz natural.
+      Casa habitada, não catálogo. Sem texto.
+
+  - target: src/assets/products/casa-organizada-em-15-minutos/sessao-curta-cozinha.webp
+    ratio: "16:9"
+    width: 1600
+    url: null
+    credit: null
+    note: >-
+      Sessão curta de organização em cozinha real. Precisa transmitir "isso
+      cabe na minha rotina", não "faxina pesada". Atenção ao corte: a ação
+      deve estar centralizada verticalmente.
+
+  # ── Artigo: como manter a casa organizada ───────────────────
+  - target: src/assets/blog/organizacao/como-manter-a-casa-organizada/bancada-cozinha-em-uso.webp
+    width: 1400
+    url: null
+    credit: null
+    note: >-
+      Bancada de cozinha depois do uso do café da manhã, sem pessoas.
+      Levemente desarrumada, nunca suja nem caótica.
+
+  - target: src/assets/blog/organizacao/como-manter-a-casa-organizada/cadeira-do-quarto-com-roupas.webp
+    width: 1400
+    url: null
+    credit: null
+    note: >-
+      Quarto habitado, cadeira com roupas acumuladas, guarda-roupa
+      parcialmente aberto ao fundo. Sem caricatura de bagunça.
+
+  # materiais-impressos-mesa.webp fica de fora de propósito: o mockup só
+  # deve sair dos quatro PDFs reais, nunca de páginas inventadas.

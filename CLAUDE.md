@@ -168,6 +168,26 @@ produto e continua sendo superfície intencional. No mobile, porém, ele é
 escondido: ali seria uma tela inteira de rolagem sem entregar nada. Quando o
 arquivo chegar, entra sem mudar layout: a proporção já está reservada.
 
+### De onde vêm as imagens
+
+`content/image-sources.yaml` declara a origem de cada arquivo de imagem:
+destino, proporção, largura, URL e crédito. `npm run images:fetch` baixa,
+corta, converte para WebP e grava no destino — idempotente, e `--force`
+refaz.
+
+O mesmo script roda no workflow **Materializar imagens declaradas**, que
+commita os arquivos no repositório. É assim que a imagem entra no projeto:
+declarar a origem, rodar o workflow. Sem download manual, sem FTP imagem a
+imagem.
+
+Existe por um motivo concreto: o ambiente onde o conteúdo é editado tem
+bloqueio de egress para os CDNs do Magnific e do Freepik. Lá dá para
+escolher e declarar; os bytes são buscados onde a rede permite.
+
+Trocar de imagem é trocar `url` e `credit`. Alt, legenda e posição vivem no
+YAML do produto e no frontmatter do artigo — não se mexe neles para trocar
+uma foto.
+
 ### Source of truth do produto
 
 `docs/casa-organizada-source-of-truth.md` é a referência do produto: preço,
