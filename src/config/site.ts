@@ -7,7 +7,7 @@ export const SITE = {
   name: 'BookGo',
   title: 'BookGo: aprenda algo útil, coloque em prática',
   description:
-    'Cursos rápidos, guias e materiais práticos para resolver problemas reais do dia a dia, no seu ritmo.',
+    'Métodos, guias e materiais práticos para resolver problemas reais do dia a dia, no seu ritmo.',
   locale: 'pt-BR',
   lang: 'pt-BR',
   ogImage: '/images/og-default.png',
