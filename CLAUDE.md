@@ -498,6 +498,33 @@ animação agressiva, sem cor de alarme.
 **Nunca inventar característica do produto.** A copy só afirma o que o YAML
 do produto já sustenta.
 
+### Produto afiliado no artigo
+
+```yaml
+affiliates:
+  - id: philips-na130          # referência usada no corpo e na imagem
+    brand: Philips Walita
+    model: Airfryer Série 1000 XL NA130/00
+    url: https://link-de-afiliado   # é este que vira href
+    sourceUrl: https://pagina-oficial  # conferência editorial, não vira link
+    cta: Ver oferta atual
+```
+
+```mdx
+<AffiliateProduct id="philips-na130" />
+```
+
+A foto do produto usa o **mesmo id** no array `images`, então arquivo, alt e
+crédito ficam num lugar só. Sem arquivo, o bloco renderiza apenas o CTA.
+
+Três coisas o componente impõe, em vez de confiar na memória de quem escreve:
+
+- **preço não entra.** Ele muda, e um número copiado para dentro do artigo
+  transforma a página em mentira sozinho;
+- **`rel="sponsored nofollow noopener"` é obrigatório**, não opcional;
+- **a nota de transparência é automática** quando o artigo declara
+  `affiliates`. Aviso que depende de alguém lembrar não é transparência.
+
 ### Para onde cada CTA leva
 
 O destino depende da intenção da página, não do componente.
@@ -517,6 +544,29 @@ parte. Os eventos acompanham: `product_click` no CTA do artigo,
 compra um clique que apenas abre a página do produto misturaria dois
 momentos do funil no mesmo número.
 
+**Em que aba cada link abre**
+
+| Origem | Destino | Aba | `rel` | Evento |
+|---|---|---|---|---|
+| Artigo BookGo | LP do produto | mesma | nenhum | `product_click` |
+| LP do produto | checkout externo | mesma | nenhum | `checkout_click` |
+| Comparativo ou review | loja, por link de afiliado | **nova** | `sponsored nofollow noopener` | `affiliate_click` |
+
+O critério é a continuidade da decisão. Conteúdo próprio mantém a pessoa num
+fluxo só, e tirar a aba de volta atrapalharia quem quer recuar. O link de
+afiliado sai do site para o domínio de outro, e ali abrir nova aba preserva o
+artigo que a pessoa estava lendo.
+
+**Isso não se escreve artigo a artigo.** Aba, `rel` e evento vivem nos
+componentes: `Cta` e `ProductCta` para produto próprio, `AffiliateProduct`
+para afiliado. O frontmatter carrega só o dado (URL, marca, modelo). Um
+`target` ou um `rel` escrito dentro de um MDX é sinal de que a regra vazou
+para o lugar errado e precisa voltar para o componente.
+
+Vale igual para o que ainda não existe: outro comparativo, review individual,
+lista de melhores, novo curso, nova LP. Nenhum deles precisa redescobrir esta
+tabela.
+
 **Afiliados e comparativos**
 
 - O CTA leva ao anunciante pelo **link de afiliado**, com
@@ -528,8 +578,8 @@ momentos do funil no mesmo número.
 
 ### Três sistemas comerciais separados
 
-`ProductCta`, `AffiliateProduct` (ainda não implementado) e `AdSlot` são
-independentes e **nunca se empilham**. Entre dois blocos comerciais tem que
+`ProductCta`, `AffiliateProduct` e `AdSlot` são independentes e **nunca se
+empilham**. Entre dois blocos comerciais tem que
 haver conteúdo editorial.
 
 Isso é código, não recomendação: `src/lib/commercial-blocks.ts` resolve a
@@ -594,7 +644,7 @@ deck, resumo e índice.
 Quando ligar, o `reserve` do `AdSlot` guarda a altura antes da carga, para o
 anúncio não empurrar o conteúdo e gerar CLS.
 
-Afiliados serão um sistema separado (`<AffiliateProduct>`), sem relação com
+Afiliados são um sistema separado (`<AffiliateProduct>`), sem relação com
 este.
 
 ## Layout do artigo
