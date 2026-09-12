@@ -9,7 +9,7 @@ import StepList from '../components/product/StepList.astro';
 import ModuleList from '../components/product/ModuleList.astro';
 import OfferBox from '../components/product/OfferBox.astro';
 import Faq from '../components/product/Faq.astro';
-import TestimonialsSection from '../components/testimonials/TestimonialsSection.astro';
+import ReviewsSection from '../components/reviews/ReviewsSection.astro';
 import AdSlot from '../components/ads/AdSlot.astro';
 import ProductImage from '../components/product/ProductImage.astro';
 import MaterialGrid from '../components/product/MaterialGrid.astro';
@@ -296,17 +296,22 @@ const crumbs = [
     </div>
   </Section>
 
-  {/* Conversas — não renderiza nada enquanto `enabled` for false.
+  {/* Avaliações. Não renderiza nada enquanto `enabled` for false, e a
+      forma sai da quantidade: uma centrada, duas lado a lado, três ou mais
+      em carrossel. A LP não escolhe nem conhece esse número.
+
       Fica entre "para quem é" e a oferta: a pessoa acabou de se
       reconhecer no público, ainda não viu o preço, e é exatamente aí que
-      aparecem as dúvidas que a seção responde. */}
-  <TestimonialsSection
-    enabled={d.testimonials.enabled}
-    demo={d.testimonials.demo}
-    kind={d.testimonials.kind}
-    title={d.testimonials.title}
-    intro={d.testimonials.intro}
-    items={[...d.testimonials.items]}
+      pesa o que outra pessoa tem a dizer. */}
+  <ReviewsSection
+    enabled={d.reviews.enabled}
+    demo={d.reviews.demo}
+    kind={d.reviews.kind}
+    title={d.reviews.title}
+    subtitle={d.reviews.subtitle}
+    items={d.reviews.items.map((i) =>
+      i.type === 'phone' ? { ...i, messages: [...i.messages] } : { ...i }
+    )}
   />
 
   {

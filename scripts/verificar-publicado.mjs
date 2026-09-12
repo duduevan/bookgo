@@ -134,7 +134,20 @@ for (const [nome, caminho, viewports] of PAGINAS) {
     await page.waitForTimeout(2000);
 
     const diag = await page.evaluate(() => ({
-      overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      /* Rolagem horizontal de verdade, e não `scrollWidth`.
+         Uma página com carrossel tem um contêiner rolável dentro dela, e o
+         `scrollWidth` do documento passa a relatar o overflow interno desse
+         contêiner mesmo com ele recortado: a conta antiga acusava 389px de
+         rolagem numa página que não anda um pixel. O que importa para quem
+         usa é se a janela rola de lado, então é isso que se mede: empurra
+         até o fim e vê onde parou. */
+      overflow: (() => {
+        const antes = window.scrollX;
+        window.scrollTo(document.documentElement.scrollWidth, 0);
+        const maximo = Math.round(window.scrollX);
+        window.scrollTo(antes, 0);
+        return maximo;
+      })(),
       imgs: [...document.images].map((i) => ({
         src: i.currentSrc.split('/').pop(),
         ok: i.naturalWidth > 0,

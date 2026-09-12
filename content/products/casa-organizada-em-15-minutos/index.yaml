@@ -255,18 +255,20 @@ offer:
     - icon: checklist
       text: Materiais em PDF para usar no celular ou impressos
 
-# ── Garantia ─────────────────────────────────────────────────
-# Prova social — desligada.
+# ── Avaliações ───────────────────────────────────────────────
 #
-# Não existe depoimento real autorizado até aqui, e depoimento não se
-# inventa. Com `enabled: false` a seção não é renderizada: a LP não ganha
-# título, espaço vazio nem CSS por causa deste bloco.
+# ACRESCENTAR UMA AVALIAÇÃO É ACRESCENTAR UM ITEM EM `items`.
+# Nada além disso: não se edita componente, não se mexe em CSS, não se
+# duplica HTML e não se cria seção. A quantidade é livre e a apresentação
+# se ajusta sozinha (uma centrada, duas lado a lado, três ou mais em
+# carrossel). Ver "Avaliações" no CLAUDE.md.
 #
-# Para ligar: colete aqui só texto que uma pessoa real escreveu e autorizou
-# a publicar, e vire `enabled` para true. Formatos disponíveis por item:
-# `type: card` (texto corrido) e `type: phone` (conversa).
-testimonials:
-  # CONVERSAS DE DEMONSTRAÇÃO, NÃO DEPOIMENTOS.
+# Campos por item: `name` e `text` (ou `messages`) são o mínimo; `avatar`,
+# `role`, `date` e `rating` são opcionais. Sem avatar entram as iniciais do
+# nome. Sem `rating` não aparece estrela nenhuma, em vez de arredondar uma
+# nota que ninguém deu.
+reviews:
+  # CONVERSAS DE DEMONSTRAÇÃO, NÃO AVALIAÇÕES.
   #
   # `kind: demonstracao` é o que separa esta seção de prova social. As
   # perguntas abaixo são as objeções reais que este produto precisa
@@ -276,11 +278,11 @@ testimonials:
   # A linguagem é de conversa de verdade de propósito: frase curta, bolha
   # quebrada, emoji, minúscula. Isso é tom, não é fingir pessoa. O que
   # continua proibido é a pergunta virar relato de resultado ("comecei e já
-  # mudou"), porque aí deixaria de ser dúvida e viraria depoimento inventado.
+  # mudou"), porque aí deixaria de ser dúvida e viraria avaliação inventada.
   #
   # O schema impede a confusão nos dois sentidos: em `demonstracao` nenhum
-  # item pode ter `name`, e em `depoimento` todo item precisa ter. Não é
-  # convenção de quem escreve, é trava de build.
+  # item pode ter `name` nem `rating`, e em `depoimento` todo item precisa
+  # de `name`. Não é convenção de quem escreve, é trava de build.
   #
   # ── PENDENTE DE DECISÃO ──────────────────────────────────────
   # A autorização de Patrícia, Fernanda e Gabriela está confirmada, mas as
@@ -297,15 +299,18 @@ testimonials:
   #       name: Patrícia          # e Fernanda, e Gabriela
   #       messages: [ ... o que ela realmente escreveu ... ]
   #
-  # O schema já cobra o par: em `depoimento` todo item precisa de `name`, e
-  # em `demonstracao` nenhum pode ter. Não é convenção, é trava de build.
+  # Quando elas chegarem, não há limite de três: o carrossel serve a
+  # quantas houver, e o título muda aqui mesmo (algo como "O que estão
+  # dizendo sobre o método") sem tocar em componente.
   enabled: true
   kind: demonstracao
   title: As dúvidas que aparecem antes de começar
-  intro: >-
-    As três perguntas que mais chegam sobre o método, respondidas do jeito
-    que a gente responderia no chat. Não são mensagens de alunas: são as
-    objeções reais e o que o método tem a dizer sobre cada uma.
+  # Sem contagem no texto: a seção aceita quantas forem, e uma frase que
+  # diz "as três" passaria a mentir na quarta.
+  subtitle: >-
+    As perguntas que mais chegam sobre o método, respondidas do jeito que a
+    gente responderia no chat. Não são mensagens de alunas: são as objeções
+    reais e o que o método tem a dizer sobre cada uma.
   items:
     - type: phone
       status: Método dos 15 Minutos
@@ -371,6 +376,7 @@ testimonials:
           text: era só isso que faltava saber 😄
           time: "21:24"
 
+# ── Garantia ─────────────────────────────────────────────────
 guarantee:
   icon: shield
   title: Garantia de 7 dias

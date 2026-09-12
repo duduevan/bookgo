@@ -96,51 +96,111 @@ ali o ícone seria decoração.
 Ícones decorativos ficam em `aria-hidden`. `label` só quando o ícone for a
 única fonte da informação, o que hoje não acontece em lugar nenhum do site.
 
-### Depoimentos
+### Avaliações
 
-**Desligados, e depoimento não se inventa.** Enquanto `testimonials.enabled`
-for `false` no YAML do produto, a seção não é renderizada — sem título, sem
-espaço vazio e sem um byte de CSS. Ligar com `items` vazio quebra o build de
-propósito.
+**Um componente só, para todos os produtos.** `ReviewsSection.astro` não
+conhece produto nenhum: não sabe nomes, textos, quantidade nem em que LP
+está. Recebe uma lista e a renderiza. É isso que o faz servir o Casa
+Organizada, o Cardápio da Semana e qualquer produto seguinte sem uma linha
+de código nova, e é também o que impede a avaliação de um produto aparecer
+em outro: cada LP passa o array do seu próprio YAML, e não existe
+repositório comum de avaliações.
 
-Só entra aqui texto que uma pessoa real escreveu e autorizou a publicar. Sem
-foto, o avatar usa as iniciais do nome: derivar do que existe é honesto, gerar
-um rosto não seria.
+**Acrescentar uma avaliação é acrescentar um item no YAML do produto.**
+Abrir `content/products/<slug>/index.yaml`, escrever nome e texto, rodar
+`npm run build`, publicar. Não se edita componente, não se mexe em CSS, não
+se duplica HTML e não se cria seção.
 
-Dois formatos, decididos item a item:
+**Não existe número máximo.** A apresentação sai da contagem:
+
+| Quantidade | O que acontece |
+|---|---|
+| 0 | nada renderizado: sem título, sem espaço, sem um byte de CSS ou de JS |
+| 1 | centrada, em largura de leitura |
+| 2 | duas colunas de mesmo peso |
+| 3 ou mais | carrossel: ~3 por vez no desktop, 2 no tablet, 1 no celular |
+
+O carrossel entra só a partir de três porque abaixo disso ele seria uma
+interface de navegação para algo que já cabe na tela. E quando tudo cabe
+(três itens num desktop largo), os controles somem sozinhos em vez de
+ficarem como setas mortas.
 
 ```yaml
-testimonials:
-  enabled: false
-  title: O que diz quem já usou
+reviews:
+  enabled: true
+  kind: depoimento            # depoimento | demonstracao
+  title: O que estão dizendo sobre o método
+  subtitle: Frase curta de abertura.
   items:
-    - type: card          # texto corrido
-      name: ...
-      role: ...           # opcional
-      text: ...
-    - type: phone         # conversa de celular
-      name: ...
-      status: ...         # opcional, decorativo
+    - type: card              # texto corrido
+      name: Nome que a pessoa autorizou
+      text: O que ela escreveu.
+      role: Contexto curto    # opcional
+      date: março de 2026     # opcional
+      rating: 5               # opcional, 1 a 5
+      avatar: foto.webp       # opcional
+    - type: phone             # conversa de celular
+      name: Nome que a pessoa autorizou
+      status: Linha decorativa
       messages:
-        - side: incoming  # a pessoa
+        - side: incoming      # a pessoa
           text: ...
-          time: "09:12"   # opcional, decorativo
-        - side: outgoing  # a BookGo
+          time: "09:12"
+        - side: outgoing      # a BookGo
           text: ...
           read: true
 ```
 
-`PhoneTestimonial` é Astro + HTML + CSS, **sem JavaScript**: a entrada em
-cascata é `animation-delay` calculado no build, roda uma vez e não tem laço.
-`prefers-reduced-motion` desliga a cascata e o conteúdo aparece pronto. A
-moldura, a barra de status e a caixa de digitar são cenário em `aria-hidden` —
-nada ali é interativo, não existe input nem botão. A conversa em si é citação
-(`figure` + `blockquote`), e cada bolha diz de quem é.
+Mínimo por item: quem e o quê. **Nada é derivado do que falta:** sem
+`avatar` entram as iniciais do nome, e sem `rating` não aparece estrela
+nenhuma, em vez de arredondar uma nota que ninguém deu. Título e subtítulo
+vivem no YAML para cada produto ter a sua voz.
 
-O CSS das três peças vive em `src/styles/testimonials.css.ts` e é emitido
-dentro da guarda de renderização. Não é estilo por preferência: Astro empacota
-o CSS de todo componente **importado**, renderizado ou não, e a LP pagaria
-~16 KB por uma seção que não aparece. Mesma solução do banner de consentimento.
+**Avaliação não se inventa.** Só entra aqui texto que uma pessoa real
+escreveu e autorizou a publicar. Sem isso, `enabled: false`. Autorização é
+permissão para publicar o que a pessoa disse, não permissão para escrever
+no lugar dela.
+
+`kind` é o que separa as duas coisas, e é trava de build, não convenção:
+
+- `depoimento`: pessoa real e autorizada. Todo item **precisa** de `name`,
+  porque uma afirmação sobre resultado precisa ter autor.
+- `demonstracao`: as dúvidas que aparecem antes de começar e a resposta da
+  BookGo, no mesmo desenho de conversa. **Nenhum item pode ter `name` nem
+  `rating`**, porque não é avaliação de ninguém: é o método respondendo.
+
+Ligar `enabled` com `items` vazio quebra o build de propósito.
+
+**A conversa tem dois lados.** As mensagens da pessoa e as respostas da
+BookGo (`side: outgoing`) alternam, porque um celular só com balões de um
+lado não parece conversa, parece depoimento recortado.
+
+#### O carrossel
+
+Rolagem nativa com `scroll-snap`, sem biblioteca e sem framework. O
+arraste no celular, o trackpad e as setas do teclado sobre a região rolável
+já são do navegador; o script (~2,3 KB inline, **só na página que tem
+carrossel**) acrescenta as setas, os pontos e o estado deles. Sem
+JavaScript a seção continua navegável, com a barra de rolagem à mostra como
+pista de que há mais ao lado.
+
+**Sem autoplay.** Carrossel que anda sozinho tira o controle da leitura e
+obriga a inventar pausa no hover, no foco e no toque para devolver o que
+tirou.
+
+**Texto nunca é cortado.** Não há recorte por altura nem reticências para
+igualar cartão: os cartões de uma linha esticam até a altura do mais longo
+e a assinatura fica ancorada no rodapé de todos. Mensagem cortada é
+mensagem escondida.
+
+`aggregateRating` e `Review` **não** são gerados por existir um bloco
+visual de avaliações. Ver "O que nunca vai a uma página".
+
+#### Conferir quantidades
+
+`npm run dev` e `/dev/avaliacoes/` mostram a mesma peça com 0, 1, 2, 3, 6 e
+10 itens, com fixtures locais. Nenhum dado dali vem de produto nenhum, e a
+rota não existe no build de produção.
 
 ### Composição da landing page
 
@@ -228,7 +288,7 @@ As faixas de continuidade vivem no YAML, com âncora declarada:
 
 ```yaml
 midCta:
-  - after: how-it-works      # how-it-works | materials | testimonials
+  - after: how-it-works      # how-it-works | materials | reviews
     text: Uma linha que fecha a seção anterior.
     label: Ver o que está incluído
 ```
@@ -280,25 +340,6 @@ Formulação que a auditoria corrigiu: **"acesso liberado após a aprovação do
 pagamento"**, nunca "acesso imediato" — quem aprova é a plataforma, e esse
 prazo não é nosso.
 
-### Depoimentos em modo demonstração
-
-`testimonials.demo: true` imprime o rótulo **visível** "Conversas
-ilustrativas" acima das conversas. O rótulo não deve ser escondido: um aviso
-que mora só no código deixa de existir exatamente quando mais importa, na
-hora em que alguém publica sem lembrar. É rótulo editorial e não caixa de
-alerta, porque uma tarja de aviso acima da seção derruba o que a seção tem
-de bom sem identificar melhor.
-
-Para publicar de verdade: troque os textos por mensagens reais e
-autorizadas, apague `demo`, mantenha `enabled: true`. Sem `demo`, o build
-exige itens.
-
-**A conversa tem dois lados.** As mensagens da pessoa e as respostas da
-BookGo (`side: outgoing`) alternam, porque um celular só com balões de um
-lado não parece conversa, parece depoimento recortado. Os aparelhos têm
-proporção e altura fixas: três celulares de alturas diferentes lado a lado
-denunciam que são caixas de texto com moldura.
-
 ### Imagens da landing page
 
 Mesma convenção do blog: metadados no YAML, arquivo em
@@ -317,7 +358,8 @@ images:
 ### Vitrine de componentes
 
 `npm run dev` e `/dev/componentes/` mostram todos os ícones e os dois formatos
-de depoimento. A rota **só existe em desenvolvimento**: `getStaticPaths`
+de avaliação; `/dev/avaliacoes/` mostra a seção com 0, 1, 2, 3, 6 e 10 itens.
+As rotas **só existem em desenvolvimento**: `getStaticPaths`
 devolve lista vazia no build, então não há arquivo em `dist/`, nem URL, nem
 entrada no sitemap. O conteúdo ali é demonstração de layout e diz isso na
 própria página — não é depoimento de ninguém.
@@ -1070,10 +1112,15 @@ cresceu fora do padrão. Não bloqueia: orçamento rígido escolhido cedo atrapa
 mais do que ajuda. Metas de campo — LCP ≤ 2,5s, INP ≤ 200ms, CLS ≤ 0,1 — são
 objetivos de engenharia, medidos em campo.
 
-Padrão do projeto: **zero JavaScript no cliente** — hoje com uma exceção
-declarada, o runtime de medição e consentimento (~4,8 KB inline por página).
-Fora isso, nenhum componente embarca JavaScript. `PhoneTestimonial`, o FAQ e o
-índice do artigo são HTML e CSS puros.
+Padrão do projeto: **zero JavaScript no cliente**, hoje com duas exceções
+declaradas:
+
+- o runtime de medição e consentimento, ~8,7 KB inline em toda página;
+- o carrossel de avaliações, ~2,3 KB inline **só nas páginas que têm três
+  ou mais avaliações**. Com zero, uma ou duas, nada é emitido.
+
+Fora isso, nenhum componente embarca JavaScript. A conversa de celular, o
+FAQ e o índice do artigo são HTML e CSS puros.
 
 ### Rascunhos
 

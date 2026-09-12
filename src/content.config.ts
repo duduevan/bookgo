@@ -29,21 +29,30 @@ const section = z.object({
 
 
 /* ------------------------------------------------------------------ */
-/*  Depoimentos                                                        */
+/*  Avaliações                                                         */
 /* ------------------------------------------------------------------ */
 
 /**
- * Prova social.
+ * Avaliações de um produto.
  *
- * Regra do projeto, sem exceção: **nenhum depoimento é inventado**. Só entra
+ * **Quantidade livre.** Não existe número máximo nem número esperado: a
+ * apresentação sai da contagem (uma centrada, duas lado a lado, três ou
+ * mais em carrossel) e o componente serve a qualquer valor. Acrescentar uma
+ * avaliação é acrescentar um item aqui, e nada além disso.
+ *
+ * **Cada produto tem o seu array**, dentro do seu próprio YAML. Não existe
+ * repositório comum de avaliações, e é por isso que a avaliação de um
+ * produto não tem como aparecer na LP de outro.
+ *
+ * Regra do projeto, sem exceção: **nenhuma avaliação é inventada**. Só entra
  * aqui texto que uma pessoa real escreveu e autorizou a publicar. Enquanto
- * isso não existir, `enabled` fica false e a seção não é renderizada — a LP
- * sai byte por byte igual à de hoje.
+ * isso não existir, `enabled` fica false e a seção não é renderizada.
  *
- * O refinamento abaixo impede o pior dos casos: ligar a seção sem ter o que
- * mostrar. `enabled: true` com `items` vazio quebra o build.
+ * Campos mínimos de um item: quem e o quê. Avatar, data, nota e contexto
+ * são opcionais, e nada é derivado dos que faltam: sem foto entram as
+ * iniciais, sem nota não aparece estrela nenhuma.
  */
-const testimonialBase = {
+const reviewBase = {
   /**
    * Nome como a pessoa autorizou publicar.
    *
@@ -54,23 +63,33 @@ const testimonialBase = {
    */
   name: z.string().optional(),
   /**
-   * Arquivo em `src/assets/testimonials/`. Sem avatar, o componente usa as
-   * iniciais do nome — derivar é honesto, gerar um rosto não seria.
+   * Arquivo em `src/assets/reviews/`, ou caminho servido. Sem avatar, o
+   * componente usa as iniciais do nome: derivar do que existe é honesto,
+   * gerar um rosto não seria, e foto de banco de imagens apresentada como
+   * cliente seria pior ainda.
    */
   avatar: z.string().optional(),
+  /** Contexto curto da pessoa, quando ela autorizou. */
+  role: z.string().max(60).optional(),
+  /** Quando a avaliação foi escrita. Texto curto, livre. */
+  date: z.string().max(24).optional(),
+  /**
+   * Nota que a pessoa deu, de 1 a 5. **Não tem padrão e não se deriva.**
+   * Sem este campo a peça não exibe estrela nenhuma, em vez de arredondar
+   * uma nota que ninguém deu.
+   */
+  rating: z.number().int().min(1).max(5).optional(),
 };
 
-const testimonialCard = z.object({
+const reviewCard = z.object({
   type: z.literal('card'),
-  ...testimonialBase,
-  /** Contexto curto da pessoa, quando ela autorizou. */
-  role: z.string().optional(),
-  text: z.string(),
+  ...reviewBase,
+  text: z.string().min(1),
 });
 
-const testimonialPhone = z.object({
+const reviewConversation = z.object({
   type: z.literal('phone'),
-  ...testimonialBase,
+  ...reviewBase,
   /** Linha sob o nome no cabeçalho da conversa. Decorativa. */
   status: z.string().optional(),
   messages: z
@@ -88,16 +107,16 @@ const testimonialPhone = z.object({
     .min(1),
 });
 
-const testimonials = z
+const reviews = z
   .object({
-    /** Chave mestra da seção. Sem depoimento real, fica false. */
+    /** Chave mestra da seção. Sem avaliação real, fica false. */
     enabled: z.boolean().default(false),
     /**
      * Conteúdo de demonstração, para avaliar o desenho antes de existirem
-     * depoimentos reais.
+     * avaliações reais.
      *
-     * Com `true`, a seção renderiza uma tarja visível dizendo que aquilo é
-     * exemplo de layout. A tarja é deliberada: um aviso que mora só no
+     * Com `true`, a seção renderiza um rótulo visível dizendo que aquilo é
+     * exemplo de layout. O rótulo é deliberado: um aviso que mora só no
      * código deixa de existir no momento em que mais importa, que é quando
      * alguém publica sem lembrar. Aqui, publicar por engano fica óbvio na
      * própria página.
@@ -112,9 +131,9 @@ const testimonials = z
      *
      * `demonstracao`: as dúvidas que aparecem antes de começar e a resposta
      * da BookGo, no mesmo formato de conversa. **Não tem nome e não afirma
-     * resultado de ninguém**, porque não é depoimento: é o método
+     * resultado de ninguém**, porque não é avaliação: é o método
      * respondendo. É a única forma honesta de usar este desenho sem uma
-     * pessoa real por trás, e por isso ela não precisa de tarja.
+     * pessoa real por trás, e por isso ela não precisa de rótulo.
      *
      * A distinção existe no schema, e não só na cabeça de quem escreve,
      * porque é ela que impede uma conversa inventada de ser publicada com
@@ -122,28 +141,29 @@ const testimonials = z
      */
     kind: z.enum(['depoimento', 'demonstracao']).default('depoimento'),
 
+    /** Título da seção. Vive aqui para cada produto ter a sua voz. */
     title: z.string().optional(),
-    intro: z.string().optional(),
+    subtitle: z.string().optional(),
     items: z
-      .array(z.discriminatedUnion('type', [testimonialCard, testimonialPhone]))
+      .array(z.discriminatedUnion('type', [reviewCard, reviewConversation]))
       .default([]),
   })
   .default({ enabled: false, items: [] })
   .refine((t) => !t.enabled || t.items.length > 0, {
     message:
-      'testimonials.enabled é true mas items está vazio. Depoimento não se inventa: preencha com texto real e autorizado, ou volte enabled para false.',
+      'reviews.enabled é true mas items está vazio. Avaliação não se inventa: preencha com texto real e autorizado, ou volte enabled para false.',
   })
   .refine((t) => !(t.enabled && !t.demo) || t.items.length > 0, {
     message:
-      'Seção de depoimentos ligada fora do modo demonstração exige itens reais e autorizados.',
+      'Seção de avaliações ligada fora do modo demonstração exige itens reais e autorizados.',
   })
-  /* Um depoimento sem autor não é depoimento: é uma frase solta apresentada
+  /* Uma avaliação sem autor não é avaliação: é uma frase solta apresentada
      como se alguém a tivesse dito. */
   .refine(
     (t) => t.kind !== 'depoimento' || t.items.every((i) => Boolean(i.name)),
     {
       message:
-        'Em kind: depoimento todo item precisa de name. Sem autor, a frase não é depoimento.',
+        'Em kind: depoimento todo item precisa de name. Sem autor, a frase não é avaliação de ninguém.',
     }
   )
   /* E o contrário: uma demonstração com nome passaria a afirmar que uma
@@ -157,8 +177,17 @@ const testimonials = z
   )
   .refine((t) => t.kind !== 'demonstracao' || !t.demo, {
     message:
-      'kind: demonstracao dispensa demo: a conversa já não se apresenta como depoimento de ninguém.',
-  });
+      'kind: demonstracao dispensa demo: a conversa já não se apresenta como avaliação de ninguém.',
+  })
+  /* Nota é afirmação sobre o que a pessoa achou. Numa demonstração não há
+     pessoa, então não há nota a exibir. */
+  .refine(
+    (t) => t.kind !== 'demonstracao' || t.items.every((i) => i.rating === undefined),
+    {
+      message:
+        'Em kind: demonstracao nenhum item pode ter rating. Não existe quem tenha dado a nota.',
+    }
+  );
 
 /* ------------------------------------------------------------------ */
 /*  Produtos — content/products/<slug>/index.yaml                      */
@@ -398,8 +427,11 @@ const products = defineCollection({
       icon: iconName.optional(),
     }),
 
-    /** Desligado por padrão; ver o bloco `testimonials` acima. */
-    testimonials,
+    /**
+     * Avaliações deste produto. Desligadas por padrão; ver o bloco
+     * `reviews` acima. A quantidade é livre e a seção se adapta sozinha.
+     */
+    reviews,
 
     /** Imagens editoriais distribuídas pela página. */
     images: z.array(productImageEntry).default([]),
@@ -424,7 +456,7 @@ const products = defineCollection({
            * livres: um CTA solto no meio de uma seção quebraria a leitura
            * do bloco em que caiu.
            */
-          after: z.enum(['how-it-works', 'materials', 'testimonials']),
+          after: z.enum(['how-it-works', 'materials', 'reviews']),
           text: z.string().min(20),
           /** Rótulo próprio, para não repetir o do checkout logo acima. */
           label: z.string().min(3).max(40).optional(),

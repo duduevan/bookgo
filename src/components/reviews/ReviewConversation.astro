@@ -1,13 +1,13 @@
 ---
 /**
- * Depoimento no formato de conversa de celular.
+ * Avaliação no formato de conversa de celular.
  *
  * Só Astro + HTML + CSS: nenhum framework, nenhuma biblioteca de animação,
  * zero JavaScript no cliente. A referência que originou este componente foi
  * feita em React com Framer Motion; aqui a entrada em cascata é
  * `animation-delay` calculado no build, um número por bolha.
  *
- * Sem `<style>` próprio de propósito — ver src/styles/testimonials.css.ts.
+ * Sem `<style>` próprio de propósito — ver src/styles/reviews.css.ts.
  *
  * Acessibilidade e honestidade da leitura:
  *  - a conversa é uma citação (`figure` + `blockquote`), não enfeite;
@@ -16,9 +16,10 @@
  *    foco por teclado que leve a lugar nenhum;
  *  - cada bolha diz de quem é, para o áudio não virar um bloco só.
  *
- * O componente não conhece nenhum depoimento: tudo entra por props.
+ * O componente não conhece nenhuma avaliação e nenhum produto: tudo entra
+ * por props.
  */
-import { initialsOf } from '../../lib/testimonials';
+import { initialsOf } from '../../lib/reviews';
 
 export interface PhoneMessage {
   side: 'incoming' | 'outgoing';
@@ -49,48 +50,48 @@ const {
 const STEP = 0.09;
 ---
 
-<figure class="tst-phone">
-  <div class="tst-frame">
+<figure class="rv-phone">
+  <div class="rv-frame">
     {/* Ilha/entalhe e barra de status: cenário puro. */}
-    <div class="tst-statusbar" aria-hidden="true">
-      <span class="tst-island"></span>
-      <span class="tst-signal">
+    <div class="rv-statusbar" aria-hidden="true">
+      <span class="rv-island"></span>
+      <span class="rv-signal">
         <i style="--h:35%"></i><i style="--h:55%"></i><i style="--h:75%"></i><i style="--h:100%"></i>
       </span>
-      <span class="tst-battery"><b></b></span>
+      <span class="rv-battery"><b></b></span>
     </div>
 
-    <header class="tst-header">
+    <header class="rv-header">
       {
         avatar ? (
-          <img class="tst-avatar" src={avatar} alt="" width="36" height="36" loading="lazy" decoding="async" />
+          <img class="rv-avatar" src={avatar} alt="" width="36" height="36" loading="lazy" decoding="async" />
         ) : (
-          <span class="tst-avatar tst-initials" aria-hidden="true">{initialsOf(name)}</span>
+          <span class="rv-avatar rv-initials" aria-hidden="true">{initialsOf(name)}</span>
         )
       }
-      <span class="tst-who">
-        <span class="tst-name">{name}</span>
-        {status && <span class="tst-status">{status}</span>}
+      <span class="rv-who">
+        <span class="rv-name">{name}</span>
+        {status && <span class="rv-status">{status}</span>}
       </span>
     </header>
 
-    <blockquote class="tst-thread">
+    <blockquote class="rv-thread">
       {
         messages.map((m, i) => (
           <p
-            class:list={['tst-bubble', m.side === 'incoming' ? 'tst-in' : 'tst-out']}
+            class:list={['rv-bubble', m.side === 'incoming' ? 'rv-in' : 'rv-out']}
             style={`--delay:${(i * STEP).toFixed(2)}s`}
           >
-            <span class="tst-sr">
+            <span class="rv-sr">
               {m.side === 'incoming' ? `${name}:` : `${outgoingName}:`}
             </span>
-            <span class="tst-text">{m.text}</span>
+            <span class="rv-text">{m.text}</span>
             {
               (m.time || (m.side === 'outgoing' && m.read)) && (
-                <span class="tst-meta" aria-hidden="true">
+                <span class="rv-meta" aria-hidden="true">
                   {m.time && <span>{m.time}</span>}
                   {m.side === 'outgoing' && m.read && (
-                    <svg class="tst-ticks" viewBox="0 0 20 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    <svg class="rv-ticks" viewBox="0 0 20 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" focusable="false">
                       <path d="M2 6.5 5 9.5 10.5 3" />
                       <path d="M8.5 6.5 11.5 9.5 17 3" />
                     </svg>
@@ -104,9 +105,9 @@ const STEP = 0.09;
     </blockquote>
 
     {/* Caixa de digitar: desenho, não campo. Sem input, sem botão, sem foco. */}
-    <div class="tst-composer" aria-hidden="true">
-      <span class="tst-field"></span>
-      <span class="tst-send">
+    <div class="rv-composer" aria-hidden="true">
+      <span class="rv-field"></span>
+      <span class="rv-send">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
           <path d="M4 12h14" /><path d="M12.5 6.5 18 12l-5.5 5.5" />
         </svg>

@@ -1,0 +1,83 @@
+---
+/**
+ * Avaliação em cartão: a forma sóbria, para texto corrido.
+ *
+ * Semântica de citação real (`figure` + `blockquote` + `figcaption`), não um
+ * cartão genérico: quem usa leitor de tela ouve que aquilo é a fala de uma
+ * pessoa, e não texto da BookGo.
+ *
+ * O texto entra inteiro. Não há recorte por altura nem reticências para
+ * igualar cartão: mensagem cortada é mensagem escondida, e uma avaliação
+ * pela metade não é a avaliação que a pessoa escreveu.
+ *
+ * Sem `<style>` próprio de propósito, ver src/styles/reviews.css.ts.
+ */
+import { initialsOf, starsOf } from '../../lib/reviews';
+
+interface Props {
+  name: string;
+  /** Contexto curto, quando a pessoa autorizou. */
+  role?: string;
+  /** Quando a avaliação foi escrita. Texto livre e curto. */
+  date?: string;
+  /** Nota real de 1 a 5. Sem ela, nenhuma estrela é exibida. */
+  rating?: number;
+  avatar?: string;
+  text: string;
+}
+
+const { name, role, date, rating, avatar, text } = Astro.props;
+
+const stars = starsOf(rating);
+/* A nota é dado, então também é texto: quem não enxerga as estrelas
+   precisa ouvir o número, e não cinco ícones sem rótulo. */
+const ratingLabel = stars.length > 0 ? `Nota ${Math.round(rating!)} de 5` : '';
+---
+
+<figure class="rv-card">
+  {
+    stars.length > 0 && (
+      <div class="rv-stars" role="img" aria-label={ratingLabel}>
+        {stars.map((on) => (
+          <svg
+            class={on ? '' : 'rv-star-off'}
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="M12 3.5l2.6 5.6 6.1.8-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6L3.3 9.9l6.1-.8z" />
+          </svg>
+        ))}
+      </div>
+    )
+  }
+
+  <blockquote class="rv-quote">{text}</blockquote>
+
+  <figcaption class="rv-cap">
+    {
+      avatar ? (
+        <img
+          class="rv-avatar"
+          src={avatar}
+          alt=""
+          width="40"
+          height="40"
+          loading="lazy"
+          decoding="async"
+        />
+      ) : (
+        /* Sem foto, as iniciais do nome. Derivar do que existe é honesto;
+           gerar um rosto que não existe não seria, e foto de banco de
+           imagens apresentada como cliente seria pior ainda. */
+        <span class="rv-avatar rv-initials" aria-hidden="true">{initialsOf(name)}</span>
+      )
+    }
+    <span class="rv-who">
+      <span class="rv-name">{name}</span>
+      {role && <span class="rv-role">{role}</span>}
+      {!role && date && <span class="rv-date">{date}</span>}
+    </span>
+  </figcaption>
+</figure>
