@@ -22,11 +22,20 @@ const OUT = '_verificacao';
 
 /** Páginas com tela; a chave é o nome do arquivo. */
 const PAGINAS = [
+  ['home', '/', ['desktop', 'mobile']],
   ['lp', '/casa-organizada-em-15-minutos/', ['desktop', 'mobile']],
   ['artigo', '/blog/organizacao/como-manter-a-casa-organizada/', ['desktop', 'mobile']],
   ['categoria', '/blog/organizacao/', ['desktop', 'mobile']],
-  ['home', '/', ['desktop']],
 ];
+
+/**
+ * Destino que os CTAs de compra da landing page precisam ter.
+ *
+ * Conferido no HTML publicado, não no build local: entre um e outro existe
+ * um envio por FTPS, e é justamente o que acontece no meio que ninguém vê.
+ * Nenhuma requisição é feita ao checkout, só a leitura do href.
+ */
+const CHECKOUT = 'https://pay.kiwify.com.br/UJyyPuL';
 
 /** Recursos sem tela, conferidos só pelo status e pelo corpo. */
 const RECURSOS = ['/sitemap-index.xml', '/robots.txt', '/llms.txt'];
@@ -115,6 +124,23 @@ for (const [nome, caminho, viewports] of PAGINAS) {
     }));
 
     await page.screenshot({ path: `${OUT}/${nome}-${vp}.jpg`, fullPage: true, quality: 80, type: 'jpeg' });
+
+    /* Na LP, todo CTA de compra tem que apontar para o checkout real. */
+    if (nome === 'lp' && vp === 'desktop') {
+      const hrefs = await page.evaluate(() =>
+        [...document.querySelectorAll('a')].map((a) => a.href)
+      );
+      const paraCheckout = hrefs.filter((h) => h.startsWith('https://pay.kiwify.com.br/'));
+      const errados = paraCheckout.filter((h) => h !== CHECKOUT);
+      registrar(`         checkout: ${paraCheckout.length} link(s), destino ${CHECKOUT}`);
+      if (paraCheckout.length === 0) problemas.push('nenhum CTA da LP aponta para o checkout');
+      for (const h of errados) problemas.push(`CTA da LP com destino inesperado: ${h}`);
+
+      const pendente = await page.evaluate(() =>
+        document.body.innerText.includes('Checkout em configuração')
+      );
+      if (pendente) problemas.push('a LP ainda mostra "Checkout em configuração"');
+    }
 
     const quebradas = diag.imgs.filter((i) => !i.ok);
     registrar(
