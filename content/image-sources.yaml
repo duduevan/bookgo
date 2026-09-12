@@ -145,3 +145,86 @@ images:
     width: 1000
     fit: contain
     background: "#FFFFFF"
+
+  # ── Artigos novos de Casa > Organização ─────────────────────
+  # Mesma regra das entradas acima: caminho público do CDN, sem token.
+
+  - target: src/assets/blog/organizacao/organizar-a-cozinha-em-15-minutos/bancada-depois-do-jantar.webp
+    provider: freepik
+    assetId: 22120753
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/close-up-dirty-plates-left-around-home_22120753.htm
+    previewPath: /free-photo/close-up-dirty-plates-left-around-home_23-2149248527.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/organizacao/organizar-a-cozinha-em-15-minutos/cozinha-pia-organizada.webp
+    provider: freepik
+    assetId: 12339105
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/white-kitchen-cabinets_12339105.htm
+    previewPath: /free-photo/white-kitchen-cabinets-with-metal-handles-doors-near-washbasin-with-bouquet-flowers-plate-vegetables_169016-9607.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/organizacao/casa-desarruma-no-dia-seguinte/sala-vivida-fim-de-tarde.webp
+    provider: freepik
+    assetId: 9434386
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/still-life-cozy-home_9434386.htm
+    previewPath: /free-photo/still-life-cozy-home-interior-details-living-room_169016-3294.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/organizacao/casa-desarruma-no-dia-seguinte/rotina-curta-quarto.webp
+    provider: freepik
+    assetId: 21934435
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/woman-making-her-bed_21934435.htm
+    previewPath: /free-photo/woman-making-her-bed-after-sleep-morning_1303-30235.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/organizacao/o-minimo-para-manter-a-casa-em-ordem/entrada-da-casa-fim-do-dia.webp
+    provider: freepik
+    assetId: 83062064
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/still-life-shoe-rack-indoors_83062064.htm
+    previewPath: /free-photo/still-life-shoe-rack-indoors_23-2150960685.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/organizacao/o-minimo-para-manter-a-casa-em-ordem/cozinha-minimo-do-dia.webp
+    provider: freepik
+    assetId: 28004558
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/bright-kitchen-interior_28004558.htm
+    previewPath: /free-photo/bright-kitchen-interior-scandinavian-style-provence-furniture_1182-2669.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/organizacao/pontos-de-acumulo-da-casa/cadeira-quarto-acumulo.webp
+    provider: freepik
+    assetId: 24996551
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/dirty-home-concept-with-clothes-chair_24996551.htm
+    previewPath: /free-photo/dirty-home-concept-with-clothes-chair_23-2149363743.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/organizacao/pontos-de-acumulo-da-casa/bancada-livre-depois.webp
+    provider: freepik
+    assetId: 30896223
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/modern-white-kitchen-countertop_30896223.htm
+    previewPath: /free-photo/modern-white-kitchen-countertop-with-free-space_43614-889.jpg
+    ratio: "16:10"
+    width: 1400
