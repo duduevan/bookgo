@@ -74,3 +74,152 @@ images:
 
   # materiais-impressos-mesa.webp fica de fora de propósito: o mockup só
   # deve sair dos quatro PDFs reais, nunca de páginas inventadas.
+
+# ── Bloco TEMPORÁRIO de candidatas ──────────────────────────
+#  Materializadas só para serem vistas. Nada em `_candidatos/` é importado,
+#  então não entra no build do site. O bloco e os arquivos saem assim que a
+#  escolha estiver feita.
+
+  - target: src/assets/_candidatos/bancada-422283230.webp
+    provider: freepik
+    assetId: 422283230
+    license: free
+    previewPath: /free-photo/morning-detox-kitchen-counter-with-citrus-pear-juice-water_169016-69427.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/_candidatos/bancada-422146427.webp
+    provider: freepik
+    assetId: 422146427
+    license: free
+    previewPath: /free-photo/fresh-set-home-kitchen-near-board-knife-orange-juice_169016-69324.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/_candidatos/bancada-5081039.webp
+    provider: freepik
+    assetId: 5081039
+    license: free
+    previewPath: /free-photo/close-up-dishes-kitchen-decoration-shelf_23-2148238581.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/_candidatos/bancada-5080935.webp
+    provider: freepik
+    assetId: 5080935
+    license: free
+    previewPath: /free-photo/close-up-bowls-tabletop-modern-kitchen_23-2148238629.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/_candidatos/bancada-34653888.webp
+    provider: freepik
+    assetId: 34653888
+    license: free
+    previewPath: /free-photo/high-angle-delicious-groceries-countertop_23-2149936248.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/_candidatos/hero-12975758.webp
+    provider: freepik
+    assetId: 12975758
+    license: free
+    previewPath: /free-photo/medium-shot-woman-cleaning-plate_23-2148883390.jpg
+    ratio: "4:5"
+    width: 1400
+
+  - target: src/assets/_candidatos/hero-12975762.webp
+    provider: freepik
+    assetId: 12975762
+    license: free
+    previewPath: /free-photo/medium-shot-woman-cleaning_23-2148883394.jpg
+    ratio: "4:5"
+    width: 1400
+
+  - target: src/assets/_candidatos/hero-57312636.webp
+    provider: freepik
+    assetId: 57312636
+    license: free
+    previewPath: /free-photo/young-woman-drinking-coffee-kitchen_23-2150656207.jpg
+    ratio: "4:5"
+    width: 1400
+
+  - target: src/assets/_candidatos/hero-78042833.webp
+    provider: freepik
+    assetId: 78042833
+    license: free
+    previewPath: /free-photo/portrait-modern-woman-morning-standing-kitchen-making-herself-cup-coffee_1258-193475.jpg
+    ratio: "4:5"
+    width: 1400
+
+  - target: src/assets/_candidatos/hero-22706503.webp
+    provider: freepik
+    assetId: 22706503
+    license: free
+    previewPath: /free-photo/woman-looking-busy-while-cleaning-kitchen_259150-59485.jpg
+    ratio: "4:5"
+    width: 1400
+
+  - target: src/assets/_candidatos/sessao-24747629.webp
+    provider: freepik
+    assetId: 24747629
+    license: free
+    previewPath: /free-photo/medium-shot-woman-cleaning-kitchen_23-2149358488.jpg
+    ratio: "16:9"
+    width: 1400
+
+  - target: src/assets/_candidatos/sessao-22706508.webp
+    provider: freepik
+    assetId: 22706508
+    license: free
+    previewPath: /free-photo/woman-looking-busy-while-cleaning-kitchen_259150-59486.jpg
+    ratio: "16:9"
+    width: 1400
+
+  - target: src/assets/_candidatos/sessao-418364313.webp
+    provider: freepik
+    assetId: 418364313
+    license: free
+    previewPath: /free-photo/teenage-girl-cleans-kitchen-house-cleaning-daily-routine-housework_169016-67990.jpg
+    ratio: "16:9"
+    width: 1400
+
+  - target: src/assets/_candidatos/sessao-12975741.webp
+    provider: freepik
+    assetId: 12975741
+    license: free
+    previewPath: /free-photo/happy-woman-cleaning-bowl-medium-shot_23-2148883373.jpg
+    ratio: "16:9"
+    width: 1400
+
+  - target: src/assets/_candidatos/cadeira-24996528.webp
+    provider: freepik
+    assetId: 24996528
+    license: free
+    previewPath: /free-photo/high-angle-clothes-chair_23-2149363742.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/_candidatos/cadeira-24996545.webp
+    provider: freepik
+    assetId: 24996545
+    license: free
+    previewPath: /free-photo/dirty-home-with-clothes-chair_23-2149363744.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/_candidatos/cadeira-9243677.webp
+    provider: freepik
+    assetId: 9243677
+    license: free
+    previewPath: /free-photo/front-view-casual-clothes-top-chair_23-2148610412.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/_candidatos/cadeira-24996542.webp
+    provider: freepik
+    assetId: 24996542
+    license: free
+    previewPath: /free-photo/high-angle-messy-bedroom-with-clothes-chair_23-2149363750.jpg
+    ratio: "16:10"
+    width: 1400
