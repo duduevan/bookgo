@@ -1,4 +1,13 @@
 ---
+/**
+ * Seção da landing page e do site.
+ *
+ * `layout="split"` existe para o problema mais visível da LP: seções cujo
+ * cabeçalho é curto e o corpo é longo ficavam com o título sozinho à
+ * esquerda e meia página vazia à direita. No split o cabeçalho ocupa uma
+ * coluna estreita própria e o corpo ocupa a larga ao lado — a mancha fecha
+ * e a leitura ganha direção.
+ */
 interface Props {
   id?: string;
   eyebrow?: string;
@@ -7,6 +16,7 @@ interface Props {
   tone?: 'default' | 'warm' | 'soft' | 'accent';
   align?: 'start' | 'center';
   narrow?: boolean;
+  layout?: 'stack' | 'split';
 }
 
 const {
@@ -17,11 +27,12 @@ const {
   tone = 'default',
   align = 'start',
   narrow = false,
+  layout = 'stack',
 } = Astro.props;
 ---
 
 <section id={id} class:list={['section', `tone-${tone}`, `align-${align}`]}>
-  <div class="container">
+  <div class:list={['container', `l-${layout}`]}>
     {
       (eyebrow || title || intro) && (
         <header class="head">
@@ -65,6 +76,23 @@ const {
 
   .body.narrow {
     max-width: var(--w-text);
+  }
+
+  @media (min-width: 62rem) {
+    .l-split {
+      display: grid;
+      grid-template-columns: minmax(0, 19rem) minmax(0, 1fr);
+      gap: var(--s-9);
+      align-items: start;
+    }
+
+    .l-split .head {
+      margin-bottom: 0;
+      /* Acompanha a rolagem do corpo longo sem virar coluna sticky de
+         verdade: o deslocamento é só óptico, para o título não parecer
+         ancorado no topo absoluto. */
+      padding-top: var(--s-2);
+    }
   }
 
   .head {

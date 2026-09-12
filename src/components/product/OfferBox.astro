@@ -1,6 +1,29 @@
 ---
+/**
+ * Bloco de oferta.
+ *
+ * A versão anterior era um cartão branco com a lista de um lado e o preço do
+ * outro, separados por um filete. Funcionava, mas não tinha peso comercial:
+ * o preço era só um número grande e a garantia ficava numa seção solta lá
+ * embaixo, longe da decisão.
+ *
+ * Agora a coluna de compra é um painel próprio, na cor do produto, com
+ * preço, botão e as três reasseguranças agrupadas — garantia, pagamento
+ * único e acesso. Quem chega aqui vê a decisão inteira num lugar só, que é
+ * o que um bloco de oferta precisa entregar.
+ *
+ * Nada de escassez: sem contador, sem "vagas", sem preço riscado que nunca
+ * existiu. As reasseguranças são fatos do produto.
+ */
 import Cta from '../ui/Cta.astro';
+import Icon from '../ui/Icon.astro';
 import BulletList from './BulletList.astro';
+import type { IconName } from '../../lib/icons';
+
+interface Reassurance {
+  icon: IconName;
+  text: string;
+}
 
 interface Props {
   includes: string[];
@@ -8,12 +31,20 @@ interface Props {
   priceNote?: string;
   ctaLabel: string;
   ctaHref: string | null;
-  /** Atributos de evento de clique, vindos de `eventAttrs()`. */
+  /** Fatos do produto exibidos sob o botão. Nunca prova social. */
+  reassurances?: Reassurance[];
   track?: Record<string, string>;
 }
 
-const { includes, price, priceNote, ctaLabel, ctaHref, track = {} } =
-  Astro.props;
+const {
+  includes,
+  price,
+  priceNote,
+  ctaLabel,
+  ctaHref,
+  reassurances = [],
+  track = {},
+} = Astro.props;
 ---
 
 <div class="box">
@@ -23,9 +54,26 @@ const { includes, price, priceNote, ctaLabel, ctaHref, track = {} } =
   </div>
 
   <div class="buy">
-    <p class="amount">{price}</p>
-    <p class="terms">pagamento único</p>
+    <div class="price">
+      <p class="amount">{price}</p>
+      <p class="terms">pagamento único · sem mensalidade</p>
+    </div>
+
     <Cta href={ctaHref} label={ctaLabel} size="lg" block track={track} />
+
+    {
+      reassurances.length > 0 && (
+        <ul class="reassure">
+          {reassurances.map((item) => (
+            <li>
+              <Icon name={item.icon} />
+              <span>{item.text}</span>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
     {priceNote && <p class="note">{priceNote}</p>}
   </div>
 </div>
@@ -36,9 +84,14 @@ const { includes, price, priceNote, ctaLabel, ctaHref, track = {} } =
     gap: var(--s-6);
     background: var(--color-surface-raised);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    padding: var(--s-6);
-    box-shadow: var(--shadow);
+    border-radius: var(--radius-xl);
+    padding: var(--s-5);
+    box-shadow: var(--shadow-lg);
+    text-align: left;
+  }
+
+  .items {
+    padding: var(--s-3) var(--s-2) 0;
   }
 
   h3 {
@@ -46,45 +99,90 @@ const { includes, price, priceNote, ctaLabel, ctaHref, track = {} } =
     margin-bottom: var(--s-5);
   }
 
+  /* Painel de compra: superfície própria, na cor do produto. É o que
+     separa "ler o que vem junto" de "decidir". */
   .buy {
-    border-top: 1px solid var(--color-border);
-    padding-top: var(--s-6);
+    /* Mais fundo que `--color-primary-soft`: a seção da oferta já usa esse
+       tom, e um painel da mesma cor do fundo não se destacaria do cartão. */
+    background: color-mix(in srgb, var(--color-primary) 20%, #ffffff);
+    border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
+    border-radius: var(--radius-lg);
+    padding: var(--s-6);
     text-align: center;
   }
 
-  .amount {
-    font-size: var(--t-4);
-    font-weight: 680;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
-  }
-
-  .terms {
-    margin-top: var(--s-1);
-    font-size: var(--t--1);
-    color: var(--color-muted);
+  .price {
     margin-bottom: var(--s-5);
   }
 
-  .note {
-    margin-top: var(--s-4);
+  .buy :global(.pending-note) {
+    justify-content: center;
+  }
+
+  .amount {
+    font-size: clamp(2.75rem, 2rem + 3vw, 3.5rem);
+    font-weight: 680;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    color: var(--color-text);
+  }
+
+  .terms {
+    margin-top: var(--s-2);
     font-size: var(--t--1);
-    color: var(--color-muted);
+    color: color-mix(in srgb, var(--color-muted) 55%, var(--color-text));
+  }
+
+  .reassure {
+    list-style: none;
+    margin: var(--s-5) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-3);
+    text-align: left;
+  }
+
+  .reassure li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--s-3);
+    font-size: var(--t--1);
+    /* O `muted` do produto foi calibrado para o fundo creme da página; neste
+       painel ele perde contraste, então a mistura puxa em direção ao texto. */
+    color: color-mix(in srgb, var(--color-muted) 45%, var(--color-text));
+    line-height: 1.45;
+  }
+
+  .reassure :global(.icon) {
+    --icon-size: 1.125rem;
+    color: var(--color-primary-dark);
+    margin-top: 0.1em;
+  }
+
+  .note {
+    margin-top: var(--s-5);
+    padding-top: var(--s-4);
+    border-top: 1px solid
+      color-mix(in srgb, var(--color-primary) 18%, transparent);
+    font-size: 0.8125rem;
+    color: color-mix(in srgb, var(--color-muted) 60%, var(--color-text));
+    text-align: left;
   }
 
   @media (min-width: 52rem) {
     .box {
-      grid-template-columns: 1fr minmax(16rem, 20rem);
-      gap: var(--s-8);
-      padding: var(--s-8);
+      grid-template-columns: minmax(0, 1fr) minmax(19rem, 22rem);
+      gap: var(--s-7);
+      padding: var(--s-6);
       align-items: start;
     }
 
-    .buy {
-      border-top: 0;
-      border-left: 1px solid var(--color-border);
-      padding-top: 0;
-      padding-left: var(--s-8);
+    /* O painel de compra é mais alto que a lista. Centrar a coluna da
+       esquerda distribui a sobra em cima e embaixo, em vez de deixar um
+       vazio inteiro no pé do cartão. */
+    .items {
+      padding: var(--s-4) var(--s-3) var(--s-4) var(--s-4);
+      align-self: center;
     }
   }
 </style>

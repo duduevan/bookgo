@@ -1,0 +1,65 @@
+---
+/**
+ * Imagem editorial da landing page.
+ *
+ * Mesmo princípio das imagens de artigo: metadados no YAML, arquivo em
+ * `src/assets/products/<slug>/`, e **nada renderiza enquanto o arquivo não
+ * existir**. É o que permite desenhar a página inteira antes de a
+ * fotografia chegar, sem publicar imagem quebrada nem moldura vazia.
+ *
+ * Sem JavaScript. `title` não é preenchido — repetir o alt ali é ruído.
+ */
+import { Image } from 'astro:assets';
+import { productImage } from '../../lib/product-images';
+
+interface Props {
+  slug: string;
+  src: string;
+  alt: string;
+  caption?: string;
+  /** Proporção do quadro. A da LP é mais larga que a de artigo. */
+  ratio?: string;
+}
+
+const { slug, src, alt, caption, ratio = '16 / 9' } = Astro.props;
+const image = productImage(slug, src);
+---
+
+{
+  image && (
+    <figure class="product-figure" style={`--ratio:${ratio}`}>
+      <Image
+        src={image}
+        alt={alt}
+        widths={[640, 960, 1280, 1600]}
+        sizes="(min-width: 72rem) 64rem, calc(100vw - 2 * var(--gutter))"
+        loading="lazy"
+        decoding="async"
+        quality={74}
+      />
+      {caption && <figcaption>{caption}</figcaption>}
+    </figure>
+  )
+}
+
+<style>
+  .product-figure {
+    margin: 0;
+  }
+
+  .product-figure :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: var(--ratio);
+    border-radius: var(--radius-xl);
+    background: var(--color-surface-raised);
+  }
+
+  figcaption {
+    margin-top: var(--s-3);
+    font-size: var(--t--1);
+    color: var(--color-muted);
+  }
+</style>

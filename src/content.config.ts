@@ -85,6 +85,17 @@ const testimonials = z
   .object({
     /** Chave mestra da seção. Sem depoimento real, fica false. */
     enabled: z.boolean().default(false),
+    /**
+     * Conteúdo de demonstração, para avaliar o desenho antes de existirem
+     * depoimentos reais.
+     *
+     * Com `true`, a seção renderiza uma tarja visível dizendo que aquilo é
+     * exemplo de layout. A tarja é deliberada: um aviso que mora só no
+     * código deixa de existir no momento em que mais importa, que é quando
+     * alguém publica sem lembrar. Aqui, publicar por engano fica óbvio na
+     * própria página.
+     */
+    demo: z.boolean().default(false),
     title: z.string().optional(),
     intro: z.string().optional(),
     items: z
@@ -95,6 +106,10 @@ const testimonials = z
   .refine((t) => !t.enabled || t.items.length > 0, {
     message:
       'testimonials.enabled é true mas items está vazio. Depoimento não se inventa: preencha com texto real e autorizado, ou volte enabled para false.',
+  })
+  .refine((t) => !(t.enabled && !t.demo) || t.items.length > 0, {
+    message:
+      'Seção de depoimentos ligada fora do modo demonstração exige itens reais e autorizados.',
   });
 
 /* ------------------------------------------------------------------ */
@@ -122,6 +137,27 @@ const theme = z.object({
   border: z.string(),
   /** Cor do texto sobre `primary`. Padrão branco. */
   onPrimary: z.string().optional(),
+});
+
+/**
+ * Imagem editorial da landing page.
+ *
+ * Mesma convenção das imagens de artigo: metadados no YAML, arquivo em
+ * `src/assets/products/<slug>/`. `placement` diz em qual âncora da página ela
+ * entra — a LP é gerada, então a posição precisa ser dado, não markup.
+ *
+ * Arquivo ainda inexistente não quebra o build e não deixa buraco: o slot
+ * não renderiza e o build lista o que falta.
+ */
+const productImageEntry = z.object({
+  id: z
+    .string()
+    .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'id deve ser minúsculo, com hífens'),
+  src: z.string().regex(/\.(webp|avif|jpe?g|png)$/i),
+  alt: z.string().min(15).max(180),
+  caption: z.string().optional(),
+  /** Âncoras conhecidas pela página do produto. */
+  placement: z.enum(['after-method', 'after-materials', 'before-offer']),
 });
 
 const products = defineCollection({
@@ -162,10 +198,17 @@ const products = defineCollection({
     }),
 
     hero: z.object({
+      /** Sobrelinha curta acima do título. Ex.: o nome do método. */
+      eyebrow: z.string().optional(),
       headline: z.string(),
       subheadline: z.string(),
-      /** Reforços curtos abaixo do CTA (fatos sobre o produto, não provas sociais). */
-      highlights: z.array(z.string()).default([]),
+      /**
+       * Reforços curtos — fatos sobre o produto, nunca prova social.
+       * Viram o cartão flutuante da composição do hero.
+       */
+      highlights: z
+        .array(z.object({ text: z.string(), icon: iconName.optional() }))
+        .default([]),
       /**
        * Imagem editorial do hero. Nome do arquivo dentro de
        * `src/assets/products/<slug>/`. Sem ela, o hero usa só a
@@ -224,6 +267,14 @@ const products = defineCollection({
     offer: section.extend({
       includes: z.array(z.string()),
       priceNote: z.string().optional(),
+      /**
+       * Reasseguranças exibidas sob o botão. **Fatos do produto**, nunca
+       * prova social, número de alunos ou escassez — ver as regras de
+       * conteúdo do CLAUDE.md.
+       */
+      reassurances: z
+        .array(z.object({ icon: iconName, text: z.string() }))
+        .default([]),
     }),
 
     guarantee: section.extend({
@@ -233,6 +284,9 @@ const products = defineCollection({
 
     /** Desligado por padrão; ver o bloco `testimonials` acima. */
     testimonials,
+
+    /** Imagens editoriais distribuídas pela página. */
+    images: z.array(productImageEntry).default([]),
 
     faq: section.extend({
       items: z.array(z.object({ q: z.string(), a: z.string() })),

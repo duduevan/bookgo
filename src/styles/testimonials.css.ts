@@ -15,6 +15,15 @@
  * `--bookgo-*`. É o que deixa a peça assumir a paleta de cada produto.
  */
 export const TESTIMONIALS_CSS = `
+/* Tarja de demonstração. Tracejada e em tom de aviso: precisa ser
+   inconfundível na página, não discreta. */
+.tst-demo{display:block;margin:0 0 var(--s-6);padding:var(--s-4) var(--s-5);
+border:1px dashed color-mix(in srgb, var(--color-accent) 55%, var(--color-border));
+border-radius:var(--radius);background:color-mix(in srgb, var(--color-accent) 8%, transparent);
+color:var(--color-text);font-size:var(--t--1);max-width:44rem;margin-inline:auto;
+text-align:left}
+.tst-demo strong{font-weight:var(--w-semibold)}
+
 .tst-items{display:grid;gap:var(--s-5);align-items:start;
 grid-template-columns:repeat(auto-fit,minmax(min(19rem,100%),1fr))}
 

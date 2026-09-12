@@ -8,12 +8,21 @@ interface Props {
   items: Array<{ title: string; text: string; icon?: IconName }>;
   variant?: 'card' | 'plain';
   min?: string;
+  /**
+   * Faz o primeiro cartão ocupar duas colunas nas telas largas.
+   *
+   * Resolve o órfão: cinco cartões numa grade de três deixavam uma lacuna
+   * do tamanho de um cartão na segunda linha. Com o primeiro em dobro, a
+   * contagem fecha (2+1 / 1+1+1) e a hierarquia ainda melhora — o benefício
+   * de abertura ganha o peso que a ordem já sugeria.
+   */
+  feature?: boolean;
 }
 
-const { items, variant = 'card', min = '17rem' } = Astro.props;
+const { items, variant = 'card', min = '17rem', feature = false } = Astro.props;
 ---
 
-<ul class:list={['grid', `v-${variant}`]} style={`--min:${min}`}>
+<ul class:list={['grid', `v-${variant}`, { feature }]} style={`--min:${min}`}>
   {
     items.map((item) => (
       <li>
@@ -65,5 +74,51 @@ const { items, variant = 'card', min = '17rem' } = Astro.props;
   .v-plain li {
     padding-top: var(--s-4);
     border-top: 2px solid var(--color-border);
+  }
+
+  @media (min-width: 64rem) {
+    .feature {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .feature > li:first-child {
+      grid-column: span 2;
+    }
+
+    /* No cartão em dobro, título e texto lado a lado. Dividir o parágrafo
+       em duas colunas foi a primeira tentativa e ficou pior: um texto curto
+       quebrado ao meio parece erro de renderização, não hierarquia. */
+    .feature > li:first-child {
+      display: grid;
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
+      gap: var(--s-6);
+      align-items: start;
+    }
+
+    .feature > li:first-child h3 {
+      font-size: var(--t-2);
+      text-wrap: balance;
+    }
+
+    .feature > li:first-child p {
+      margin-top: 0;
+      font-size: var(--t-0);
+    }
+
+    /* O ícone acompanha o título na coluna da esquerda. */
+    .feature > li:first-child :global(.lead) {
+      grid-column: 1;
+      --icon-size: 1.75rem;
+    }
+
+    .feature > li:first-child h3 {
+      grid-column: 1;
+      align-self: start;
+    }
+
+    .feature > li:first-child p {
+      grid-column: 2;
+      grid-row: 1 / 3;
+    }
   }
 </style>

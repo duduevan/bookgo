@@ -40,13 +40,23 @@ interface PhoneItem {
 
 interface Props {
   enabled: boolean;
+  /**
+   * Conteúdo de demonstração: renderiza uma tarja **visível** dizendo que
+   * aquilo é exemplo de layout.
+   *
+   * A tarja é deliberada e não deve ser escondida. Um aviso que mora só no
+   * código deixa de existir exatamente quando mais importa — na hora em que
+   * alguém publica sem lembrar. Assim, publicar por engano fica óbvio na
+   * própria página.
+   */
+  demo?: boolean;
   title?: string;
   intro?: string;
   items: Array<CardItem | PhoneItem>;
   tone?: 'default' | 'warm' | 'soft';
 }
 
-const { enabled, title, intro, items, tone = 'warm' } = Astro.props;
+const { enabled, demo = false, title, intro, items, tone = 'warm' } = Astro.props;
 
 const show = enabled && items.length > 0;
 
@@ -57,8 +67,14 @@ const onlyPhones = items.every((i) => i.type === 'phone');
 
 {
   show && (
-    <Section tone={tone} title={title} intro={intro}>
+    <Section tone={tone} title={title} intro={intro} align={onlyPhones ? 'center' : 'start'}>
       <style is:inline set:html={TESTIMONIALS_CSS} />
+      {demo && (
+        <p class="tst-demo" role="note">
+          <strong>Exemplo de layout.</strong> Os textos abaixo são conteúdo de
+          demonstração — não são depoimentos de pessoas reais.
+        </p>
+      )}
       <div class:list={['tst-items', { 'tst-phones': onlyPhones }]}>
         {items.map((item) =>
           item.type === 'phone' ? (

@@ -142,6 +142,58 @@ dentro da guarda de renderização. Não é estilo por preferência: Astro empac
 o CSS de todo componente **importado**, renderizado ou não, e a LP pagaria
 ~16 KB por uma seção que não aparece. Mesma solução do banner de consentimento.
 
+### Composição da landing page
+
+Duas ferramentas resolvem o vício de "título à esquerda, metade da tela
+vazia à direita":
+
+- **`<Section layout="split">`** põe o cabeçalho numa coluna estreita e o
+  corpo na larga ao lado. Usado em problema, método, módulos, FAQ e
+  relacionados — seções de cabeçalho curto e corpo longo.
+- **`<CardGrid feature>`** faz o primeiro cartão ocupar duas colunas. Resolve
+  o órfão de cinco cartões numa grade de três, e a hierarquia melhora junto.
+
+Quando um grid ficar com lacuna na última linha, ajuste `min` antes de
+aceitar o buraco: `min` grande demais colapsa para uma coluna, pequeno
+demais cria o órfão.
+
+### Hero do produto
+
+Duas colunas no desktop: copy à esquerda, quadro de imagem à direita com o
+cartão de reforços sobreposto no canto. Os reforços (`hero.highlights`) são
+fatos do produto, nunca prova social.
+
+**Sem a imagem, o quadro não vira buraco** — usa gradiente da paleta do
+produto e continua sendo superfície intencional. No mobile, porém, ele é
+escondido: ali seria uma tela inteira de rolagem sem entregar nada. Quando o
+arquivo chegar, entra sem mudar layout: a proporção já está reservada.
+
+### Depoimentos em modo demonstração
+
+`testimonials.demo: true` renderiza a seção com uma **tarja visível** na
+página dizendo que aquilo é exemplo de layout. A tarja não deve ser
+escondida: um aviso que mora só no código deixa de existir exatamente quando
+mais importa — na hora em que alguém publica sem lembrar.
+
+Para publicar de verdade: troque os textos por mensagens reais e
+autorizadas, apague `demo`, mantenha `enabled: true`. Sem `demo`, o build
+exige itens.
+
+### Imagens da landing page
+
+Mesma convenção do blog: metadados no YAML, arquivo em
+`src/assets/products/<slug>/`, e **nada renderiza enquanto o arquivo não
+existir** — o build lista o que falta, com proporção e função de cada uma.
+
+```yaml
+images:
+  - id: sessao-curta-cozinha
+    src: sessao-curta-cozinha.webp
+    alt: Descrição da cena
+    caption: Opcional
+    placement: after-method   # after-method | after-materials | before-offer
+```
+
 ### Vitrine de componentes
 
 `npm run dev` e `/dev/componentes/` mostram todos os ícones e os dois formatos

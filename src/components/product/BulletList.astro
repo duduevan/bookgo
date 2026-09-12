@@ -36,6 +36,12 @@ const { items, marker = 'dot', columns = false } = Astro.props;
     gap: var(--s-4);
   }
 
+  /* A lista de itens inclusos na oferta ganha respiro: ela divide altura
+     com o painel de preço, e linhas apertadas deixavam a coluna curta. */
+  .m-check {
+    gap: var(--s-5);
+  }
+
   li {
     display: grid;
     grid-template-columns: 1.25rem 1fr;

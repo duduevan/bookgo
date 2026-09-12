@@ -14,7 +14,8 @@ import Faq from '../components/product/Faq.astro';
 import TestimonialsSection from '../components/testimonials/TestimonialsSection.astro';
 import PostCard from '../components/blog/PostCard.astro';
 import AdSlot from '../components/ads/AdSlot.astro';
-import { productImage } from '../lib/product-images';
+import ProductImage from '../components/product/ProductImage.astro';
+import { productImage, missingProductImages } from '../lib/product-images';
 import TrackPageEvent from '../components/tracking/TrackPageEvent.astro';
 import { eventAttrs } from '../lib/tracking';
 import {
@@ -27,6 +28,22 @@ import {
 import * as schema from '../lib/schema';
 
 export async function getStaticPaths() {
+  /* Imagem declarada cujo arquivo ainda não chegou. Não é erro — é o que
+     permite desenhar a página antes de a fotografia existir. Mas precisa
+     aparecer no log, senão o slot silencioso passa despercebido. */
+  const missing = await missingProductImages();
+  if (missing.length > 0) {
+    console.warn(
+      `\n[imagens] ${missing.length} imagem(ns) de produto declarada(s) sem arquivo:`
+    );
+    for (const m of missing) {
+      console.warn(`  · ${m.expectedPath}`);
+      console.warn(`    ${m.role}`);
+      console.warn(`    alt: ${m.alt}`);
+    }
+    console.warn('');
+  }
+
   const products = await getProducts();
 
   return products.map((product) => {
@@ -64,6 +81,11 @@ const checkoutEvent = eventAttrs('checkout_click', {
   currency: d.price.currency,
 });
 
+/* Imagens editoriais, distribuídas pelas âncoras declaradas no YAML.
+   Arquivo inexistente não renderiza nada — ver ProductImage.astro. */
+const imagesAt = (placement: string) =>
+  d.images.filter((i) => i.placement === placement);
+
 const crumbs = [
   { name: 'Início', path: '/' },
   { name: d.name, path },
@@ -82,6 +104,7 @@ const crumbs = [
   ]}
 >
   <Hero
+    eyebrow={d.hero.eyebrow}
     headline={d.hero.headline}
     subheadline={d.hero.subheadline}
     highlights={[...d.hero.highlights]}
@@ -108,25 +131,39 @@ const crumbs = [
   </div>
 
   {/* Problema */}
-  <Section title={d.problem.title} intro={d.problem.intro} narrow>
-    <BulletList items={[...d.problem.items]} marker="dot" />
+  <Section layout="split" title={d.problem.title} intro={d.problem.intro}>
+    <BulletList items={[...d.problem.items]} marker="dot" columns />
     {d.problem.close && <p class="close">{d.problem.close}</p>}
   </Section>
 
   {/* Mecanismo */}
   <Section
     tone="warm"
+    layout="split"
     eyebrow={d.method.name}
     title={d.method.title}
     intro={d.method.intro}
   >
-    <CardGrid items={[...d.method.pillars]} variant="plain" min="18rem" />
+    <CardGrid items={[...d.method.pillars]} variant="plain" min="22rem" />
     {d.method.note && <p class="note">{d.method.note}</p>}
   </Section>
 
+  {
+    imagesAt('after-method').map((img) => (
+      <div class="container figure-wrap">
+        <ProductImage
+          slug={d.slug}
+          src={img.src}
+          alt={img.alt}
+          caption={img.caption}
+        />
+      </div>
+    ))
+  }
+
   {/* Benefícios */}
   <Section title={d.benefits.title} intro={d.benefits.intro}>
-    <CardGrid items={[...d.benefits.items]} />
+    <CardGrid items={[...d.benefits.items]} feature />
   </Section>
 
   {/* Como funciona */}
@@ -135,7 +172,11 @@ const crumbs = [
   </Section>
 
   {/* Conteúdo do produto */}
-  <Section title={d.contents.title} intro={d.contents.intro}>
+  <Section
+    layout="split"
+    title={d.contents.title}
+    intro={d.contents.intro}
+  >
     <ModuleList modules={[...d.contents.modules]} />
   </Section>
 
@@ -144,14 +185,27 @@ const crumbs = [
     <CardGrid items={[...d.materials.items]} min="24rem" />
   </Section>
 
+  {
+    imagesAt('after-materials').map((img) => (
+      <div class="container figure-wrap">
+        <ProductImage
+          slug={d.slug}
+          src={img.src}
+          alt={img.alt}
+          caption={img.caption}
+        />
+      </div>
+    ))
+  }
+
   {/* Público */}
   <Section>
     <div class="audience">
-      <div>
+      <div class="aud yes">
         <h2>{d.forWho.title}</h2>
         <BulletList items={[...d.forWho.items]} marker="check" />
       </div>
-      <div>
+      <div class="aud no">
         <h2>{d.notForWho.title}</h2>
         <BulletList items={[...d.notForWho.items]} marker="minus" />
       </div>
@@ -163,10 +217,24 @@ const crumbs = [
       reconhecer no público e ainda não viu o preço. */}
   <TestimonialsSection
     enabled={d.testimonials.enabled}
+    demo={d.testimonials.demo}
     title={d.testimonials.title}
     intro={d.testimonials.intro}
     items={[...d.testimonials.items]}
   />
+
+  {
+    imagesAt('before-offer').map((img) => (
+      <div class="container figure-wrap">
+        <ProductImage
+          slug={d.slug}
+          src={img.src}
+          alt={img.alt}
+          caption={img.caption}
+        />
+      </div>
+    ))
+  }
 
   {/* Oferta */}
   <Section
@@ -182,12 +250,14 @@ const crumbs = [
       priceNote={d.offer.priceNote}
       ctaLabel={d.checkout.cta}
       ctaHref={checkoutHref}
+      reassurances={[...(d.offer.reassurances ?? [])]}
       track={checkoutEvent}
     />
   </Section>
 
-  {/* Garantia */}
-  <Section narrow>
+  {/* Garantia — faixa horizontal logo abaixo da oferta, ainda dentro do
+      momento de decisão. */}
+  <Section tone="soft">
     <div class="guarantee">
       {d.guarantee.icon && <Icon name={d.guarantee.icon} class="seal" />}
       <div>
@@ -198,14 +268,19 @@ const crumbs = [
   </Section>
 
   {/* FAQ */}
-  <Section tone="warm" title={d.faq.title}>
+  <Section
+    tone="warm"
+    layout="split"
+    title={d.faq.title}
+    intro={d.faq.intro}
+  >
     <Faq items={[...d.faq.items]} />
   </Section>
 
   {/* Artigos relacionados */}
   {
     relatedPosts.length > 0 && (
-      <Section title="Leia também" narrow>
+      <Section title="Leia também" layout="split">
         {relatedPosts.map((post) => (
           <PostCard post={post} />
         ))}
@@ -226,6 +301,19 @@ const crumbs = [
         track={checkoutEvent}
       />
       <p class="final-price">{d.price.display} · pagamento único</p>
+
+      {
+        d.offer.reassurances.length > 0 && (
+          <ul class="final-chips">
+            {d.offer.reassurances.map((item) => (
+              <li>
+                <Icon name={item.icon} />
+                <span>{item.text}</span>
+              </li>
+            ))}
+          </ul>
+        )
+      }
     </div>
   </Section>
 
@@ -265,9 +353,66 @@ const crumbs = [
     max-width: 68ch;
   }
 
+  /* Duas colunas de texto solto viravam duas manchas cinzas lado a lado,
+     sem dizer que são um par em oposição. Como cartões, a comparação fica
+     explícita — e o lado que interessa ao leitor certo recebe a cor. */
+  /* As figuras editoriais herdam a mesma coluna das seções e mantêm o
+     ritmo vertical entre blocos. */
+  .figure-wrap {
+    padding-block: var(--s-8);
+  }
+
+  /* As mesmas reasseguranças da oferta fecham a página. Quem rolou até aqui
+     sem comprar costuma estar decidindo entre "agora" e "depois" — repetir
+     garantia e acesso é responder a isso, não repetir por repetir. */
+  /* A nota de checkout pendente segue o alinhamento do bloco em que vive.
+     Centralizada aqui, ela para de parecer solta à esquerda da faixa. */
+  .final :global(.pending-note) {
+    justify-content: center;
+  }
+
+  .final-chips {
+    list-style: none;
+    padding: 0;
+    margin: var(--s-7) auto 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--s-3) var(--s-5);
+    max-width: 48rem;
+  }
+
+  .final-chips li {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    font-size: var(--t--1);
+    color: color-mix(in srgb, var(--color-on-primary) 88%, transparent);
+  }
+
+  .final-chips :global(.icon) {
+    --icon-size: 1rem;
+    opacity: 0.9;
+  }
+
   .audience {
     display: grid;
-    gap: var(--s-8);
+    gap: var(--s-5);
+  }
+
+  .aud {
+    border-radius: var(--radius-lg);
+    padding: var(--s-6);
+    border: 1px solid var(--color-border);
+  }
+
+  .aud.yes {
+    background: var(--color-primary-soft);
+    border-color: color-mix(in srgb, var(--color-primary) 22%, transparent);
+  }
+
+  .aud.no {
+    background: var(--color-surface-raised);
   }
 
   .audience h2 {
@@ -275,32 +420,55 @@ const crumbs = [
     margin-bottom: var(--s-5);
   }
 
+  @media (min-width: 56rem) {
+    .audience {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--s-6);
+    }
+
+    .aud {
+      padding: var(--s-7);
+    }
+  }
+
+  /* Faixa larga em vez de caixinha centrada com meia página vazia em volta.
+     O escudo ganha um disco próprio para não flutuar solto ao lado do texto. */
   .guarantee {
     background: var(--color-surface-raised);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     padding: var(--s-6);
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: var(--s-5);
+    box-shadow: var(--shadow-sm);
   }
 
   .guarantee :global(.seal) {
-    --icon-size: 2rem;
-    color: var(--color-primary);
-    /* Alinha o escudo à altura da primeira linha do título. */
-    margin-top: 0.1em;
+    --icon-size: 1.75rem;
+    color: var(--color-primary-dark);
+    flex: none;
+    box-sizing: content-box;
+    padding: var(--s-4);
+    border-radius: 50%;
+    background: var(--color-primary-soft);
   }
 
-  @media (max-width: 32rem) {
+  @media (max-width: 40rem) {
     .guarantee {
       flex-direction: column;
+      align-items: flex-start;
       gap: var(--s-4);
     }
   }
 
   .guarantee h2 {
-    font-size: var(--t-2);
+    font-size: var(--t-1);
+  }
+
+  .guarantee p {
+    margin-top: var(--s-2);
+    max-width: 68ch;
   }
 
   .guarantee p {
