@@ -1,0 +1,51 @@
+---
+/**
+ * Marca, no corpo do MDX, onde entra o CTA contextual do produto.
+ *
+ *     <ProductCtaHere />
+ *
+ * Não carrega copy nem configuração: só a posição, que é a única coisa
+ * genuinamente editorial nesta decisão. O resto vem do bloco `productCta`
+ * do frontmatter.
+ *
+ * Por que um marcador e não uma porcentagem calculada: a referência de 40% a
+ * 65% do texto é orientação, não regra. O ponto certo é onde a pessoa acabou
+ * de receber valor e a oferta passa a fazer sentido — isso quem sabe é quem
+ * escreveu, não uma conta sobre a contagem de palavras.
+ *
+ * Nada acontece se `productCta.placement` não incluir `inline`: o marcador
+ * fica inerte. E o contrário — placement com `inline` e nenhum marcador no
+ * corpo — quebra o build, em src/pages/blog/[category]/[slug].astro.
+ */
+import ProductCta from './ProductCta.astro';
+import { getProduct } from '../../lib/content';
+import { postFromPathname } from '../../lib/article-images';
+
+const post = await postFromPathname(Astro.url.pathname);
+if (!post) {
+  throw new Error(
+    `<ProductCtaHere /> usado fora de uma página de artigo (${Astro.url.pathname}).`
+  );
+}
+
+const cta = post.data.productCta;
+const show = Boolean(
+  cta && (cta.placement === 'inline' || cta.placement === 'inline-and-end')
+);
+const product = show && post.data.product
+  ? await getProduct(post.data.product.id)
+  : undefined;
+---
+
+{
+  show && product && cta && (
+    <ProductCta
+      product={product}
+      label={cta.label}
+      headline={cta.headline}
+      text={cta.text}
+      buttonLabel={cta.buttonLabel}
+      placement="inline"
+    />
+  )
+}

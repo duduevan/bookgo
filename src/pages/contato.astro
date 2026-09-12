@@ -1,52 +1,65 @@
 ---
-import SiteLayout from '../layouts/SiteLayout.astro';
-import PlaceholderNotice from '../components/site/PlaceholderNotice.astro';
+/**
+ * Contato.
+ *
+ * Identifica quem opera a BookGo e para que serve cada canal. Nenhum dado de
+ * contato é inventado: o que falta aparece como pendência, na página e no
+ * registro em src/config/legal.ts.
+ */
+import LegalPage from '../layouts/LegalPage.astro';
+import { COMPANY, addressLine, OPERATED_BY } from '../config/company';
+import { getCollection } from 'astro:content';
+
+const products = await getCollection('products');
+const checkoutConnected = products.some((p) => p.data.checkout.url);
 ---
 
-<SiteLayout
-  title="Contato"
-  description="Como falar com a BookGo."
-  noindex
->
-  <article class="container legal">
-    <h1>Contato</h1>
-    <PlaceholderNotice />
+<LegalPage id="contato">
+  <p>
+    Para dúvidas sobre um material, problemas de acesso, pedidos de reembolso
+    ou solicitações relativas aos seus dados pessoais, use o canal abaixo.
+  </p>
 
-    <div class="prose">
+  <h2>E-mail</h2>
+  <p>
+    <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
+  </p>
+  <p>
+    É o mesmo endereço para tudo: contato geral, atendimento e as
+    solicitações previstas na
+    <a href="/privacidade/">Política de Privacidade</a> — acesso, correção,
+    eliminação de dados e revogação de consentimento. Não há outro canal, e
+    não queremos criar caixas que ninguém lê.
+  </p>
+
+  <h2>Compras e reembolso</h2>
+  {
+    checkoutConnected ? (
       <p>
-        Para dúvidas sobre um material, problemas de acesso ou pedidos de
-        reembolso dentro do prazo de garantia, use o canal abaixo.
+        Compras são processadas pela plataforma Kiwify, que também oferece
+        atendimento próprio sobre pagamento e acesso. Pedidos de reembolso
+        podem ser feitos por qualquer um dos dois canais, dentro do prazo.
       </p>
-
-      <h2>E-mail</h2>
-      <p><span class="fill">[PREENCHER: endereço de e-mail de atendimento]</span></p>
-
-      <h2>Prazo de resposta</h2>
-      <p><span class="fill">[PREENCHER: prazo, por exemplo em até 2 dias úteis]</span></p>
-
-      <h2>Compras e reembolso</h2>
+    ) : (
       <p>
-        Pedidos processados pela plataforma de checkout também podem ser
-        tratados diretamente por ela.
-        <span class="fill">[PREENCHER: link ou instrução da central de compras da
-        plataforma]</span>
+        O checkout ainda não está conectado, então não há compras a tratar
+        nesta etapa. Quando entrar no ar, o pagamento será processado pela
+        plataforma Kiwify. Os meios de pagamento, as condições comerciais e a
+        forma de acesso aplicáveis a cada produto serão apresentados na
+        respectiva página de oferta e no checkout.
       </p>
-
-      <h2>Dados da empresa</h2>
-      <p>
-        <span class="fill">[PREENCHER: razão social, CNPJ e endereço]</span>
-      </p>
-    </div>
-  </article>
-</SiteLayout>
-
-<style>
-  .legal {
-    padding-block: var(--section-y-tight) var(--section-y);
+    )
   }
+  <p>
+    As condições de compra, o direito de arrependimento e a garantia estão em
+    <a href="/termos-de-compra/">Termos de Compra e Reembolso</a>.
+  </p>
 
-  .legal h1 {
-    font-size: var(--t-4);
-    margin-bottom: var(--s-7);
-  }
-</style>
+  <h2>Quem opera a BookGo</h2>
+  <p>
+    <strong>{COMPANY.legalName}</strong><br />
+    CNPJ {COMPANY.cnpj}<br />
+    {addressLine()}
+  </p>
+  <p>{OPERATED_BY}</p>
+</LegalPage>

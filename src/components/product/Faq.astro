@@ -1,5 +1,7 @@
 ---
 /** FAQ com <details> nativo — acessível e sem JavaScript. */
+import Icon from '../ui/Icon.astro';
+
 interface Props {
   items: Array<{ q: string; a: string }>;
 }
@@ -13,16 +15,7 @@ const { items } = Astro.props;
       <details>
         <summary>
           <span>{item.q}</span>
-          <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-            <path
-              d="M3.5 6L8 10.5 12.5 6"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.75"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
+          <Icon name="chevron-down" />
         </summary>
         <p>{item.a}</p>
       </details>
@@ -60,15 +53,15 @@ const { items } = Astro.props;
     color: var(--color-primary);
   }
 
-  summary svg {
-    width: 1rem;
-    height: 1rem;
-    flex: none;
+  /* O <svg> vem de Icon.astro e não carrega o escopo deste componente:
+     `:global` sob `summary`, que é escopado, é o que volta a alcançá-lo. */
+  summary :global(.icon) {
+    --icon-size: 1rem;
     color: var(--color-muted);
     transition: transform 0.15s ease;
   }
 
-  details[open] summary svg {
+  details[open] summary :global(.icon) {
     transform: rotate(180deg);
   }
 
@@ -79,7 +72,7 @@ const { items } = Astro.props;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    summary svg {
+    summary :global(.icon) {
       transition: none;
     }
   }

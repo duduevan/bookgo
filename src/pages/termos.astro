@@ -1,81 +1,132 @@
 ---
-import SiteLayout from '../layouts/SiteLayout.astro';
-import PlaceholderNotice from '../components/site/PlaceholderNotice.astro';
+/**
+ * Termos de Uso — condições de uso do site.
+ *
+ * As condições de compra ficam num documento próprio (`/termos-de-compra/`):
+ * elas valem só para quem compra, dependem de dados do produto que ainda não
+ * existem e, por isso, ficam prontas em momentos diferentes. Misturar os dois
+ * prenderia as regras do site inteiro a pendências comerciais.
+ */
+import LegalPage from '../layouts/LegalPage.astro';
+import { COMPANY, addressLine, OPERATED_BY } from '../config/company';
 ---
 
-<SiteLayout
-  title="Termos de Uso"
-  description="Termos de uso da BookGo."
-  noindex
->
-  <article class="container legal">
-    <h1>Termos de Uso</h1>
-    <PlaceholderNotice />
+<LegalPage id="termos">
+  <p>
+    Estes termos regulam o uso do site da BookGo. Ao navegar por ele, você
+    concorda com as condições abaixo. As regras da <strong>compra</strong> de
+    materiais digitais estão em documento separado:
+    <a href="/termos-de-compra/">Termos de Compra e Reembolso</a>.
+  </p>
 
-    <div class="prose">
-      <p>
-        Estes termos regulam o uso do site e a compra dos materiais digitais
-        oferecidos por <span class="fill">[PREENCHER: razão social]</span>, inscrita no
-        CNPJ sob o nº <span class="fill">[PREENCHER: CNPJ]</span>, com sede em
-        <span class="fill">[PREENCHER: endereço]</span>.
-      </p>
+  <h2>1. Quem opera este site</h2>
+  <p>{OPERATED_BY}</p>
+  <p>
+    Endereço: {addressLine()}<br />
+    Contato: <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
+  </p>
 
-      <h2>1. Objeto</h2>
-      <p>
-        A BookGo comercializa materiais digitais de caráter educacional,
-        entregues em formato eletrônico após a confirmação do pagamento.
-      </p>
+  <h2>2. O que a BookGo oferece</h2>
+  <p>
+    A BookGo publica conteúdo editorial gratuito e comercializa materiais
+    digitais de caráter educacional, voltados à aplicação prática no dia a
+    dia. O acesso ao conteúdo editorial do site é livre e não exige cadastro.
+  </p>
 
-      <h2>2. Pagamento e entrega</h2>
-      <p>
-        O pagamento é processado pela plataforma de checkout indicada na página
-        do produto. A liberação do acesso ocorre após a confirmação do
-        pagamento pela plataforma. <span class="fill">[PREENCHER: prazo de liberação e
-        forma de entrega, conforme configurado na plataforma]</span>
-      </p>
+  <h2>3. Conteúdo editorial</h2>
+  <p>
+    Os artigos e materiais têm finalidade educacional e informativa. Eles não
+    substituem orientação profissional individualizada — jurídica, médica,
+    financeira ou de qualquer outra especialidade — e não devem ser tratados
+    como tal.
+  </p>
+  <p>
+    Os resultados dependem da aplicação de cada pessoa e do seu contexto, e
+    variam. A BookGo não promete resultado específico, e nenhuma página deste
+    site deve ser lida como promessa de resultado garantido.
+  </p>
+  <p>
+    O conteúdo é revisado periodicamente, mas pode conter imprecisões ou ficar
+    desatualizado. Correções são bem-vindas pelo canal de
+    <a href="/contato/">contato</a>.
+  </p>
 
-      <h2>3. Garantia e reembolso</h2>
-      <p>
-        Os produtos possuem 7 dias de garantia contados a partir da confirmação
-        da compra. O pedido de reembolso dentro desse prazo deve ser feito
-        por <span class="fill">[PREENCHER: canal de solicitação]</span>.
-      </p>
+  <h2>4. Propriedade intelectual</h2>
+  <p>
+    Os textos, materiais, imagens, identidade visual e a organização do site
+    são de titularidade de EG Evangelista Comunicação ME ou de terceiros que
+    autorizaram o uso, e são protegidos pela legislação de direitos autorais (Lei nº 9.610/1998).
+  </p>
+  <p>
+    "BookGo" é o nome comercial sob o qual a plataforma é operada. A citação
+    de marcas, produtos ou serviços de terceiros neste site é meramente
+    referencial e não implica vínculo, patrocínio ou endosso.
+  </p>
+  <p>
+    É permitido citar trechos do conteúdo editorial com indicação da fonte e
+    link para a página original. Não é permitida a reprodução integral, a
+    tradução, a adaptação ou o uso comercial sem autorização prévia por
+    escrito.
+  </p>
 
-      <h2>4. Uso do conteúdo</h2>
-      <p>
-        Os materiais são de uso pessoal e não podem ser redistribuídos,
-        revendidos ou compartilhados publicamente.
-        <span class="fill">[PREENCHER: demais restrições, se houver]</span>
-      </p>
+  <h2>5. Uso adequado</h2>
+  <p>Ao usar o site, você concorda em não:</p>
+  <ul>
+    <li>
+      tentar obter acesso não autorizado a sistemas, contas ou áreas
+      restritas;
+    </li>
+    <li>
+      interferir no funcionamento do site, por exemplo com automações que
+      causem carga anormal;
+    </li>
+    <li>
+      copiar o conteúdo de forma sistemática para republicação, com ou sem
+      alteração;
+    </li>
+    <li>usar o site para fins ilícitos ou que violem direitos de terceiros.</li>
+  </ul>
 
-      <h2>5. Limitação de responsabilidade</h2>
-      <p>
-        O conteúdo é educacional. Os resultados dependem da aplicação individual
-        e variam de pessoa para pessoa.
-        <span class="fill">[PREENCHER: revisão jurídica desta cláusula]</span>
-      </p>
+  <h2>6. Links externos</h2>
+  <p>
+    O site pode indicar páginas de terceiros — fontes citadas em artigos e a
+    plataforma de checkout, por exemplo. Esses destinos têm termos e políticas
+    próprios, e a BookGo não responde pelo conteúdo, pela disponibilidade ou
+    pelas práticas deles. A indicação é editorial e não constitui garantia.
+  </p>
 
-      <h2>6. Alterações</h2>
-      <p>
-        Estes termos podem ser atualizados. A versão vigente é sempre a
-        publicada nesta página.
-      </p>
+  <h2>7. Disponibilidade e limitações</h2>
+  <p>
+    O site é oferecido no estado em que se encontra. Podem ocorrer
+    interrupções por manutenção, falha de hospedagem ou causas fora do
+    controle da BookGo, e não há garantia de funcionamento ininterrupto ou
+    livre de erros.
+  </p>
+  <p>
+    Nada nestes termos afasta ou reduz direitos que a legislação assegura a
+    você, especialmente os previstos no Código de Defesa do Consumidor. Onde
+    houver conflito, prevalece a lei.
+  </p>
 
-      <h2>7. Foro</h2>
-      <p><span class="fill">[PREENCHER: foro eleito]</span></p>
+  <h2>8. Privacidade</h2>
+  <p>
+    O tratamento de dados pessoais está descrito na
+    <a href="/privacidade/">Política de Privacidade</a>, e o uso de cookies e
+    armazenamento local, na
+    <a href="/politica-de-cookies/">Política de Cookies</a>.
+  </p>
 
-      <p><em>Última atualização:</em> <span class="fill">[PREENCHER: data]</span></p>
-    </div>
-  </article>
-</SiteLayout>
+  <h2>9. Alterações destes termos</h2>
+  <p>
+    Estes termos podem ser atualizados a qualquer momento. A versão vigente é
+    sempre a publicada nesta página, com a data de revisão ao final. O uso do
+    site após a publicação de uma nova versão indica concordância com ela.
+  </p>
 
-<style>
-  .legal {
-    padding-block: var(--section-y-tight) var(--section-y);
-  }
-
-  .legal h1 {
-    font-size: var(--t-4);
-    margin-bottom: var(--s-7);
-  }
-</style>
+  <h2>10. Legislação aplicável</h2>
+  <p>
+    Aplica-se a legislação brasileira, incluindo o Código de Defesa do
+    Consumidor (Lei nº 8.078/1990), o Marco Civil da Internet (Lei nº
+    12.965/2014) e a Lei Geral de Proteção de Dados (Lei nº 13.709/2018).
+  </p>
+</LegalPage>

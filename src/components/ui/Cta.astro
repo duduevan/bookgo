@@ -16,6 +16,11 @@ interface Props {
   variant?: 'primary' | 'inverse';
   size?: 'md' | 'lg';
   block?: boolean;
+  /**
+   * Atributos `data-*` do evento de clique. Vêm de `eventAttrs()`, que
+   * devolve `{}` com o tracking desligado — então hoje nada é emitido.
+   */
+  track?: Record<string, string>;
 }
 
 const {
@@ -24,6 +29,7 @@ const {
   variant = 'primary',
   size = 'md',
   block = false,
+  track = {},
 } = Astro.props;
 
 const classes = ['cta', `v-${variant}`, `s-${size}`, block ? 'block' : ''];
@@ -32,7 +38,7 @@ const classes = ['cta', `v-${variant}`, `s-${size}`, block ? 'block' : ''];
 <div class:list={['wrap', { block }]}>
   {
     href ? (
-      <a class:list={classes} href={href}>
+      <a class:list={classes} href={href} {...track}>
         {label}
       </a>
     ) : (

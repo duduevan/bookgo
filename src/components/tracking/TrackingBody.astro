@@ -1,0 +1,31 @@
+---
+/**
+ * `<noscript>` do GTM.
+ *
+ * Só é emitido quando o consentimento **não** é exigido: um iframe em
+ * noscript dispara sem passar por nenhuma decisão do usuário, então ele é
+ * incompatível com a postura de não carregar nada antes do aceite.
+ *
+ * Com `consent.required = true` — o padrão do projeto — este componente não
+ * renderiza nada, e visitantes sem JavaScript simplesmente não são medidos.
+ * É a troca correta: preferimos perder medição a coletar sem permissão.
+ */
+import { TRACKING } from '../../config/tracking';
+import { shouldLoadGtm } from '../../lib/tracking';
+
+const show = shouldLoadGtm() && !TRACKING.consent.required;
+---
+
+{
+  show && (
+    <noscript>
+      <iframe
+        src={`https://www.googletagmanager.com/ns.html?id=${TRACKING.gtm.id}`}
+        height="0"
+        width="0"
+        style="display:none;visibility:hidden"
+        title="Google Tag Manager"
+      />
+    </noscript>
+  )
+}

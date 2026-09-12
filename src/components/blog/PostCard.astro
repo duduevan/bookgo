@@ -1,4 +1,5 @@
 ---
+import Icon from '../ui/Icon.astro';
 import { formatDate, postUrl, type Post } from '../../lib/content';
 
 interface Props {
@@ -32,16 +33,7 @@ const href = postUrl(post);
 
   <span class="more" aria-hidden="true">
     Ler artigo
-    <svg viewBox="0 0 16 16" focusable="false">
-      <path
-        d="M3.5 8h9M9 4.5L12.5 8 9 11.5"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-    </svg>
+    <Icon name="arrow-right" />
   </span>
 </article>
 
@@ -119,13 +111,12 @@ const href = postUrl(post);
     color: var(--color-primary);
   }
 
-  .more svg {
-    width: 1rem;
-    height: 1rem;
+  .more :global(.icon) {
+    --icon-size: 1rem;
     transition: transform var(--dur) var(--ease);
   }
 
-  .card:hover .more svg {
+  .card:hover .more :global(.icon) {
     transform: translateX(3px);
   }
 

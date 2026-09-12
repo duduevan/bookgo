@@ -3,6 +3,7 @@ import ProductLayout from '../layouts/ProductLayout.astro';
 import Breadcrumbs from '../components/seo/Breadcrumbs.astro';
 import Section from '../components/ui/Section.astro';
 import Cta from '../components/ui/Cta.astro';
+import Icon from '../components/ui/Icon.astro';
 import Hero from '../components/product/Hero.astro';
 import BulletList from '../components/product/BulletList.astro';
 import CardGrid from '../components/product/CardGrid.astro';
@@ -10,9 +11,12 @@ import StepList from '../components/product/StepList.astro';
 import ModuleList from '../components/product/ModuleList.astro';
 import OfferBox from '../components/product/OfferBox.astro';
 import Faq from '../components/product/Faq.astro';
+import TestimonialsSection from '../components/testimonials/TestimonialsSection.astro';
 import PostCard from '../components/blog/PostCard.astro';
 import AdSlot from '../components/ads/AdSlot.astro';
 import { productImage } from '../lib/product-images';
+import TrackPageEvent from '../components/tracking/TrackPageEvent.astro';
+import { eventAttrs } from '../lib/tracking';
 import {
   getProducts,
   getPostsByProduct,
@@ -49,6 +53,17 @@ const checkoutHref = hasCheckout(product) ? d.checkout.url : null;
 const relatedPosts = await getPostsByProduct(product.id);
 const heroImage = productImage(d.slug, d.hero.image);
 
+/**
+ * Clique no checkout. É intenção, não compra: nenhum `Purchase` sai daqui —
+ * quem conhece a transação é a Kiwify. Ver docs/tracking.md.
+ */
+const checkoutEvent = eventAttrs('checkout_click', {
+  product_slug: d.slug,
+  product_name: d.name,
+  value: d.price.amount,
+  currency: d.price.currency,
+});
+
 const crumbs = [
   { name: 'Início', path: '/' },
   { name: d.name, path },
@@ -75,6 +90,17 @@ const crumbs = [
     price={d.price.display}
     image={heroImage}
     imageAlt={d.hero.imageAlt}
+    track={checkoutEvent}
+  />
+
+  <TrackPageEvent
+    event="product_view"
+    params={{
+      product_slug: d.slug,
+      product_name: d.name,
+      value: d.price.amount,
+      currency: d.price.currency,
+    }}
   />
 
   <div class="crumb-bar container">
@@ -127,10 +153,20 @@ const crumbs = [
       </div>
       <div>
         <h2>{d.notForWho.title}</h2>
-        <BulletList items={[...d.notForWho.items]} marker="dash" />
+        <BulletList items={[...d.notForWho.items]} marker="minus" />
       </div>
     </div>
   </Section>
+
+  {/* Depoimentos — não renderiza nada enquanto `enabled` for false.
+      Fica entre "para quem é" e a oferta: a pessoa acabou de se
+      reconhecer no público e ainda não viu o preço. */}
+  <TestimonialsSection
+    enabled={d.testimonials.enabled}
+    title={d.testimonials.title}
+    intro={d.testimonials.intro}
+    items={[...d.testimonials.items]}
+  />
 
   {/* Oferta */}
   <Section
@@ -146,14 +182,18 @@ const crumbs = [
       priceNote={d.offer.priceNote}
       ctaLabel={d.checkout.cta}
       ctaHref={checkoutHref}
+      track={checkoutEvent}
     />
   </Section>
 
   {/* Garantia */}
   <Section narrow>
     <div class="guarantee">
-      <h2>{d.guarantee.title}</h2>
-      <p>{d.guarantee.text}</p>
+      {d.guarantee.icon && <Icon name={d.guarantee.icon} class="seal" />}
+      <div>
+        <h2>{d.guarantee.title}</h2>
+        <p>{d.guarantee.text}</p>
+      </div>
     </div>
   </Section>
 
@@ -183,6 +223,7 @@ const crumbs = [
         label={d.checkout.cta}
         variant="inverse"
         size="lg"
+        track={checkoutEvent}
       />
       <p class="final-price">{d.price.display} · pagamento único</p>
     </div>
@@ -239,6 +280,23 @@ const crumbs = [
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     padding: var(--s-6);
+    display: flex;
+    align-items: flex-start;
+    gap: var(--s-5);
+  }
+
+  .guarantee :global(.seal) {
+    --icon-size: 2rem;
+    color: var(--color-primary);
+    /* Alinha o escudo à altura da primeira linha do título. */
+    margin-top: 0.1em;
+  }
+
+  @media (max-width: 32rem) {
+    .guarantee {
+      flex-direction: column;
+      gap: var(--s-4);
+    }
   }
 
   .guarantee h2 {

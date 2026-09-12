@@ -73,6 +73,85 @@ lista estática rolável.
 
 ---
 
+### Ícones
+
+Uma grade só, em `src/lib/icons.ts`: **viewBox 24×24, traço 1.5, pontas e
+junções redondas, `currentColor`**. O invólucro `<svg>` existe em um lugar
+único, `src/components/ui/Icon.astro` — mudar a espessura de todos os ícones é
+mudar uma linha. Nenhum ícone traz cor ou tamanho próprio: herda do contexto.
+
+```astro
+<Icon name="shield" />              <!-- acompanha o tamanho do texto -->
+<Icon name="spark" size="2rem" />
+```
+
+No YAML do produto, `icon` é opcional em benefícios, materiais e garantia, e é
+validado contra a lista real — nome inexistente **quebra o build**, em vez de
+abrir um buraco na página.
+
+**Onde ícone não entra:** onde número ou texto já cumprem melhor a função. Os
+módulos são numerados e os passos do "como funciona" têm ordem explícita —
+ali o ícone seria decoração.
+
+Ícones decorativos ficam em `aria-hidden`. `label` só quando o ícone for a
+única fonte da informação, o que hoje não acontece em lugar nenhum do site.
+
+### Depoimentos
+
+**Desligados, e depoimento não se inventa.** Enquanto `testimonials.enabled`
+for `false` no YAML do produto, a seção não é renderizada — sem título, sem
+espaço vazio e sem um byte de CSS. Ligar com `items` vazio quebra o build de
+propósito.
+
+Só entra aqui texto que uma pessoa real escreveu e autorizou a publicar. Sem
+foto, o avatar usa as iniciais do nome: derivar do que existe é honesto, gerar
+um rosto não seria.
+
+Dois formatos, decididos item a item:
+
+```yaml
+testimonials:
+  enabled: false
+  title: O que diz quem já usou
+  items:
+    - type: card          # texto corrido
+      name: ...
+      role: ...           # opcional
+      text: ...
+    - type: phone         # conversa de celular
+      name: ...
+      status: ...         # opcional, decorativo
+      messages:
+        - side: incoming  # a pessoa
+          text: ...
+          time: "09:12"   # opcional, decorativo
+        - side: outgoing  # a BookGo
+          text: ...
+          read: true
+```
+
+`PhoneTestimonial` é Astro + HTML + CSS, **sem JavaScript**: a entrada em
+cascata é `animation-delay` calculado no build, roda uma vez e não tem laço.
+`prefers-reduced-motion` desliga a cascata e o conteúdo aparece pronto. A
+moldura, a barra de status e a caixa de digitar são cenário em `aria-hidden` —
+nada ali é interativo, não existe input nem botão. A conversa em si é citação
+(`figure` + `blockquote`), e cada bolha diz de quem é.
+
+O CSS das três peças vive em `src/styles/testimonials.css.ts` e é emitido
+dentro da guarda de renderização. Não é estilo por preferência: Astro empacota
+o CSS de todo componente **importado**, renderizado ou não, e a LP pagaria
+~16 KB por uma seção que não aparece. Mesma solução do banner de consentimento.
+
+### Vitrine de componentes
+
+`npm run dev` e `/dev/componentes/` mostram todos os ícones e os dois formatos
+de depoimento. A rota **só existe em desenvolvimento**: `getStaticPaths`
+devolve lista vazia no build, então não há arquivo em `dist/`, nem URL, nem
+entrada no sitemap. O conteúdo ali é demonstração de layout e diz isso na
+própria página — não é depoimento de ninguém.
+
+---
+
 ## Criar um produto (e sua landing page)
 
 A LP não é escrita à mão: ela é gerada a partir do YAML do produto.
@@ -238,6 +317,122 @@ subtopics:                                   # recortes que a categoria cobre
 relatedProduct: casa-organizada-em-15-minutos
 ```
 
+## Padrão editorial dos artigos
+
+### Imagens
+
+Artigo não é bloco contínuo de texto. Referência, não conta a fechar:
+**normalmente 2 imagens em artigo médio, 3 em artigo longo** — e nenhuma que
+não acrescente contexto, compreensão ou ritmo. Imagem para preencher espaço
+é ruído com custo de banda.
+
+A imagem conversa com o trecho onde aparece. Nunca como falsa prova de
+resultado do produto.
+
+Arquivos em `src/assets/blog/<categoria>/<slug>/`, com nome descritivo
+(`bancada-cozinha-em-uso.webp`, não `IMG001.webp`). WebP; AVIF só quando
+trouxer ganho real.
+
+Os metadados ficam no frontmatter; o corpo do MDX carrega só a posição:
+
+```yaml
+images:
+  - id: bancada-cozinha-em-uso        # referência usada no corpo
+    src: bancada-cozinha-em-uso.webp  # arquivo em src/assets/blog/<cat>/<slug>/
+    alt: Bancada de cozinha com louça do café da manhã sobre a superfície
+    caption: Só quando acrescenta informação que o texto não dá.
+    credit: Opcional.
+```
+
+```mdx
+<ArticleImage id="bancada-cozinha-em-uso" />
+```
+
+`ArticleImage.astro` resolve tudo: `astro:assets` com `srcset`, `sizes`,
+`width`/`height` reais, `loading="lazy"` e `decoding="async"`. **Sem
+JavaScript.** Imagem principal/LCP usa `priority` — as do corpo, nunca.
+
+`title` **não** é preenchido: repetir o alt ali não é lido por leitor de
+tela, não aparece no toque e vira ruído. Só com motivo próprio.
+
+O alt descreve a cena e a função dela naquele contexto. Sem keyword
+stuffing — o schema recusa alt com 3 ou mais palavras-chave do artigo ou
+mais de 25 palavras.
+
+**Arquivo ainda inexistente não quebra nada:** o slot não renderiza e o
+build lista o que falta. É assim que a arquitetura do artigo fica pronta
+antes da fotografia existir, sem imagem quebrada nem caixa vazia no ar.
+
+**Direção visual:** fotografia realista, editorial, contemporânea, humana,
+luz natural. Sem texto embutido, sem cara de banco de imagens, sem estética
+artificial. Em Casa e Organização: casas habitadas, objetos em uso,
+organização realista — não casa perfeita de catálogo.
+
+### CTA contextual do produto
+
+O CTA conversa com o que a pessoa acabou de ler. Banner idêntico repetido em
+todos os artigos é exatamente o que não fazemos — por isso a copy mora no
+**artigo**, não no componente:
+
+```yaml
+productCta:
+  placement: inline          # none | inline | end | inline-and-end
+  label: Material relacionado
+  headline: Quer aplicar esse raciocínio na casa inteira?
+  text: Frase que liga o assunto do artigo ao produto.
+  buttonLabel: Conhecer o método
+```
+
+```mdx
+<ProductCtaHere />
+```
+
+O marcador diz **onde**; o resto vem do frontmatter. Referência de posição:
+entre 40% e 65% do texto, depois de a pessoa já ter recebido valor — mas o
+ponto certo é editorial, não aritmético. `placement` com `inline` e nenhum
+marcador quebra o build, e vice-versa.
+
+**Artigo médio:** normalmente 1 CTA inline. **Artigo longo:** inline + um de
+fechamento.
+
+**Nunca:** logo depois do H1, dentro do resumo, dentro do índice, antes de
+conteúdo substancial, ou colado em anúncio ou material afiliado.
+
+O bloco veste a paleta do próprio produto (`themeToStyle`), então quem clica
+cai numa landing page com as mesmas cores. Sem contador, sem escassez, sem
+animação agressiva, sem cor de alarme.
+
+**Nunca inventar característica do produto.** A copy só afirma o que o YAML
+do produto já sustenta.
+
+### Três sistemas comerciais separados
+
+`ProductCta`, `AffiliateProduct` (ainda não implementado) e `AdSlot` são
+independentes e **nunca se empilham**. Entre dois blocos comerciais tem que
+haver conteúdo editorial.
+
+Isso é código, não recomendação: `src/lib/commercial-blocks.ts` resolve a
+sequência em build e remove o que ficaria colado — o anúncio cede, porque é
+receita de terceiro e o CTA é o negócio da casa. O `qa:seo` confere o
+resultado no HTML gerado e falha se dois `data-commercial` ficarem vizinhos.
+
+### Metadados internos de monetização
+
+Orientam o planejamento editorial. **Não viram tag, meta nem atributo no
+HTML** — nenhum componente os recebe.
+
+```yaml
+monetization:
+  productCta: medio      # forte | medio | secundario | off
+  affiliate: baixo       # alto | medio | baixo | off
+  adsense: alto          # alto | medio | baixo | off
+```
+
+Como referência: artigo informacional tende a CTA médio, afiliado baixo,
+AdSense alto; artigo de fundo de funil, CTA forte e AdSense desligado.
+
+---
+
 ## Publicidade
 
 Hoje **desligada por inteiro**: `ADS.enabled = false` em `src/config/site.ts`.
@@ -247,7 +442,7 @@ JavaScript no cliente.
 ```ts
 ADS = {
   enabled: false,
-  adsenseClient: null,
+  adsenseClient: 'ca-pub-6552313195053069',   // guardado; não carrega nada
   placements: {
     'article-inline': false,   // fim do corpo editorial do artigo
     'article-end': false,      // fim da página do artigo
@@ -260,8 +455,11 @@ Cada posição liga sozinha. A LP exige **duas** chaves: a posição global e o
 `ads.pageEnd` do próprio produto — para decidir material a material se vale a
 pena monetizar.
 
-Ligar o AdSense de verdade tem um passo a mais e deliberado: injetar o script
-do Google, que custa o "zero JS" do projeto. `AdSlot.astro` não faz isso.
+O publisher ID já está guardado, e isso **não liga nada**: com `enabled: false`
+o ID nem chega ao HTML. Ligar o AdSense de verdade é um passo separado e
+deliberado — `enabled`, o placement e, na LP, o `ads.pageEnd` do produto. Só
+então o script do Google é carregado, e ainda assim apenas depois do aceite na
+categoria `advertising`.
 
 **Formatos que a BookGo não usa:** popup, modal, vignette, anchor ad, side
 rail, sticky ou qualquer anúncio que cubra conteúdo. Só in-page discreto, sem
@@ -406,16 +604,69 @@ dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false
 
 ## Páginas legais
 
-`/termos/`, `/privacidade/` e `/contato/` existem com texto de referência e
-marcações `[PREENCHER]`. Enquanto estiverem assim:
+Cinco documentos, um registro só: **`src/config/legal.ts`**. Nenhuma página
+escreve o próprio `noindex`, e o sitemap não repete caminho nenhum.
 
-- as páginas estão em `noindex`;
-- ficam fora do sitemap (filtro em `astro.config.mjs`);
-- exibem o aviso `PlaceholderNotice`.
+| Página | Estado |
+|---|---|
+| `/termos/` | publicada |
+| `/politica-de-cookies/` | publicada |
+| `/contato/` | publicada |
+| `/privacidade/` | **noindex** — falta prazo de retenção |
+| `/termos-de-compra/` | **noindex** — faltam dados do produto |
 
-Ao publicar o conteúdo definitivo, desfaça os três — nenhum dado jurídico ou
-empresarial foi inventado.
+`ready: true` é a única chave. Virá-la faz, sozinho: sair o `noindex`, entrar
+no sitemap, entrar no `llms.txt` e sumir o aviso de pendência da página.
+`inFooter` decide o rodapé em separado — um documento pode existir e ser
+alcançável por links no texto sem ocupar uma linha da landing page.
 
+Três travas impedem publicar documento incompleto, e todas quebram o build:
+
+- `ready: true` com `pending` não vazio;
+- `ready: true` sem `updated` (política vigente precisa dizer desde quando vale);
+- página indexável contendo `[PENDING INPUT` ou `[PREENCHER]` — verificado em
+  `npm run qa:seo`, sobre o HTML gerado.
+
+Uma página incompleta continua **acessível e linkada** no rodapé: esconder
+política de privacidade seria pior do que publicá-la com o aviso.
+
+### Identificação da empresa
+
+`src/config/company.ts` é a fonte única — razão social, CNPJ, endereço e
+e-mail. Alimenta as cinco páginas e o JSON-LD `Organization`. Nenhuma dessas
+strings é escrita direto numa página.
+
+**BookGo é nome comercial, não marca registrada.** Nenhum texto deve
+apresentá-la como tal. A formulação padrão vive em `OPERATED_BY`.
+
+### O que os documentos afirmam
+
+O texto descreve a implementação real, e o que é gerado a partir da
+configuração não pode divergir dela: as tabelas de cookies saem de `TRACKING`
+e `ADS`, e o catálogo dos termos de compra sai do YAML do produto. Ligar a
+publicidade ou trocar o ID do Analytics muda a página no mesmo build.
+
+Regras que valem para qualquer revisão desses textos:
+
+- **não afirmar que o site exibe anúncios** enquanto `ADS.enabled` for false;
+- **não apresentar o Search Console como cookie ou rastreamento** — é só uma
+  etiqueta de verificação de propriedade do domínio;
+- **não descrever opção que o banner não oferece.** Hoje a escolha é única e
+  vale para as duas categorias não essenciais ao mesmo tempo; não existe
+  seletor por categoria;
+- **não inventar** prazo de retenção, encarregado, foro, telefone ou segundo
+  e-mail;
+- **não reduzir direito do consumidor.** A garantia comercial de 7 dias é
+  oferecida voluntariamente e não substitui o direito de arrependimento do
+  art. 49 do CDC.
+
+### Revogar consentimento
+
+`ConsentControl.astro`, na Política de Cookies, apaga a escolha e recarrega a
+página. A LGPD exige que revogar seja tão fácil quanto consentir — sem esse
+controle, a única saída seria limpar os dados do site no navegador, o que não
+é uma escolha oferecida, é um obstáculo. O botão só aparece depois de existir
+uma decisão a revogar.
 
 ## Regras de conteúdo (não negociáveis)
 
@@ -467,7 +718,10 @@ cresceu fora do padrão. Não bloqueia: orçamento rígido escolhido cedo atrapa
 mais do que ajuda. Metas de campo — LCP ≤ 2,5s, INP ≤ 200ms, CLS ≤ 0,1 — são
 objetivos de engenharia, medidos em campo.
 
-Padrão do projeto: **zero JavaScript no cliente**.
+Padrão do projeto: **zero JavaScript no cliente** — hoje com uma exceção
+declarada, o runtime de medição e consentimento (~4,8 KB inline por página).
+Fora isso, nenhum componente embarca JavaScript. `PhoneTestimonial`, o FAQ e o
+índice do artigo são HTML e CSS puros.
 
 ### Rascunhos
 
@@ -492,11 +746,51 @@ depois de validarmos o modelo.
 
 ### Search Console
 
-Em `src/config/site.ts`, `googleSiteVerification` é `null` e nada é renderizado.
-Para verificar o domínio, cole o valor do método "tag HTML" nesse campo — a meta
-aparece sozinha. Nunca preencha com valor fictício.
+`googleSiteVerification` em `src/config/site.ts` carrega o token real, e
+`BaseLayout` é o único lugar que o lê: a meta sai uma vez por página. É apenas
+verificação de propriedade do domínio — não é cookie, não coleta dado de
+visitante e não deve ser descrita como rastreamento. Sitemap a enviar:
+`https://bookgo.com.br/sitemap-index.xml`.
 
-### Analytics
+---
 
-Nenhum GA4, GTM ou Meta Pixel instalado nesta fase. Se for adicionar, atualize
-antes a Política de Privacidade, que hoje declara ausência de cookies próprios.
+## Tracking e consentimento
+
+**GA4 `G-W41286ERFZ` está ligado.** `TRACKING.enabled = true` em
+`src/config/tracking.ts`. Meta Pixel e Google Ads seguem sem ID, e ainda não
+existe contêiner GTM — por isso o GA4 entra por `gtag.js` direto, mas sempre
+pela camada central: o snippet não é colado em página nenhuma. Preencher
+`gtm.id` migra tudo para o contêiner sem tocar em uma linha de markup.
+
+**Nada carrega antes do aceite.** Sem decisão ou com recusa, nenhuma requisição
+sai para o Google. Eventos disparados antes da escolha ficam numa fila em
+memória e só são enviados se a pessoa aceitar `analytics`.
+
+**O custo, declarado:** o site deixou de ser 0 KB de JavaScript no cliente.
+São ~4,8 KB inline por página (runtime + banner), medidos e reportados
+separadamente por `npm run qa:perf`. Voltar `TRACKING.enabled` para `false`
+devolve a página a 0 KB.
+
+Todos os IDs vivem num arquivo só: `src/config/tracking.ts` — GTM, GA4, Meta
+Pixel e Google Ads. Com ID `null`, aquele fornecedor não renderiza nada.
+
+Eventos da BookGo, independentes de fornecedor: `page_view`, `view_content`,
+`product_view`, `checkout_click`, `consent_update` (e `affiliate_click`
+reservado). Entram no `dataLayer`, que é o formato do GTM. Enquanto o GA4 for
+direto, uma ponte também os repassa como `gtag('event', ...)` — menos
+`page_view`, que o `config` do GA4 já envia e contaria em dobro.
+
+**`Purchase` nunca sai do site.** Clique no checkout é intenção, não compra —
+quem conhece a transação é a Kiwify.
+
+O banner de consentimento só existe quando há algo a consentir. Com o GA4
+ligado, ele passou a existir. Desligar o tracking o faz desaparecer sozinho,
+junto com o JavaScript — pedir consentimento para nada seria ruído.
+
+Como configurar cada fornecedor, como integrar a Kiwify e como evitar contar a
+mesma conversão duas vezes: **[docs/tracking.md](docs/tracking.md)**.
+
+A Política de Cookies documenta os cookies do GA4 e está publicada. A
+Política de Privacidade descreve tudo corretamente, mas segue em `noindex`
+por um item só: **o prazo de retenção** (Analytics › Admin › Retenção de
+dados, e por quanto tempo a hospedagem guarda os registros de acesso).

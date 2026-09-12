@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
-import { SITE, absoluteUrl, LEGAL_NAV } from '../config/site';
+import { SITE, absoluteUrl } from '../config/site';
+import { LEGAL_PAGES } from '../config/legal';
 import {
   getCategories,
   getPosts,
@@ -73,7 +74,7 @@ export const GET: APIRoute = async () => {
   lines.push(`- [Blog](${absoluteUrl('/blog/')}): todos os artigos publicados.`);
   // Páginas legais só entram depois de publicadas: enquanto têm
   // marcações [PREENCHER] elas são noindex e não são "úteis".
-  for (const item of LEGAL_NAV.filter((i) => i.ready)) {
+  for (const item of LEGAL_PAGES.filter((i) => i.ready)) {
     lines.push(`- [${item.label}](${absoluteUrl(item.href)})`);
   }
   lines.push('');

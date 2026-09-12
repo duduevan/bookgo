@@ -1,5 +1,6 @@
 ---
-import { SITE, NAV, LEGAL_NAV, FOOTER } from '../../config/site';
+import { SITE, NAV, FOOTER } from '../../config/site';
+import { LEGAL_PAGES } from '../../config/legal';
 import Logo from './Logo.astro';
 
 const year = new Date().getFullYear();
@@ -24,7 +25,9 @@ const year = new Date().getFullYear();
     <nav aria-label="Links legais">
       <p class="label">Legal</p>
       <ul>
-        {LEGAL_NAV.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+        {LEGAL_PAGES.filter((i) => i.inFooter).map((item) => (
+          <li><a href={item.href}>{item.label}</a></li>
+        ))}
       </ul>
     </nav>
 

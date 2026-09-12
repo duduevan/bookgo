@@ -1,26 +1,44 @@
 ---
 /**
- * Aviso visível de conteúdo pendente.
+ * Aviso de documento legal incompleto.
  *
- * Fica na página enquanto houver texto a preencher. Quando o conteúdo
- * definitivo entrar, remova este componente e o `noindex` da página.
+ * Em vez de dizer genericamente "há texto a preencher", lista **o que**
+ * falta, lido do registro em `src/config/legal.ts`. Quem abre a página sabe
+ * exatamente o que está pendente, e quem for completar não precisa caçar
+ * marcações no meio do texto.
+ *
+ * Sem pendência, não renderiza nada.
  */
+interface Props {
+  pending: string[];
+}
+
+const { pending } = Astro.props;
 ---
 
-<aside class="notice" role="note">
-  <strong>Conteúdo pendente.</strong>
-  <span>
-    Esta página está com texto de referência e marcações
-    <code>[PREENCHER]</code>. Ela não é indexada por buscadores enquanto
-    estiver assim.
-  </span>
-</aside>
+{
+  pending.length > 0 && (
+    <aside class="notice" role="note">
+      <p class="head">
+        <strong>Documento em preparação.</strong> Este texto descreve
+        corretamente o que o site faz hoje, mas ainda depende dos dados
+        abaixo para valer como documento público. Enquanto isso, a página não
+        é indexada por buscadores nem consta do sitemap.
+      </p>
+      <ul>
+        {pending.map((item) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+    </aside>
+  )
+}
 
 <style>
   .notice {
     display: grid;
-    gap: var(--s-2);
-    padding: var(--s-4) var(--s-5);
+    gap: var(--s-3);
+    padding: var(--s-5);
     margin-bottom: var(--s-7);
     border: 1px dashed var(--color-border);
     border-radius: var(--radius);
@@ -30,15 +48,18 @@
     max-width: var(--w-prose);
   }
 
+  .head {
+    margin: 0;
+  }
+
   strong {
     color: var(--color-text);
   }
 
-  code {
-    font-size: 0.95em;
-    padding: 0.1em 0.35em;
-    border-radius: var(--radius-sm);
-    background: var(--color-surface-raised);
-    border: 1px solid var(--color-border);
+  ul {
+    margin: 0;
+    padding-left: var(--s-5);
+    display: grid;
+    gap: var(--s-2);
   }
 </style>

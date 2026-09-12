@@ -13,11 +13,18 @@ export const SITE = {
   ogImage: '/images/og-default.png',
   ogImageAlt: 'BookGo — aprenda algo útil e coloque em prática',
   /**
-   * Verificação do Google Search Console.
-   * `null` enquanto não houver token real: nada é renderizado.
-   * Para ativar, cole aqui o valor do método "tag HTML" do Search Console.
+   * Verificação do Google Search Console (método "tag HTML").
+   *
+   * Token real da propriedade bookgo.com.br. `BaseLayout` é o único lugar
+   * que lê este campo, e renderiza a meta uma única vez por página. Não
+   * existe segunda cópia em layout, página ou componente.
+   *
+   * Não é segredo: o token é público por natureza — ele só prova posse do
+   * domínio para quem já tem acesso à conta do Search Console.
    */
-  googleSiteVerification: null as string | null,
+  googleSiteVerification: 'oBqSFgvHkSPpe1vSmnJ_Aip9_LlG5cEmEtevdcWHQTM' as
+    | string
+    | null,
 } as const;
 
 /** Navegação institucional. `Explorar` e `Sobre` são âncoras da home
@@ -35,18 +42,13 @@ export const NAV_CTA = {
 } as const;
 
 /**
- * Links legais — rodapé institucional e rodapé das LPs.
+ * Links legais.
  *
- * `ready: false` enquanto a página ainda tem marcações [PREENCHER]: ela
- * continua acessível e linkada no rodapé, mas fica em noindex, fora do
- * sitemap e fora do llms.txt. Vire para `true` junto com a publicação do
- * texto definitivo.
+ * O registro vive em `src/config/legal.ts`, junto com o estado de cada
+ * documento — não aqui, para não existirem duas listas contando histórias
+ * diferentes sobre a mesma página. Reexportado para quem só precisa do menu.
  */
-export const LEGAL_NAV = [
-  { label: 'Termos de Uso', href: '/termos/', ready: false },
-  { label: 'Política de Privacidade', href: '/privacidade/', ready: false },
-  { label: 'Contato', href: '/contato/', ready: false },
-] as const;
+export { LEGAL_PAGES } from './legal';
 
 export const FOOTER = {
   legalName: 'BookGo',
@@ -61,6 +63,12 @@ export const FOOTER = {
  * arquivo: ligá-lo é um passo separado e deliberado, porque ele custa o
  * "zero JavaScript no cliente" que é padrão do projeto.
  *
+ * `adsenseClient` já guarda o publisher ID real. Ter o ID **não** liga nada:
+ * o runtime só carrega o adsbygoogle.js quando `enabled` for true, existir
+ * um placement ligado e o visitante tiver aceitado a categoria de
+ * publicidade. Guardar o ID aqui agora evita procurá-lo depois e mantém a
+ * regra do projeto de que nenhum identificador vive fora da configuração.
+ *
  * Filosofia (ver CLAUDE.md): só anúncio in-page discreto. Nada de popup,
  * modal, vignette, anchor, side rail, sticky ou qualquer formato que cubra
  * o conteúdo. Sem sidebar de publicidade.
@@ -73,7 +81,8 @@ export const ADS: {
   placements: Record<AdPlacement, boolean>;
 } = {
   enabled: false,
-  adsenseClient: null,
+  /** Publisher ID real. Inerte enquanto `enabled` for false. */
+  adsenseClient: 'ca-pub-6552313195053069',
   /** Cada posição liga e desliga sozinha, mesmo com `enabled` true. */
   placements: {
     'article-inline': false,

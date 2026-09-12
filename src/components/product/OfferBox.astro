@@ -8,9 +8,12 @@ interface Props {
   priceNote?: string;
   ctaLabel: string;
   ctaHref: string | null;
+  /** Atributos de evento de clique, vindos de `eventAttrs()`. */
+  track?: Record<string, string>;
 }
 
-const { includes, price, priceNote, ctaLabel, ctaHref } = Astro.props;
+const { includes, price, priceNote, ctaLabel, ctaHref, track = {} } =
+  Astro.props;
 ---
 
 <div class="box">
@@ -22,7 +25,7 @@ const { includes, price, priceNote, ctaLabel, ctaHref } = Astro.props;
   <div class="buy">
     <p class="amount">{price}</p>
     <p class="terms">pagamento único</p>
-    <Cta href={ctaHref} label={ctaLabel} size="lg" block />
+    <Cta href={ctaHref} label={ctaLabel} size="lg" block track={track} />
     {priceNote && <p class="note">{priceNote}</p>}
   </div>
 </div>

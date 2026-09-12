@@ -1,19 +1,101 @@
 import { defineCollection, reference, z } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { ICON_NAMES } from './lib/icons';
 
 /* ------------------------------------------------------------------ */
 /*  Blocos reutilizáveis                                               */
 /* ------------------------------------------------------------------ */
 
+/**
+ * Nome de ícone da grade da BookGo.
+ *
+ * Validado contra `src/lib/icons.ts`: nome inexistente quebra o build, em vez
+ * de renderizar um buraco na página. É opcional de propósito — sem ícone, o
+ * cartão fica só com título e texto, que é o padrão.
+ */
+const iconName = z.enum(ICON_NAMES as [string, ...string[]]);
+
 const titledItem = z.object({
   title: z.string(),
   text: z.string(),
+  /** Opcional. Só onde o ícone acrescenta leitura; ver src/lib/icons.ts. */
+  icon: iconName.optional(),
 });
 
 const section = z.object({
   title: z.string(),
   intro: z.string().optional(),
 });
+
+
+/* ------------------------------------------------------------------ */
+/*  Depoimentos                                                        */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Prova social.
+ *
+ * Regra do projeto, sem exceção: **nenhum depoimento é inventado**. Só entra
+ * aqui texto que uma pessoa real escreveu e autorizou a publicar. Enquanto
+ * isso não existir, `enabled` fica false e a seção não é renderizada — a LP
+ * sai byte por byte igual à de hoje.
+ *
+ * O refinamento abaixo impede o pior dos casos: ligar a seção sem ter o que
+ * mostrar. `enabled: true` com `items` vazio quebra o build.
+ */
+const testimonialBase = {
+  /** Nome como a pessoa autorizou publicar. */
+  name: z.string(),
+  /**
+   * Arquivo em `src/assets/testimonials/`. Sem avatar, o componente usa as
+   * iniciais do nome — derivar é honesto, gerar um rosto não seria.
+   */
+  avatar: z.string().optional(),
+};
+
+const testimonialCard = z.object({
+  type: z.literal('card'),
+  ...testimonialBase,
+  /** Contexto curto da pessoa, quando ela autorizou. */
+  role: z.string().optional(),
+  text: z.string(),
+});
+
+const testimonialPhone = z.object({
+  type: z.literal('phone'),
+  ...testimonialBase,
+  /** Linha sob o nome no cabeçalho da conversa. Decorativa. */
+  status: z.string().optional(),
+  messages: z
+    .array(
+      z.object({
+        /** `incoming` = a pessoa; `outgoing` = a BookGo. */
+        side: z.enum(['incoming', 'outgoing']),
+        text: z.string(),
+        /** Horário exibido na bolha. Decorativo. */
+        time: z.string().optional(),
+        /** Confirmação de leitura. Só faz sentido em `outgoing`. */
+        read: z.boolean().default(false),
+      })
+    )
+    .min(1),
+});
+
+const testimonials = z
+  .object({
+    /** Chave mestra da seção. Sem depoimento real, fica false. */
+    enabled: z.boolean().default(false),
+    title: z.string().optional(),
+    intro: z.string().optional(),
+    items: z
+      .array(z.discriminatedUnion('type', [testimonialCard, testimonialPhone]))
+      .default([]),
+  })
+  .default({ enabled: false, items: [] })
+  .refine((t) => !t.enabled || t.items.length > 0, {
+    message:
+      'testimonials.enabled é true mas items está vazio. Depoimento não se inventa: preencha com texto real e autorizado, ou volte enabled para false.',
+  });
 
 /* ------------------------------------------------------------------ */
 /*  Produtos — content/products/<slug>/index.yaml                      */
@@ -146,7 +228,11 @@ const products = defineCollection({
 
     guarantee: section.extend({
       text: z.string(),
+      icon: iconName.optional(),
     }),
+
+    /** Desligado por padrão; ver o bloco `testimonials` acima. */
+    testimonials,
 
     faq: section.extend({
       items: z.array(z.object({ q: z.string(), a: z.string() })),
@@ -188,6 +274,78 @@ const categories = defineCollection({
       .default({}),
     order: z.number().int().default(100),
   }),
+});
+
+
+/* ------------------------------------------------------------------ */
+/*  Blocos editoriais do artigo                                        */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Imagem editorial dentro do artigo.
+ *
+ * Todos os metadados ficam aqui, no frontmatter. O corpo do MDX carrega
+ * apenas `<ArticleImage id="..." />` no ponto exato onde a imagem entra —
+ * a posição é decisão editorial e pertence ao texto; alt, legenda e crédito
+ * são dados e pertencem ao cabeçalho.
+ *
+ * `src` é só o nome do arquivo. A imagem vive em
+ * `src/assets/blog/<categoria>/<slug>/`, para passar pelo astro:assets e
+ * sair com dimensões reais, srcset e formato moderno — mesma convenção já
+ * usada pelas imagens de produto.
+ */
+const articleImage = z.object({
+  /** Referência usada no corpo do MDX. Minúsculas, hífens. */
+  id: z
+    .string()
+    .regex(
+      /^[a-z0-9]+(-[a-z0-9]+)*$/,
+      'id de imagem deve ser minúsculo, com hífens: "bancada-cozinha"'
+    ),
+  /** Nome do arquivo, descritivo. Nada de IMG001.webp. */
+  src: z.string().regex(/\.(webp|avif|jpe?g|png)$/i),
+  /**
+   * Descreve a cena e a função dela naquele contexto. Não é campo de
+   * palavra-chave: ver o refinamento contra keyword stuffing abaixo.
+   */
+  alt: z.string().min(15).max(180),
+  /** Só quando acrescenta informação editorial que o texto não dá. */
+  caption: z.string().optional(),
+  credit: z.string().optional(),
+});
+
+/**
+ * CTA contextual do produto BookGo.
+ *
+ * A copy vive no artigo, não no componente: ela precisa conversar com o
+ * assunto que a pessoa acabou de ler. Um banner idêntico repetido em todos
+ * os artigos é justamente o que não queremos.
+ *
+ * `inline` é renderizado onde o corpo traz `<ProductCtaHere />`; o ponto
+ * editorial é escolhido por quem escreve, não calculado por porcentagem.
+ */
+const productCta = z.object({
+  placement: z.enum(['none', 'inline', 'end', 'inline-and-end']),
+  /** Sobrelinha curta. */
+  label: z.string().default('Material relacionado'),
+  headline: z.string().min(10).max(120),
+  text: z.string().min(30),
+  buttonLabel: z.string().min(3).max(40),
+});
+
+/**
+ * Metadados internos de monetização.
+ *
+ * Orientam a redação e o planejamento editorial. **Não viram tag, meta,
+ * classe nem atributo no HTML** — nenhum componente os recebe.
+ */
+const monetization = z.object({
+  /** Peso do CTA do produto BookGo neste artigo. */
+  productCta: z.enum(['forte', 'medio', 'secundario', 'off']),
+  /** Potencial de material afiliado. Sistema ainda não implementado. */
+  affiliate: z.enum(['alto', 'medio', 'baixo', 'off']),
+  /** Potencial de AdSense. Publicidade segue desligada globalmente. */
+  adsense: z.enum(['alto', 'medio', 'baixo', 'off']),
 });
 
 /* ------------------------------------------------------------------ */
@@ -248,6 +406,59 @@ const blog = defineCollection({
     /** Imagem social própria do artigo; sem ela cai na institucional. */
     ogImage: z.string().optional(),
     ogImageAlt: z.string().optional(),
+
+    /**
+     * Imagens editoriais. Referência editorial: normalmente duas em artigo
+     * médio, três em artigo longo — e nenhuma que não acrescente contexto,
+     * compreensão ou ritmo. Não é conta a fechar.
+     */
+    images: z.array(articleImage).default([]),
+
+    /** CTA contextual do produto. Exige `product` definido. */
+    productCta: productCta.optional(),
+
+    /** Interno. Nunca sai no HTML. */
+    monetization: monetization.optional(),
+  })
+  .superRefine((d, ctx) => {
+    const ids = d.images.map((i) => i.id);
+    const duplicated = ids.filter((id, i) => ids.indexOf(id) !== i);
+    if (duplicated.length > 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `ids de imagem repetidos: ${[...new Set(duplicated)].join(', ')}`,
+      });
+    }
+
+    /* Guarda contra keyword stuffing no alt. Um alt que empilha as palavras-
+       chave do artigo descreve a estratégia de SEO, não a imagem — e quem
+       depende de leitor de tela é quem paga a conta. */
+    for (const img of d.images) {
+      const alt = img.alt.toLowerCase();
+      const hits = d.keywords.filter((k) => alt.includes(k.toLowerCase()));
+      if (hits.length >= 3) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message:
+            `alt da imagem "${img.id}" contém ${hits.length} palavras-chave do artigo. ` +
+            'O alt descreve a cena e a função dela no contexto, não repete a lista de keywords.',
+        });
+      }
+      if (alt.split(/\s+/).length > 25) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `alt da imagem "${img.id}" tem mais de 25 palavras — descreva a cena, não o artigo.`,
+        });
+      }
+    }
+
+    if (d.productCta && d.productCta.placement !== 'none' && !d.product) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          'productCta definido sem `product`. O CTA precisa apontar para um produto existente.',
+      });
+    }
   }),
 });
 

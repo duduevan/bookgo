@@ -1,0 +1,96 @@
+---
+/**
+ * Imagem editorial dentro do artigo.
+ *
+ * Usada no corpo do MDX com um atributo só:
+ *
+ *     <ArticleImage id="bancada-cozinha" />
+ *
+ * Todo o resto — arquivo, alt, legenda, crédito — vem do frontmatter. O
+ * corpo do texto marca **onde** a imagem entra, que é decisão editorial; os
+ * metadados ficam no cabeçalho, que é onde dado se organiza.
+ *
+ * Zero JavaScript. Dimensões reais e `srcset` vêm do astro:assets, então o
+ * espaço é reservado antes de a imagem chegar e não há deslocamento de
+ * layout.
+ *
+ * `title` **não** é preenchido: duplicar o alt ali não ajuda ninguém —
+ * não é lido por leitor de tela, não aparece no toque e vira ruído. Só
+ * deveria existir com motivo próprio, e aqui não há.
+ */
+import { Image } from 'astro:assets';
+import { articleImageById, postFromPathname } from '../../lib/article-images';
+
+interface Props {
+  id: string;
+  /**
+   * Imagem principal da página? Fora do padrão: as imagens do corpo ficam
+   * abaixo da dobra e devem carregar preguiçosamente.
+   */
+  priority?: boolean;
+}
+
+const { id, priority = false } = Astro.props;
+
+const post = await postFromPathname(Astro.url.pathname);
+if (!post) {
+  throw new Error(
+    `<ArticleImage id="${id}" /> usado fora de uma página de artigo (${Astro.url.pathname}).`
+  );
+}
+
+const img = articleImageById(post, id);
+---
+
+{
+  /* Sem arquivo, o slot não renderiza nada. Preferimos a ausência a uma
+     caixa vazia ou a um ícone de imagem quebrada no meio do texto. O build
+     avisa exatamente qual arquivo falta. */
+  img.image && (
+    <figure class="article-figure">
+      <Image
+        src={img.image}
+        alt={img.alt}
+        widths={[480, 768, 1024, 1400]}
+        sizes="(min-width: 48rem) 44rem, calc(100vw - 2 * var(--gutter))"
+        loading={priority ? 'eager' : 'lazy'}
+        decoding={priority ? 'sync' : 'async'}
+        fetchpriority={priority ? 'high' : 'auto'}
+        quality={72}
+      />
+      {(img.caption || img.credit) && (
+        <figcaption>
+          {img.caption}
+          {img.credit && <span class="credit">{img.credit}</span>}
+        </figcaption>
+      )}
+    </figure>
+  )
+}
+
+<style>
+  .article-figure {
+    margin: var(--s-8) 0;
+  }
+
+  .article-figure :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius);
+    background: var(--color-surface-raised);
+  }
+
+  figcaption {
+    margin-top: var(--s-3);
+    font-size: var(--t--1);
+    color: var(--color-muted);
+    line-height: 1.5;
+  }
+
+  .credit {
+    display: block;
+    margin-top: var(--s-1);
+    opacity: 0.8;
+  }
+</style>

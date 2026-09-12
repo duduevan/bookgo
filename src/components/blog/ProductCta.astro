@@ -1,61 +1,125 @@
 ---
 /**
- * CTA contextual exibido no artigo quando o frontmatter define `product`.
- * Toda a copy vem do produto — nada é escrito aqui.
+ * CTA contextual de um produto BookGo dentro do artigo.
+ *
+ * A copy vem do frontmatter do **artigo**, não do produto e não daqui: ela
+ * precisa conversar com o assunto que a pessoa acabou de ler. Um banner
+ * idêntico repetido em todos os artigos é exatamente o que não queremos, e
+ * é o que acontece quando a copy mora no componente.
+ *
+ * O componente não conhece nenhum produto: nome, preço e checkout vêm do
+ * produto referenciado, a copy vem do artigo. Qualquer produto BookGo usa
+ * esta mesma infraestrutura sem tocar neste arquivo.
+ *
+ * Sem JavaScript. Sem contador, sem urgência, sem animação, sem cor de
+ * alarme — perceptível, mas ainda editorial.
+ *
+ * `data-commercial` marca o bloco para a checagem de vizinhança do
+ * `qa:seo`: elemento comercial não pode encostar em outro.
+ *
+ * O bloco veste a paleta do próprio produto, aplicada só no escopo dele.
+ * Não é enfeite: a pessoa que clica cai numa landing page com essas mesmas
+ * cores, e a continuidade visual confirma que ela chegou onde esperava. O
+ * componente continua sem conhecer produto nenhum — a paleta vem do YAML,
+ * pelos mesmos papéis `--color-*` que a LP já usa.
  */
 import Cta from '../ui/Cta.astro';
+import Icon from '../ui/Icon.astro';
 import { hasCheckout, productUrl, type Product } from '../../lib/content';
+import { eventAttrs } from '../../lib/tracking';
+import { themeToStyle } from '../../lib/theme';
 
 interface Props {
   product: Product;
+  label: string;
+  headline: string;
+  text: string;
+  buttonLabel: string;
+  /** Distingue o CTA do meio do texto do de fechamento na medição. */
+  placement: 'inline' | 'end';
 }
 
-const { product } = Astro.props;
-const { name, tagline, price, checkout } = product.data;
+const { product, label, headline, text, buttonLabel, placement } = Astro.props;
+const { name, price, checkout } = product.data;
 const href = productUrl(product.data.slug);
+
+const checkoutEvent = eventAttrs('checkout_click', {
+  product_slug: product.data.slug,
+  product_name: name,
+  value: price.amount,
+  currency: price.currency,
+  placement: `article_cta_${placement}`,
+});
 ---
 
-<aside class="promo" aria-label="Produto relacionado">
-  <p class="eyebrow">Material relacionado</p>
-  <h2><a href={href}>{name}</a></h2>
-  <p class="tagline">{tagline}</p>
+<aside
+  class="promo"
+  data-commercial="product-cta"
+  style={themeToStyle(product.data.theme)}
+  aria-label={`Material relacionado: ${name}`}
+>
+  <p class="eyebrow">
+    <Icon name="spark" />
+    {label}
+  </p>
+
+  <h2>{headline}</h2>
+  <p class="text">{text}</p>
+
   <div class="actions">
     <Cta
-      href={hasCheckout(product) ? checkout.url : null}
-      label={checkout.cta}
+      href={hasCheckout(product) ? checkout.url : href}
+      label={buttonLabel}
+      track={checkoutEvent}
     />
-    <a class="details" href={href}>Ver detalhes — {price.display}</a>
+    <a class="details" href={href}>{name} — {price.display}</a>
   </div>
 </aside>
 
 <style>
   .promo {
-    margin-top: var(--s-9);
+    /* Respiro generoso dos dois lados: o CTA se destaca por espaço, não por
+       contraste agressivo, e não encosta no texto editorial. */
+    margin-block: var(--s-9);
     padding: var(--s-6);
     background: var(--color-primary-soft);
     border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-primary);
     border-radius: var(--radius-lg);
-    max-width: var(--w-prose);
+  }
+
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    font-size: var(--t--1);
+    letter-spacing: var(--tr-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-primary-dark);
+    font-weight: var(--w-semibold);
+  }
+
+  .promo :global(.icon) {
+    --icon-size: 1rem;
   }
 
   h2 {
-    margin-top: var(--s-2);
+    margin-top: var(--s-4);
     font-size: var(--t-2);
-  }
-
-  h2 a {
     color: var(--color-text);
-    text-decoration: none;
+    text-wrap: balance;
   }
 
-  h2 a:hover {
-    color: var(--color-primary);
-  }
-
-  .tagline {
+  .text {
     margin-top: var(--s-3);
-    color: var(--color-muted);
+    /* O `muted` do produto foi calibrado para o fundo da landing page, que é
+       mais claro que este bloco: aplicado aqui, ele mede 4,28:1 e não passa
+       nos 4,5:1 de texto corrido. A mistura em direção ao texto preserva a
+       hierarquia — continua secundário ao título — sem cobrar a legibilidade
+       de quem tem baixa visão. */
+    color: color-mix(in srgb, var(--color-muted) 55%, var(--color-text));
     font-size: var(--t-0);
+    max-width: 60ch;
   }
 
   .actions {
@@ -68,6 +132,6 @@ const href = productUrl(product.data.slug);
 
   .details {
     font-size: var(--t--1);
-    color: var(--color-primary);
+    color: var(--color-primary-dark);
   }
 </style>

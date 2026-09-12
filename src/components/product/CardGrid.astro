@@ -1,7 +1,11 @@
 ---
 /** Grade de cartões título + texto: pilares do método, benefícios, materiais. */
+import Icon from '../ui/Icon.astro';
+import type { IconName } from '../../lib/icons';
+
 interface Props {
-  items: Array<{ title: string; text: string }>;
+  /** `icon` é opcional item a item: um cartão sem ícone continua válido. */
+  items: Array<{ title: string; text: string; icon?: IconName }>;
   variant?: 'card' | 'plain';
   min?: string;
 }
@@ -13,6 +17,7 @@ const { items, variant = 'card', min = '17rem' } = Astro.props;
   {
     items.map((item) => (
       <li>
+        {item.icon && <Icon name={item.icon} class="lead" />}
         <h3>{item.title}</h3>
         <p>{item.text}</p>
       </li>
@@ -28,6 +33,15 @@ const { items, variant = 'card', min = '17rem' } = Astro.props;
     display: grid;
     gap: var(--s-4);
     grid-template-columns: repeat(auto-fit, minmax(min(var(--min), 100%), 1fr));
+  }
+
+  /* O ícone é apoio visual do título, não substituto: fica acima, no tom da
+     marca do produto, e some da leitura de quem usa leitor de tela. */
+  li :global(.lead) {
+    --icon-size: 1.5rem;
+    display: block;
+    margin-bottom: var(--s-3);
+    color: var(--color-primary);
   }
 
   h3 {

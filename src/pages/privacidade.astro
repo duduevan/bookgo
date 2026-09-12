@@ -1,78 +1,250 @@
 ---
-import SiteLayout from '../layouts/SiteLayout.astro';
-import PlaceholderNotice from '../components/site/PlaceholderNotice.astro';
+/**
+ * Política de Privacidade.
+ *
+ * O texto descreve a implementação que existe hoje no repositório, não um
+ * modelo genérico. Quando o comportamento técnico mudar — ligar o AdSense,
+ * conectar o checkout, adicionar um formulário — esta página muda junto.
+ */
+import LegalPage from '../layouts/LegalPage.astro';
+import { COMPANY, addressLine, OPERATED_BY } from '../config/company';
+import { TRACKING } from '../config/tracking';
 ---
 
-<SiteLayout
-  title="Política de Privacidade"
-  description="Como a BookGo trata dados pessoais."
-  noindex
->
-  <article class="container legal">
-    <h1>Política de Privacidade</h1>
-    <PlaceholderNotice />
+<LegalPage id="privacidade">
+  <p>
+    Esta política explica como a BookGo trata dados pessoais, em conformidade
+    com a Lei nº 13.709/2018 (LGPD). Ela descreve o que o site faz hoje — não
+    o que ele poderia vir a fazer.
+  </p>
 
-    <div class="prose">
-      <p>
-        Esta política descreve como <span class="fill">[PREENCHER: razão social]</span>,
-        CNPJ <span class="fill">[PREENCHER: CNPJ]</span>, trata dados pessoais em
-        conformidade com a Lei nº 13.709/2018 (LGPD).
-      </p>
+  <h2>1. Quem é o responsável</h2>
+  <p>{OPERATED_BY} É ela a controladora dos dados tratados neste site.</p>
+  <p>
+    Endereço: {addressLine()}<br />
+    Contato para assuntos de privacidade:
+    <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
+  </p>
 
-      <h2>1. Dados coletados</h2>
-      <p>
-        <span class="fill">[PREENCHER: listar o que é efetivamente coletado — por exemplo
-        nome e e-mail informados no checkout, e dados de navegação caso haja
-        analytics ou pixel instalado]</span>
-      </p>
+  <h2>2. Em resumo</h2>
+  <p>
+    O site é estático: não há cadastro, login, área de membros, formulário nem
+    newsletter. <strong>Nada é pedido a você para navegar.</strong> Os únicos
+    tratamentos que existem hoje são os registros de acesso do servidor e,
+    caso você aceite, a medição de audiência.
+  </p>
 
-      <h2>2. Finalidade</h2>
-      <p>
-        Os dados são usados para processar a compra, entregar o material
-        adquirido e prestar suporte.
-        <span class="fill">[PREENCHER: incluir comunicação de marketing, se houver]</span>
-      </p>
+  <h2>3. Dados fornecidos por você</h2>
+  <p>
+    Hoje, <strong>nenhum</strong>: o site não tem campo onde você possa
+    digitar qualquer coisa.
+  </p>
+  <p>
+    Isso muda quando o checkout for conectado. A partir daí, os dados de
+    compra (como nome, e-mail e informações de pagamento) são fornecidos por
+    você na plataforma de checkout, e não neste site. Ver o item 8.
+  </p>
 
-      <h2>3. Compartilhamento</h2>
-      <p>
-        Dados de pagamento são tratados diretamente pela plataforma de checkout,
-        que atua como operadora.
-        <span class="fill">[PREENCHER: nomear a plataforma e demais operadores, como
-        serviços de e-mail ou analytics]</span>
-      </p>
+  <h2>4. Dados técnicos tratados</h2>
+  <p>
+    <strong>Registros de acesso do servidor.</strong> Como em qualquer site,
+    o servidor de hospedagem registra as requisições recebidas — normalmente
+    endereço IP, data e hora, página acessada e identificação do navegador.
+    Esses registros são mantidos pela empresa de hospedagem contratada e
+    servem à operação e à segurança do site. Eles não são usados para criar
+    perfis nem cruzados com dados de medição.
+  </p>
+  <p>
+    <strong>Dados de medição de audiência.</strong> Só existem se você
+    aceitar. Ver o item 5.
+  </p>
 
-      <h2>4. Cookies</h2>
-      <p>
-        <span class="fill">[PREENCHER: descrever os cookies em uso. Hoje o site é estático
-        e não instala cookies próprios; isso muda se um pixel de campanha ou
-        ferramenta de analytics for adicionado]</span>
-      </p>
-
-      <h2>5. Direitos do titular</h2>
-      <p>
-        Você pode solicitar confirmação de tratamento, acesso, correção,
-        anonimização, portabilidade ou eliminação dos seus dados pelo canal
-        indicado na página de <a href="/contato/">contato</a>.
-      </p>
-
-      <h2>6. Retenção</h2>
-      <p><span class="fill">[PREENCHER: prazo de retenção]</span></p>
-
-      <h2>7. Encarregado (DPO)</h2>
-      <p><span class="fill">[PREENCHER: nome e e-mail do encarregado, se aplicável]</span></p>
-
-      <p><em>Última atualização:</em> <span class="fill">[PREENCHER: data]</span></p>
-    </div>
-  </article>
-</SiteLayout>
-
-<style>
-  .legal {
-    padding-block: var(--section-y-tight) var(--section-y);
+  <h2>5. Google Analytics 4</h2>
+  {
+    TRACKING.ga4.measurementId && (
+      <>
+        <p>
+          O site usa o <strong>Google Analytics 4</strong> (propriedade
+          <code>{TRACKING.ga4.measurementId}</code>) para entender como as
+          páginas são usadas: quantas pessoas chegam, por quais caminhos, quais
+          conteúdos são lidos e em quais pontos a navegação é abandonada. A
+          finalidade é medir audiência e melhorar o conteúdo — não identificar
+          você individualmente.
+        </p>
+        <p>
+          <strong>O Analytics só é carregado depois do seu aceite.</strong>
+          Antes de você decidir, e também se você recusar, nenhum arquivo do
+          Google é baixado e nenhum cookie de medição é gravado. Essa não é uma
+          promessa de intenção: é como o site está construído, e pode ser
+          verificado abrindo as ferramentas de desenvolvedor do navegador na
+          aba de rede.
+        </p>
+        <p>
+          O site também aplica o <em>Consent Mode</em> do Google com todos os
+          consentimentos negados por padrão, de modo que qualquer tag do Google
+          encontre o estado correto antes de gravar qualquer coisa.
+        </p>
+        <p>
+          O tratamento realizado pelo Google, como operador, segue as
+          políticas dele. Os cookies gravados e suas validades estão
+          detalhados na <a href="/politica-de-cookies/">Política de Cookies</a>.
+        </p>
+      </>
+    )
   }
 
-  .legal h1 {
-    font-size: var(--t-4);
-    margin-bottom: var(--s-7);
-  }
-</style>
+  <h2>6. Cookies e armazenamento local</h2>
+  <p>
+    O site não grava nenhum cookie próprio. A sua escolha sobre medição é
+    guardada no <strong>armazenamento local do seu navegador</strong>, sob a
+    chave <code>{TRACKING.consent.storageKey}</code>, e
+    <strong>não é enviada a servidor nenhum</strong> — ela existe só para o
+    site não perguntar de novo a cada página.
+  </p>
+  <p>
+    O detalhamento por categoria, com o que cada uma carrega hoje, está na
+    <a href="/politica-de-cookies/">Política de Cookies</a>.
+  </p>
+
+  <h2>7. Consentimento</h2>
+  <p>
+    Na primeira visita, uma barra no rodapé apresenta duas opções de mesmo
+    peso: aceitar ou recusar os itens não essenciais. Nada de medição é
+    carregado antes dessa escolha, e recusar é um caminho tão direto quanto
+    aceitar — não há passo extra, botão escondido nem opção pré-marcada.
+  </p>
+  <p>
+    Você pode mudar de ideia quando quiser, pela
+    <a href="/politica-de-cookies/">Política de Cookies</a>, sem custo e sem
+    justificativa. A base legal para a medição de audiência é o seu
+    consentimento (art. 7º, I, da LGPD); revogá-lo interrompe o tratamento
+    dali em diante.
+  </p>
+
+  <h2>8. Compra e a plataforma de checkout</h2>
+  <p>
+    A BookGo vende materiais digitais. O pagamento não é processado neste
+    site: ele ocorre na plataforma de checkout <strong>Kiwify</strong>, que
+    recebe diretamente de você os dados necessários à transação. O tratamento
+    desses dados é regido também pela política da própria plataforma.
+  </p>
+  <p>
+    Nesta etapa o checkout <strong>ainda não está conectado</strong>: os
+    botões de compra existem na página do produto, mas não levam a lugar
+    nenhum enquanto a URL definitiva não for publicada. Ou seja, hoje nenhum
+    dado de compra é tratado por este site nem por terceiros a partir dele.
+  </p>
+  <p>
+    Os meios de pagamento, as condições comerciais e a forma de acesso
+    aplicáveis a cada produto são apresentados na respectiva página de oferta
+    e no checkout.
+  </p>
+  <p>
+    Quando o checkout entrar no ar, os dados de compra serão usados para
+    executar o contrato: processar o pagamento, entregar o material e prestar
+    suporte (art. 7º, V, da LGPD).
+  </p>
+
+  <h2>9. Publicidade</h2>
+  <p>
+    <strong>O site não exibe anúncios hoje.</strong> Nenhum espaço
+    publicitário é renderizado e nenhum script de anúncios é carregado.
+  </p>
+  <p>
+    A arquitetura está preparada para que isso possa mudar no futuro, com
+    Google AdSense. Se e quando for ativado, a publicidade ficará submetida à
+    categoria <em>publicidade</em> do banner de consentimento — isto é, só
+    carregará com aceite — e esta política e a Política de Cookies serão
+    atualizadas <strong>antes</strong>, descrevendo os cookies e as
+    tecnologias envolvidas e, quando aplicável, a personalização de anúncios.
+  </p>
+
+  <h2>10. Google Search Console</h2>
+  <p>
+    O site inclui uma etiqueta de verificação do Google Search Console. Ela
+    apenas comprova a propriedade do domínio para quem administra a conta.
+    <strong>Não é cookie, não coleta dados de visitantes e não acompanha
+    navegação.</strong>
+  </p>
+
+  <h2>11. Com quem os dados são compartilhados</h2>
+  <p>
+    Somente com prestadores estritamente necessários para o site funcionar:
+  </p>
+  <ul>
+    <li>
+      a empresa de <strong>hospedagem</strong>, que mantém os registros de
+      acesso do servidor;
+    </li>
+    <li>
+      o <strong>Google</strong>, como operador da medição de audiência, e
+      apenas se você tiver aceitado;
+    </li>
+    <li>
+      a <strong>Kiwify</strong>, quando houver compra, para processar o
+      pagamento e entregar o material.
+    </li>
+  </ul>
+  <p>
+    A BookGo <strong>não vende dados pessoais</strong>, não os cede para fins
+    de marketing de terceiros e não mantém nenhuma outra integração de
+    medição, pixel ou rede de anúncios.
+  </p>
+
+  <h2>12. Segurança</h2>
+  <p>
+    O site é servido por HTTPS. Por ser inteiramente estático,
+    <strong>não existe banco de dados nem área autenticada neste servidor</strong>,
+    o que significa que não há base de usuários armazenada aqui para ser
+    exposta. Dados de compra ficam sob a responsabilidade da plataforma de
+    checkout.
+  </p>
+  <p>
+    Nenhum sistema é infalível: se ocorrer incidente de segurança com risco
+    relevante, os titulares e a ANPD serão comunicados na forma da lei.
+  </p>
+
+  <h2>13. Retenção</h2>
+  <p>
+    <span class="fill">[PENDING INPUT: por quanto tempo os registros de acesso
+    do servidor são mantidos e qual o prazo de retenção configurado na
+    propriedade do Google Analytics]</span>
+  </p>
+  <p>
+    Dados tratados com base no seu consentimento deixam de ser coletados
+    assim que você o revoga.
+  </p>
+
+  <h2>14. Seus direitos</h2>
+  <p>
+    A LGPD garante a você, a qualquer momento: confirmação da existência de
+    tratamento; acesso aos dados; correção de dados incompletos, inexatos ou
+    desatualizados; anonimização, bloqueio ou eliminação de dados
+    desnecessários ou tratados em desconformidade; portabilidade; eliminação
+    dos dados tratados com base no consentimento; informação sobre com quem os
+    dados foram compartilhados; informação sobre a possibilidade de não
+    consentir e as consequências disso; e revogação do consentimento.
+  </p>
+  <p>
+    Para exercer qualquer um deles, escreva para
+    <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>. O pedido é
+    atendido sem custo. Se não houver resposta satisfatória, você pode
+    reclamar à Autoridade Nacional de Proteção de Dados (ANPD).
+  </p>
+
+  <h2>15. Canal para assuntos de dados pessoais</h2>
+  <p>
+    As solicitações e comunicações sobre dados pessoais são recebidas em
+    <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a> e tratadas
+    diretamente por {COMPANY.legalName}.
+  </p>
+
+  <h2>16. Atualizações desta política</h2>
+  <p>
+    Esta política é atualizada sempre que o site mudar de comportamento — por
+    exemplo, ao conectar o checkout ou ao ativar publicidade. A versão vigente
+    é sempre a publicada nesta página, com a data de revisão ao final.
+    Mudanças que dependam de novo consentimento não serão aplicadas
+    retroativamente: o consentimento será pedido de novo.
+  </p>
+</LegalPage>

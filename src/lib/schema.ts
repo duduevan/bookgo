@@ -7,6 +7,7 @@
  * `citation` só aparece quando o artigo declara fontes de verdade.
  */
 import { SITE, absoluteUrl } from '../config/site';
+import { COMPANY } from '../config/company';
 import { BRAND_LOGO_URL } from './brand';
 import type { Post, Product } from './content';
 import { isoDate } from './content';
@@ -26,6 +27,21 @@ export const organization = (): Json => ({
     url: absoluteUrl(BRAND_LOGO_URL),
     width: 600,
     height: 216,
+  },
+  /* Identificação real da operadora. Não é enfeite de SEO: para um site que
+     vende, o Google e o visitante precisam poder ligar a marca a uma pessoa
+     jurídica verificável. Tudo aqui vem de src/config/company.ts e consta
+     também das páginas legais — nada é afirmado só no JSON-LD. */
+  legalName: COMPANY.legalName,
+  taxID: COMPANY.cnpj,
+  email: COMPANY.email,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: COMPANY.address.street,
+    addressLocality: COMPANY.address.city,
+    addressRegion: COMPANY.address.state,
+    postalCode: COMPANY.address.zip,
+    addressCountry: COMPANY.address.country,
   },
 });
 

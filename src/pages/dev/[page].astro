@@ -1,0 +1,155 @@
+---
+/**
+ * Vitrine de componentes — **só existe em `astro dev`**.
+ *
+ * `getStaticPaths` devolve lista vazia no build de produção, então a rota
+ * não gera arquivo em `dist/`: não há URL, não entra no sitemap, não entra
+ * no llms.txt e não existe "página oculta" publicada. Rodar
+ * `npm run dev` e abrir /dev/componentes/ é o único caminho.
+ *
+ * O conteúdo abaixo é **demonstração de layout**, não depoimento. Os textos
+ * dizem isso de forma explícita justamente para que ninguém, nem por engano,
+ * copie daqui para a LP: depoimento real só entra quando existir, escrito e
+ * autorizado por uma pessoa.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../../components/ui/Icon.astro';
+import TestimonialsSection from '../../components/testimonials/TestimonialsSection.astro';
+import { ICON_NAMES } from '../../lib/icons';
+
+export function getStaticPaths() {
+  /* Em produção, nenhuma rota. Em dev, uma. */
+  if (import.meta.env.PROD) return [];
+  return [{ params: { page: 'componentes' } }];
+}
+
+const demoPhone = {
+  type: 'phone' as const,
+  name: 'Exemplo de conversa',
+  status: 'conteúdo de demonstração',
+  messages: [
+    {
+      side: 'incoming' as const,
+      text: 'Esta é uma mensagem de exemplo. Serve para conferir a altura da bolha, a quebra de linha e o alinhamento à esquerda.',
+      time: '09:12',
+      read: false,
+    },
+    {
+      side: 'outgoing' as const,
+      text: 'Resposta de exemplo, alinhada à direita, com horário e confirmação de leitura.',
+      time: '09:14',
+      read: true,
+    },
+    {
+      side: 'incoming' as const,
+      text: 'Terceira bolha, para ver a cascata de entrada rodando uma vez só.',
+      time: '09:15',
+      read: false,
+    },
+  ],
+};
+
+const demoCard = {
+  type: 'card' as const,
+  name: 'Exemplo de cartão',
+  role: 'conteúdo de demonstração',
+  text: 'Este texto ocupa o lugar de um depoimento para conferir a tipografia, o avatar de iniciais e a altura do cartão na grade. Não é a fala de ninguém.',
+};
+---
+
+<BaseLayout title="Componentes (dev)" description="Vitrine interna." noindex>
+  <main class="dev">
+    <p class="warn">
+      <strong>Ambiente de desenvolvimento.</strong> Esta página não é gerada no
+      build de produção. Todo o conteúdo abaixo é demonstração de layout —
+      nenhum depoimento, nome ou resultado aqui é real.
+    </p>
+
+    <h1>Componentes</h1>
+
+    <h2>Ícones</h2>
+    <p>Grade 24×24, traço 1.5, pontas redondas, <code>currentColor</code>.</p>
+    <ul class="icons">
+      {
+        ICON_NAMES.map((name) => (
+          <li>
+            <Icon name={name} size="2rem" />
+            <code>{name}</code>
+          </li>
+        ))
+      }
+    </ul>
+
+    <h2>Ícones no tamanho de uso</h2>
+    <p>Todos herdam a cor e o tamanho do texto ao redor.</p>
+    <ul class="icons small">
+      {
+        ICON_NAMES.map((name) => (
+          <li>
+            <Icon name={name} />
+            <code>{name}</code>
+          </li>
+        ))
+      }
+    </ul>
+  </main>
+
+  <TestimonialsSection
+    enabled
+    title="Depoimento — conversa (demonstração)"
+    intro="Formato type: phone. Conteúdo fictício, apenas para conferir o desenho."
+    items={[demoPhone]}
+  />
+
+  <TestimonialsSection
+    enabled
+    tone="default"
+    title="Depoimento — cartão (demonstração)"
+    intro="Formato type: card. Conteúdo fictício, apenas para conferir o desenho."
+    items={[demoCard, { ...demoCard, name: 'Segundo exemplo', avatar: undefined }]}
+  />
+</BaseLayout>
+
+<style>
+  .dev {
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: var(--s-8) var(--s-5);
+  }
+
+  .warn {
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius);
+    padding: var(--s-4);
+    color: var(--color-muted);
+    margin-bottom: var(--s-7);
+  }
+
+  h2 {
+    margin-top: var(--s-8);
+  }
+
+  .icons {
+    list-style: none;
+    padding: 0;
+    margin: var(--s-5) 0 0;
+    display: grid;
+    gap: var(--s-4);
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  }
+
+  .icons li {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    padding: var(--s-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    color: var(--color-primary);
+  }
+
+  .icons code {
+    font-size: var(--t--1);
+    color: var(--color-muted);
+  }
+</style>
