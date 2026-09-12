@@ -35,7 +35,7 @@ export const COMPANY = {
 /** Endereço em uma linha, para texto corrido e dados estruturados. */
 export const addressLine = (): string => {
   const a = COMPANY.address;
-  return `${a.street} — ${a.district}, ${a.city}/${a.state}, CEP ${a.zip}`;
+  return `${a.street}, ${a.district}, ${a.city}/${a.state}, CEP ${a.zip}`;
 };
 
 /**

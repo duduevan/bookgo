@@ -102,7 +102,7 @@ export const GET: APIRoute = async ({ props }) => {
   if (d.sources.length > 0) {
     lines.push('## Fontes', '');
     for (const source of d.sources) {
-      const publisher = source.publisher ? ` — ${source.publisher}` : '';
+      const publisher = source.publisher ? `. ${source.publisher}` : '';
       lines.push(`- [${source.title}](${source.url})${publisher}`);
     }
     lines.push('');
@@ -114,18 +114,18 @@ export const GET: APIRoute = async ({ props }) => {
     '## Sobre este documento',
     '',
     `- Versão HTML (principal): ${absoluteUrl(postUrl(post))}`,
-    `- Categoria: ${categoryName} — ${absoluteUrl(categoryUrl(d.category.id))}`,
+    `- Categoria: [${categoryName}](${absoluteUrl(categoryUrl(d.category.id))})`,
     `- Publicado em: ${isoDate(d.date)}`,
     ...(d.updated ? [`- Atualizado em: ${isoDate(d.updated)}`] : []),
     `- Autoria: ${d.author}`,
     ...(product
       ? [
-          `- Material relacionado: ${product.data.name} — ${absoluteUrl(
+          `- Material relacionado: [${product.data.name}](${absoluteUrl(
             productUrl(product.data.slug)
-          )}`,
+          )})`,
         ]
       : []),
-    `- Publicado por: ${SITE.name} — ${SITE.url}/`,
+    `- Publicado por: [${SITE.name}](${SITE.url}/)`,
     ''
   );
 

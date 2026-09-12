@@ -5,13 +5,13 @@
 export const SITE = {
   url: 'https://bookgo.com.br',
   name: 'BookGo',
-  title: 'BookGo — aprenda algo útil, coloque em prática',
+  title: 'BookGo: aprenda algo útil, coloque em prática',
   description:
     'Cursos rápidos, guias e materiais práticos para resolver problemas reais do dia a dia, no seu ritmo.',
   locale: 'pt-BR',
   lang: 'pt-BR',
   ogImage: '/images/og-default.png',
-  ogImageAlt: 'BookGo — aprenda algo útil e coloque em prática',
+  ogImageAlt: 'BookGo: aprenda algo útil e coloque em prática',
   /**
    * Verificação do Google Search Console (método "tag HTML").
    *

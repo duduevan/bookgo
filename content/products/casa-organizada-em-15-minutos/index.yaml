@@ -85,7 +85,7 @@ problem:
   title: Você organiza, e pouco tempo depois parece que ninguém organizou nada
   items:
     - Você arruma a cozinha à noite e, no dia seguinte, ela já está do mesmo jeito.
-    - A organização vira assunto de sábado — e o fim de semana desaparece.
+    - A organização vira assunto de sábado, e o fim de semana desaparece.
     - Você olha para a bagunça, não sabe por onde começar e acaba adiando.
     - Quando um ambiente finalmente fica pronto, outro já desandou.
     - Os métodos que você encontra pedem dias inteiros, caixas novas e uma casa vazia.
@@ -98,12 +98,12 @@ method:
   name: O Método dos 15 Minutos
   intro: >-
     Em vez de esperar por um dia livre que dificilmente chega, você organiza em sessões
-    curtas de 15 minutos distribuídas na sua rotina. Uma sessão não organiza a casa inteira —
+    curtas de 15 minutos distribuídas na sua rotina. Uma sessão não organiza a casa inteira,
     e não precisa organizar. O que mantém a casa em ordem é a repetição dessas janelas curtas.
   pillars:
     - title: Um ponto de cada vez
       icon: compass
-      text: Você escolhe um alvo específico para a sessão — a bancada, uma gaveta, o sofá — em vez de encarar o cômodo inteiro.
+      text: Você escolhe um alvo específico para a sessão (a bancada, uma gaveta, o sofá) em vez de encarar o cômodo inteiro.
     - title: Prioridade antes de perfeição
       icon: list
       text: Primeiro o que mais atrapalha o dia a dia. O detalhe fica para quando houver tempo extra.
@@ -121,7 +121,7 @@ benefits:
   items:
     - title: Começar deixa de ser o problema
       icon: spark
-      text: Quinze minutos é um compromisso pequeno o suficiente para caber em quase qualquer dia — e isso reduz a paralisia de não saber por onde começar.
+      text: Quinze minutos é um compromisso pequeno o suficiente para caber em quase qualquer dia, e isso reduz a paralisia de não saber por onde começar.
     - title: O fim de semana volta a ser seu
       icon: calendar
       text: Quando a manutenção acontece durante a semana, o sábado deixa de ser o dia de correr atrás do prejuízo.
@@ -140,7 +140,7 @@ howItWorks:
   title: Como funciona no seu dia
   steps:
     - title: Escolha a sua janela
-      text: Defina onde os 15 minutos cabem — antes do banho, depois do jantar, enquanto o café passa.
+      text: Defina onde os 15 minutos cabem. Pode ser antes do banho, depois do jantar ou enquanto o café passa.
     - title: Siga o checklist do dia
       text: O Checklist Diário indica o alvo da sessão, para você não gastar a janela decidindo o que fazer.
     - title: Pare quando o tempo acabar
@@ -318,7 +318,7 @@ faq:
     - q: Preciso assistir a aulas?
       a: Não. O conteúdo é em texto e em materiais práticos em PDF, feitos para leitura rápida e aplicação direta.
     - q: É mais um planner que eu vou abandonar?
-      a: O Planner Semanal é uma peça de apoio, não o centro do método. Ele é simples e pode ser usado impresso ou no celular — e, se você parar de usá-lo, o método continua funcionando.
+      a: O Planner Semanal é uma peça de apoio, não o centro do método. Ele é simples e pode ser usado impresso ou no celular. Se você parar de usá-lo, o método continua funcionando.
     - q: Preciso comprar caixas ou organizadores?
       a: Não. O método trabalha com o que você já tem em casa.
     - q: Como recebo os materiais?
@@ -327,4 +327,4 @@ faq:
 # ── CTA final ────────────────────────────────────────────────
 finalCta:
   title: Quinze minutos hoje custam menos que um sábado inteiro depois
-  text: Se a sua casa parece voltar à estaca zero toda semana, provavelmente o problema não é falta de esforço — é o formato. Comece por uma janela curta e veja como a sua rotina responde.
+  text: Se a sua casa parece voltar à estaca zero toda semana, provavelmente o problema não é falta de esforço. É o formato. Comece por uma janela curta e veja como a sua rotina responde.

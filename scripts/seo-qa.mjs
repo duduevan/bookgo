@@ -1,5 +1,5 @@
 /**
- * SEO QA — roda sobre dist/ depois do build.
+ * SEO QA: roda sobre dist/ depois do build.
  *
  * Filosofia: só falha em erro ESTRUTURAL, aquilo que quebra de fato o
  * entendimento da página por um rastreador. Contagem de caracteres de title
@@ -212,9 +212,64 @@ for (const file of htmlFiles) {
   /* ── Avisos editoriais: nunca bloqueiam ──────────────────── */
 
   if (indexable && title && title.length > 62)
-    warn(page, `title com ${title.length} caracteres — pode ser cortado no resultado de busca`);
+    warn(page, `title com ${title.length} caracteres, pode ser cortado no resultado de busca`);
   if (indexable && description && description.length < 110)
-    warn(page, `description com ${description.length} caracteres — há espaço para mais contexto`);
+    warn(page, `description com ${description.length} caracteres, há espaço para mais contexto`);
+}
+
+/* ── Travessão: proibido em conteúdo público ───────────────── */
+
+/* Regra editorial do BookGo: o travessão não aparece em texto nosso. A
+   frase é reescrita com pontuação natural, nunca trocada por hífen.
+
+   A verificação roda sobre o que foi gerado, não sobre o código-fonte, por
+   dois motivos. Primeiro, é o texto publicado que importa: um travessão num
+   comentário de implementação não chega a ninguém. Segundo, `<script>` e
+   `<style>` ficam de fora, então dependência de terceiro com o caractere no
+   próprio bundle não reprova conteúdo que é nosso.
+
+   Além do texto visível, entram os atributos que uma pessoa lê ou ouve:
+   leitor de tela anuncia `aria-label` e `alt` igual a parágrafo, e o
+   resultado de busca mostra `content` de meta. */
+
+const TRAVESSAO = '—';
+
+const decodificar = (t) =>
+  t
+    .replace(/&mdash;/g, TRAVESSAO)
+    .replace(/&#8212;/g, TRAVESSAO)
+    .replace(/&#x2014;/gi, TRAVESSAO)
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
+
+const ATRIBUTOS_LIDOS = /(?:content|aria-label|alt|title|placeholder)="([^"]*)"/g;
+
+for (const file of files.filter((f) => /\.(html|md|txt)$/.test(f))) {
+  const page = urlOf(file);
+  const bruto = decodificar(await readFile(file, 'utf-8'));
+  const trechos = [];
+
+  if (file.endsWith('.html')) {
+    const semCodigo = bruto.replace(/<(script|style)\b[\s\S]*?<\/\1>/g, ' ');
+
+    for (const [, valor] of semCodigo.matchAll(ATRIBUTOS_LIDOS))
+      if (valor.includes(TRAVESSAO)) trechos.push(valor);
+
+    for (const linha of semCodigo.replace(/<[^>]+>/g, '\n').split('\n'))
+      if (linha.includes(TRAVESSAO)) trechos.push(linha.trim());
+  } else {
+    for (const linha of bruto.split('\n'))
+      if (linha.includes(TRAVESSAO)) trechos.push(linha.trim());
+  }
+
+  for (const trecho of new Set(trechos)) {
+    const recorte = trecho.length > 90 ? `${trecho.slice(0, 90)}...` : trecho;
+    fail(page, `travessão em conteúdo público: "${recorte}"`);
+  }
 }
 
 /* ── Relatório ─────────────────────────────────────────────── */
@@ -228,10 +283,10 @@ const group = (items) => {
   return byPage;
 };
 
-console.log(`SEO QA — ${htmlFiles.length} páginas verificadas\n`);
+console.log(`SEO QA sobre ${htmlFiles.length} páginas\n`);
 
 if (warnings.length) {
-  console.log(`Avisos editoriais (${warnings.length}) — não bloqueiam o build:`);
+  console.log(`Avisos editoriais (${warnings.length}), não bloqueiam o build:`);
   for (const [page, messages] of group(warnings)) {
     console.log(`  ${page}`);
     for (const m of messages) console.log(`    · ${m}`);

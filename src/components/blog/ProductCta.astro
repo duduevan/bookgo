@@ -83,7 +83,14 @@ const checkoutEvent = eventAttrs('checkout_click', {
       label={buttonLabel}
       track={checkoutEvent}
     />
-    <a class="details" href={href}>{name} — {price.display}</a>
+    {/* Informação, não segunda ação. Como link, disputava o clique com o
+        botão ao lado e dividia a decisão em duas portas para o mesmo
+        lugar. Em texto, o nome e o preço continuam visíveis e o CTA volta
+        a ser único. */}
+    <p class="details">
+      <span class="details-name">{name}</span>
+      <span class="details-price">{price.display}</span>
+    </p>
   </div>
 </aside>
 
@@ -142,7 +149,17 @@ const checkoutEvent = eventAttrs('checkout_click', {
   }
 
   .details {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--s-1) var(--s-3);
     font-size: var(--t--1);
-    color: var(--color-primary-dark);
+    /* Sem cor de link e sem sublinhado: nada aqui deve parecer clicável. */
+    color: color-mix(in srgb, var(--color-muted) 55%, var(--color-text));
+  }
+
+  .details-price {
+    font-weight: var(--w-semibold);
+    color: var(--color-text);
   }
 </style>

@@ -27,14 +27,14 @@ const gaSessionCookie = `_ga_${(TRACKING.ga4.measurementId ?? '').replace('G-', 
   <p>
     Esta página explica o que a BookGo grava no seu navegador, em quais
     categorias e como você aceita ou recusa. Ela descreve o estado atual do
-    site — não um modelo genérico.
+    site, não um modelo genérico.
   </p>
 
   <h2>1. Antes de tudo: o que existe hoje</h2>
   <p>
     <strong>O site da BookGo não grava nenhum cookie próprio.</strong> A única
     coisa guardada por padrão é a sua escolha sobre medição, e ela fica no
-    armazenamento local do navegador — não é cookie e não é enviada a lugar
+    armazenamento local do navegador. Não é cookie e não é enviada a lugar
     nenhum.
   </p>
   <p>
@@ -61,7 +61,7 @@ const gaSessionCookie = `_ga_${(TRACKING.ga4.measurementId ?? '').replace('G-', 
   <h3>Necessários</h3>
   <p>
     O que o site precisa para funcionar e para respeitar a sua decisão. Não
-    dependem de consentimento — sem eles, o site não conseguiria nem lembrar
+    dependem de consentimento: sem eles, o site não conseguiria nem lembrar
     que você recusou.
   </p>
   <table>
@@ -146,7 +146,7 @@ const gaSessionCookie = `_ga_${(TRACKING.ga4.measurementId ?? '').replace('G-', 
       <>
         <p>
           <strong>Desativada.</strong> O site não exibe anúncios e nenhum
-          script de publicidade é carregado — nem depois do aceite, porque não
+          script de publicidade é carregado, nem depois do aceite, porque não
           há nada para carregar.
         </p>
         <p>
@@ -159,7 +159,7 @@ const gaSessionCookie = `_ga_${(TRACKING.ga4.measurementId ?? '').replace('G-', 
           Se for ativada no futuro, ela ficará submetida a esta categoria:
           só carregará com aceite, e esta página e a
           <a href="/privacidade/">Política de Privacidade</a> serão
-          atualizadas <strong>antes</strong> — descrevendo os cookies e as
+          atualizadas <strong>antes</strong>, descrevendo os cookies e as
           tecnologias do Google envolvidos e, quando aplicável, a
           personalização de anúncios.
         </p>
@@ -190,12 +190,12 @@ const gaSessionCookie = `_ga_${(TRACKING.ga4.measurementId ?? '').replace('G-', 
         </p>
         <ul>
           <li>
-            <strong>Aceitar</strong> — autoriza as categorias não
+            <strong>Aceitar</strong>: autoriza as categorias não
             essenciais. Hoje isso significa, na prática, apenas a de
             analytics, já que a de publicidade não carrega nada.
           </li>
           <li>
-            <strong>Recusar não essenciais</strong> — mantém apenas os itens
+            <strong>Recusar não essenciais</strong>: mantém apenas os itens
             necessários. Nada de medição é carregado, e o site funciona
             exatamente igual.
           </li>
@@ -222,15 +222,15 @@ const gaSessionCookie = `_ga_${(TRACKING.ga4.measurementId ?? '').replace('G-', 
     ) : (
       <p>
         Não há banner de consentimento no momento, porque não existe nenhuma
-        categoria não essencial ativa — não há o que consentir.
+        categoria não essencial ativa, e não há o que consentir.
       </p>
     )
   }
 
   <h2>7. Atualizações</h2>
   <p>
-    Esta página é atualizada sempre que o site passar a usar — ou deixar de
-    usar — alguma dessas tecnologias. As tabelas acima são geradas
+    Esta página é atualizada sempre que o site passar a usar (ou deixar de
+    usar) alguma dessas tecnologias. As tabelas acima são geradas
     diretamente da configuração do site, de modo que elas não podem descrever
     um estado diferente do que está no ar.
   </p>

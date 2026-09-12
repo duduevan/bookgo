@@ -755,6 +755,32 @@ uma decisão a revogar.
 
 ## Regras de conteúdo (não negociáveis)
 
+### Nunca utilizar travessão
+
+O caractere `—` não aparece em texto do BookGo. Reescreva a frase com
+pontuação natural: ponto, vírgula, dois-pontos, ponto e vírgula, parênteses
+ou uma estrutura melhor. **Trocar por hífen não resolve** — a frase é que
+precisa mudar.
+
+```
+"a premissa é outra — a casa é usada"     →  "a premissa é outra: a casa é usada"
+"cadeira do quarto — os lugares que"      →  "Bancada, mesa da sala e cadeira do
+                                              quarto são os lugares que"
+```
+
+Vale para tudo que chega ao público: títulos, parágrafos, artigos, FAQ, CTAs,
+meta title e description, YAML de produto e categoria, frontmatter, páginas
+legais, texto de cartão e `aria-label` ou `alt`, que o leitor de tela anuncia
+igual a parágrafo.
+
+`npm run qa:seo` **quebra o build** se um travessão aparecer no HTML, no
+Markdown alternativo ou no `llms.txt` gerados. A verificação roda sobre
+`dist/`, e não sobre o código: comentário de implementação e dependência de
+terceiro ficam de fora, porque não chegam a leitor nenhum. Este guia e os
+comentários do código também estão fora do escopo.
+
+### O que nunca vai a uma página
+
 Não escreva, em nenhuma página:
 
 - depoimentos, avaliações ou número de alunos;
