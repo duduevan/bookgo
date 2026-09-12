@@ -22,9 +22,27 @@ import {
   type Post,
 } from '../../../lib/content';
 import * as schema from '../../../lib/schema';
+import { ADS } from '../../../config/site';
+import { resolveRhythm } from '../../../lib/commercial-blocks';
+import { missingArticleImages } from '../../../lib/article-images';
 
 export async function getStaticPaths() {
   const [posts, categories] = await Promise.all([getPosts(), getCategories()]);
+
+  /* Imagem declarada cujo arquivo ainda não chegou. Não é erro: é assim que
+     a arquitetura do artigo fica pronta antes da fotografia existir. Mas
+     precisa aparecer no log, senão o slot vazio passa despercebido. */
+  const missing = await missingArticleImages();
+  if (missing.length > 0) {
+    console.warn(
+      `\n[imagens] ${missing.length} imagem(ns) declarada(s) sem arquivo — o slot não renderiza:`
+    );
+    for (const m of missing) {
+      console.warn(`  · ${m.expectedPath}`);
+      console.warn(`    alt: ${m.alt}`);
+    }
+    console.warn('');
+  }
 
   return posts.map((post) => {
     const category = categories.find((c) => c.id === post.data.category.id);
@@ -49,6 +67,51 @@ const { Content, headings } = await render(post);
 const product = d.product ? await getProduct(d.product.id) : undefined;
 const related = await getRelatedPosts(post, 3);
 const wordCount = countWords(post.body);
+
+/* O corpo precisa marcar onde entra o CTA do meio do texto. Placement com
+   `inline` e nenhum marcador significa um CTA que a redação pediu e que
+   simplesmente não apareceria — erro de conteúdo, não detalhe a tolerar. */
+const cta = d.productCta;
+const wantsInline =
+  cta?.placement === 'inline' || cta?.placement === 'inline-and-end';
+const hasMarker = post.body?.includes('<ProductCtaHere') ?? false;
+
+if (wantsInline && !hasMarker) {
+  throw new Error(
+    `"${d.slug}": productCta.placement é "${cta!.placement}" mas o corpo não ` +
+      'traz <ProductCtaHere />. Marque o ponto editorial onde o CTA entra.'
+  );
+}
+if (!wantsInline && hasMarker) {
+  throw new Error(
+    `"${d.slug}": o corpo traz <ProductCtaHere /> mas productCta.placement é ` +
+      `"${cta?.placement ?? 'ausente'}". O marcador não renderiza nada assim.`
+  );
+}
+
+const showEndCta =
+  Boolean(product) &&
+  (cta?.placement === 'end' || cta?.placement === 'inline-and-end');
+
+/* Nenhum bloco comercial encosta em outro. Ver src/lib/commercial-blocks.ts:
+   sem fontes, um artigo pode não ter separador editorial suficiente para
+   hospedar anúncio e CTA de fechamento — aqui o anúncio cede. */
+const adOn = (placement: 'article-inline' | 'article-end') =>
+  ADS.enabled && ADS.placements[placement] && Boolean(ADS.adsenseClient);
+
+const rhythm = resolveRhythm([
+  { id: 'ad-inline', commercial: true, on: adOn('article-inline'), priority: 2 },
+  { id: 'sources', commercial: false, on: d.sources.length > 0 },
+  { id: 'product-cta-end', commercial: true, on: showEndCta, priority: 3 },
+  { id: 'related', commercial: false, on: related.length > 0 },
+  { id: 'ad-end', commercial: true, on: adOn('article-end'), priority: 1 },
+]);
+
+for (const drop of rhythm.dropped) {
+  console.warn(
+    `[ritmo] ${d.slug}: bloco "${drop.id}" removido — ${drop.because}.`
+  );
+}
 
 const crumbs = [
   { name: 'Início', path: '/' },
@@ -117,16 +180,27 @@ const crumbs = [
 
     {/* Posição in-page só depois de todo o corpo editorial: nunca entre
         H1, deck, resumo, índice ou primeiro parágrafo. */}
-    <AdSlot placement="article-inline" />
+    {rhythm.visible.has('ad-inline') && <AdSlot placement="article-inline" />}
 
     <SourcesList sources={d.sources} />
 
-    {product && <ProductCta product={product} />}
+    {
+      rhythm.visible.has('product-cta-end') && product && cta && (
+        <ProductCta
+          product={product}
+          label={cta.label}
+          headline={cta.headline}
+          text={cta.text}
+          buttonLabel={cta.buttonLabel}
+          placement="end"
+        />
+      )
+    }
 
     <RelatedPosts posts={related} />
 
     {/* Fim da página, depois dos relacionados e longe do CTA. */}
-    <AdSlot placement="article-end" />
+    {rhythm.visible.has('ad-end') && <AdSlot placement="article-end" />}
   </article>
 </SiteLayout>
 

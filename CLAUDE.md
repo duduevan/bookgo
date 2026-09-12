@@ -317,6 +317,122 @@ subtopics:                                   # recortes que a categoria cobre
 relatedProduct: casa-organizada-em-15-minutos
 ```
 
+## Padrão editorial dos artigos
+
+### Imagens
+
+Artigo não é bloco contínuo de texto. Referência, não conta a fechar:
+**normalmente 2 imagens em artigo médio, 3 em artigo longo** — e nenhuma que
+não acrescente contexto, compreensão ou ritmo. Imagem para preencher espaço
+é ruído com custo de banda.
+
+A imagem conversa com o trecho onde aparece. Nunca como falsa prova de
+resultado do produto.
+
+Arquivos em `src/assets/blog/<categoria>/<slug>/`, com nome descritivo
+(`bancada-cozinha-em-uso.webp`, não `IMG001.webp`). WebP; AVIF só quando
+trouxer ganho real.
+
+Os metadados ficam no frontmatter; o corpo do MDX carrega só a posição:
+
+```yaml
+images:
+  - id: bancada-cozinha-em-uso        # referência usada no corpo
+    src: bancada-cozinha-em-uso.webp  # arquivo em src/assets/blog/<cat>/<slug>/
+    alt: Bancada de cozinha com louça do café da manhã sobre a superfície
+    caption: Só quando acrescenta informação que o texto não dá.
+    credit: Opcional.
+```
+
+```mdx
+<ArticleImage id="bancada-cozinha-em-uso" />
+```
+
+`ArticleImage.astro` resolve tudo: `astro:assets` com `srcset`, `sizes`,
+`width`/`height` reais, `loading="lazy"` e `decoding="async"`. **Sem
+JavaScript.** Imagem principal/LCP usa `priority` — as do corpo, nunca.
+
+`title` **não** é preenchido: repetir o alt ali não é lido por leitor de
+tela, não aparece no toque e vira ruído. Só com motivo próprio.
+
+O alt descreve a cena e a função dela naquele contexto. Sem keyword
+stuffing — o schema recusa alt com 3 ou mais palavras-chave do artigo ou
+mais de 25 palavras.
+
+**Arquivo ainda inexistente não quebra nada:** o slot não renderiza e o
+build lista o que falta. É assim que a arquitetura do artigo fica pronta
+antes da fotografia existir, sem imagem quebrada nem caixa vazia no ar.
+
+**Direção visual:** fotografia realista, editorial, contemporânea, humana,
+luz natural. Sem texto embutido, sem cara de banco de imagens, sem estética
+artificial. Em Casa e Organização: casas habitadas, objetos em uso,
+organização realista — não casa perfeita de catálogo.
+
+### CTA contextual do produto
+
+O CTA conversa com o que a pessoa acabou de ler. Banner idêntico repetido em
+todos os artigos é exatamente o que não fazemos — por isso a copy mora no
+**artigo**, não no componente:
+
+```yaml
+productCta:
+  placement: inline          # none | inline | end | inline-and-end
+  label: Material relacionado
+  headline: Quer aplicar esse raciocínio na casa inteira?
+  text: Frase que liga o assunto do artigo ao produto.
+  buttonLabel: Conhecer o método
+```
+
+```mdx
+<ProductCtaHere />
+```
+
+O marcador diz **onde**; o resto vem do frontmatter. Referência de posição:
+entre 40% e 65% do texto, depois de a pessoa já ter recebido valor — mas o
+ponto certo é editorial, não aritmético. `placement` com `inline` e nenhum
+marcador quebra o build, e vice-versa.
+
+**Artigo médio:** normalmente 1 CTA inline. **Artigo longo:** inline + um de
+fechamento.
+
+**Nunca:** logo depois do H1, dentro do resumo, dentro do índice, antes de
+conteúdo substancial, ou colado em anúncio ou material afiliado.
+
+O bloco veste a paleta do próprio produto (`themeToStyle`), então quem clica
+cai numa landing page com as mesmas cores. Sem contador, sem escassez, sem
+animação agressiva, sem cor de alarme.
+
+**Nunca inventar característica do produto.** A copy só afirma o que o YAML
+do produto já sustenta.
+
+### Três sistemas comerciais separados
+
+`ProductCta`, `AffiliateProduct` (ainda não implementado) e `AdSlot` são
+independentes e **nunca se empilham**. Entre dois blocos comerciais tem que
+haver conteúdo editorial.
+
+Isso é código, não recomendação: `src/lib/commercial-blocks.ts` resolve a
+sequência em build e remove o que ficaria colado — o anúncio cede, porque é
+receita de terceiro e o CTA é o negócio da casa. O `qa:seo` confere o
+resultado no HTML gerado e falha se dois `data-commercial` ficarem vizinhos.
+
+### Metadados internos de monetização
+
+Orientam o planejamento editorial. **Não viram tag, meta nem atributo no
+HTML** — nenhum componente os recebe.
+
+```yaml
+monetization:
+  productCta: medio      # forte | medio | secundario | off
+  affiliate: baixo       # alto | medio | baixo | off
+  adsense: alto          # alto | medio | baixo | off
+```
+
+Como referência: artigo informacional tende a CTA médio, afiliado baixo,
+AdSense alto; artigo de fundo de funil, CTA forte e AdSense desligado.
+
+---
+
 ## Publicidade
 
 Hoje **desligada por inteiro**: `ADS.enabled = false` em `src/config/site.ts`.

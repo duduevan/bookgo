@@ -20,7 +20,41 @@ summary:
   - Pare quando o tempo acabar, mesmo com o alvo pela metade — esticar a sessão é o que gera desistência.
   - "Comece pelos pontos de acúmulo (bancada, mesa, cadeira do quarto): é o melhor retorno por minuto investido."
 sources: []
+
+# Imagens editoriais. Artigo médio (~1.150 palavras): duas, cada uma ligada
+# ao trecho onde aparece. Os arquivos ainda não foram fornecidos — enquanto
+# não existirem em src/assets/blog/organizacao/como-manter-a-casa-organizada/,
+# o slot não renderiza nada e o build lista o que falta.
+images:
+  - id: bancada-cozinha-em-uso
+    src: bancada-cozinha-em-uso.webp
+    alt: Bancada de cozinha com louça do café da manhã e objetos do dia a dia sobre a superfície
+    caption: A casa desarruma porque é usada. Manutenção é o trabalho de devolver o que o dia tirou do lugar.
+  - id: cadeira-do-quarto-com-roupas
+    src: cadeira-do-quarto-com-roupas.webp
+    alt: Cadeira de quarto com roupas empilhadas no encosto, ao lado de um guarda-roupa aberto
+
+# CTA contextual. Artigo médio: um só, no meio do texto, no ponto marcado
+# por <ProductCtaHere /> — depois de a pessoa já ter recebido o método inteiro.
+productCta:
+  placement: inline
+  label: Material relacionado
+  headline: Quer aplicar esse raciocínio na casa inteira?
+  text: >-
+    O Casa Organizada em 15 Minutos por Dia transforma essa lógica em uma rotina
+    para os diferentes ambientes, com checklists que definem o alvo de cada
+    sessão antes de ela começar.
+  buttonLabel: Conhecer o método
+
+# Metadados internos de monetização. Não viram tag, meta nem atributo no HTML.
+monetization:
+  productCta: medio
+  affiliate: baixo
+  adsense: alto
 ---
+
+import ArticleImage from '../../../src/components/blog/ArticleImage.astro';
+import ProductCtaHere from '../../../src/components/blog/ProductCtaHere.astro';
 
 **A resposta curta:** pare de esperar por um bloco livre de horas e passe a
 organizar em sessões de cerca de 15 minutos, distribuídas ao longo da semana.
@@ -50,6 +84,8 @@ Só que a casa não desarruma porque o armário está mal projetado. Ela desarru
 porque é usada todos os dias. Cada refeição, cada troca de roupa, cada brincadeira
 devolve objetos ao ambiente. Isso é **manutenção**, e manutenção tem natureza
 oposta à do projeto: precisa ser curta, frequente e pouco dependente de motivação.
+
+<ArticleImage id="bancada-cozinha-em-uso" />
 
 Quando as duas coisas são tratadas como uma só, acontece o previsível: a pessoa
 espera pelo dia livre, o dia livre não vem, o acúmulo cresce, e quando finalmente
@@ -99,6 +135,8 @@ sessão é exatamente o que transforma organização em algo cansativo e insuste
 Cinco sessões curtas na semana sustentam a casa melhor que uma tarde inteira a
 cada quinze dias. É a mesma lógica de qualquer manutenção: pouco e sempre.
 
+<ProductCtaHere />
+
 ## Como encaixar 15 minutos numa rotina que já está cheia
 
 A pergunta seguinte é sempre a mesma: de onde tirar esses 15 minutos? Em geral,
@@ -117,6 +155,8 @@ consiga identificar com facilidade no dia em que ele aparecer.
 Se você for começar hoje, não comece pelo armário. Comece pelos lugares onde as
 coisas param quando ninguém decide onde elas vão: a bancada da cozinha, a mesa da
 sala, a cadeira do quarto, a entrada da casa.
+
+<ArticleImage id="cadeira-do-quarto-com-roupas" />
 
 Esses pontos funcionam como termômetro. Quando estão livres, a casa parece
 organizada mesmo que existam gavetas bagunçadas. Quando estão cheios, a casa
