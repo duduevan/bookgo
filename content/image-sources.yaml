@@ -283,20 +283,6 @@ images:
     ratio: "16:10"
     width: 1400
 
-  - target: src/assets/blog/cozinha/cardapio-semanal-simples/cozinha-com-ingredientes.webp
-    provider: freepik
-    assetId: 86739611
-    license: free
-    author: magnific
-    sourcePage: https://www.magnific.com/free-photo/portrait-young-woman-standing-kitchen-with-vegetables-chopping-board-holding_86739611.htm
-    previewPath: /free-photo/portrait-young-woman-standing-kitchen-with-vegetables-chopping-board-holding_1258-203763.jpg
-    ratio: "16:10"
-    width: 1400
-    note: >-
-      Substitui a prancheta de planner (3124129), descartada depois de vista:
-      trazia "EVERY MOMENT MATTERS" e os dias da semana em inglês impressos na
-      folha. Texto embutido em outro idioma não entra em página da BookGo.
-
   - target: src/assets/blog/cozinha/lista-de-compras-a-partir-do-cardapio/lista-escrita-antes-da-compra.webp
     provider: freepik
     assetId: 81440711
@@ -335,35 +321,6 @@ images:
       evitada de propósito: o artigo é sobre decidir o jantar, não sobre
       beliscar de madrugada.
 
-  - target: src/assets/blog/cozinha/nao-sei-o-que-fazer-para-o-jantar/refeicao-na-mesa-de-casa.webp
-    provider: freepik
-    assetId: 19924940
-    license: free
-    author: magnific
-    sourcePage: https://www.magnific.com/free-photo/close-up-people-eating-together_19924940.htm
-    previewPath: /free-photo/close-up-people-eating-together_23-2149152939.jpg
-    ratio: "16:10"
-    width: 1400
-    note: >-
-      Substitui o prato de arroz com pimentões (11106862), descartado depois de
-      visto: fundo branco de estúdio, folha de salsa posicionada e talheres
-      alinhados. Era montagem fotográfica, e o trecho fala justamente da
-      refeição simples que resolve o dia.
-
-  - target: src/assets/blog/cozinha/planejar-refeicoes-quando-a-semana-muda/rotina-mudando-na-cozinha.webp
-    provider: freepik
-    assetId: 5508595
-    license: free
-    author: magnific
-    sourcePage: https://www.magnific.com/free-photo/young-woman-kitchen-cooking-breakfast-talking-phone_5508595.htm
-    previewPath: /free-photo/young-woman-kitchen-cooking-breakfast-talking-phone_1303-16461.jpg
-    ratio: "16:10"
-    width: 1400
-    note: >-
-      Substitui o calendário de parede (5637810), descartado depois de visto:
-      era um mockup de design, com "NOV / 2019", "COMPANY NAME" e um cartaz em
-      inglês num quadro de cortiça de escritório. Nada ali é cozinha.
-
   - target: src/assets/blog/cozinha/planejar-refeicoes-quando-a-semana-muda/potes-com-sobras-na-geladeira.webp
     provider: freepik
     assetId: 7389459
@@ -373,3 +330,16 @@ images:
     previewPath: /free-photo/open-fridge-with-plastic-food-containers-vegetables_23-2148487830.jpg
     ratio: "16:10"
     width: 1400
+
+  # Três slots seguem sem imagem, e é de propósito.
+  #
+  # Segunda rodada de descarte nos mesmos lugares, agora por direção visual e
+  # não por texto embutido: a segunda foto do cardápio semanal era retrato
+  # posado sorrindo para a câmera com o celular na mão; a da mesa de casa era
+  # um almoço social servindo vinho, e o trecho fala da refeição simples de
+  # uma quarta-feira; a da semana que muda era cozinha branca de catálogo com
+  # alguém no celular, sem cozinhar.
+  #
+  # Artigo com uma imagem certa é melhor do que artigo com duas, sendo uma
+  # delas de banco de imagens. Os slots ficam abertos: declarar a origem aqui
+  # basta para o texto voltar a ter a segunda foto, sem tocar no MDX.
