@@ -122,9 +122,18 @@ async function abrir(caminho, { consent } = {}) {
   });
   const erros = [];
   page.on('console', (m) => {
-    if (m.type() === 'error' && /facebook|fbq|pixel/i.test(m.text())) {
-      erros.push(m.text().slice(0, 160));
+    if (m.type() === 'error' || m.type() === 'warning') {
+      erros.push(`${m.type()}: ${m.text().slice(0, 200)}`);
     }
+  });
+  page.on('pageerror', (e) => erros.push(`exceção: ${String(e).slice(0, 200)}`));
+
+  /* Tudo que vai para qualquer domínio da Meta, sem filtro de caminho: se o
+     Pixel mudar o endereço de entrega, o relatório mostra em vez de concluir
+     que nada saiu. */
+  const bruto = [];
+  page.on('request', (r) => {
+    if (/facebook/.test(r.url())) bruto.push(`${r.method()} ${r.url().slice(0, 120)}`);
   });
 
   await page.goto(BASE + caminho, { waitUntil: 'networkidle' });
@@ -138,7 +147,18 @@ async function abrir(caminho, { consent } = {}) {
         return { ev: q.get('ev'), id: q.get('id'), eid: q.get('eid') };
       });
 
-  return { ctx, page, meta, capi, respostas, erros, eventos };
+  /* Estado do Pixel depois de tudo: dizer "não disparou" sem saber se ele
+     chegou a inicializar é diagnóstico pela metade. */
+  const estadoPixel = () =>
+    page.evaluate(() => ({
+      existe: typeof window.fbq === 'function',
+      carregado: Boolean(window.fbq && window.fbq.loaded),
+      versao: window.fbq ? window.fbq.version : null,
+      fila: window.fbq && window.fbq.queue ? window.fbq.queue.length : null,
+      fbp: (document.cookie.match(/_fbp=[^;]+/) || [null])[0],
+    }));
+
+  return { ctx, page, meta, capi, respostas, erros, bruto, estadoPixel, eventos };
 }
 
 /** Pares navegador/servidor do mesmo evento, casados pelo event_id. */
@@ -223,12 +243,13 @@ registrar('');
 const ACEITO = { analytics: true, advertising: true };
 
 {
-  const { ctx, eventos, capi, respostas, erros } = await abrir('/', {
-    consent: ACEITO,
-  });
+  const { ctx, eventos, capi, respostas, erros, bruto, estadoPixel } =
+    await abrir('/', { consent: ACEITO });
   const e = eventos();
+  for (const r of bruto) registrar(`  pedido Meta            ${r}`);
   for (const r of respostas) registrar(`  rede Meta              ${r}`);
-  for (const x of erros) registrar(`  erro no console        ${x}`);
+  for (const x of erros.slice(0, 12)) registrar(`  console                ${x}`);
+  registrar(`  estado do Pixel        ${JSON.stringify(await estadoPixel())}`);
   registrar(`  home                   Pixel: ${e.map((x) => x.ev).join(', ') || '(nenhum)'}`);
   registrar(`                         CAPI:  ${capi.map((c) => c.corpo?.event_name).join(', ') || '(nenhum)'}`);
   conferirDeduplicacao('home', e, capi);
