@@ -109,9 +109,9 @@ const crumbs = [
     {
       posts.length > 0 ? (
         <ul class="posts">
-          {posts.map((post, index) => (
-            <li class:list={{ wide: index === 0 }}>
-              <PostCard post={post} featured={index === 0} thumbnail />
+          {posts.map((post) => (
+            <li>
+              <PostCard post={post} thumbnail />
             </li>
           ))}
         </ul>
@@ -224,12 +224,20 @@ const crumbs = [
     padding-bottom: var(--s-9);
   }
 
+  /* Grade preparada para crescer: uma coluna no mobile, duas no tablet e
+     três no desktop. `auto-fill` em vez de `auto-fit` é a diferença que
+     importa aqui — com um artigo só, `auto-fit` colapsaria a linha e o
+     cartão ocuparia a largura inteira, que é exatamente o que não queremos.
+     Com `auto-fill` a trilha vazia permanece e o cartão fica do tamanho de
+     um cartão, sem que seja preciso inventar cartões falsos para completar
+     a linha. */
   .posts {
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
-    gap: var(--s-4);
+    gap: var(--s-5);
+    grid-template-columns: repeat(auto-fill, minmax(min(20rem, 100%), 1fr));
   }
 
   .empty {
@@ -260,13 +268,13 @@ const crumbs = [
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: var(--s-5);
     }
+  }
 
+  /* Teto de três colunas: acima disso o cartão fica largo demais para a
+     proporção 16:9 da foto. */
+  @media (min-width: 76rem) {
     .posts {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .posts .wide {
-      grid-column: 1 / -1;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 </style>

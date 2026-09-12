@@ -111,19 +111,37 @@ const {
       grid-column: span 2;
     }
 
+    /* Dois pesos em vez de cinco cartões iguais. A largura dupla sozinha não
+       criava hierarquia: lado a lado com os outros, o cartão de abertura
+       tinha a mesma superfície e o mesmo tom, e a seção lia como uma lista
+       plana. O fundo da paleta do produto resolve sem tirar conteúdo de
+       ninguém e sem mexer nos quatro secundários. */
+    .v-card.feature > li:first-child {
+      background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface-raised));
+      border-color: color-mix(in srgb, var(--color-primary) 34%, var(--color-border));
+      padding: var(--s-6);
+    }
+
     /* No cartão em dobro, título e texto lado a lado. Dividir o parágrafo
        em duas colunas foi a primeira tentativa e ficou pior: um texto curto
        quebrado ao meio parece erro de renderização, não hierarquia. */
     .feature > li:first-child {
       display: grid;
       grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
-      gap: var(--s-6);
+      /* Linha curta, coluna larga: o gap do grid vale para os dois eixos, e
+         o valor que separa bem as colunas afastava o título do seu ícone. */
+      gap: var(--s-2) var(--s-6);
       align-items: start;
+      /* Sem isto as duas linhas da coluna esquerda esticam junto com o
+         parágrafo ao lado, e o título desce para o meio do cartão, longe
+         do ícone que deveria acompanhá-lo. */
+      align-content: start;
     }
 
     .feature > li:first-child h3 {
-      font-size: var(--t-2);
+      font-size: var(--t-3);
       text-wrap: balance;
+      line-height: 1.15;
     }
 
     .feature > li:first-child p {

@@ -38,18 +38,23 @@ const { steps } = Astro.props;
 </ol>
 
 <style>
+  /* Disco e espaçamento como variáveis: o trilho é posicionado a partir
+     deles, então crescer o número no desktop não exige recalcular o CSS do
+     trilho em dois lugares. */
   .steps {
+    --disco: 3rem;
+    --passo-gap: var(--s-6);
     list-style: none;
     padding: 0;
     margin: 0;
     display: grid;
-    gap: var(--s-6);
+    gap: var(--passo-gap);
   }
 
   li {
     position: relative;
     display: grid;
-    grid-template-columns: 3rem 1fr;
+    grid-template-columns: var(--disco) 1fr;
     gap: var(--s-4);
     align-items: start;
     text-align: left;
@@ -58,8 +63,8 @@ const { steps } = Astro.props;
   .node {
     position: relative;
     z-index: 1;
-    width: 3rem;
-    height: 3rem;
+    width: var(--disco);
+    height: var(--disco);
     display: grid;
     place-items: center;
     border-radius: 50%;
@@ -92,9 +97,9 @@ const { steps } = Astro.props;
   li::before {
     content: '';
     position: absolute;
-    left: 1.5rem;
-    top: 3rem;
-    bottom: calc(var(--s-6) * -1);
+    left: calc(var(--disco) / 2);
+    top: var(--disco);
+    bottom: calc(var(--passo-gap) * -1);
     width: 2px;
     transform: translateX(-1px);
     background: color-mix(in srgb, var(--color-primary) 24%, transparent);
@@ -105,9 +110,12 @@ const { steps } = Astro.props;
   }
 
   @media (min-width: 60rem) {
+    /* No desktop a jornada é o argumento da seção, e estava discreta demais
+       para isso: disco maior, número maior e mais ar entre os passos. */
     .steps {
+      --disco: 3.75rem;
+      --passo-gap: var(--s-7);
       grid-template-columns: repeat(var(--count), minmax(0, 1fr));
-      gap: var(--s-6);
     }
 
     li {
@@ -115,6 +123,29 @@ const { steps } = Astro.props;
       gap: var(--s-5);
       text-align: center;
       justify-items: center;
+      /* Sem isto, o passo mais alto define a altura da linha e os outros
+         distribuem a sobra: os quatro discos param em alturas diferentes e
+         a jornada deixa de ler como uma sequência. */
+      align-content: start;
+    }
+
+    /* Espaço de duas linhas para todos os títulos, para que os parágrafos
+       comecem na mesma altura mesmo quando só um deles quebra. */
+    h3 {
+      min-height: 2lh;
+    }
+
+    .node {
+      background: var(--color-primary-soft);
+      border-color: color-mix(in srgb, var(--color-primary) 42%, transparent);
+    }
+
+    .num {
+      font-size: var(--t-2);
+    }
+
+    h3 {
+      font-size: var(--t-2);
     }
 
     /* No desktop o trilho vira horizontal e liga um disco ao seguinte.
@@ -123,8 +154,8 @@ const { steps } = Astro.props;
        entre o fim do trilho e o disco de destino. */
     li::before {
       left: 50%;
-      right: calc(-50% - var(--s-6));
-      top: 1.5rem;
+      right: calc(-50% - var(--passo-gap));
+      top: calc(var(--disco) / 2);
       bottom: auto;
       width: auto;
       height: 2px;
@@ -132,7 +163,7 @@ const { steps } = Astro.props;
     }
 
     .body {
-      max-width: 24ch;
+      max-width: 26ch;
     }
 
     h3 {

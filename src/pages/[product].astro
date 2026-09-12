@@ -296,9 +296,18 @@ const crumbs = [
   {
     relatedPosts.length > 0 && (
       <Section title="Leia também" layout="split">
-        {relatedPosts.map((post) => (
-          <PostCard post={post} />
-        ))}
+        {/* Com miniatura e em grade, como no blog. Sem a foto o bloco era o
+            único da página feito só de texto, e fechava a LP perdendo peso
+            justamente onde ela precisa continuar parecendo a mesma página.
+            A altura quase não muda: a imagem entra no lugar do ar que o
+            cartão já tinha. */}
+        <ul class="related">
+          {relatedPosts.map((post) => (
+            <li>
+              <PostCard post={post} thumbnail />
+            </li>
+          ))}
+        </ul>
       </Section>
     )
   }
@@ -345,6 +354,17 @@ const crumbs = [
 </ProductLayout>
 
 <style>
+  .related {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-5);
+    /* Mesma régua da listagem do blog, e `auto-fill` pelo mesmo motivo: com
+       um artigo só, o cartão precisa ocupar uma célula, não a faixa toda. */
+    grid-template-columns: repeat(auto-fill, minmax(min(18rem, 100%), 1fr));
+  }
+
   .crumb-bar {
     padding-block: var(--s-4);
   }

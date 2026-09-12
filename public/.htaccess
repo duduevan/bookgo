@@ -23,7 +23,7 @@ ErrorDocument 404 /404.html
 
   # /sitemap.xml nunca existiu: o @astrojs/sitemap gera sitemap-index.xml
   # (o índice) e sitemap-0.xml (as URLs). O robots.txt aponta para o índice,
-  # que é o endereço correto — mas /sitemap.xml é o palpite de quem digita
+  # que é o endereço correto. Mas /sitemap.xml é o palpite de quem digita
   # à mão e de parte das ferramentas, e devolvia 404. O redirecionamento
   # resolve isso sem renomear arquivo já conhecido pelo Search Console.
   RewriteRule ^sitemap\.xml$ /sitemap-index.xml [L,R=301]

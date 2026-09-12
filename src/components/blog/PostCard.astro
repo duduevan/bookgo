@@ -7,7 +7,11 @@ import { resolveArticleImages } from '../../lib/article-images';
 interface Props {
   post: Post;
   categoryName?: string;
-  /** Destaque: ocupa mais espaço na grade e usa tipografia maior. */
+  /**
+   * Tipografia maior. Não mexe mais na largura: o cartão ocupa uma célula
+   * da grade como qualquer outro. Um artigo só esticado pela linha inteira
+   * não parecia destaque, parecia listagem quebrada.
+   */
   featured?: boolean;
   /**
    * Mostra a primeira imagem editorial do artigo como miniatura.
@@ -72,46 +76,21 @@ const thumb = thumbnail
 </article>
 
 <style>
-  /* Cartão de destaque com miniatura: imagem ao lado do texto, não acima.
-     Empilhada, a chamada principal empurrava o título para fora da dobra. */
-  @media (min-width: 60rem) {
-    .featured.has-thumb {
-      display: grid;
-      grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
-      gap: 0 var(--s-7);
-      align-content: center;
-      /* Sem isto as linhas implícitas esticam e a data descola do título. */
-      grid-auto-rows: min-content;
-    }
-
-    /* O cartão não tem um invólucro de texto — meta, título, descrição e
-       link são filhos diretos. Sem estas duas regras eles se espalhariam
-       pelas duas colunas do grid, e o título cairia embaixo da imagem com a
-       descrição ao lado. A miniatura ocupa a coluna 1 inteira; todo o resto
-       empilha na coluna 2. */
-    .featured.has-thumb .thumb {
-      margin-bottom: 0;
-      height: 100%;
-      grid-column: 1;
-      grid-row: 1 / -1;
-    }
-
-    .featured.has-thumb > :not(.thumb) {
-      grid-column: 2;
-    }
-  }
-
   /* Sem miniatura, o texto do destaque não estica pela largura inteira. */
   .featured .desc {
     max-width: 62ch;
   }
 
+  /* A imagem sangra até a borda do cartão em vez de ficar recuada dentro do
+     padding. É o que separa uma publicação editorial de um bloco de texto
+     com uma miniatura anexada: a foto abre o cartão, não o ilustra. O
+     recuo negativo evita um invólucro só para isto no markup. */
   .thumb {
-    aspect-ratio: 16 / 10;
-    border-radius: var(--radius);
+    aspect-ratio: 16 / 9;
     overflow: hidden;
-    margin-bottom: var(--s-5);
     background: var(--color-surface);
+    margin: calc(var(--card-pad) * -1) calc(var(--card-pad) * -1) var(--s-5);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   }
 
   .thumb :global(img) {
@@ -137,11 +116,14 @@ const thumb = thumbnail
   }
 
   .card {
+    --card-pad: clamp(1.25rem, 1rem + 1vw, 1.75rem);
     position: relative;
     display: flex;
     flex-direction: column;
     height: 100%;
-    padding: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem);
+    padding: var(--card-pad);
+    /* Sem isto o canto arredondado da foto vaza sobre a borda do cartão. */
+    overflow: hidden;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     background: var(--color-surface-raised);
