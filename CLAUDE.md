@@ -429,6 +429,29 @@ Aparecem sozinhos ao final do artigo, no máximo três. A seleção é
 determinística (`getRelatedPosts`): mesma categoria primeiro, depois mesmo
 produto. O próprio artigo nunca entra e não há sorteio.
 
+## Hub do blog
+
+`/blog/` tem três camadas, e nenhuma é escrita à mão.
+
+**Destaque.** `featured: true` no frontmatter do artigo. Havendo mais de um
+marcado, vence o mais recente; não havendo nenhum, o destaque cai no artigo
+público mais recente. A página nunca fica sem topo porque alguém esqueceu de
+marcar a caixa, e nenhum slug está escrito no componente. Rascunho nunca entra.
+
+A imagem do destaque é a **primeira imagem declarada** do artigo. É por isso
+que um artigo que precisa de capa própria declara a capa antes das demais, sem
+chamá-la no corpo: ela vale para as listagens, e o texto segue com as imagens
+que conversam com cada trecho.
+
+**Últimos artigos.** Os publicados, menos o destaque, em três, duas e uma
+coluna. A grade usa `auto-fill`, e não `auto-fit`, para que um artigo sozinho
+ocupe uma célula em vez de esticar pela faixa inteira.
+
+**Explore por tema.** Pilar numa coluna estreita, subcategorias na larga ao
+lado. A capa de cada uma sai de `src/assets/categories/<id>.webp`, resolvida
+pelo id: categoria nova ganha imagem colocando o arquivo ali, sem lista para
+atualizar. Sem arquivo, o cartão continua existindo com o fundo da paleta.
+
 ## Categoria como hub
 
 Além de `name` e `description`, o YAML da categoria aceita:

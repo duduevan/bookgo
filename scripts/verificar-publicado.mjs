@@ -23,6 +23,7 @@ const OUT = '_verificacao'; // rodada da migração
 /** Páginas com tela; a chave é o nome do arquivo. */
 const PAGINAS = [
   ['home', '/', ['desktop', 'mobile']],
+  ['blog', '/blog/', ['desktop', 'tablet', 'mobile']],
   ['lp', '/casa-organizada-em-15-minutos/', ['desktop', 'mobile']],
   ['artigo', '/blog/casa/organizacao/como-manter-a-casa-organizada/', ['desktop', 'mobile']],
   ['pilar', '/blog/casa/', ['desktop', 'mobile']],
@@ -59,7 +60,11 @@ const REDIRECIONAM = {
     '/blog/casa/organizacao/como-manter-a-casa-organizada/',
 };
 
-const VIEWPORTS = { desktop: { width: 1440, height: 1000 }, mobile: { width: 390, height: 844 } };
+const VIEWPORTS = {
+  desktop: { width: 1440, height: 1000 },
+  tablet: { width: 834, height: 1112 },
+  mobile: { width: 390, height: 844 },
+};
 
 await mkdir(OUT, { recursive: true });
 
@@ -157,6 +162,31 @@ for (const [nome, caminho, viewports] of PAGINAS) {
           problemas.push(`link de afiliado sem affiliate_click: ${a.href}`);
       }
       if (afiliados.length === 0) problemas.push('o comparativo não tem link de afiliado');
+    }
+
+    /* No hub do blog, o destaque tem que existir e não pode aparecer de novo
+       na lista de recentes: o mesmo artigo duas vezes na mesma tela não é
+       hierarquia, é repetição. */
+    if (nome === 'blog' && vp === 'desktop') {
+      const hub = await page.evaluate(() => {
+        const destaque = document.querySelector('.feature h2 a');
+        const recentes = [...document.querySelectorAll('.posts a[href*="/blog/"]')]
+          .map((a) => new URL(a.href).pathname);
+        const temas = [...document.querySelectorAll('.sub h4')].map((h) =>
+          h.textContent.trim()
+        );
+        return {
+          destaque: destaque ? new URL(destaque.href).pathname : null,
+          recentes: [...new Set(recentes)],
+          temas,
+        };
+      });
+      registrar(`         destaque: ${hub.destaque ?? '(nenhum)'}`);
+      registrar(`         recentes: ${hub.recentes.length} · temas: ${hub.temas.join(', ')}`);
+      if (!hub.destaque) problemas.push('o hub do blog está sem destaque');
+      if (hub.destaque && hub.recentes.includes(hub.destaque))
+        problemas.push('o destaque do blog se repete na lista de recentes');
+      if (hub.temas.length === 0) problemas.push('o hub do blog está sem "Explore por tema"');
     }
 
     if (nome === 'lp' && vp === 'desktop') {
