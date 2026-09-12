@@ -243,9 +243,26 @@ registrar('');
 const ACEITO = { analytics: true, advertising: true };
 
 {
-  const { ctx, eventos, capi, respostas, erros, bruto, estadoPixel } =
+  const { ctx, page, eventos, capi, respostas, erros, bruto, estadoPixel } =
     await abrir('/', { consent: ACEITO });
-  const e = eventos();
+
+  /* Sonda decisiva: chama o Pixel à mão, já carregado, e espera.
+   *
+   * Se nem uma chamada direta produz requisição, o problema não está no
+   * runtime da BookGo — está do lado da Meta, no conjunto de dados. A sonda
+   * separa "o site não chamou" de "a Meta não entrega", que é a diferença
+   * entre corrigir código aqui e mexer na conta lá. */
+  const antesDaSonda = eventos().length;
+  await page.evaluate(() => {
+    window.fbq('track', 'ViewContent', { content_type: 'sonda' });
+  });
+  await page.waitForTimeout(3000);
+  const depoisDaSonda = eventos().length;
+  registrar(
+    `  sonda fbq direta       ${depoisDaSonda - antesDaSonda} requisição(ões) após chamada manual`
+  );
+
+  const e = eventos().slice(0, antesDaSonda);
   for (const r of bruto) registrar(`  pedido Meta            ${r}`);
   for (const r of respostas) registrar(`  rede Meta              ${r}`);
   for (const x of erros.slice(0, 12)) registrar(`  console                ${x}`);
