@@ -25,7 +25,7 @@
  */
 import Cta from '../ui/Cta.astro';
 import Icon from '../ui/Icon.astro';
-import { hasCheckout, productUrl, type Product } from '../../lib/content';
+import { productUrl, type Product } from '../../lib/content';
 import { eventAttrs } from '../../lib/tracking';
 import { themeToStyle } from '../../lib/theme';
 
@@ -46,7 +46,7 @@ interface Props {
 }
 
 const { product, placement } = Astro.props;
-const { name, price, checkout, tagline } = product.data;
+const { name, price, tagline } = product.data;
 
 const label = Astro.props.label ?? 'Material relacionado';
 const headline = Astro.props.headline ?? name;
@@ -54,11 +54,21 @@ const text = Astro.props.text ?? tagline;
 const buttonLabel = Astro.props.buttonLabel ?? 'Conhecer o material';
 const href = productUrl(product.data.slug);
 
-const checkoutEvent = eventAttrs('checkout_click', {
+/**
+ * O botão leva à landing page, nunca direto ao checkout.
+ *
+ * Quem está lendo um artigo ainda não viu a oferta: não conhece o preço, o
+ * que está incluso nem a garantia. Pular a LP economiza um clique e cobra
+ * a decisão antes de a pessoa ter com o que decidir. A ordem é artigo →
+ * landing page → checkout, e cada página faz a sua parte.
+ *
+ * Por isso o evento também não é `checkout_click`: contar como intenção de
+ * compra um clique que só abre a página do produto misturaria dois momentos
+ * diferentes do funil no mesmo número.
+ */
+const ctaEvent = eventAttrs('product_click', {
   product_slug: product.data.slug,
   product_name: name,
-  value: price.amount,
-  currency: price.currency,
   placement: `article_cta_${placement}`,
 });
 ---
@@ -78,11 +88,7 @@ const checkoutEvent = eventAttrs('checkout_click', {
   <p class="text">{text}</p>
 
   <div class="actions">
-    <Cta
-      href={hasCheckout(product) ? checkout.url : href}
-      label={buttonLabel}
-      track={checkoutEvent}
-    />
+    <Cta href={href} label={buttonLabel} track={ctaEvent} />
     {/* Informação, não segunda ação. Como link, disputava o clique com o
         botão ao lado e dividia a decisão em duas portas para o mesmo
         lugar. Em texto, o nome e o preço continuam visíveis e o CTA volta

@@ -17,15 +17,17 @@
 export const TESTIMONIALS_CSS = `
 /* Tarja de demonstração. Tracejada e em tom de aviso: precisa ser
    inconfundível na página, não discreta. */
-.tst-demo{display:block;margin:0 0 var(--s-6);padding:var(--s-4) var(--s-5);
-border:1px dashed color-mix(in srgb, var(--color-accent) 55%, var(--color-border));
-border-radius:var(--radius);background:color-mix(in srgb, var(--color-accent) 8%, transparent);
-color:var(--color-text);font-size:var(--t--1);max-width:44rem;margin-inline:auto;
-text-align:left}
-.tst-demo strong{font-weight:var(--w-semibold)}
+/* Rótulo editorial, não alerta: identifica as conversas como ilustrativas
+   sem uma caixa tomando o lugar da seção. */
+.tst-ilustrativa{margin:0 0 var(--s-6);font-size:var(--t--1);
+letter-spacing:var(--tr-eyebrow);text-transform:uppercase;
+font-weight:var(--w-semibold);color:var(--color-muted)}
 
 .tst-items{display:grid;gap:var(--s-5);align-items:start;
 grid-template-columns:repeat(auto-fit,minmax(min(19rem,100%),1fr))}
+/* Conversas se alinham pelo topo e esticam juntas: celular de altura
+   variável, encolhendo porque a conversa é curta, não parece celular. */
+.tst-phones{align-items:stretch}
 
 /* Celulares são estreitos por natureza: centralizados, sem esticar. */
 .tst-phones{gap:var(--s-6);justify-content:center;
@@ -53,13 +55,15 @@ padding:var(--s-6);display:flex;flex-direction:column;gap:var(--s-5);height:100%
 
 /* --- conversa --- */
 .tst-phone{margin:0;display:flex;justify-content:center}
-.tst-frame{width:min(100%,22rem);background:var(--color-surface);
-border:1px solid var(--color-border);border-radius:1.75rem;overflow:hidden;
-display:flex;flex-direction:column;
-box-shadow:0 0 0 .5rem var(--color-surface-raised),
-0 0 0 .5625rem var(--color-border),0 1.5rem 3rem -1.5rem rgb(0 0 0 / .28)}
+/* Proporção de smartphone de verdade. A altura vem da proporção, não do
+   conteúdo: três celulares de alturas diferentes lado a lado denunciam que
+   são caixas de texto com moldura, não aparelhos. */
+.tst-frame{width:min(100%,19.5rem);aspect-ratio:9/18.5;display:flex;
+flex-direction:column;overflow:hidden;background:var(--color-surface);
+border:1px solid var(--color-border);border-radius:2.25rem;
+box-shadow:var(--shadow);padding:.4rem}
 
-.tst-statusbar{position:relative;height:1.75rem;display:flex;align-items:center;
+.tst-statusbar{flex:none;position:relative;height:1.75rem;display:flex;align-items:center;
 justify-content:flex-end;gap:.3rem;padding-inline:var(--s-4);
 background:var(--color-surface-raised);color:var(--color-muted)}
 .tst-island{position:absolute;left:50%;top:.35rem;transform:translateX(-50%);
@@ -71,14 +75,21 @@ background:var(--color-text);opacity:.85}
 border-radius:.2rem;padding:1px}
 .tst-battery b{display:block;width:65%;height:100%;border-radius:1px;background:currentColor}
 
-.tst-header{display:flex;align-items:center;gap:var(--s-3);padding:var(--s-3) var(--s-4);
+.tst-header{flex:none;display:flex;align-items:center;gap:var(--s-3);padding:var(--s-3) var(--s-4);
 border-bottom:1px solid var(--color-border);background:var(--color-surface-raised)}
 .tst-header .tst-avatar{width:2.25rem;height:2.25rem}
 .tst-header .tst-who{line-height:1.25}
 .tst-status{font-size:.75rem;color:var(--color-muted)}
 
-.tst-thread{margin:0;padding:var(--s-4);display:flex;flex-direction:column;
-gap:var(--s-3);background:var(--color-surface)}
+/* O fundo é uma interpretação própria: marcas soltas de cozinha e casa
+   desenhadas aqui mesmo, em opacidade muito baixa. Lembra o ambiente de um
+   mensageiro sem copiar asset de ninguém. */
+.tst-thread{margin:0;padding:var(--s-4);flex:1;min-height:0;display:flex;
+flex-direction:column;justify-content:flex-end;gap:var(--s-3);overflow:hidden;
+background-color:color-mix(in srgb, var(--color-primary) 5%, var(--color-background));
+background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128' viewBox='0 0 128 128'%3E%3Cg fill='none' stroke='%23000' stroke-opacity='.045' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 28l6 6 11-12'/%3E%3Ccircle cx='96' cy='26' r='7'/%3E%3Cpath d='M26 88h18M35 79v18'/%3E%3Cpath d='M86 84c6 0 10 4 10 10v8H76v-8c0-6 4-10 10-10z'/%3E%3C/g%3E%3C/svg%3E");
+background-size:8rem 8rem}
+
 .tst-bubble{margin:0;max-width:82%;padding:var(--s-3) var(--s-4);font-size:var(--t--1);
 line-height:1.5;border-radius:1.125rem;
 /* Entra uma vez e fica. Sem laço, sem JavaScript. */
@@ -93,7 +104,7 @@ margin-top:.25rem;font-size:.6875rem;opacity:.75}
 .tst-ticks{width:1rem;height:.6rem;flex:none}
 
 /* Caixa de digitar: desenho, não campo. */
-.tst-composer{display:flex;align-items:center;gap:var(--s-3);
+.tst-composer{flex:none;display:flex;align-items:center;gap:var(--s-3);
 padding:var(--s-3) var(--s-4) var(--s-4);border-top:1px solid var(--color-border);
 background:var(--color-surface-raised)}
 .tst-field{flex:1;height:1.875rem;border-radius:var(--radius-pill);

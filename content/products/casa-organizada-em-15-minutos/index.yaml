@@ -241,17 +241,17 @@ offer:
 # a publicar, e vire `enabled` para true. Formatos disponíveis por item:
 # `type: card` (texto corrido) e `type: phone` (conversa).
 testimonials:
-  # LIGADO EM MODO DEMONSTRAÇÃO.
+  # LIGADO EM MODO ILUSTRATIVO.
   #
   # As conversas abaixo foram escritas para avaliar a seção, não por
-  # clientes. Por isso `demo: true`, que renderiza uma tarja visível na
-  # própria página dizendo exatamente isso. A tarja não é um rascunho a
-  # limpar antes de publicar: ela é o que separa exemplo de layout de
-  # depoimento forjado numa página que vende.
+  # clientes. Por isso `demo: true`, que imprime o rótulo "Conversas
+  # ilustrativas" na própria página. O rótulo não é rascunho a limpar antes
+  # de publicar: é o que separa exemplo de layout de depoimento forjado numa
+  # página que vende.
   #
   # Para publicar de verdade: troque cada mensagem por texto que uma pessoa
-  # real escreveu e autorizou, apague `demo` e mantenha `enabled: true`. A
-  # tarja some sozinha, e o build passa a exigir itens reais.
+  # real escreveu e autorizou, apague `demo` e mantenha `enabled: true`. O
+  # rótulo some sozinho, e o build passa a exigir itens reais.
   enabled: true
   demo: true
   title: Como a rotina muda na prática
@@ -259,51 +259,55 @@ testimonials:
   items:
     - type: phone
       name: Ana
-      status: exemplo de layout
       messages:
         - side: incoming
           text: eu achei que 15 minutos não ia adiantar muita coisa...
           time: "08:41"
         - side: incoming
-          text: mas comecei pela cozinha e foi bem mais fácil do que tentar arrumar tudo de uma vez
+          text: mas comecei pela cozinha e foi bem mais fácil do que arrumar tudo de uma vez
           time: "08:41"
+        - side: outgoing
+          text: é justamente essa a ideia 💚 começar pequeno e conseguir continuar
+          time: "08:44"
+          read: true
         - side: incoming
           text: hoje fiz só o que estava no checklist e parei 😂
-          time: "08:42"
-        - side: incoming
-          text: parece pouco, mas no fim do dia já dá outra sensação
-          time: "08:43"
+          time: "08:46"
 
     - type: phone
       name: Rita
-      status: exemplo de layout
       messages:
         - side: incoming
           text: eu sempre começava super animada e depois largava tudo kkk
           time: "19:05"
+        - side: outgoing
+          text: quando a meta fica menor, manter a rotina costuma ficar bem mais possível
+          time: "19:08"
+          read: true
         - side: incoming
           text: dessa vez estou fazendo bem menos por dia
-          time: "19:06"
+          time: "19:12"
         - side: incoming
-          text: só que estou conseguindo continuar...
-          time: "19:06"
-        - side: incoming
-          text: pra mim essa foi a maior diferença
-          time: "19:07"
+          text: só que estou conseguindo continuar... pra mim essa foi a maior diferença
+          time: "19:12"
 
     - type: phone
       name: Carol
-      status: exemplo de layout
       messages:
         - side: incoming
-          text: tenho criança em casa então aquela casa perfeita simplesmente não existe aqui 😂
+          text: ontem cheguei cansada e pensei que hoje não ia fazer nada
           time: "21:18"
+        - side: outgoing
+          text: nesses dias os 15 minutos fazem ainda mais sentido
+          time: "21:21"
+          read: true
         - side: incoming
-          text: mas estou conseguindo manter as coisas muito mais no lugar
-          time: "21:19"
-        - side: incoming
-          text: sem ficar o dia inteiro arrumando
-          time: "21:19"
+          text: fiz só uma parte da cozinha e pronto
+          time: "21:24"
+        - side: outgoing
+          text: pronto já é bem melhor do que acumular tudo pra depois 💚
+          time: "21:25"
+          read: true
 
 guarantee:
   icon: shield

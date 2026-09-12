@@ -203,14 +203,22 @@ prazo não é nosso.
 
 ### Depoimentos em modo demonstração
 
-`testimonials.demo: true` renderiza a seção com uma **tarja visível** na
-página dizendo que aquilo é exemplo de layout. A tarja não deve ser
-escondida: um aviso que mora só no código deixa de existir exatamente quando
-mais importa — na hora em que alguém publica sem lembrar.
+`testimonials.demo: true` imprime o rótulo **visível** "Conversas
+ilustrativas" acima das conversas. O rótulo não deve ser escondido: um aviso
+que mora só no código deixa de existir exatamente quando mais importa, na
+hora em que alguém publica sem lembrar. É rótulo editorial e não caixa de
+alerta, porque uma tarja de aviso acima da seção derruba o que a seção tem
+de bom sem identificar melhor.
 
 Para publicar de verdade: troque os textos por mensagens reais e
 autorizadas, apague `demo`, mantenha `enabled: true`. Sem `demo`, o build
 exige itens.
+
+**A conversa tem dois lados.** As mensagens da pessoa e as respostas da
+BookGo (`side: outgoing`) alternam, porque um celular só com balões de um
+lado não parece conversa, parece depoimento recortado. Os aparelhos têm
+proporção e altura fixas: três celulares de alturas diferentes lado a lado
+denunciam que são caixas de texto com moldura.
 
 ### Imagens da landing page
 
@@ -489,6 +497,34 @@ animação agressiva, sem cor de alarme.
 
 **Nunca inventar característica do produto.** A copy só afirma o que o YAML
 do produto já sustenta.
+
+### Para onde cada CTA leva
+
+O destino depende da intenção da página, não do componente.
+
+**Produto próprio (low ticket)**
+
+- Artigo informacional leva para a **landing page**, nunca direto ao
+  checkout. Quem está lendo ainda não viu preço, o que está incluso nem a
+  garantia: pular a LP economiza um clique e cobra a decisão antes de a
+  pessoa ter com o que decidir.
+- A **landing page** leva ao checkout. É lá que a oferta está inteira.
+- Quantidade e copy dos CTAs saem do conteúdo, não de um número fixo.
+
+A ordem é **artigo → landing page → checkout**, e cada página faz a sua
+parte. Os eventos acompanham: `product_click` no CTA do artigo,
+`checkout_click` só nos botões de compra da LP. Contar como intenção de
+compra um clique que apenas abre a página do produto misturaria dois
+momentos do funil no mesmo número.
+
+**Afiliados e comparativos**
+
+- O CTA leva ao anunciante pelo **link de afiliado**, com
+  `rel="sponsored nofollow noopener"` e evento `affiliate_click`.
+- A copy fala do produto comparado. CTA do curso próprio não entra aqui sem
+  contexto: um botão de outro assunto no meio de um comparativo é ruído.
+- Preço, desconto e parcelamento não são copiados para o artigo. Eles mudam,
+  e a página passa a mentir sozinha. O CTA diz "ver oferta atual".
 
 ### Três sistemas comerciais separados
 

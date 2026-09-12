@@ -69,12 +69,13 @@ const onlyPhones = items.every((i) => i.type === 'phone');
   show && (
     <Section tone={tone} title={title} intro={intro} align={onlyPhones ? 'center' : 'start'}>
       <style is:inline set:html={TESTIMONIALS_CSS} />
-      {demo && (
-        <p class="tst-demo" role="note">
-          <strong>Exemplo de layout.</strong> Os textos abaixo são conteúdo de
-          demonstração. Não são depoimentos de pessoas reais.
-        </p>
-      )}
+      {/* Identificação discreta, no lugar da tarja de alerta que havia
+          antes. Continua visível na página, que é o ponto: um aviso que
+          mora só no código deixa de existir quando alguém publica sem
+          lembrar. Mas caixa de alerta acima de uma seção de conversas
+          derruba o que a seção tinha de bom, e um rótulo editorial
+          identifica igual sem competir com o desenho. */}
+      {demo && <p class="tst-ilustrativa">Conversas ilustrativas</p>}
       <div class:list={['tst-items', { 'tst-phones': onlyPhones }]}>
         {items.map((item) =>
           item.type === 'phone' ? (
