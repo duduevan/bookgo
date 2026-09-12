@@ -93,18 +93,42 @@ async function abrir(caminho, { consent } = {}) {
     const u = r.url();
     if (/connect\.facebook\.net|facebook\.com\/tr/.test(u)) meta.push(u);
     if (u.includes(CAPI)) {
+      /* sendBeacon manda o corpo como Blob: `postData()` volta vazio e só
+         `postDataBuffer()` traz os bytes. Ler só o primeiro faria todo
+         evento server-side aparecer sem nome no relatório. */
+      const bruto = r.postData() ?? r.postDataBuffer()?.toString('utf8') ?? '';
       let corpo = null;
       try {
-        corpo = JSON.parse(r.postData() ?? 'null');
+        corpo = JSON.parse(bruto || 'null');
       } catch (e) {
         corpo = null;
       }
-      capi.push({ metodo: r.method(), corpo, bruto: r.postData() ?? '' });
+      capi.push({ metodo: r.method(), corpo, bruto });
+    }
+  });
+
+  /* O status das respostas da Meta importa: um script bloqueado e um script
+     ausente dão a mesma tela, e só o tráfego separa os dois casos. */
+  const respostas = [];
+  page.on('response', (r) => {
+    if (/connect\.facebook\.net|facebook\.com\/tr/.test(r.url())) {
+      respostas.push(`${r.status()} ${r.url().split('?')[0]}`);
+    }
+  });
+  page.on('requestfailed', (r) => {
+    if (/facebook/.test(r.url())) {
+      respostas.push(`falhou ${r.failure()?.errorText} ${r.url().split('?')[0]}`);
+    }
+  });
+  const erros = [];
+  page.on('console', (m) => {
+    if (m.type() === 'error' && /facebook|fbq|pixel/i.test(m.text())) {
+      erros.push(m.text().slice(0, 160));
     }
   });
 
   await page.goto(BASE + caminho, { waitUntil: 'networkidle' });
-  await page.waitForTimeout(600);
+  await page.waitForTimeout(1200);
 
   const eventos = () =>
     meta
@@ -114,7 +138,7 @@ async function abrir(caminho, { consent } = {}) {
         return { ev: q.get('ev'), id: q.get('id'), eid: q.get('eid') };
       });
 
-  return { ctx, page, meta, capi, eventos };
+  return { ctx, page, meta, capi, respostas, erros, eventos };
 }
 
 /** Pares navegador/servidor do mesmo evento, casados pelo event_id. */
@@ -199,8 +223,12 @@ registrar('');
 const ACEITO = { analytics: true, advertising: true };
 
 {
-  const { ctx, eventos, capi } = await abrir('/', { consent: ACEITO });
+  const { ctx, eventos, capi, respostas, erros } = await abrir('/', {
+    consent: ACEITO,
+  });
   const e = eventos();
+  for (const r of respostas) registrar(`  rede Meta              ${r}`);
+  for (const x of erros) registrar(`  erro no console        ${x}`);
   registrar(`  home                   Pixel: ${e.map((x) => x.ev).join(', ') || '(nenhum)'}`);
   registrar(`                         CAPI:  ${capi.map((c) => c.corpo?.event_name).join(', ') || '(nenhum)'}`);
   conferirDeduplicacao('home', e, capi);

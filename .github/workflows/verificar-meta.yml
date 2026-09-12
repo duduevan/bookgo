@@ -51,10 +51,16 @@ jobs:
       - name: Instalar dependências
         run: npm ci
 
+      # `pipefail` é obrigatório aqui: sem ele o status do passo é o do `tee`,
+      # que sempre dá certo, e o job ficaria verde com o relatório cheio de
+      # problemas. Uma conferência que não sabe reprovar não é conferência.
       - name: Conferir
+        shell: bash
         env:
           CHROMIUM_PATH: /usr/bin/google-chrome
-        run: node scripts/verificar-meta.mjs "${{ inputs.origem || 'https://bookgo.com.br' }}" | tee relatorio-meta.txt
+        run: |
+          set -o pipefail
+          node scripts/verificar-meta.mjs "${{ inputs.origem || 'https://bookgo.com.br' }}" | tee relatorio-meta.txt
 
       - name: Resumo
         if: always()
