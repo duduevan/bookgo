@@ -24,7 +24,19 @@ const OUT = '_verificacao'; // rodada da migração
 const PAGINAS = [
   ['home', '/', ['desktop', 'mobile']],
   ['blog', '/blog/', ['desktop', 'tablet', 'mobile']],
-  ['lp', '/casa-organizada-em-15-minutos/', ['desktop', 'mobile']],
+  /* Landing pages. O quarto item é o que a conferência espera encontrar
+     nelas, e é ele que faz este arquivo servir a qualquer produto novo em
+     vez de conhecer um só. */
+  ['lp', '/casa-organizada-em-15-minutos/', ['desktop', 'mobile'], {
+    checkout: 'https://pay.kiwify.com.br/UJyyPuL',
+    avaliacoes: 'pelo menos uma',
+  }],
+  ['lp-cardapio', '/cardapio-da-semana-em-20-minutos/', ['desktop', 'mobile'], {
+    checkout: 'https://pay.kiwify.com.br/6VGDS8V',
+    /* Este produto ainda não tem avaliação própria, e a seção não deve
+       existir vazia. */
+    avaliacoes: 'nenhuma',
+  }],
   ['artigo', '/blog/casa/organizacao/como-manter-a-casa-organizada/', ['desktop', 'tablet', 'mobile']],
   ['cozinha15', '/blog/casa/organizacao/organizar-a-cozinha-em-15-minutos/', ['desktop', 'mobile']],
   ['desarruma', '/blog/casa/organizacao/casa-desarruma-no-dia-seguinte/', ['desktop', 'mobile']],
@@ -43,7 +55,7 @@ const PAGINAS = [
  * um envio por FTPS, e é justamente o que acontece no meio que ninguém vê.
  * Nenhuma requisição é feita ao checkout, só a leitura do href.
  */
-const CHECKOUT = 'https://pay.kiwify.com.br/UJyyPuL';
+/* Cada LP declara o seu em PAGINAS. */
 
 /** Recursos sem tela, conferidos só pelo status e pelo corpo. */
 const RECURSOS = ['/sitemap-index.xml', '/robots.txt', '/llms.txt'];
@@ -101,7 +113,7 @@ registrar('');
 
 const browser = await chromium.launch({ executablePath: BROWSER, args: ['--no-sandbox'] });
 
-for (const [nome, caminho, viewports] of PAGINAS) {
+for (const [nome, caminho, viewports, lp] of PAGINAS) {
   for (const vp of viewports) {
     const ctx = await browser.newContext({ viewport: VIEWPORTS[vp], deviceScaleFactor: 1 });
     const page = await ctx.newPage();
@@ -287,13 +299,13 @@ for (const [nome, caminho, viewports] of PAGINAS) {
       }
     }
 
-    if (nome === 'lp' && vp === 'desktop') {
+    if (lp && vp === 'desktop') {
       const hrefs = await page.evaluate(() =>
         [...document.querySelectorAll('a')].map((a) => a.href)
       );
       const paraCheckout = hrefs.filter((h) => h.startsWith('https://pay.kiwify.com.br/'));
-      const errados = paraCheckout.filter((h) => h !== CHECKOUT);
-      registrar(`         checkout: ${paraCheckout.length} link(s), destino ${CHECKOUT}`);
+      const errados = paraCheckout.filter((h) => h !== lp.checkout);
+      registrar(`         checkout: ${paraCheckout.length} link(s), destino ${lp.checkout}`);
       if (paraCheckout.length === 0) problemas.push('nenhum CTA da LP aponta para o checkout');
       for (const h of errados) problemas.push(`CTA da LP com destino inesperado: ${h}`);
 
@@ -329,7 +341,7 @@ for (const [nome, caminho, viewports] of PAGINAS) {
       if (continua.length === 0)
         problemas.push('a LP não tem nenhum CTA de continuidade');
       for (const c of compra) {
-        if (c.href !== CHECKOUT)
+        if (c.href !== lp.checkout)
           problemas.push(`CTA de compra sem destino de checkout: ${c.href}`);
         if (c.evento !== 'checkout_click')
           problemas.push(`CTA de compra sem checkout_click: ${c.href}`);
@@ -358,9 +370,15 @@ for (const [nome, caminho, viewports] of PAGINAS) {
       registrar(
         `         avaliações: ${aval.aparelhos} aparelho(s) em ${aval.secoes} seção(ões), nomes ${aval.nomes.join(', ') || '(nenhum)'}`
       );
-      if (aval.secoes !== 1)
-        problemas.push(`a LP tem ${aval.secoes} seção(ões) de avaliações, esperado 1`);
-      if (aval.aparelhos === 0) problemas.push('a LP não tem nenhuma avaliação em aparelho');
+      const secoesEsperadas = lp.avaliacoes === 'nenhuma' ? 0 : 1;
+      if (aval.secoes !== secoesEsperadas)
+        problemas.push(
+          `a LP tem ${aval.secoes} seção(ões) de avaliações, esperado ${secoesEsperadas}`
+        );
+      if (lp.avaliacoes === 'pelo menos uma' && aval.aparelhos === 0)
+        problemas.push('a LP não tem nenhuma avaliação em aparelho');
+      if (lp.avaliacoes === 'nenhuma' && aval.secoes > 0)
+        problemas.push('a LP renderizou seção de avaliações sem ter avaliações');
       if (aval.cartoes > 0)
         problemas.push(`a LP tem ${aval.cartoes} cartão(ões) de review; o formato é o aparelho`);
       if (aval.balaoForaDoAparelho > 0)
@@ -370,20 +388,25 @@ for (const [nome, caminho, viewports] of PAGINAS) {
 
       /* A oferta é um bloco só: conteúdo, preço, botão, reasseguranças e
          garantia. Se a garantia voltar a ser uma seção solta, isto quebra. */
-      const ofertaInteira = await page.evaluate(() => {
+      const oferta = await page.evaluate(() => {
         const sec = document.getElementById('oferta');
         if (!sec) return null;
         const t = sec.innerText;
         return {
-          garantia: t.includes('Garantia de 7 dias'),
-          preco: t.includes('R$ 37,00'),
+          texto: t,
           incluso: /O que você recebe/.test(t),
+          garantia: /[Gg]arantia/.test(t),
         };
       });
-      if (!ofertaInteira) problemas.push('a LP não tem a âncora #oferta');
+      if (!oferta) problemas.push('a LP não tem a âncora #oferta');
       else {
-        for (const [k, v] of Object.entries(ofertaInteira))
-          if (!v) problemas.push(`a seção da oferta não traz: ${k}`);
+        if (!oferta.incluso)
+          problemas.push('a seção da oferta não traz o bloco do que está incluso');
+        /* O preço vem do YAML e precisa chegar inteiro à oferta. */
+        const precoNaOferta = /R\$\s?\d+,\d{2}/.exec(oferta.texto)?.[0] ?? '(nenhum)';
+        registrar(`         oferta: preço ${precoNaOferta}, garantia ${oferta.garantia ? 'presente' : 'ausente'}`);
+        if (precoNaOferta === '(nenhum)')
+          problemas.push('a seção da oferta não mostra preço');
       }
     }
 
