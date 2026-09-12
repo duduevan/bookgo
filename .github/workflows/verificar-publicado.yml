@@ -70,4 +70,11 @@ jobs:
 
           git add _verificacao
           git commit -m "Conferência do site publicado"
-          git push origin HEAD:${{ github.ref_name }}
+
+          # A branch costuma andar enquanto a conferência roda, e o relatório
+          # não é motivo para reprovar uma conferência que passou. Rebase e
+          # uma segunda tentativa resolvem a corrida; se ainda assim não der,
+          # fica o aviso, e não um vermelho que não diz nada sobre o site.
+          git pull --rebase origin "${{ github.ref_name }}" || git rebase --abort || true
+          git push origin "HEAD:${{ github.ref_name }}" \
+            || echo "::warning::relatório não commitado: a branch andou durante a conferência"
