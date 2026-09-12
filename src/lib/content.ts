@@ -46,7 +46,12 @@ export const markdownUrl = (post: Post) => `${postUrl(post)}index.md`;
 
 /* ── Produtos ────────────────────────────────────────────────── */
 
-export const getProducts = () => getCollection('products');
+/**
+ * Produtos publicados. Rascunho não gera URL, como no blog: ver `draft`
+ * no schema do produto.
+ */
+export const getProducts = () =>
+  getCollection('products', ({ data }) => !data.draft);
 
 export const getProduct = (id: string) => getEntry('products', id);
 

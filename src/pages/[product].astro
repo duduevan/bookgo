@@ -2,7 +2,6 @@
 import ProductLayout from '../layouts/ProductLayout.astro';
 import Section from '../components/ui/Section.astro';
 import Cta from '../components/ui/Cta.astro';
-import Icon from '../components/ui/Icon.astro';
 import Hero from '../components/product/Hero.astro';
 import BulletList from '../components/product/BulletList.astro';
 import CardGrid from '../components/product/CardGrid.astro';
@@ -11,7 +10,6 @@ import ModuleList from '../components/product/ModuleList.astro';
 import OfferBox from '../components/product/OfferBox.astro';
 import Faq from '../components/product/Faq.astro';
 import TestimonialsSection from '../components/testimonials/TestimonialsSection.astro';
-import PostCard from '../components/blog/PostCard.astro';
 import AdSlot from '../components/ads/AdSlot.astro';
 import ProductImage from '../components/product/ProductImage.astro';
 import MaterialGrid from '../components/product/MaterialGrid.astro';
@@ -20,7 +18,6 @@ import TrackPageEvent from '../components/tracking/TrackPageEvent.astro';
 import { eventAttrs } from '../lib/tracking';
 import {
   getProducts,
-  getPostsByProduct,
   hasCheckout,
   productUrl,
   type Product,
@@ -67,7 +64,6 @@ const { product } = Astro.props;
 const d = product.data;
 const path = productUrl(d.slug);
 const checkoutHref = hasCheckout(product) ? d.checkout.url : null;
-const relatedPosts = await getPostsByProduct(product.id);
 const heroImage = productImage(d.slug, d.hero.image);
 
 /**
@@ -81,10 +77,20 @@ const checkoutEvent = eventAttrs('checkout_click', {
   currency: d.price.currency,
 });
 
+/* Chamadas intermediárias, pelas âncoras declaradas no YAML. Levam à
+   oferta, nunca ao checkout: ver o comentário na primeira delas. */
+const midCtaAt = (after: string) => d.midCta.filter((c) => c.after === after);
+
 /* Imagens editoriais, distribuídas pelas âncoras declaradas no YAML.
    Arquivo inexistente não renderiza nada — ver ProductImage.astro. */
+/* Só entram as que têm arquivo. O componente já não renderiza a figura sem
+   ele, mas o invólucro da seção continuava ocupando altura: uma faixa de
+   ar entre duas seções, sem nada dentro. Filtrar aqui é o que faz a página
+   fechar sozinha enquanto a fotografia não chega. */
 const imagesAt = (placement: string) =>
-  d.images.filter((i) => i.placement === placement);
+  d.images.filter(
+    (i) => i.placement === placement && productImage(d.slug, i.src)
+  );
 
 /* A foto que acompanha o mecanismo, quando declarada. Uma só: duas fotos ao
    lado do mesmo argumento competiriam entre si. */
@@ -210,24 +216,29 @@ const crumbs = [
     <StepList steps={[...d.howItWorks.steps]} />
   </Section>
 
-  {/* CTA intermediário.
-      Aponta para a oferta, e não para o checkout: quem chega aqui ainda não
-      viu preço nem o que está incluído, e mandar direto para o pagamento
-      cobraria a decisão antes de a pessoa ter com o que decidir. É a mesma
-      regra que vale do artigo para a LP, aplicada dentro da página.
+  {/* CTA de continuidade.
 
-      Por não ser botão de compra, ele não dispara `checkout_click`: esse
-      evento continua contando só intenção real de pagamento. */}
+      A LP tem dois tipos de botão, e a diferença não é de estilo:
+
+      · de compra  — leva ao checkout e carrega `checkout_click`. São o do
+                     hero, o da oferta e o do fechamento, todos ao lado do
+                     preço ou depois dele;
+      · de continuidade — leva à oferta, na própria página. Não carrega
+                     evento de compra, porque rolar a página não é intenção
+                     de pagamento e contá-la como tal misturaria dois
+                     momentos do funil no mesmo número.
+
+      Quem chega aqui ainda não viu preço nem o que está incluído, e mandar
+      direto ao pagamento cobraria a decisão antes de a pessoa ter com o que
+      decidir. É a mesma regra que vale do artigo para a LP, aplicada dentro
+      da página. */}
   {
-    d.midCta && (
+    midCtaAt('how-it-works').map((c) => (
       <div class="container midcta">
-        <p>{d.midCta.text}</p>
-        <Cta
-          href="#oferta"
-          label={d.midCta.label ?? d.checkout.cta}
-        />
+        <p>{c.text}</p>
+        <Cta href="#oferta" label={c.label ?? d.checkout.cta} kind="continue" />
       </div>
-    )
+    ))
   }
 
   {/* Conteúdo do produto */}
@@ -258,6 +269,15 @@ const crumbs = [
           alt={img.alt}
           caption={img.caption}
         />
+      </div>
+    ))
+  }
+
+  {
+    midCtaAt('materials').map((c) => (
+      <div class="container midcta">
+        <p>{c.text}</p>
+        <Cta href="#oferta" label={c.label ?? d.checkout.cta} kind="continue" />
       </div>
     ))
   }
@@ -310,27 +330,28 @@ const crumbs = [
     intro={d.offer.intro}
     align="center"
   >
+    {/* A garantia entra aqui dentro, e não numa faixa própria logo
+        abaixo: ela é parte da oferta. No celular a leitura fica título,
+        conteúdo incluído, preço, botão, reasseguranças e garantia, numa
+        sequência só, sem uma seção nova cortando a decisão no meio. */}
     <OfferBox
+      heading={d.offer.includesTitle}
+      highlights={[...d.offer.highlights]}
+      groups={d.offer.groups.map((g) => ({ ...g, items: [...g.items] }))}
       includes={[...d.offer.includes]}
       price={d.price.display}
+      priceTerms={d.offer.priceTerms}
       priceNote={d.offer.priceNote}
       ctaLabel={d.checkout.cta}
       ctaHref={checkoutHref}
       reassurances={[...(d.offer.reassurances ?? [])]}
+      guarantee={{
+        title: d.guarantee.title,
+        text: d.guarantee.text,
+        icon: d.guarantee.icon,
+      }}
       track={checkoutEvent}
     />
-  </Section>
-
-  {/* Garantia — faixa horizontal logo abaixo da oferta, ainda dentro do
-      momento de decisão. */}
-  <Section tone="soft">
-    <div class="guarantee">
-      {d.guarantee.icon && <Icon name={d.guarantee.icon} class="seal" />}
-      <div>
-        <h2>{d.guarantee.title}</h2>
-        <p>{d.guarantee.text}</p>
-      </div>
-    </div>
   </Section>
 
   {/* FAQ */}
@@ -343,25 +364,14 @@ const crumbs = [
     <Faq items={[...d.faq.items]} />
   </Section>
 
-  {/* Artigos relacionados */}
-  {
-    relatedPosts.length > 0 && (
-      <Section title="Leia também" layout="split">
-        {/* Com miniatura e em grade, como no blog. Sem a foto o bloco era o
-            único da página feito só de texto, e fechava a LP perdendo peso
-            justamente onde ela precisa continuar parecendo a mesma página.
-            A altura quase não muda: a imagem entra no lugar do ar que o
-            cartão já tinha. */}
-        <ul class="related">
-          {relatedPosts.map((post) => (
-            <li>
-              <PostCard post={post} thumbnail />
-            </li>
-          ))}
-        </ul>
-      </Section>
-    )
-  }
+  {/* Nenhum bloco de artigos aqui.
+
+      A LP é uma página comercial: cada link para fora dela custa conversão
+      em campanha paga, e "Leia também" no fim da página oferecia
+      exatamente isso a quem acabou de ver o preço. A relação entre artigo e
+      produto continua existindo no conteúdo (`product:` no frontmatter) e
+      continua valendo numa direção só: o artigo leva à LP, a LP leva ao
+      checkout. Os únicos links que restam são os legais, no rodapé. */}
 
   {/* CTA final */}
   <Section tone="accent" align="center" narrow>
@@ -375,20 +385,7 @@ const crumbs = [
         size="lg"
         track={checkoutEvent}
       />
-      <p class="final-price">{d.price.display} · pagamento único</p>
-
-      {
-        d.offer.reassurances.length > 0 && (
-          <ul class="final-chips">
-            {d.offer.reassurances.map((item) => (
-              <li>
-                <Icon name={item.icon} />
-                <span>{item.text}</span>
-              </li>
-            ))}
-          </ul>
-        )
-      }
+      <p class="final-price">{d.price.display} · {d.offer.priceTerms}</p>
     </div>
   </Section>
 
@@ -405,17 +402,6 @@ const crumbs = [
 </ProductLayout>
 
 <style>
-  .related {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: var(--s-5);
-    /* Mesma régua da listagem do blog, e `auto-fill` pelo mesmo motivo: com
-       um artigo só, o cartão precisa ocupar uma célula, não a faixa toda. */
-    grid-template-columns: repeat(auto-fill, minmax(min(18rem, 100%), 1fr));
-  }
-
   .crumb-bar {
     padding-block: var(--s-4);
   }
@@ -500,37 +486,10 @@ const crumbs = [
     max-width: 60ch;
   }
 
-  /* As mesmas reasseguranças da oferta fecham a página. Quem rolou até aqui
-     sem comprar costuma estar decidindo entre "agora" e "depois" — repetir
-     garantia e acesso é responder a isso, não repetir por repetir. */
   /* A nota de checkout pendente segue o alinhamento do bloco em que vive.
      Centralizada aqui, ela para de parecer solta à esquerda da faixa. */
   .final :global(.pending-note) {
     justify-content: center;
-  }
-
-  .final-chips {
-    list-style: none;
-    padding: 0;
-    margin: var(--s-7) auto 0;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--s-3) var(--s-5);
-    max-width: 48rem;
-  }
-
-  .final-chips li {
-    display: flex;
-    align-items: center;
-    gap: var(--s-2);
-    font-size: var(--t--1);
-    color: color-mix(in srgb, var(--color-on-primary) 88%, transparent);
-  }
-
-  .final-chips :global(.icon) {
-    --icon-size: 1rem;
-    opacity: 0.9;
   }
 
   .audience {
@@ -573,51 +532,6 @@ const crumbs = [
     .aud {
       padding: var(--s-7);
     }
-  }
-
-  /* Faixa larga em vez de caixinha centrada com meia página vazia em volta.
-     O escudo ganha um disco próprio para não flutuar solto ao lado do texto. */
-  .guarantee {
-    background: var(--color-surface-raised);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    padding: var(--s-6);
-    display: flex;
-    align-items: center;
-    gap: var(--s-5);
-    box-shadow: var(--shadow-sm);
-  }
-
-  .guarantee :global(.seal) {
-    --icon-size: 1.75rem;
-    color: var(--color-primary-dark);
-    flex: none;
-    box-sizing: content-box;
-    padding: var(--s-4);
-    border-radius: 50%;
-    background: var(--color-primary-soft);
-  }
-
-  @media (max-width: 40rem) {
-    .guarantee {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: var(--s-4);
-    }
-  }
-
-  .guarantee h2 {
-    font-size: var(--t-1);
-  }
-
-  .guarantee p {
-    margin-top: var(--s-2);
-    max-width: 68ch;
-  }
-
-  .guarantee p {
-    margin-top: var(--s-3);
-    color: var(--color-muted);
   }
 
   .final {

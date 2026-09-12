@@ -157,6 +157,85 @@ Quando um grid ficar com lacuna na última linha, ajuste `min` antes de
 aceitar o buraco: `min` grande demais colapsa para uma coluna, pequeno
 demais cria o órfão.
 
+**A LP não linka para o blog.** Nenhum bloco de artigos, nenhum "Leia
+também", nenhuma chamada para conteúdo editorial. Cada saída custa conversão
+em campanha paga, e no fim da página ela custa a quem acabou de ver o preço.
+A relação entre artigo e produto continua existindo no conteúdo (`product:`
+no frontmatter) e continua valendo numa direção só: o artigo leva à LP, a LP
+leva ao checkout. Os links legais do rodapé são a única saída. `npm run
+qa:seo` não cobre isso; a conferência do site publicado cobre.
+
+### A oferta
+
+Uma seção, um bloco, duas colunas de peso parecido. À esquerda, o que está
+incluso: os números da entrega em chips e o conteúdo agrupado por natureza,
+em cartões. À direita, a coluna de compra: preço, botão, reasseguranças e a
+garantia.
+
+**A garantia mora dentro da oferta**, não numa faixa própria abaixo. Ela é
+parte da decisão, e uma seção nova no meio do momento de decidir quebra a
+leitura. No celular a ordem fica título, conteúdo incluído, preço, botão,
+reasseguranças e garantia, numa sequência só.
+
+As duas colunas só entram a partir de 72rem. No tablet a oferta fica
+empilhada de propósito: com a divisão antecipada, a lista alongava de um lado
+e o painel de compra deixava meia tela vazia do outro.
+
+```yaml
+offer:
+  title: Comece hoje
+  intro: Pagamento único. Sem mensalidade e sem renovação.
+  includesTitle: O que você recebe       # título da coluna do conteúdo
+  priceTerms: pagamento único · sem mensalidade   # linha sob o preço
+  highlights:                            # até 4 números, opcional
+    - value: "5"
+      label: módulos
+  groups:                                # agrupado por natureza
+    - title: Método
+      icon: compass
+      items:
+        - Item da entrega.
+  includes: []                           # alternativa: lista plana
+  priceNote: ...
+  reassurances:
+    - icon: shield
+      text: ...
+```
+
+`groups` ou `includes`: um dos dois precisa existir, e o schema cobra.
+`highlights` são contagens verificáveis do produto (módulos, materiais,
+duração da sessão), **nunca prova social**.
+
+### Os dois tipos de CTA
+
+A diferença não é de estilo, é de destino, e ela existe no HTML:
+
+| Tipo | `kind` | Vai para | Evento | Onde |
+|---|---|---|---|---|
+| Compra | `buy` (padrão) | checkout | `checkout_click` | hero, oferta, fechamento |
+| Continuidade | `continue` | `#oferta`, na própria página | nenhum | as faixas `midCta` |
+
+Um clique que só rola a página não é intenção de pagamento. Contá-lo como
+`checkout_click` misturaria dois momentos do funil no mesmo número, que é a
+mesma razão pela qual o clique do artigo para a LP é `product_click` e não
+`checkout_click`.
+
+O valor sai como `data-cta` no HTML, e `scripts/verificar-publicado.mjs`
+afirma a regra sobre a página publicada em vez de confiar na leitura do
+código.
+
+As faixas de continuidade vivem no YAML, com âncora declarada:
+
+```yaml
+midCta:
+  - after: how-it-works      # how-it-works | materials | testimonials
+    text: Uma linha que fecha a seção anterior.
+    label: Ver o que está incluído
+```
+
+Sem o bloco, nenhuma faixa é renderizada. **Não ancore uma faixa logo antes
+da oferta**: um botão para rolar uma tela é ruído.
+
 ### Hero do produto
 
 Duas colunas no desktop: copy à esquerda, quadro de imagem à direita com o
@@ -262,6 +341,23 @@ LP para cada produto encontrado.
 
 O schema que valida o YAML está em `src/content.config.ts`. Campo obrigatório
 faltando ou com tipo errado **quebra o build** — é proposital.
+
+**`draft: true` enquanto a copy não estiver fechada.** Igual ao `draft` do
+artigo: o produto continua sendo validado pelo schema a cada build, e é essa
+validação que prova que a estrutura está completa, mas não gera URL, não
+entra no sitemap, não entra no `llms.txt` e não aparece na home. É o que
+permite deixar a arquitetura de um produto novo pronta sem publicar uma
+página com texto de espera.
+
+Hoje existe um assim: `cardapio-da-semana-em-20-minutos`, com os campos
+pendentes marcados `[PREENCHER]` e a source of truth em
+`docs/cardapio-da-semana-source-of-truth.md`.
+
+**Dois produtos não podem parecer o mesmo produto.** O sistema é o mesmo
+(componentes, tokens, tipografia, régua), a identidade comercial não: a
+paleta do YAML é o que separa uma LP da outra, e trocar a cor principal vale
+mais do que ajustar a mesma. Ao escolher, confira o contraste de `text` sobre
+`background` e de `onPrimary` sobre `primary` — o mínimo é 4.5:1.
 
 ## Alterar preço
 
@@ -730,10 +826,11 @@ com a ambientação em CSS. A imagem passa por `astro:assets` com `srcset`,
 
 ## Relacionar artigo a produto
 
-Adicione `product: <slug-do-produto>` ao frontmatter. Isso liga os dois lados:
+Adicione `product: <slug-do-produto>` ao frontmatter. A ligação existe, e ela
+tem uma direção só: **o artigo leva à LP, e a LP não volta para o artigo.**
 
-- o artigo passa a exibir o CTA contextual do produto ao final;
-- a LP do produto passa a listar o artigo em "Leia também".
+- o artigo passa a exibir o CTA contextual do produto;
+- a LP **não** ganha bloco de artigos. Ver "Composição da landing page".
 
 O slug precisa existir em `content/products/`, senão o build falha.
 

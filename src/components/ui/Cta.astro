@@ -17,6 +17,19 @@ interface Props {
   size?: 'md' | 'lg';
   block?: boolean;
   /**
+   * O que o botão faz, e não como ele parece.
+   *
+   * `buy` leva ao checkout e é o único que carrega `checkout_click`.
+   * `continue` leva a outro ponto da própria página (a oferta), e por isso
+   * não dispara evento de compra: um clique que só rola a página não é
+   * intenção de pagamento, e contá-lo como tal misturaria dois momentos do
+   * funil no mesmo número.
+   *
+   * O valor sai no HTML como `data-cta`, para a conferência do site
+   * publicado poder afirmar a regra em vez de confiar na leitura do código.
+   */
+  kind?: 'buy' | 'continue';
+  /**
    * Atributos `data-*` do evento de clique. Vêm de `eventAttrs()`, que
    * devolve `{}` com o tracking desligado — então hoje nada é emitido.
    */
@@ -29,6 +42,7 @@ const {
   variant = 'primary',
   size = 'md',
   block = false,
+  kind = 'buy',
   track = {},
 } = Astro.props;
 
@@ -38,11 +52,16 @@ const classes = ['cta', `v-${variant}`, `s-${size}`, block ? 'block' : ''];
 <div class:list={['wrap', { block }]}>
   {
     href ? (
-      <a class:list={classes} href={href} {...track}>
+      <a class:list={classes} href={href} data-cta={kind} {...track}>
         {label}
       </a>
     ) : (
-      <span class:list={[...classes, 'pending']} role="link" aria-disabled="true">
+      <span
+        class:list={[...classes, 'pending']}
+        role="link"
+        aria-disabled="true"
+        data-cta={kind}
+      >
         {label}
       </span>
     )

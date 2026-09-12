@@ -229,6 +229,17 @@ const products = defineCollection({
     /** Frase curta usada em cards e no CTA contextual do blog. */
     tagline: z.string(),
 
+    /**
+     * Rascunho. Igual ao `draft` do artigo: o produto continua sendo
+     * validado por este schema a cada build — é essa validação que prova
+     * que o esqueleto está completo —, mas não gera URL, não entra no
+     * sitemap, não entra no `llms.txt` e não aparece na home.
+     *
+     * É o que permite deixar um produto novo pronto para receber copy sem
+     * publicar uma página com texto de espera.
+     */
+    draft: z.boolean().default(false),
+
     theme,
 
     /** Promessa central — base da descrição do schema Product. */
@@ -327,18 +338,60 @@ const products = defineCollection({
     forWho: section.extend({ items: z.array(z.string()) }),
     notForWho: section.extend({ items: z.array(z.string()) }),
 
-    offer: section.extend({
-      includes: z.array(z.string()),
-      priceNote: z.string().optional(),
-      /**
-       * Reasseguranças exibidas sob o botão. **Fatos do produto**, nunca
-       * prova social, número de alunos ou escassez — ver as regras de
-       * conteúdo do CLAUDE.md.
-       */
-      reassurances: z
-        .array(z.object({ icon: iconName, text: z.string() }))
-        .default([]),
-    }),
+    offer: section
+      .extend({
+        /**
+         * Título da coluna do conteúdo e a linha sob o preço. Vivem no YAML
+         * e não no componente porque cada produto tem a sua voz: um curso
+         * "inclui", um material "vem com".
+         */
+        includesTitle: z.string().min(3).max(48),
+        priceTerms: z.string().min(3).max(60),
+        /**
+         * Números curtos do que a oferta entrega, em chips acima da lista.
+         * São contagens verificáveis do produto (módulos, materiais,
+         * duração da sessão), nunca prova social nem resultado prometido.
+         */
+        highlights: z
+          .array(
+            z.object({
+              value: z.string().min(1).max(6),
+              label: z.string().min(2).max(34),
+            })
+          )
+          .max(4)
+          .default([]),
+        /**
+         * O que está incluso, agrupado por natureza: método, materiais,
+         * acesso. Agrupar é o que transforma a lista de entrega em parte
+         * da oferta, em vez de um bloco de texto ao lado do preço.
+         *
+         * `includes` continua aceito como lista plana, para um produto que
+         * não precise de grupos. Um dos dois precisa existir.
+         */
+        groups: z
+          .array(
+            z.object({
+              title: z.string().min(2).max(40),
+              icon: iconName.optional(),
+              items: z.array(z.string()).min(1),
+            })
+          )
+          .default([]),
+        includes: z.array(z.string()).default([]),
+        priceNote: z.string().optional(),
+        /**
+         * Reasseguranças exibidas sob o botão. **Fatos do produto**, nunca
+         * prova social, número de alunos ou escassez — ver as regras de
+         * conteúdo do CLAUDE.md.
+         */
+        reassurances: z
+          .array(z.object({ icon: iconName, text: z.string() }))
+          .default([]),
+      })
+      .refine((o) => o.groups.length > 0 || o.includes.length > 0, {
+        message: 'offer precisa de `groups` ou de `includes`.',
+      }),
 
     guarantee: section.extend({
       text: z.string(),
@@ -364,12 +417,20 @@ const products = defineCollection({
      * nada é renderizado.
      */
     midCta: z
-      .object({
-        text: z.string().min(20),
-        /** Rótulo próprio, para não repetir o do checkout logo acima. */
-        label: z.string().min(3).max(40).optional(),
-      })
-      .optional(),
+      .array(
+        z.object({
+          /**
+           * Onde a faixa entra. São âncoras da página, não posições
+           * livres: um CTA solto no meio de uma seção quebraria a leitura
+           * do bloco em que caiu.
+           */
+          after: z.enum(['how-it-works', 'materials', 'testimonials']),
+          text: z.string().min(20),
+          /** Rótulo próprio, para não repetir o do checkout logo acima. */
+          label: z.string().min(3).max(40).optional(),
+        })
+      )
+      .default([]),
 
     finalCta: z.object({
       title: z.string(),

@@ -212,13 +212,38 @@ notForWho:
 offer:
   title: Comece hoje
   intro: Pagamento único. Sem mensalidade e sem renovação.
-  includes:
-    - Os 5 módulos com o Método dos 15 Minutos
-    - Checklist Diário de 15 Minutos
-    - Planner Semanal da Casa
-    - Plano Casa Organizada em 7 Dias
-    - Checklist por Ambiente
-    - Acesso pela área de membros da Kiwify, liberado após a aprovação do pagamento
+  includesTitle: O que você recebe
+  priceTerms: pagamento único · sem mensalidade
+  # Contagens verificáveis da entrega, não prova social. Cada uma pode ser
+  # conferida na lista logo abaixo.
+  highlights:
+    - value: "5"
+      label: módulos
+    - value: "4"
+      label: materiais em PDF
+    - value: "15"
+      label: minutos por sessão
+  # Agrupado por natureza. É o que separa "o método" de "os materiais" e do
+  # "acesso", em vez de seis linhas seguidas em que tudo pesa igual.
+  groups:
+    - title: Método
+      icon: compass
+      items:
+        - Os 5 módulos com o Método dos 15 Minutos, escritos para ler e aplicar no mesmo dia
+        - A aplicação ambiente por ambiente, da cozinha à área de serviço
+        - A rotina semanal e o que fazer para a bagunça não voltar
+    - title: Materiais práticos
+      icon: checklist
+      items:
+        - Checklist Diário de 15 Minutos
+        - Planner Semanal da Casa
+        - Plano Casa Organizada em 7 Dias
+        - Checklist por Ambiente
+    - title: Acesso
+      icon: spark
+      items:
+        - Área de membros da Kiwify, liberada após a aprovação do pagamento
+        - Materiais em PDF para usar no celular, no computador ou impressos
   priceNote: Materiais digitais em PDF. Pagamento processado pela Kiwify.
   # Reasseguranças sob o botão. São fatos do produto — nunca prova social,
   # número de alunos ou escassez.
@@ -257,9 +282,23 @@ testimonials:
   # item pode ter `name`, e em `depoimento` todo item precisa ter. Não é
   # convenção de quem escreve, é trava de build.
   #
-  # Quando existir depoimento real e autorizado, troque `kind` para
-  # `depoimento`, acrescente o nome que a pessoa autorizou e cole o texto
-  # dela. Só então a seção passa a afirmar algo sobre resultado.
+  # ── PENDENTE DE DECISÃO ──────────────────────────────────────
+  # A autorização de Patrícia, Fernanda e Gabriela está confirmada, mas as
+  # mensagens abaixo não foram escritas por elas: foram escritas aqui, para
+  # responder às objeções do produto. Autorização é permissão para publicar
+  # o que a pessoa disse, não permissão para escrever no lugar dela.
+  #
+  # Por isso a seção segue em `demonstracao`. Para virar depoimento, basta
+  # colar o texto real de cada uma e trocar duas coisas:
+  #
+  #   kind: depoimento
+  #   items:
+  #     - type: phone
+  #       name: Patrícia          # e Fernanda, e Gabriela
+  #       messages: [ ... o que ela realmente escreveu ... ]
+  #
+  # O schema já cobra o par: em `depoimento` todo item precisa de `name`, e
+  # em `demonstracao` nenhum pode ter. Não é convenção, é trava de build.
   enabled: true
   kind: demonstracao
   title: As dúvidas que aparecem antes de começar
@@ -381,8 +420,16 @@ faq:
 # rolar até o fim, e quem ainda não decidiu continua lendo sem tropeçar
 # num bloco grande.
 midCta:
-  text: O método está explicado. Se ele conversa com a sua rotina, dá para começar hoje mesmo.
-  label: Ver o que está incluído
+  - after: how-it-works
+    text: O método está explicado. Se ele conversa com a sua rotina, dá para começar hoje mesmo.
+    label: Ver o que está incluído
+  # Depois dos materiais, e não depois das conversas: as conversas são a
+  # última seção antes da oferta, e um botão para rolar uma tela seria
+  # ruído. Aqui a pessoa acabou de ver a entrega inteira e ainda não viu o
+  # preço, que é exatamente o que o botão oferece.
+  - after: materials
+    text: Você já viu o método e o que vem junto. Falta a parte do preço.
+    label: Ver a oferta
 
 # ── CTA final ────────────────────────────────────────────────
 finalCta:

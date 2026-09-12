@@ -1,0 +1,250 @@
+# ─────────────────────────────────────────────────────────────
+#  Cardápio da Semana em 20 Minutos
+#
+#  ESQUELETO. `draft: true` — este produto NÃO gera página, não entra
+#  no sitemap, no llms.txt nem na home. O schema continua validando o
+#  arquivo a cada build, e é essa validação que prova que a estrutura
+#  está completa antes de existir uma linha de copy final.
+#
+#  O QUE JÁ ESTÁ APROVADO (e por isso é o único texto real aqui):
+#    · nome e slug
+#    · preço R$ 27,00, pagamento único
+#    · checkout https://pay.kiwify.com.br/6VGDS8V
+#
+#  TUDO O QUE ESTIVER MARCADO [PREENCHER] DEPENDE DA SOURCE OF TRUTH.
+#  Ver docs/cardapio-da-semana-source-of-truth.md. A regra do projeto
+#  vale igual aqui: se não está na source of truth, não se afirma na
+#  página. Nada neste arquivo foi escrito como copy provisória de
+#  venda, justamente para que ninguém a publique por engano.
+#
+#  PARA PUBLICAR: preencha, apague `draft: true`, rode `npm run build`.
+#  A página aparece em /cardapio-da-semana-em-20-minutos/ sem nenhuma
+#  alteração de código.
+# ─────────────────────────────────────────────────────────────
+
+slug: cardapio-da-semana-em-20-minutos
+name: Cardápio da Semana em 20 Minutos
+draft: true
+
+tagline: "[PREENCHER] Frase curta usada nos cartões e no CTA contextual do blog."
+promise: "[PREENCHER] A promessa central, base da descrição do schema Product. Precisa estar na source of truth."
+
+# ── Identidade visual ────────────────────────────────────────
+# Identidade comercial própria, e não uma variação da LP do Casa
+# Organizada: o sálvia daquele produto sai de cena e entra um páprica
+# quente, com o verde virando acento pontual em vez de cor principal.
+# Mesmo sistema, outra voz.
+#
+# Contrastes já conferidos: texto sobre fundo 14,9:1, branco sobre
+# primary 6,5:1, branco sobre primaryDark 10,5:1, muted sobre fundo
+# 5,8:1. Todos acima do mínimo de 4,5:1 para texto corrido.
+#
+# A paleta é uma proposta e pode mudar sem tocar em código.
+theme:
+  primary: "#9C4221"       # páprica — CTAs e destaques
+  primaryDark: "#6B2C14"   # páprica profundo — hover e contraste
+  accent: "#3F6B52"        # verde ervas — acento pontual
+  background: "#FDF8F3"    # creme quente — fundo da página
+  surface: "#FFFFFF"       # branco — cartões
+  text: "#2A211C"
+  muted: "#6E5F56"
+  border: "#EADFD3"
+
+# ── Comercial (aprovado) ─────────────────────────────────────
+price:
+  amount: 27
+  currency: BRL
+  display: R$ 27,00
+
+checkout:
+  provider: kiwify
+  url: https://pay.kiwify.com.br/6VGDS8V
+  cta: "[PREENCHER] Rótulo do botão de compra"
+
+# ── SEO ──────────────────────────────────────────────────────
+seo:
+  title: "[PREENCHER] Title da página"
+  description: "[PREENCHER] Meta description, uma a duas frases sobre o que o material entrega."
+
+# ── Hero ─────────────────────────────────────────────────────
+hero:
+  eyebrow: "[PREENCHER] Nome do método"
+  headline: "[PREENCHER] Manchete do hero"
+  subheadline: "[PREENCHER] Subtítulo do hero, explicando a promessa em uma ou duas frases."
+  # Fatos do produto, nunca prova social.
+  highlights:
+    - text: "[PREENCHER] Reforço 1"
+      icon: list
+    - text: "[PREENCHER] Reforço 2"
+      icon: checklist
+    - text: "[PREENCHER] Reforço 3"
+      icon: spark
+  # Sem imagem declarada: o hero usa a ambientação em CSS até o arquivo
+  # existir em src/assets/products/cardapio-da-semana-em-20-minutos/.
+
+# ── Problema ─────────────────────────────────────────────────
+problem:
+  title: "[PREENCHER] A dor, na linguagem de quem a vive"
+  items:
+    - "[PREENCHER] Situação 1."
+    - "[PREENCHER] Situação 2."
+    - "[PREENCHER] Situação 3."
+  close: "[PREENCHER] A frase que reenquadra o problema."
+
+# ── Mecanismo ────────────────────────────────────────────────
+method:
+  title: "[PREENCHER] Existe um caminho mais simples"
+  name: "[PREENCHER] Nome do método"
+  intro: "[PREENCHER] Como o método funciona, em um parágrafo."
+  pillars:
+    - title: "[PREENCHER] Pilar 1"
+      icon: compass
+      text: "[PREENCHER] O que este pilar resolve."
+    - title: "[PREENCHER] Pilar 2"
+      icon: list
+      text: "[PREENCHER] O que este pilar resolve."
+    - title: "[PREENCHER] Pilar 3"
+      icon: calendar
+      text: "[PREENCHER] O que este pilar resolve."
+  note: "[PREENCHER] O que o método não promete."
+
+# ── Benefícios ───────────────────────────────────────────────
+benefits:
+  title: "[PREENCHER] O que muda na prática"
+  items:
+    - title: "[PREENCHER] Benefício 1"
+      icon: spark
+      text: "[PREENCHER] Descrição."
+    - title: "[PREENCHER] Benefício 2"
+      icon: calendar
+      text: "[PREENCHER] Descrição."
+    - title: "[PREENCHER] Benefício 3"
+      icon: list
+      text: "[PREENCHER] Descrição."
+
+# ── Como funciona ────────────────────────────────────────────
+howItWorks:
+  title: "[PREENCHER] Como funciona no seu dia"
+  steps:
+    - title: "[PREENCHER] Passo 1"
+      text: "[PREENCHER] Descrição."
+    - title: "[PREENCHER] Passo 2"
+      text: "[PREENCHER] Descrição."
+    - title: "[PREENCHER] Passo 3"
+      text: "[PREENCHER] Descrição."
+
+# ── Conteúdo do produto ──────────────────────────────────────
+contents:
+  title: "[PREENCHER] O que você vai aprender"
+  intro: "[PREENCHER] Formato do conteúdo."
+  modules:
+    - number: 1
+      title: "[PREENCHER] Módulo 1"
+      objective: "[PREENCHER] Objetivo do módulo."
+    - number: 2
+      title: "[PREENCHER] Módulo 2"
+      objective: "[PREENCHER] Objetivo do módulo."
+
+# ── Materiais incluídos ──────────────────────────────────────
+materials:
+  title: "[PREENCHER] Materiais incluídos"
+  intro: "[PREENCHER] Formato dos materiais."
+  items:
+    - title: "[PREENCHER] Material 1"
+      icon: checklist
+      text: "[PREENCHER] Para que serve."
+    - title: "[PREENCHER] Material 2"
+      icon: calendar-week
+      text: "[PREENCHER] Para que serve."
+
+# ── Público ──────────────────────────────────────────────────
+audience:
+  title: "[PREENCHER] Este material faz sentido para você?"
+  intro: "[PREENCHER] Frase de abertura da comparação."
+
+forWho:
+  title: Para quem é
+  items:
+    - "[PREENCHER] Perfil 1."
+    - "[PREENCHER] Perfil 2."
+    - "[PREENCHER] Perfil 3."
+
+notForWho:
+  title: Para quem não é
+  items:
+    - "[PREENCHER] Perfil 1."
+    - "[PREENCHER] Perfil 2."
+    - "[PREENCHER] Perfil 3."
+
+# ── Oferta ───────────────────────────────────────────────────
+offer:
+  title: "[PREENCHER] Título da oferta"
+  intro: Pagamento único. Sem mensalidade e sem renovação.
+  includesTitle: "[PREENCHER] O que você recebe"
+  priceTerms: pagamento único · sem mensalidade
+  # Contagens verificáveis da entrega. Nunca prova social.
+  highlights:
+    - value: "0"
+      label: "[PREENCHER] contagem 1"
+    - value: "0"
+      label: "[PREENCHER] contagem 2"
+    - value: "0"
+      label: "[PREENCHER] contagem 3"
+  groups:
+    - title: "[PREENCHER] Método"
+      icon: compass
+      items:
+        - "[PREENCHER] Item."
+    - title: "[PREENCHER] Materiais"
+      icon: checklist
+      items:
+        - "[PREENCHER] Item."
+    - title: Acesso
+      icon: spark
+      items:
+        - "[PREENCHER] Como o acesso é liberado. Formulação obrigatória do projeto: após a aprovação do pagamento."
+  priceNote: "[PREENCHER] Nota sob o preço. Pagamento processado pela Kiwify."
+  reassurances:
+    - icon: shield
+      text: 7 dias de garantia para conhecer o conteúdo
+    - icon: spark
+      text: Acesso liberado após a aprovação do pagamento
+    - icon: checklist
+      text: "[PREENCHER] Terceiro fato do produto"
+
+# ── Garantia ─────────────────────────────────────────────────
+# Garantia comercial, objetiva, sem interpretação jurídica. O texto
+# abaixo é o padrão do projeto e vale para qualquer produto BookGo.
+guarantee:
+  icon: shield
+  title: Garantia de 7 dias
+  text: Você terá 7 dias de garantia para conhecer o conteúdo. Se não for para você, basta pedir o reembolso dentro desse prazo.
+
+# ── Conversas ────────────────────────────────────────────────
+# Omitido de propósito: sem o bloco, a seção fica desligada e não custa
+# um byte de CSS. Ver o bloco equivalente do Casa Organizada para os
+# dois formatos disponíveis e para a diferença entre `kind: depoimento`
+# e `kind: demonstracao`.
+
+# ── FAQ ──────────────────────────────────────────────────────
+faq:
+  title: Perguntas frequentes
+  items:
+    - q: "[PREENCHER] Pergunta 1"
+      a: "[PREENCHER] Resposta 1"
+    - q: "[PREENCHER] Pergunta 2"
+      a: "[PREENCHER] Resposta 2"
+
+# ── CTAs de continuidade ─────────────────────────────────────
+# Levam à oferta, na própria página. Não são botões de compra e não
+# disparam `checkout_click`. Âncoras: how-it-works, materials,
+# testimonials.
+midCta:
+  - after: how-it-works
+    text: "[PREENCHER] Uma linha que fecha o método e convida a ver a oferta."
+    label: Ver o que está incluído
+
+# ── CTA final ────────────────────────────────────────────────
+finalCta:
+  title: "[PREENCHER] Manchete do fechamento"
+  text: "[PREENCHER] Um parágrafo curto de fechamento."

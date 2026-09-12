@@ -288,6 +288,65 @@ for (const [nome, caminho, viewports] of PAGINAS) {
         document.body.innerText.includes('Checkout em configuração')
       );
       if (pendente) problemas.push('a LP ainda mostra "Checkout em configuração"');
+
+      /* A LP não manda ninguém para o blog. Decisão comercial: cada saída
+         custa conversão em campanha paga. Os links legais do rodapé são a
+         única exceção, e não passam por /blog/. */
+      const paraBlog = hrefs.filter((h) => new URL(h).pathname.startsWith('/blog'));
+      registrar(`         links para o blog: ${paraBlog.length}`);
+      for (const h of paraBlog)
+        problemas.push(`a LP tem link para o blog: ${h}`);
+
+      /* Os dois tipos de botão, afirmados no HTML e não só no código: o de
+         compra leva ao checkout e carrega `checkout_click`; o de
+         continuidade leva à oferta e não carrega evento de compra. */
+      const ctas = await page.evaluate(() =>
+        [...document.querySelectorAll('[data-cta]')].map((el) => ({
+          kind: el.getAttribute('data-cta'),
+          href: el.getAttribute('href'),
+          evento: el.getAttribute('data-bookgo-event'),
+        }))
+      );
+      const compra = ctas.filter((c) => c.kind === 'buy');
+      const continua = ctas.filter((c) => c.kind === 'continue');
+      registrar(
+        `         CTAs: ${compra.length} de compra, ${continua.length} de continuidade`
+      );
+      if (compra.length === 0) problemas.push('a LP não tem nenhum CTA de compra');
+      if (continua.length === 0)
+        problemas.push('a LP não tem nenhum CTA de continuidade');
+      for (const c of compra) {
+        if (c.href !== CHECKOUT)
+          problemas.push(`CTA de compra sem destino de checkout: ${c.href}`);
+        if (c.evento !== 'checkout_click')
+          problemas.push(`CTA de compra sem checkout_click: ${c.href}`);
+      }
+      for (const c of continua) {
+        if (c.href !== '#oferta')
+          problemas.push(`CTA de continuidade fora da âncora da oferta: ${c.href}`);
+        if (c.evento)
+          problemas.push(
+            `CTA de continuidade disparando ${c.evento}: rolar a página não é intenção de compra`
+          );
+      }
+
+      /* A oferta é um bloco só: conteúdo, preço, botão, reasseguranças e
+         garantia. Se a garantia voltar a ser uma seção solta, isto quebra. */
+      const ofertaInteira = await page.evaluate(() => {
+        const sec = document.getElementById('oferta');
+        if (!sec) return null;
+        const t = sec.innerText;
+        return {
+          garantia: t.includes('Garantia de 7 dias'),
+          preco: t.includes('R$ 37,00'),
+          incluso: /O que você recebe/.test(t),
+        };
+      });
+      if (!ofertaInteira) problemas.push('a LP não tem a âncora #oferta');
+      else {
+        for (const [k, v] of Object.entries(ofertaInteira))
+          if (!v) problemas.push(`a seção da oferta não traz: ${k}`);
+      }
     }
 
     const quebradas = diag.imgs.filter((i) => !i.ok);
