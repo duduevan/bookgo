@@ -1,0 +1,82 @@
+---
+/**
+ * O trilho das avaliações. A unidade que ele move é **um celular**.
+ *
+ * Rolagem nativa com scroll-snap, sem biblioteca e sem framework. O
+ * arraste no celular, o trackpad e as setas do teclado sobre a região
+ * rolável já são do navegador; o script acrescenta as setas, os pontos e o
+ * estado deles. Sem JavaScript a seção continua navegável, com a barra de
+ * rolagem à mostra como pista de que há mais ao lado. Sem autoplay.
+ *
+ * **Quantos cabem por vez é decidido em CSS, e limitado pela quantidade**:
+ * `--rv-count` entra aqui como custom property e o CSS usa
+ * `min(3, count)` no desktop, `min(2, count)` no tablet e 1 no celular.
+ * É isso que faz uma avaliação sozinha ocupar a faixa inteira em vez de
+ * ficar encolhida num terço, e duas dividirem a largura ao meio, sem
+ * nenhum caso especial no componente.
+ *
+ * Com tudo cabendo na tela não há o que navegar, e o script esconde a
+ * linha de controles em vez de deixar setas mortas. É por isso que a regra
+ * não depende do número absoluto de itens: três celulares não rolam num
+ * desktop largo e rolam no tablet, e a mesma peça acerta nos dois.
+ */
+import { REVIEWS_CAROUSEL_JS } from '../../scripts/reviews-carousel';
+
+interface Props {
+  /** Quantos itens o trilho carrega. Limita quantos cabem por vez. */
+  count: number;
+  /** Rótulo da região rolável, para quem navega por teclado. */
+  label: string;
+}
+
+const { count, label } = Astro.props;
+---
+
+<div class="rv-wrap" data-rv-carousel style={`--rv-count:${count}`}>
+  <div
+    class="rv-track"
+    role="group"
+    aria-roledescription="carrossel"
+    aria-label={label}
+    tabindex="0"
+  >
+    <slot />
+  </div>
+
+  {/* Controles. Nascem escondidos: sem JavaScript eles não fariam nada, e
+      a barra de rolagem já diz que há mais ao lado. O script os revela e,
+      quando tudo cabe na tela, volta a escondê-los. */}
+  <div class="rv-nav" hidden>
+    <button class="rv-arrow" type="button" data-rv-prev aria-label="Ver as avaliações anteriores">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+        <path d="M20 12H6" />
+        <path d="M11.5 6.5 6 12l5.5 5.5" />
+      </svg>
+    </button>
+
+    <ul class="rv-dots">
+      {
+        Array.from({ length: count }, (_, i) => (
+          <li>
+            <button
+              class="rv-dot"
+              type="button"
+              data-rv-dot
+              aria-current={i === 0 ? 'true' : 'false'}
+              aria-label={`Ir para a avaliação ${i + 1} de ${count}`}
+            />
+          </li>
+        ))
+      }
+    </ul>
+
+    <button class="rv-arrow" type="button" data-rv-next aria-label="Ver as próximas avaliações">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+        <path d="M4 12h14" />
+        <path d="M12.5 6.5 18 12l-5.5 5.5" />
+      </svg>
+    </button>
+  </div>
+</div>
+
+<script is:inline set:html={REVIEWS_CAROUSEL_JS} />

@@ -35,159 +35,65 @@ const section = z.object({
 /**
  * Avaliações de um produto.
  *
- * **Quantidade livre.** Não existe número máximo nem número esperado: a
- * apresentação sai da contagem (uma centrada, duas lado a lado, três ou
- * mais em carrossel) e o componente serve a qualquer valor. Acrescentar uma
- * avaliação é acrescentar um item aqui, e nada além disso.
+ * **Uma avaliação é uma conversa, e uma conversa é um celular.** Não existe
+ * outro formato: nada de cartão com texto solto, nada de nota em estrelas
+ * ao lado do nome. O comentário da pessoa mora dentro do aparelho, em
+ * balões, do jeito que ela escreveu.
+ *
+ * **Quantidade livre.** Não existe número máximo nem número esperado.
+ * Acrescentar uma avaliação é acrescentar um item aqui, e nada além disso:
+ * o carrossel ganha mais um celular sozinho.
  *
  * **Cada produto tem o seu array**, dentro do seu próprio YAML. Não existe
  * repositório comum de avaliações, e é por isso que a avaliação de um
  * produto não tem como aparecer na LP de outro.
- *
- * Regra do projeto, sem exceção: **nenhuma avaliação é inventada**. Só entra
- * aqui texto que uma pessoa real escreveu e autorizou a publicar. Enquanto
- * isso não existir, `enabled` fica false e a seção não é renderizada.
- *
- * Campos mínimos de um item: quem e o quê. Avatar, data, nota e contexto
- * são opcionais, e nada é derivado dos que faltam: sem foto entram as
- * iniciais, sem nota não aparece estrela nenhuma.
  */
-const reviewBase = {
-  /**
-   * Nome como a pessoa autorizou publicar.
-   *
-   * Opcional porque a seção tem dois usos, e só um deles tem pessoa: em
-   * `kind: demonstracao` a conversa é entre uma pergunta e a resposta da
-   * BookGo, sem ninguém a nomear. Um refinamento abaixo exige o nome
-   * exatamente onde ele precisa existir.
-   */
-  name: z.string().optional(),
-  /**
-   * Arquivo em `src/assets/reviews/`, ou caminho servido. Sem avatar, o
-   * componente usa as iniciais do nome: derivar do que existe é honesto,
-   * gerar um rosto não seria, e foto de banco de imagens apresentada como
-   * cliente seria pior ainda.
-   */
-  avatar: z.string().optional(),
-  /** Contexto curto da pessoa, quando ela autorizou. */
-  role: z.string().max(60).optional(),
-  /** Quando a avaliação foi escrita. Texto curto, livre. */
-  date: z.string().max(24).optional(),
-  /**
-   * Nota que a pessoa deu, de 1 a 5. **Não tem padrão e não se deriva.**
-   * Sem este campo a peça não exibe estrela nenhuma, em vez de arredondar
-   * uma nota que ninguém deu.
-   */
-  rating: z.number().int().min(1).max(5).optional(),
-};
-
-const reviewCard = z.object({
-  type: z.literal('card'),
-  ...reviewBase,
-  text: z.string().min(1),
-});
-
-const reviewConversation = z.object({
-  type: z.literal('phone'),
-  ...reviewBase,
-  /** Linha sob o nome no cabeçalho da conversa. Decorativa. */
-  status: z.string().optional(),
-  messages: z
-    .array(
-      z.object({
-        /** `incoming` = a pessoa; `outgoing` = a BookGo. */
-        side: z.enum(['incoming', 'outgoing']),
-        text: z.string(),
-        /** Horário exibido na bolha. Decorativo. */
-        time: z.string().optional(),
-        /** Confirmação de leitura. Só faz sentido em `outgoing`. */
-        read: z.boolean().default(false),
-      })
-    )
-    .min(1),
-});
-
 const reviews = z
   .object({
-    /** Chave mestra da seção. Sem avaliação real, fica false. */
-    enabled: z.boolean().default(false),
-    /**
-     * Conteúdo de demonstração, para avaliar o desenho antes de existirem
-     * avaliações reais.
-     *
-     * Com `true`, a seção renderiza um rótulo visível dizendo que aquilo é
-     * exemplo de layout. O rótulo é deliberado: um aviso que mora só no
-     * código deixa de existir no momento em que mais importa, que é quando
-     * alguém publica sem lembrar. Aqui, publicar por engano fica óbvio na
-     * própria página.
-     */
-    demo: z.boolean().default(false),
+    /** Chave mestra da seção. Com `false`, nada é renderizado. */
+    enabled: z.boolean().default(true),
 
-    /**
-     * O que a seção é, e não apenas como ela parece.
-     *
-     * `depoimento`: texto que uma pessoa real escreveu e autorizou. Leva
-     * nome, porque uma afirmação sobre resultado precisa ter autor.
-     *
-     * `demonstracao`: as dúvidas que aparecem antes de começar e a resposta
-     * da BookGo, no mesmo formato de conversa. **Não tem nome e não afirma
-     * resultado de ninguém**, porque não é avaliação: é o método
-     * respondendo. É a única forma honesta de usar este desenho sem uma
-     * pessoa real por trás, e por isso ela não precisa de rótulo.
-     *
-     * A distinção existe no schema, e não só na cabeça de quem escreve,
-     * porque é ela que impede uma conversa inventada de ser publicada com
-     * cara de cliente.
-     */
-    kind: z.enum(['depoimento', 'demonstracao']).default('depoimento'),
-
-    /** Título da seção. Vive aqui para cada produto ter a sua voz. */
+    /** Título e subtítulo da seção. Vivem aqui para cada produto ter a sua voz. */
     title: z.string().optional(),
     subtitle: z.string().optional(),
+
     items: z
-      .array(z.discriminatedUnion('type', [reviewCard, reviewConversation]))
+      .array(
+        z.object({
+          /** Referência de quem edita. Não vira nada na página. */
+          id: z
+            .string()
+            .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'id deve ser minúsculo, com hífens')
+            .optional(),
+          /** Nome como a pessoa autorizou publicar. Aparece no topo do aparelho. */
+          name: z.string().min(1),
+          /**
+           * Arquivo em `src/assets/reviews/`, ou caminho servido. Sem
+           * avatar, o componente usa as iniciais do nome: derivar do que
+           * existe é honesto, gerar um rosto não seria, e foto de banco de
+           * imagens apresentada como cliente seria pior ainda.
+           */
+          avatar: z.string().optional(),
+          /** Linha sob o nome no cabeçalho da conversa. Decorativa. */
+          status: z.string().optional(),
+          messages: z
+            .array(
+              z.object({
+                /** Quem mandou a mensagem. */
+                sender: z.enum(['person', 'bookgo']),
+                text: z.string().min(1),
+                /** Horário exibido na bolha. Decorativo. */
+                time: z.string().optional(),
+                /** Confirmação de leitura. Só faz sentido em `bookgo`. */
+                read: z.boolean().default(false),
+              })
+            )
+            .min(1),
+        })
+      )
       .default([]),
   })
-  .default({ enabled: false, items: [] })
-  .refine((t) => !t.enabled || t.items.length > 0, {
-    message:
-      'reviews.enabled é true mas items está vazio. Avaliação não se inventa: preencha com texto real e autorizado, ou volte enabled para false.',
-  })
-  .refine((t) => !(t.enabled && !t.demo) || t.items.length > 0, {
-    message:
-      'Seção de avaliações ligada fora do modo demonstração exige itens reais e autorizados.',
-  })
-  /* Uma avaliação sem autor não é avaliação: é uma frase solta apresentada
-     como se alguém a tivesse dito. */
-  .refine(
-    (t) => t.kind !== 'depoimento' || t.items.every((i) => Boolean(i.name)),
-    {
-      message:
-        'Em kind: depoimento todo item precisa de name. Sem autor, a frase não é avaliação de ninguém.',
-    }
-  )
-  /* E o contrário: uma demonstração com nome passaria a afirmar que uma
-     pessoa chamada assim disse aquilo, que é exatamente o que ela não é. */
-  .refine(
-    (t) => t.kind !== 'demonstracao' || t.items.every((i) => !i.name),
-    {
-      message:
-        'Em kind: demonstracao nenhum item pode ter name. A conversa é o método respondendo, não uma pessoa.',
-    }
-  )
-  .refine((t) => t.kind !== 'demonstracao' || !t.demo, {
-    message:
-      'kind: demonstracao dispensa demo: a conversa já não se apresenta como avaliação de ninguém.',
-  })
-  /* Nota é afirmação sobre o que a pessoa achou. Numa demonstração não há
-     pessoa, então não há nota a exibir. */
-  .refine(
-    (t) => t.kind !== 'demonstracao' || t.items.every((i) => i.rating === undefined),
-    {
-      message:
-        'Em kind: demonstracao nenhum item pode ter rating. Não existe quem tenha dado a nota.',
-    }
-  );
+  .default({ enabled: true, items: [] });
 
 /* ------------------------------------------------------------------ */
 /*  Produtos — content/products/<slug>/index.yaml                      */

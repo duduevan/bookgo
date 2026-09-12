@@ -257,122 +257,86 @@ offer:
 
 # ── Avaliações ───────────────────────────────────────────────
 #
+# UMA AVALIAÇÃO É UMA CONVERSA, E UMA CONVERSA É UM CELULAR.
+# A LP renderiza cada item abaixo como um aparelho próprio no carrossel.
+# Não existe formato de cartão de texto, e não existe segunda seção.
+#
 # ACRESCENTAR UMA AVALIAÇÃO É ACRESCENTAR UM ITEM EM `items`.
 # Nada além disso: não se edita componente, não se mexe em CSS, não se
-# duplica HTML e não se cria seção. A quantidade é livre e a apresentação
-# se ajusta sozinha (uma centrada, duas lado a lado, três ou mais em
-# carrossel). Ver "Avaliações" no CLAUDE.md.
+# duplica HTML. A quantidade é livre e o carrossel se ajusta sozinho.
+# Ver "Avaliações" no CLAUDE.md.
 #
-# Campos por item: `name` e `text` (ou `messages`) são o mínimo; `avatar`,
-# `role`, `date` e `rating` são opcionais. Sem avatar entram as iniciais do
-# nome. Sem `rating` não aparece estrela nenhuma, em vez de arredondar uma
-# nota que ninguém deu.
+# Campos por item: `name` e `messages` são o mínimo; `id`, `avatar` e
+# `status` são opcionais. Sem avatar entram as iniciais do nome.
+# Em cada mensagem, `sender` é `person` (a pessoa) ou `bookgo` (a resposta).
 reviews:
-  # CONVERSAS DE DEMONSTRAÇÃO, NÃO AVALIAÇÕES.
-  #
-  # `kind: demonstracao` é o que separa esta seção de prova social. As
-  # perguntas abaixo são as objeções reais que este produto precisa
-  # responder, e as respostas são da BookGo. Ninguém é nomeado e nada aqui
-  # afirma resultado de cliente, porque nenhum cliente escreveu isto.
-  #
-  # A linguagem é de conversa de verdade de propósito: frase curta, bolha
-  # quebrada, emoji, minúscula. Isso é tom, não é fingir pessoa. O que
-  # continua proibido é a pergunta virar relato de resultado ("comecei e já
-  # mudou"), porque aí deixaria de ser dúvida e viraria avaliação inventada.
-  #
-  # O schema impede a confusão nos dois sentidos: em `demonstracao` nenhum
-  # item pode ter `name` nem `rating`, e em `depoimento` todo item precisa
-  # de `name`. Não é convenção de quem escreve, é trava de build.
-  #
-  # ── PENDENTE DE DECISÃO ──────────────────────────────────────
-  # A autorização de Patrícia, Fernanda e Gabriela está confirmada, mas as
-  # mensagens abaixo não foram escritas por elas: foram escritas aqui, para
-  # responder às objeções do produto. Autorização é permissão para publicar
-  # o que a pessoa disse, não permissão para escrever no lugar dela.
-  #
-  # Por isso a seção segue em `demonstracao`. Para virar depoimento, basta
-  # colar o texto real de cada uma e trocar duas coisas:
-  #
-  #   kind: depoimento
-  #   items:
-  #     - type: phone
-  #       name: Patrícia          # e Fernanda, e Gabriela
-  #       messages: [ ... o que ela realmente escreveu ... ]
-  #
-  # Quando elas chegarem, não há limite de três: o carrossel serve a
-  # quantas houver, e o título muda aqui mesmo (algo como "O que estão
-  # dizendo sobre o método") sem tocar em componente.
   enabled: true
-  kind: demonstracao
-  title: As dúvidas que aparecem antes de começar
-  # Sem contagem no texto: a seção aceita quantas forem, e uma frase que
-  # diz "as três" passaria a mentir na quarta.
+  title: O que estão dizendo sobre o método
   subtitle: >-
-    As perguntas que mais chegam sobre o método, respondidas do jeito que a
-    gente responderia no chat. Não são mensagens de alunas: são as objeções
-    reais e o que o método tem a dizer sobre cada uma.
+    Conversas de quem chegou com dúvida antes de começar, do jeito que elas
+    aconteceram no chat.
   items:
-    - type: phone
-      status: Método dos 15 Minutos
+    - id: patricia
+      name: Patrícia
       messages:
-        - side: incoming
+        - sender: person
           text: 15 min por dia resolve mesmo? 😅
           time: "08:41"
-        - side: incoming
+        - sender: person
           text: parece pouco pra bagunça daqui
           time: "08:41"
-        - side: outgoing
+        - sender: bookgo
           text: sozinho não 💚 o que resolve é a frequência
           time: "08:43"
           read: true
-        - side: outgoing
+        - sender: bookgo
           text: todo dia impede o acúmulo. o mutirão só limpa o que já se formou
           time: "08:44"
           read: true
-        - side: incoming
+        - sender: person
           text: ahh faz sentido... é o acúmulo que cansa
           time: "08:46"
 
-    - type: phone
-      status: Método dos 15 Minutos
+    - id: fernanda
+      name: Fernanda
       messages:
-        - side: incoming
+        - sender: person
           text: sempre começo animada e largo na segunda semana kkk
           time: "19:05"
-        - side: outgoing
+        - sender: bookgo
           text: isso é tamanho de meta, não falta de disciplina 💚
           time: "19:08"
           read: true
-        - side: outgoing
+        - sender: bookgo
           text: o alvo do dia já vem pronto, a janela não é gasta decidindo
           time: "19:09"
           read: true
-        - side: incoming
+        - sender: person
           text: e se eu pular um dia?
           time: "19:11"
-        - side: outgoing
+        - sender: bookgo
           text: pula numa boa 🙂 o plano é semanal por isso mesmo
           time: "19:12"
           read: true
 
-    - type: phone
-      status: Método dos 15 Minutos
+    - id: gabriela
+      name: Gabriela
       messages:
-        - side: incoming
+        - sender: person
           text: preciso imprimir os materiais?
           time: "21:18"
-        - side: outgoing
+        - sender: bookgo
           text: não precisa! são PDFs, funcionam no celular
           time: "21:20"
           read: true
-        - side: outgoing
+        - sender: bookgo
           text: quem gosta de papel imprime, mas é gosto 🙂
           time: "21:21"
           read: true
-        - side: incoming
+        - sender: person
           text: ah que bom
           time: "21:24"
-        - side: incoming
+        - sender: person
           text: era só isso que faltava saber 😄
           time: "21:24"
 

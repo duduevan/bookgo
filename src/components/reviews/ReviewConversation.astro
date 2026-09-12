@@ -1,28 +1,33 @@
 ---
 /**
- * Avaliação no formato de conversa de celular.
+ * Uma avaliação: a conversa de uma pessoa, dentro de um celular.
+ *
+ * **O aparelho é o cartão da avaliação.** Não existe versão em caixa de
+ * texto: o comentário mora nos balões, com o nome e o avatar no topo do
+ * aparelho, porque é assim que ele chegou.
  *
  * Só Astro + HTML + CSS: nenhum framework, nenhuma biblioteca de animação,
- * zero JavaScript no cliente. A referência que originou este componente foi
- * feita em React com Framer Motion; aqui a entrada em cascata é
- * `animation-delay` calculado no build, um número por bolha.
+ * zero JavaScript. A entrada em cascata é `animation-delay` calculado no
+ * build, um número por bolha.
  *
- * Sem `<style>` próprio de propósito — ver src/styles/reviews.css.ts.
+ * Sem `<style>` próprio de propósito, ver src/styles/reviews.css.ts.
  *
  * Acessibilidade e honestidade da leitura:
  *  - a conversa é uma citação (`figure` + `blockquote`), não enfeite;
  *  - a moldura, a barra de status e a caixa de digitar são `aria-hidden`:
- *    são cenário, e nada ali é interativo — não há input, nem botão, nem
+ *    são cenário, e nada ali é interativo, não há input, nem botão, nem
  *    foco por teclado que leve a lugar nenhum;
  *  - cada bolha diz de quem é, para o áudio não virar um bloco só.
  *
- * O componente não conhece nenhuma avaliação e nenhum produto: tudo entra
- * por props.
+ * Nada aqui é identidade de aplicativo de mensagem de ninguém: a moldura,
+ * a barra e o fundo são desenhados neste projeto.
+ *
+ * O componente não conhece avaliação nem produto: tudo entra por props.
  */
 import { initialsOf } from '../../lib/reviews';
 
-export interface PhoneMessage {
-  side: 'incoming' | 'outgoing';
+export interface ConversationMessage {
+  sender: 'person' | 'bookgo';
   text: string;
   time?: string;
   read?: boolean;
@@ -32,9 +37,9 @@ interface Props {
   name: string;
   avatar?: string;
   status?: string;
-  messages: PhoneMessage[];
-  /** Rótulo de quem envia as mensagens `outgoing`. */
-  outgoingName?: string;
+  messages: ConversationMessage[];
+  /** Rótulo de quem responde, para o leitor de tela. */
+  replyName?: string;
 }
 
 const {
@@ -42,7 +47,7 @@ const {
   avatar,
   status,
   messages,
-  outgoingName = 'BookGo',
+  replyName = 'BookGo',
 } = Astro.props;
 
 /* Cascata: cada bolha entra 90ms depois da anterior, e a última encerra.
@@ -79,18 +84,18 @@ const STEP = 0.09;
       {
         messages.map((m, i) => (
           <p
-            class:list={['rv-bubble', m.side === 'incoming' ? 'rv-in' : 'rv-out']}
+            class:list={['rv-bubble', m.sender === 'person' ? 'rv-in' : 'rv-out']}
             style={`--delay:${(i * STEP).toFixed(2)}s`}
           >
             <span class="rv-sr">
-              {m.side === 'incoming' ? `${name}:` : `${outgoingName}:`}
+              {m.sender === 'person' ? `${name}:` : `${replyName}:`}
             </span>
             <span class="rv-text">{m.text}</span>
             {
-              (m.time || (m.side === 'outgoing' && m.read)) && (
+              (m.time || (m.sender === 'bookgo' && m.read)) && (
                 <span class="rv-meta" aria-hidden="true">
                   {m.time && <span>{m.time}</span>}
-                  {m.side === 'outgoing' && m.read && (
+                  {m.sender === 'bookgo' && m.read && (
                     <svg class="rv-ticks" viewBox="0 0 20 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" focusable="false">
                       <path d="M2 6.5 5 9.5 10.5 3" />
                       <path d="M8.5 6.5 11.5 9.5 17 3" />
@@ -115,4 +120,3 @@ const STEP = 0.09;
     </div>
   </div>
 </figure>
-

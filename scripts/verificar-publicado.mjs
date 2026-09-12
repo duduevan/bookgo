@@ -343,6 +343,31 @@ for (const [nome, caminho, viewports] of PAGINAS) {
           );
       }
 
+      /* Avaliações: uma é um celular, e o comentário mora dentro dele.
+         Se um cartão de review voltar a aparecer, ou se a seção virar duas,
+         isto quebra. */
+      const aval = await page.evaluate(() => ({
+        secoes: document.querySelectorAll('.rv-wrap').length,
+        aparelhos: document.querySelectorAll('.rv-phone').length,
+        cartoes: document.querySelectorAll('.rv-card').length,
+        nomes: [...document.querySelectorAll('.rv-name')].map((n) => n.textContent.trim()),
+        balaoForaDoAparelho: [...document.querySelectorAll('.rv-bubble')].filter(
+          (b) => !b.closest('.rv-frame')
+        ).length,
+      }));
+      registrar(
+        `         avaliações: ${aval.aparelhos} aparelho(s) em ${aval.secoes} seção(ões), nomes ${aval.nomes.join(', ') || '(nenhum)'}`
+      );
+      if (aval.secoes !== 1)
+        problemas.push(`a LP tem ${aval.secoes} seção(ões) de avaliações, esperado 1`);
+      if (aval.aparelhos === 0) problemas.push('a LP não tem nenhuma avaliação em aparelho');
+      if (aval.cartoes > 0)
+        problemas.push(`a LP tem ${aval.cartoes} cartão(ões) de review; o formato é o aparelho`);
+      if (aval.balaoForaDoAparelho > 0)
+        problemas.push(`${aval.balaoForaDoAparelho} balão(ões) fora de um aparelho`);
+      if (aval.nomes.length !== aval.aparelhos)
+        problemas.push('há aparelho sem nome no cabeçalho');
+
       /* A oferta é um bloco só: conteúdo, preço, botão, reasseguranças e
          garantia. Se a garantia voltar a ser uma seção solta, isto quebra. */
       const ofertaInteira = await page.evaluate(() => {

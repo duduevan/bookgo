@@ -32,24 +32,23 @@ export function getStaticPaths() {
 const { page } = Astro.params;
 
 const demoConversa = {
-  type: 'phone' as const,
   name: 'Exemplo de conversa',
   status: 'conteúdo de demonstração',
   messages: [
     {
-      side: 'incoming' as const,
+      sender: 'person' as const,
       text: 'Esta é uma mensagem de exemplo. Serve para conferir a altura da bolha, a quebra de linha e o alinhamento à esquerda.',
       time: '09:12',
       read: false,
     },
     {
-      side: 'outgoing' as const,
+      sender: 'bookgo' as const,
       text: 'Resposta de exemplo, alinhada à direita, com horário e confirmação de leitura.',
       time: '09:14',
       read: true,
     },
     {
-      side: 'incoming' as const,
+      sender: 'person' as const,
       text: 'Terceira bolha, para ver a cascata de entrada rodando uma vez só.',
       time: '09:15',
       read: false,
@@ -57,41 +56,45 @@ const demoConversa = {
   ],
 };
 
-const demoCartao = {
-  type: 'card' as const,
-  name: 'Exemplo de cartão',
-  role: 'conteúdo de demonstração',
-  text: 'Este texto ocupa o lugar de uma avaliação para conferir a tipografia, o avatar de iniciais e a altura do cartão. Não é a fala de ninguém.',
-};
-
-/* Fixtures de quantidade. Textos de comprimentos bem diferentes de
-   propósito: é o caso que o desenho precisa aguentar sem cortar nada. */
-const TEXTOS = [
-  'Texto curto. 🙂',
-  'Um texto de tamanho médio, com duas linhas mais ou menos, para conferir como o cartão se comporta quando o conteúdo não é nem curto nem longo.',
-  'Um texto claramente mais longo que os outros, escrito para forçar o pior caso do carrossel: vários parágrafos de altura num item só, enquanto o vizinho tem uma linha. O cartão precisa mostrar tudo, sem reticências e sem recorte, e os outros acompanham a altura em vez de deixar o trilho torto. Emojis também entram aqui 👋 e precisam sair inteiros.',
-  'Texto médio com emoji no meio 💚 para conferir a pilha de fontes.',
-  'Outro curto.',
-];
-
+/* Fixtures de quantidade. As conversas têm comprimentos bem diferentes de
+   propósito: é o caso que o desenho precisa aguentar sem cortar nada e sem
+   deixar um aparelho com metade da altura do vizinho. */
 const NOMES = [
   'Ana Paula', 'Bruno', 'Carla Menezes', 'Diego', 'Elisa Fontes',
   'Felipe', 'Giovana Alves', 'Heitor', 'Isabela Cruz', 'João',
 ];
 
+const CONVERSAS = [
+  [
+    { sender: 'person' as const, text: 'curta 🙂', time: '10:00' },
+  ],
+  [
+    { sender: 'person' as const, text: 'uma pergunta de tamanho médio, com duas linhas mais ou menos', time: '11:20' },
+    { sender: 'bookgo' as const, text: 'resposta de tamanho médio também', time: '11:22', read: true },
+    { sender: 'person' as const, text: 'entendi, obrigada 💚', time: '11:25' },
+  ],
+  [
+    { sender: 'person' as const, text: 'esta é a conversa mais longa do conjunto, escrita para forçar o pior caso do carrossel: várias bolhas num aparelho só, enquanto o vizinho tem uma linha', time: '14:02' },
+    { sender: 'person' as const, text: 'a intenção é ver se alguma mensagem fica cortada no topo', time: '14:02' },
+    { sender: 'bookgo' as const, text: 'nenhuma deve ficar: a altura vem do conteúdo e o trilho iguala todos pelo mais alto', time: '14:05', read: true },
+    { sender: 'bookgo' as const, text: 'e os emojis precisam sair inteiros 👋', time: '14:05', read: true },
+    { sender: 'person' as const, text: 'mais uma bolha para esticar', time: '14:08' },
+    { sender: 'person' as const, text: 'e outra, só para garantir', time: '14:09' },
+  ],
+  [
+    { sender: 'person' as const, text: 'duas bolhas apenas', time: '16:40' },
+    { sender: 'bookgo' as const, text: 'e uma resposta', time: '16:41', read: true },
+  ],
+];
+
 const fixture = (n: number) =>
   Array.from({ length: n }, (_, i) => ({
-    type: 'card' as const,
+    id: `fixture-${i + 1}`,
     name: NOMES[i % NOMES.length]!,
-    text: TEXTOS[i % TEXTOS.length]!,
-    /* Uma parte com nota, outra sem: sem o campo, nenhuma estrela deve
-       aparecer, e é isso que precisa ficar visível lado a lado. */
-    rating: i % 3 === 0 ? 5 : i % 3 === 1 ? 4 : undefined,
-    role: i % 4 === 0 ? 'dado de teste' : undefined,
-    date: i % 4 === 1 ? 'março de 2026' : undefined,
+    messages: CONVERSAS[i % CONVERSAS.length]!.map((m) => ({ ...m })),
   }));
 
-const QUANTIDADES = [0, 1, 2, 3, 6, 10];
+const QUANTIDADES = [0, 1, 2, 3, 4, 6, 10];
 ---
 
 {
@@ -136,17 +139,9 @@ const QUANTIDADES = [0, 1, 2, 3, 6, 10];
 
       <ReviewsSection
         enabled
-        title="Avaliação: conversa (demonstração)"
-        subtitle="Formato type: phone. Conteúdo fictício, apenas para conferir o desenho."
+        title="Avaliação: a conversa no aparelho"
+        subtitle="Uma avaliação é um celular. Conteúdo fictício, apenas para conferir o desenho."
         items={[demoConversa]}
-      />
-
-      <ReviewsSection
-        enabled
-        tone="default"
-        title="Avaliação: cartão (demonstração)"
-        subtitle="Formato type: card. Conteúdo fictício, apenas para conferir o desenho."
-        items={[demoCartao, { ...demoCartao, name: 'Segundo exemplo', rating: 5 }]}
       />
     </BaseLayout>
   )
@@ -167,9 +162,11 @@ const QUANTIDADES = [0, 1, 2, 3, 6, 10];
         </p>
         <h1>Seção de avaliações por quantidade</h1>
         <p>
-          A mesma peça com {QUANTIDADES.join(', ')} itens. Zero não renderiza
-          nada, uma fica centrada, duas lado a lado, e daí em diante é
-          carrossel. Não existe número máximo.
+          A mesma peça com {QUANTIDADES.join(', ')} avaliações. Cada uma é um
+          celular. Zero não renderiza nada; daí em diante quantos aparecem
+          por vez sai da largura da tela limitada pela quantidade, e os
+          controles só existem quando há o que navegar. Não existe número
+          máximo.
         </p>
       </main>
 

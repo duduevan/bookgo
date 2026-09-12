@@ -222,36 +222,29 @@ guarantee:
 
 # ── Avaliações ───────────────────────────────────────────────
 # Omitido de propósito: sem o bloco, a seção fica desligada e não custa um
-# byte de CSS nem de JavaScript. Este produto ainda não tem avaliação real,
-# e avaliação não se inventa.
+# byte de CSS nem de JavaScript. Este produto ainda não tem avaliação, e
+# avaliação não se inventa.
 #
-# Quando existir, é só descomentar e ir acrescentando itens. Não há limite:
-# uma aparece centrada, duas lado a lado, três ou mais viram carrossel, e o
-# mesmo componente global serve a este produto e a todos os seguintes. Nada
-# de código muda.
+# Quando existir, é só descomentar e ir acrescentando itens. Cada item vira
+# um celular no carrossel, a quantidade é livre, e o mesmo componente
+# global serve a este produto e a todos os seguintes. Nada de código muda.
 #
 # reviews:
 #   enabled: true
-#   kind: depoimento
 #   title: O que estão dizendo
 #   subtitle: Frase curta de abertura.
 #   items:
-#     - type: card                  # texto corrido
+#     - id: nome-da-pessoa
 #       name: Nome que a pessoa autorizou
-#       role: Contexto curto        # opcional
-#       date: março de 2026         # opcional
-#       rating: 5                   # opcional; sem ele, nenhuma estrela
-#       avatar: foto.webp           # opcional; sem ele, as iniciais
-#       text: O que ela escreveu.
-#     - type: phone                 # conversa
-#       name: Nome que a pessoa autorizou
-#       status: Linha decorativa    # opcional
+#       avatar: foto.webp          # opcional; sem ele, as iniciais
+#       status: Linha decorativa   # opcional
 #       messages:
-#         - side: incoming          # a pessoa
+#         - sender: person         # a pessoa
 #           text: ...
-#           time: "09:12"           # opcional
-#         - side: outgoing          # a BookGo
+#           time: "09:12"          # opcional
+#         - sender: bookgo         # a resposta da BookGo
 #           text: ...
+#           time: "09:14"
 #           read: true
 
 # ── FAQ ──────────────────────────────────────────────────────

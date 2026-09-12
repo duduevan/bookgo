@@ -98,6 +98,16 @@ ali o ícone seria decoração.
 
 ### Avaliações
 
+**Uma avaliação é uma conversa, e uma conversa é um celular.** Esse é o
+formato da BookGo para prova social, e não há outro: nada de cartão com
+texto solto, nada de nota em estrelas ao lado do nome, nada de comentário
+fora do aparelho. O comentário da pessoa mora nos balões, com o nome e o
+avatar no topo do celular, do jeito que ele chegou.
+
+```
+ReviewsSection → ReviewsCarousel → ReviewConversation (um por avaliação)
+```
+
 **Um componente só, para todos os produtos.** `ReviewsSection.astro` não
 conhece produto nenhum: não sabe nomes, textos, quantidade nem em que LP
 está. Recebe uma lista e a renderiza. É isso que o faz servir o Casa
@@ -107,100 +117,96 @@ em outro: cada LP passa o array do seu próprio YAML, e não existe
 repositório comum de avaliações.
 
 **Acrescentar uma avaliação é acrescentar um item no YAML do produto.**
-Abrir `content/products/<slug>/index.yaml`, escrever nome e texto, rodar
-`npm run build`, publicar. Não se edita componente, não se mexe em CSS, não
-se duplica HTML e não se cria seção.
-
-**Não existe número máximo.** A apresentação sai da contagem:
-
-| Quantidade | O que acontece |
-|---|---|
-| 0 | nada renderizado: sem título, sem espaço, sem um byte de CSS ou de JS |
-| 1 | centrada, em largura de leitura |
-| 2 | duas colunas de mesmo peso |
-| 3 ou mais | carrossel: ~3 por vez no desktop, 2 no tablet, 1 no celular |
-
-O carrossel entra só a partir de três porque abaixo disso ele seria uma
-interface de navegação para algo que já cabe na tela. E quando tudo cabe
-(três itens num desktop largo), os controles somem sozinhos em vez de
-ficarem como setas mortas.
+Abrir `content/products/<slug>/index.yaml`, escrever o nome e as mensagens,
+rodar `npm run build`, publicar. O carrossel ganha mais um celular sozinho.
+Não se edita componente, não se mexe em CSS, não se duplica HTML e não se
+cria uma segunda seção.
 
 ```yaml
 reviews:
   enabled: true
-  kind: depoimento            # depoimento | demonstracao
   title: O que estão dizendo sobre o método
   subtitle: Frase curta de abertura.
   items:
-    - type: card              # texto corrido
-      name: Nome que a pessoa autorizou
-      text: O que ela escreveu.
-      role: Contexto curto    # opcional
-      date: março de 2026     # opcional
-      rating: 5               # opcional, 1 a 5
-      avatar: foto.webp       # opcional
-    - type: phone             # conversa de celular
-      name: Nome que a pessoa autorizou
-      status: Linha decorativa
+    - id: patricia              # referência de quem edita, opcional
+      name: Patrícia            # aparece no topo do aparelho
+      avatar: foto.webp         # opcional; sem ele, as iniciais do nome
+      status: Linha decorativa  # opcional
       messages:
-        - side: incoming      # a pessoa
+        - sender: person        # a pessoa
           text: ...
-          time: "09:12"
-        - side: outgoing      # a BookGo
+          time: "08:41"         # opcional
+        - sender: bookgo        # a resposta da BookGo
           text: ...
+          time: "08:43"
           read: true
 ```
 
-Mínimo por item: quem e o quê. **Nada é derivado do que falta:** sem
-`avatar` entram as iniciais do nome, e sem `rating` não aparece estrela
-nenhuma, em vez de arredondar uma nota que ninguém deu. Título e subtítulo
-vivem no YAML para cada produto ter a sua voz.
+Mínimo por item: `name` e `messages`. Sem `avatar` entram as iniciais do
+nome: derivar do que existe é honesto, gerar um rosto não seria, e foto de
+banco de imagens apresentada como cliente seria pior ainda.
 
 **Avaliação não se inventa.** Só entra aqui texto que uma pessoa real
-escreveu e autorizou a publicar. Sem isso, `enabled: false`. Autorização é
-permissão para publicar o que a pessoa disse, não permissão para escrever
-no lugar dela.
+escreveu e autorizou a publicar. Sem isso, `enabled: false` ou nenhum item.
 
-`kind` é o que separa as duas coisas, e é trava de build, não convenção:
+#### Quantos aparecem por vez
 
-- `depoimento`: pessoa real e autorizada. Todo item **precisa** de `name`,
-  porque uma afirmação sobre resultado precisa ter autor.
-- `demonstracao`: as dúvidas que aparecem antes de começar e a resposta da
-  BookGo, no mesmo desenho de conversa. **Nenhum item pode ter `name` nem
-  `rating`**, porque não é avaliação de ninguém: é o método respondendo.
+Não existe número máximo, e a regra **não** depende do número absoluto de
+itens: quantos cabem sai da largura da tela limitada pela quantidade
+(`min(3, count)` no desktop, `min(2, count)` no tablet, 1 no celular), e os
+controles existem só quando sobra o que navegar.
 
-Ligar `enabled` com `items` vazio quebra o build de propósito.
+| Itens | Celular | Tablet | Desktop |
+|---|---|---|---|
+| 0 | nada renderizado, nem título, nem um byte de CSS ou de JS |||
+| 1 | um aparelho, sem controles | um aparelho, sem controles | um aparelho, sem controles |
+| 2 | um por vez, com controles | os dois, sem controles | os dois, sem controles |
+| 3 | um por vez, com controles | dois por vez, com controles | os três, sem controles |
+| 4+ | um por vez, com controles | dois por vez, com controles | três por vez, com controles |
 
-**A conversa tem dois lados.** As mensagens da pessoa e as respostas da
-BookGo (`side: outgoing`) alternam, porque um celular só com balões de um
-lado não parece conversa, parece depoimento recortado.
+É o mesmo caminho de renderização em todos os casos: não há layout especial
+para uma ou duas.
 
 #### O carrossel
 
-Rolagem nativa com `scroll-snap`, sem biblioteca e sem framework. O
-arraste no celular, o trackpad e as setas do teclado sobre a região rolável
-já são do navegador; o script (~2,3 KB inline, **só na página que tem
-carrossel**) acrescenta as setas, os pontos e o estado deles. Sem
-JavaScript a seção continua navegável, com a barra de rolagem à mostra como
-pista de que há mais ao lado.
+Rolagem nativa com `scroll-snap`, sem biblioteca e sem framework. O arraste
+no celular, o trackpad e as setas do teclado sobre a região rolável já são
+do navegador; o script (~2,3 KB inline, **só na página que tem carrossel**)
+acrescenta as setas, os pontos e o estado deles. Sem JavaScript a seção
+continua navegável, com a barra de rolagem à mostra como pista de que há
+mais ao lado.
 
 **Sem autoplay.** Carrossel que anda sozinho tira o controle da leitura e
 obriga a inventar pausa no hover, no foco e no toque para devolver o que
 tirou.
 
-**Texto nunca é cortado.** Não há recorte por altura nem reticências para
-igualar cartão: os cartões de uma linha esticam até a altura do mais longo
-e a assinatura fica ancorada no rodapé de todos. Mensagem cortada é
-mensagem escondida.
+#### Altura dos aparelhos, e por que nada é cortado
 
-`aggregateRating` e `Review` **não** são gerados por existir um bloco
-visual de avaliações. Ver "O que nunca vai a uma página".
+A altura vem do conteúdo, com um piso que mantém cara de celular na
+conversa mais curta, e o `align-items: stretch` do trilho iguala todos pelo
+mais alto. Nenhuma mensagem é escondida, nenhum aparelho fica com metade da
+altura do vizinho, e não existe reticência para igualar.
+
+A versão anterior fixava a proporção do aparelho e mandava o excedente para
+fora: uma conversa mais longa começava pela metade. Por isso o piso é
+`min-height` e nunca `min-height: 0` — zero autorizaria o flex a encolher a
+conversa abaixo do próprio conteúdo, que é exatamente o corte que se quer
+evitar.
+
+#### O que a seção não faz
+
+Nada de identidade de aplicativo de mensagem de ninguém: a moldura, a barra
+de status, o fundo e a caixa de digitar são desenhados neste projeto, e a
+caixa de digitar é cenário em `aria-hidden`, sem input e sem botão.
+
+`aggregateRating` e `Review` **não** são gerados por existir a seção. Ver "O
+que nunca vai a uma página".
 
 #### Conferir quantidades
 
-`npm run dev` e `/dev/avaliacoes/` mostram a mesma peça com 0, 1, 2, 3, 6 e
-10 itens, com fixtures locais. Nenhum dado dali vem de produto nenhum, e a
-rota não existe no build de produção.
+`npm run dev` e `/dev/avaliacoes/` mostram a mesma peça com 0, 1, 2, 3, 4, 6
+e 10 avaliações, com fixtures locais. Nenhum dado dali vem de produto
+nenhum, e a rota não existe no build de produção.
 
 ### Composição da landing page
 
@@ -1116,8 +1122,8 @@ Padrão do projeto: **zero JavaScript no cliente**, hoje com duas exceções
 declaradas:
 
 - o runtime de medição e consentimento, ~8,7 KB inline em toda página;
-- o carrossel de avaliações, ~2,3 KB inline **só nas páginas que têm três
-  ou mais avaliações**. Com zero, uma ou duas, nada é emitido.
+- o carrossel de avaliações, ~2,3 KB inline **só nas páginas que têm
+  avaliações**. Sem nenhuma, nada é emitido.
 
 Fora isso, nenhum componente embarca JavaScript. A conversa de celular, o
 FAQ e o índice do artigo são HTML e CSS puros.

@@ -22,38 +22,3 @@ export function initialsOf(name: string): string {
   const last = parts.length > 1 ? parts[parts.length - 1]![0]! : '';
   return (first + last).toUpperCase();
 }
-
-/**
- * Como a seção se apresenta, decidido pela quantidade e por nada mais.
- *
- * Não existe número máximo. O carrossel entra a partir de três porque abaixo
- * disso ele seria uma interface de navegação para algo que já cabe na tela:
- * setas que nunca andam e pontinhos que nunca mudam pesam mais do que
- * ajudam.
- *
- *   0 → `none`      a seção não é renderizada, nem título, nem CSS
- *   1 → `solo`      uma coluna centrada, largura de leitura
- *   2 → `pair`      duas colunas de mesmo peso
- *  3+ → `carousel`  trilho com rolagem, setas, pontos e teclado
- */
-export type ReviewsLayout = 'none' | 'solo' | 'pair' | 'carousel';
-
-export function reviewsLayout(enabled: boolean, count: number): ReviewsLayout {
-  if (!enabled || count === 0) return 'none';
-  if (count === 1) return 'solo';
-  if (count === 2) return 'pair';
-  return 'carousel';
-}
-
-/**
- * Estrelas de uma nota real.
- *
- * Devolve lista vazia quando não há nota. **Nota não se deriva e não se
- * arredonda para cima**: sem o dado, a peça não exibe estrela nenhuma, e a
- * LP não passa a afirmar uma avaliação que ninguém deu.
- */
-export function starsOf(rating: number | undefined): boolean[] {
-  if (typeof rating !== 'number') return [];
-  const full = Math.round(rating);
-  return Array.from({ length: 5 }, (_, i) => i < full);
-}
