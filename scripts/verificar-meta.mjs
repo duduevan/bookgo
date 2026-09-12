@@ -136,7 +136,29 @@ async function abrir(caminho, { consent } = {}) {
     }
     if (r.url().includes('/signals/config/')) {
       try {
-        configs.push((await r.text()).slice(0, 700));
+        const corpo = await r.text();
+        /* O corpo é JavaScript e começa com meia página de licença: fatiar o
+           início só devolve o aviso de copyright. O que interessa são os
+           marcadores de entrega, então a busca é por eles. */
+        const marcadores = [
+          'pixelInitialized',
+          'disable',
+          'blacklist',
+          'blocked',
+          'restrictedDataProcessing',
+          'batching',
+          'endpoint',
+          'valid',
+        ];
+        const achados = marcadores
+          .map((m) => {
+            const i = corpo.indexOf(m);
+            return i === -1 ? null : `${m}→${corpo.slice(i, i + 60).replace(/\s+/g, ' ')}`;
+          })
+          .filter(Boolean);
+        configs.push(
+          `${corpo.length} bytes | ${achados.join(' | ') || 'nenhum marcador conhecido'}`
+        );
       } catch (e) {
         configs.push('(corpo indisponível)');
       }
