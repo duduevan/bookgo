@@ -44,8 +44,15 @@ const section = z.object({
  * mostrar. `enabled: true` com `items` vazio quebra o build.
  */
 const testimonialBase = {
-  /** Nome como a pessoa autorizou publicar. */
-  name: z.string(),
+  /**
+   * Nome como a pessoa autorizou publicar.
+   *
+   * Opcional porque a seção tem dois usos, e só um deles tem pessoa: em
+   * `kind: demonstracao` a conversa é entre uma pergunta e a resposta da
+   * BookGo, sem ninguém a nomear. Um refinamento abaixo exige o nome
+   * exatamente onde ele precisa existir.
+   */
+  name: z.string().optional(),
   /**
    * Arquivo em `src/assets/testimonials/`. Sem avatar, o componente usa as
    * iniciais do nome — derivar é honesto, gerar um rosto não seria.
@@ -96,6 +103,25 @@ const testimonials = z
      * própria página.
      */
     demo: z.boolean().default(false),
+
+    /**
+     * O que a seção é, e não apenas como ela parece.
+     *
+     * `depoimento`: texto que uma pessoa real escreveu e autorizou. Leva
+     * nome, porque uma afirmação sobre resultado precisa ter autor.
+     *
+     * `demonstracao`: as dúvidas que aparecem antes de começar e a resposta
+     * da BookGo, no mesmo formato de conversa. **Não tem nome e não afirma
+     * resultado de ninguém**, porque não é depoimento: é o método
+     * respondendo. É a única forma honesta de usar este desenho sem uma
+     * pessoa real por trás, e por isso ela não precisa de tarja.
+     *
+     * A distinção existe no schema, e não só na cabeça de quem escreve,
+     * porque é ela que impede uma conversa inventada de ser publicada com
+     * cara de cliente.
+     */
+    kind: z.enum(['depoimento', 'demonstracao']).default('depoimento'),
+
     title: z.string().optional(),
     intro: z.string().optional(),
     items: z
@@ -110,6 +136,28 @@ const testimonials = z
   .refine((t) => !(t.enabled && !t.demo) || t.items.length > 0, {
     message:
       'Seção de depoimentos ligada fora do modo demonstração exige itens reais e autorizados.',
+  })
+  /* Um depoimento sem autor não é depoimento: é uma frase solta apresentada
+     como se alguém a tivesse dito. */
+  .refine(
+    (t) => t.kind !== 'depoimento' || t.items.every((i) => Boolean(i.name)),
+    {
+      message:
+        'Em kind: depoimento todo item precisa de name. Sem autor, a frase não é depoimento.',
+    }
+  )
+  /* E o contrário: uma demonstração com nome passaria a afirmar que uma
+     pessoa chamada assim disse aquilo, que é exatamente o que ela não é. */
+  .refine(
+    (t) => t.kind !== 'demonstracao' || t.items.every((i) => !i.name),
+    {
+      message:
+        'Em kind: demonstracao nenhum item pode ter name. A conversa é o método respondendo, não uma pessoa.',
+    }
+  )
+  .refine((t) => t.kind !== 'demonstracao' || !t.demo, {
+    message:
+      'kind: demonstracao dispensa demo: a conversa já não se apresenta como depoimento de ninguém.',
   });
 
 /* ------------------------------------------------------------------ */
@@ -157,7 +205,15 @@ const productImageEntry = z.object({
   alt: z.string().min(15).max(180),
   caption: z.string().optional(),
   /** Âncoras conhecidas pela página do produto. */
-  placement: z.enum(['after-method', 'after-materials', 'before-offer']),
+  placement: z.enum([
+    /* Ao lado do mecanismo, em duas colunas. É a âncora para a foto que
+       ilustra um argumento, em vez de ocupar largura sozinha entre duas
+       seções. */
+    'beside-method',
+    'after-method',
+    'after-materials',
+    'before-offer',
+  ]),
 });
 
 const products = defineCollection({
@@ -298,6 +354,22 @@ const products = defineCollection({
     faq: section.extend({
       items: z.array(z.object({ q: z.string(), a: z.string() })),
     }),
+
+    /**
+     * Chamada intermediária, depois de o método estar explicado.
+     *
+     * Uma linha e um botão, não uma seção com manchete: é presença
+     * comercial no meio da página para quem já se convenceu, sem transformar
+     * a leitura numa sequência de botões. Opcional: sem o bloco no YAML,
+     * nada é renderizado.
+     */
+    midCta: z
+      .object({
+        text: z.string().min(20),
+        /** Rótulo próprio, para não repetir o do checkout logo acima. */
+        label: z.string().min(3).max(40).optional(),
+      })
+      .optional(),
 
     finalCta: z.object({
       title: z.string(),

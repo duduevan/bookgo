@@ -86,6 +86,10 @@ const checkoutEvent = eventAttrs('checkout_click', {
 const imagesAt = (placement: string) =>
   d.images.filter((i) => i.placement === placement);
 
+/* A foto que acompanha o mecanismo, quando declarada. Uma só: duas fotos ao
+   lado do mesmo argumento competiriam entre si. */
+const [methodImage] = imagesAt('beside-method');
+
 const crumbs = [
   { name: 'Início', path: '/' },
   { name: d.name, path },
@@ -141,8 +145,14 @@ const crumbs = [
   </Section>
 
   {/* Mecanismo */}
-  {/* Composição central: quebra a sequência de cabeçalhos laterais e dá ao
-      mecanismo do produto o peso de um manifesto, não de mais uma lista. */}
+  {/* Cabeçalho central, como antes: o mecanismo do produto tem peso de
+      manifesto e não de mais uma lista.
+
+      O corpo muda quando existe a foto da âncora `beside-method`: ela vai a
+      uma coluna e os pilares à outra, em vez de a foto ocupar largura
+      sozinha entre duas seções. Uma imagem que ilustra o argumento ao lado
+      dele vale mais do que a mesma imagem com uma legenda embaixo. Sem o
+      arquivo, a seção volta sozinha à grade de dois pilares. */}
   <Section
     tone="warm"
     align="center"
@@ -150,7 +160,23 @@ const crumbs = [
     title={d.method.title}
     intro={d.method.intro}
   >
-    <CardGrid items={[...d.method.pillars]} cols={2} min="20rem" />
+    {
+      methodImage ? (
+        <div class="method-split">
+          <div class="method-figure">
+            <ProductImage
+              slug={d.slug}
+              src={methodImage.src}
+              alt={methodImage.alt}
+              ratio="3 / 2"
+            />
+          </div>
+          <CardGrid items={[...d.method.pillars]} cols={1} min="100%" />
+        </div>
+      ) : (
+        <CardGrid items={[...d.method.pillars]} cols={2} min="20rem" />
+      )
+    }
     {d.method.note && <p class="note note-center">{d.method.note}</p>}
   </Section>
 
@@ -183,6 +209,26 @@ const crumbs = [
   >
     <StepList steps={[...d.howItWorks.steps]} />
   </Section>
+
+  {/* CTA intermediário.
+      Aponta para a oferta, e não para o checkout: quem chega aqui ainda não
+      viu preço nem o que está incluído, e mandar direto para o pagamento
+      cobraria a decisão antes de a pessoa ter com o que decidir. É a mesma
+      regra que vale do artigo para a LP, aplicada dentro da página.
+
+      Por não ser botão de compra, ele não dispara `checkout_click`: esse
+      evento continua contando só intenção real de pagamento. */}
+  {
+    d.midCta && (
+      <div class="container midcta">
+        <p>{d.midCta.text}</p>
+        <Cta
+          href="#oferta"
+          label={d.midCta.label ?? d.checkout.cta}
+        />
+      </div>
+    )
+  }
 
   {/* Conteúdo do produto */}
   <Section
@@ -230,12 +276,14 @@ const crumbs = [
     </div>
   </Section>
 
-  {/* Depoimentos — não renderiza nada enquanto `enabled` for false.
+  {/* Conversas — não renderiza nada enquanto `enabled` for false.
       Fica entre "para quem é" e a oferta: a pessoa acabou de se
-      reconhecer no público e ainda não viu o preço. */}
+      reconhecer no público, ainda não viu o preço, e é exatamente aí que
+      aparecem as dúvidas que a seção responde. */}
   <TestimonialsSection
     enabled={d.testimonials.enabled}
     demo={d.testimonials.demo}
+    kind={d.testimonials.kind}
     title={d.testimonials.title}
     intro={d.testimonials.intro}
     items={[...d.testimonials.items]}
@@ -374,6 +422,52 @@ const crumbs = [
 
   .ad-wrap {
     padding-bottom: var(--section-y);
+  }
+
+  /* Mecanismo com foto: uma coluna para a imagem, outra para os pilares.
+     No mobile a foto vai para cima e os pilares descem, na ordem em que se
+     lê.
+
+     A proporção é 3/2 porque é a que o arquivo sustenta: o original tem
+     626x352, e um recorte retrato ao lado de uma coluna alta de cartões
+     precisaria ampliar a foto quase duas vezes para preencher. Foto
+     ampliada não fica maior, fica borrada. Centralizada na coluna, a
+     diferença de altura lê como pareamento editorial, e não como buraco. */
+  .method-split {
+    display: grid;
+    gap: var(--s-6);
+    text-align: start;
+  }
+
+  .method-figure :global(.product-figure) {
+    margin: 0;
+  }
+
+  @media (min-width: 60rem) {
+    .method-split {
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
+      gap: var(--s-8);
+      align-items: center;
+    }
+  }
+
+  /* Faixa do CTA intermediário: uma linha e um botão, lado a lado no
+     desktop e empilhados no celular. Sem manchete e sem fundo próprio, para
+     não competir com a oferta que vem depois. */
+  .midcta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--s-4) var(--s-6);
+    padding-block: var(--s-8);
+    text-align: center;
+  }
+
+  .midcta p {
+    margin: 0;
+    max-width: 46ch;
+    color: var(--color-muted);
   }
 
   .close {

@@ -19,7 +19,7 @@ import { TESTIMONIALS_CSS } from '../../styles/testimonials.css';
 
 interface CardItem {
   type: 'card';
-  name: string;
+  name?: string;
   role?: string;
   avatar?: string;
   text: string;
@@ -27,7 +27,7 @@ interface CardItem {
 
 interface PhoneItem {
   type: 'phone';
-  name: string;
+  name?: string;
   avatar?: string;
   status?: string;
   messages: Array<{
@@ -50,13 +50,33 @@ interface Props {
    * própria página.
    */
   demo?: boolean;
+  /**
+   * `depoimento` traz pessoa real e autorizada. `demonstracao` traz as
+   * dúvidas que aparecem antes de começar, respondidas pela BookGo: mesmo
+   * desenho, sem ninguém a nomear e sem afirmar resultado de ninguém.
+   */
+  kind?: 'depoimento' | 'demonstracao';
   title?: string;
   intro?: string;
   items: Array<CardItem | PhoneItem>;
   tone?: 'default' | 'warm' | 'soft';
 }
 
-const { enabled, demo = false, title, intro, items, tone = 'warm' } = Astro.props;
+const {
+  enabled,
+  demo = false,
+  kind = 'depoimento',
+  title,
+  intro,
+  items,
+  tone = 'warm',
+} = Astro.props;
+
+/* Numa demonstração o cabeçalho da conversa é a própria BookGo, que é quem
+   responde. Inventar um nome ali transformaria a explicação do método em
+   depoimento de uma pessoa que não existe. */
+const headerName = (item: CardItem | PhoneItem) =>
+  kind === 'demonstracao' ? 'BookGo' : (item.name ?? '');
 
 const show = enabled && items.length > 0;
 
@@ -75,19 +95,24 @@ const onlyPhones = items.every((i) => i.type === 'phone');
           lembrar. Mas caixa de alerta acima de uma seção de conversas
           derruba o que a seção tinha de bom, e um rótulo editorial
           identifica igual sem competir com o desenho. */}
-      {demo && <p class="tst-ilustrativa">Conversas ilustrativas</p>}
+      {/* A tarja só existe no modo depoimento, para conteúdo de exemplo. Em
+          `demonstracao` ela não faz falta: a seção não afirma que alguém
+          disse aquilo, então não há o que ressalvar. */}
+      {demo && kind === 'depoimento' && (
+        <p class="tst-ilustrativa">Conversas ilustrativas</p>
+      )}
       <div class:list={['tst-items', { 'tst-phones': onlyPhones }]}>
         {items.map((item) =>
           item.type === 'phone' ? (
             <PhoneTestimonial
-              name={item.name}
+              name={headerName(item)}
               avatar={item.avatar}
               status={item.status}
               messages={item.messages}
             />
           ) : (
             <TestimonialCard
-              name={item.name}
+              name={headerName(item)}
               role={item.role}
               avatar={item.avatar}
               text={item.text}

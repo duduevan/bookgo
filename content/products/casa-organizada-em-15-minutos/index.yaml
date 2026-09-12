@@ -51,7 +51,7 @@ price:
 checkout:
   provider: kiwify
   url: https://pay.kiwify.com.br/UJyyPuL
-  cta: QUERO COMEÇAR AGORA
+  cta: Quero começar hoje
 
 # ── SEO ──────────────────────────────────────────────────────
 seo:
@@ -241,73 +241,81 @@ offer:
 # a publicar, e vire `enabled` para true. Formatos disponíveis por item:
 # `type: card` (texto corrido) e `type: phone` (conversa).
 testimonials:
-  # LIGADO EM MODO ILUSTRATIVO.
+  # CONVERSAS DE DEMONSTRAÇÃO, NÃO DEPOIMENTOS.
   #
-  # As conversas abaixo foram escritas para avaliar a seção, não por
-  # clientes. Por isso `demo: true`, que imprime o rótulo "Conversas
-  # ilustrativas" na própria página. O rótulo não é rascunho a limpar antes
-  # de publicar: é o que separa exemplo de layout de depoimento forjado numa
-  # página que vende.
+  # `kind: demonstracao` é o que separa esta seção de prova social. As
+  # perguntas abaixo são as objeções reais que este produto precisa
+  # responder, e as respostas são da BookGo. Ninguém é nomeado e nada aqui
+  # afirma resultado de cliente, porque nenhum cliente escreveu isto.
   #
-  # Para publicar de verdade: troque cada mensagem por texto que uma pessoa
-  # real escreveu e autorizou, apague `demo` e mantenha `enabled: true`. O
-  # rótulo some sozinho, e o build passa a exigir itens reais.
+  # O schema impede a confusão nos dois sentidos: em `demonstracao` nenhum
+  # item pode ter `name`, e em `depoimento` todo item precisa ter. Não é
+  # convenção de quem escreve, é trava de build.
+  #
+  # Quando existir depoimento real e autorizado, troque `kind` para
+  # `depoimento`, acrescente o nome que a pessoa autorizou e cole o texto
+  # dela. Só então a seção passa a afirmar algo sobre resultado.
   enabled: true
-  demo: true
-  title: Como a rotina muda na prática
-  intro: Conversas curtas, do jeito que a mudança costuma aparecer no dia a dia.
+  kind: demonstracao
+  title: As dúvidas que aparecem antes de começar
+  intro: >-
+    As três perguntas que mais chegam sobre o método, respondidas do jeito
+    que a gente responderia no chat. Não são mensagens de alunas: são as
+    objeções reais e o que o método tem a dizer sobre cada uma.
   items:
     - type: phone
-      name: Ana
+      status: Método dos 15 Minutos
       messages:
         - side: incoming
-          text: eu achei que 15 minutos não ia adiantar muita coisa...
-          time: "08:41"
-        - side: incoming
-          text: mas comecei pela cozinha e foi bem mais fácil do que arrumar tudo de uma vez
+          text: 15 minutos por dia resolvem mesmo? parece pouco
           time: "08:41"
         - side: outgoing
-          text: é justamente essa a ideia 💚 começar pequeno e conseguir continuar
-          time: "08:44"
+          text: sozinhos, não. o que resolve é a frequência
+          time: "08:43"
+          read: true
+        - side: outgoing
+          text: uma sessão curta todo dia impede o acúmulo de se formar. o mutirão de sábado só limpa o que já se formou
+          time: "08:43"
           read: true
         - side: incoming
-          text: hoje fiz só o que estava no checklist e parei 😂
+          text: faz sentido... é o acúmulo que cansa, não a arrumação
           time: "08:46"
 
     - type: phone
-      name: Rita
+      status: Método dos 15 Minutos
       messages:
         - side: incoming
-          text: eu sempre começava super animada e depois largava tudo kkk
+          text: eu sempre começo animada e largo na segunda semana
           time: "19:05"
         - side: outgoing
-          text: quando a meta fica menor, manter a rotina costuma ficar bem mais possível
+          text: isso costuma ser tamanho de meta, não falta de disciplina
           time: "19:08"
           read: true
+        - side: outgoing
+          text: o checklist já traz o alvo do dia, e o plano é semanal. pular um dia não derruba a semana
+          time: "19:09"
+          read: true
         - side: incoming
-          text: dessa vez estou fazendo bem menos por dia
-          time: "19:12"
-        - side: incoming
-          text: só que estou conseguindo continuar... pra mim essa foi a maior diferença
-          time: "19:12"
+          text: então não preciso acertar todos os dias pra funcionar
+          time: "19:11"
 
     - type: phone
-      name: Carol
+      status: Método dos 15 Minutos
       messages:
         - side: incoming
-          text: ontem cheguei cansada e pensei que hoje não ia fazer nada
+          text: preciso imprimir os materiais pra usar?
           time: "21:18"
         - side: outgoing
-          text: nesses dias os 15 minutos fazem ainda mais sentido
-          time: "21:21"
+          text: não precisa. são PDFs, funcionam no celular
+          time: "21:20"
+          read: true
+        - side: outgoing
+          text: quem prefere marcar no papel imprime, mas é gosto, não requisito
+          time: "21:20"
           read: true
         - side: incoming
-          text: fiz só uma parte da cozinha e pronto
+          text: perfeito, era só isso que faltava saber
           time: "21:24"
-        - side: outgoing
-          text: pronto já é bem melhor do que acumular tudo pra depois 💚
-          time: "21:25"
-          read: true
 
 guarantee:
   icon: shield
@@ -319,11 +327,13 @@ guarantee:
 # Nenhum foi fornecido ainda: sem o arquivo, o slot não renderiza e o
 # build lista o que falta. Quando chegarem, entram sem mudar código.
 images:
+  # Ao lado dos pilares do método, e não sozinha entre duas seções: a foto
+  # mostra exatamente o que o texto ao lado afirma, uma sessão curta com
+  # alvo definido. A legenda sai, porque o argumento agora está ao lado.
   - id: sessao-curta-cozinha
     src: sessao-curta-cozinha.webp
     alt: Mulher limpando a bancada da cozinha em uma sessão curta de arrumação
-    caption: Uma sessão curta tem alvo definido antes de começar.
-    placement: after-method
+    placement: beside-method
   - id: materiais-impressos-mesa
     src: materiais-impressos-mesa.webp
     alt: Checklist impresso sobre a mesa da cozinha, ao lado de uma caneca
@@ -349,6 +359,15 @@ faq:
       a: Não. O método trabalha com o que você já tem em casa.
     - q: Como recebo os materiais?
       a: Após a aprovação do pagamento, o acesso é liberado na área de membros da Kiwify, plataforma responsável pelo checkout.
+
+# ── CTA intermediário ────────────────────────────────────────
+# Entra depois de "Como funciona no seu dia", quando o método já foi
+# explicado inteiro. Uma linha e um botão: quem já decidiu não precisa
+# rolar até o fim, e quem ainda não decidiu continua lendo sem tropeçar
+# num bloco grande.
+midCta:
+  text: O método está explicado. Se ele conversa com a sua rotina, dá para começar hoje mesmo.
+  label: Ver o que está incluído
 
 # ── CTA final ────────────────────────────────────────────────
 finalCta:
