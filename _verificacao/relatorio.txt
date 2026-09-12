@@ -1,0 +1,40 @@
+Origem: https://bookgo.com.br
+
+  200  /sitemap-index.xml     184 bytes
+  200  /robots.txt            1909 bytes
+  200  /llms.txt              1281 bytes
+  301  /sitemap.xml           → https://bookgo.com.br/sitemap-index.xml
+
+  200  lp/desktop           overflow=0px  imagens=4 quebradas=0
+         · 604×755     hero-cozinha-manha.CvmdvNea_Z2n8Vox.webp
+         · 1024×575    sessao-curta-cozinha.B_eU-lAT_Z7eIcp.webp
+         · 352×220     bancada-cozinha-em-uso.BdDZlDYS_1MJ9CL.webp
+         · 50×18       bookgo-wordmark-blue.CUzJguyw_kOMiD.webp
+  200  lp/mobile            overflow=0px  imagens=4 quebradas=0
+         · 390×487     hero-cozinha-manha.CvmdvNea_Z2n8Vox.webp
+         · 390×219     sessao-curta-cozinha.B_eU-lAT_Z7eIcp.webp
+         · 389×243     bancada-cozinha-em-uso.BdDZlDYS_1MJ9CL.webp
+         · 50×18       bookgo-wordmark-blue.CUzJguyw_kOMiD.webp
+  200  artigo/desktop       overflow=0px  imagens=4 quebradas=0
+         · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
+         · 704×439     bancada-cozinha-em-uso.BdDZlDYS_Z1kle4w.webp
+         · 704×439     cadeira-do-quarto-com-roupas.DUGl_qWT_udiiv.webp
+         · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
+  200  artigo/mobile        overflow=0px  imagens=4 quebradas=0
+         · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
+         · 389×243     bancada-cozinha-em-uso.BdDZlDYS_1BsWDH.webp
+         · 389×243     cadeira-do-quarto-com-roupas.DUGl_qWT_Z1fiIA6.webp
+         · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
+  200  categoria/desktop    overflow=0px  imagens=3 quebradas=0
+         · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
+         · 352×220     bancada-cozinha-em-uso.BdDZlDYS_1MJ9CL.webp
+         · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
+  200  categoria/mobile     overflow=0px  imagens=3 quebradas=0
+         · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
+         · 389×243     bancada-cozinha-em-uso.BdDZlDYS_1MJ9CL.webp
+         · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
+  200  home/desktop         overflow=0px  imagens=2 quebradas=0
+         · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
+         · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
+
+Nenhum problema encontrado.
