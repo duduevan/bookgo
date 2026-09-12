@@ -1180,6 +1180,12 @@ Não escreva, em nenhuma página:
 A garantia é comercial e objetiva: "Você terá 7 dias de garantia para conhecer o
 conteúdo." Sem interpretação jurídica.
 
+**São 7 dias, sempre, em todo material da BookGo.** É o padrão configurado na
+Kiwify, e é por isso que o bloco `guarantee` existe nos três produtos com o
+mesmo texto. Ele continua sendo opcional no schema: um material cuja condição
+na plataforma um dia for outra omite o bloco em vez de afirmar um prazo que
+não está ligado lá.
+
 ## SEO
 
 Automático em toda página: title, meta description, canonical absoluto, Open

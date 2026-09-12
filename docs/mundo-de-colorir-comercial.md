@@ -231,7 +231,7 @@ Tudo pronto para colar no cadastro. Os campos marcados dependem de você.
 | **Formato de entrega** | PDF único para download, mais acesso pela área de membros |
 | **Preço** | [APROVAR] |
 | **Checkout** | [APROVAR, a URL sai daqui e alimenta a LP inteira] |
-| **Garantia** | [APROVAR, é configuração da plataforma e não texto de página] |
+| **Garantia** | 7 dias, o padrão da BookGo |
 
 ### Descrição curta para cadastro
 
@@ -291,10 +291,9 @@ Tudo pronto para colar no cadastro. Os campos marcados dependem de você.
 ### Observações comerciais que dependem de você
 
 1. **Preço**, que define todo o resto da oferta.
-2. **Garantia**, que só vira texto depois de estar ligada na plataforma.
-3. **Política de uso**, principalmente para professores e espaços infantis.
-4. **Order bump ou upsell**, se você quiser preparar o volume 2 desde já.
-5. **Nome do arquivo entregue**, que é a primeira coisa que a pessoa vê na pasta
+2. **Política de uso**, principalmente para professores e espaços infantis.
+3. **Order bump ou upsell**, se você quiser preparar o volume 2 desde já.
+4. **Nome do arquivo entregue**, que é a primeira coisa que a pessoa vê na pasta
    de downloads. Sugestão: `mundo-de-colorir-bookgo.pdf`.
 
 ---

@@ -276,6 +276,8 @@ offer:
         - Peças pensadas para também funcionarem impressas
   priceNote: Produto digital. Pagamento processado pela Kiwify.
   reassurances:
+    - icon: shield
+      text: 7 dias de garantia para conhecer o conteúdo
     - icon: spark
       text: Acesso liberado após a aprovação do pagamento
     - icon: checklist
@@ -386,6 +388,15 @@ reviews:
         - sender: bookgo
           text: "Menos louça e mais tempo livre pra descansar! Obrigada pelo carinho, Bia! 💛✨"
           read: true
+
+# ── Garantia ─────────────────────────────────────────────────
+# Sete dias, o padrão da BookGo, configurado na Kiwify. Texto comercial e
+# objetivo, sem interpretação jurídica: a garantia é oferecida
+# voluntariamente e não substitui o direito de arrependimento do CDC.
+guarantee:
+  icon: shield
+  title: Garantia de 7 dias
+  text: Você terá 7 dias de garantia para conhecer o conteúdo. Se não for para você, basta pedir o reembolso dentro desse prazo.
 
 # ── FAQ ──────────────────────────────────────────────────────
 faq:

@@ -102,7 +102,7 @@ referência contra a qual ela é conferida.
 | Materiais | PDF para ler no celular, no tablet, no computador ou impresso |
 | Preenchimento | Impresso ou em aplicativo de anotação do próprio aparelho. **Não afirmar PDF preenchível digitalmente** enquanto o arquivo final não tiver campos de formulário |
 | Suporte | E-mail institucional da BookGo, o mesmo de `src/config/company.ts` |
-| Garantia | Pendente. Ver abaixo |
+| Garantia | 7 dias, o padrão da BookGo |
 
 ## Avaliações
 
@@ -123,9 +123,9 @@ versão reescrita em nome delas.
    copy: afirmar um prazo sem ele estar ligado lá seria prometer em nome de
    terceiro. Confirmada a configuração, acrescentar o bloco `guarantee` e a
    reasseguração correspondente.
-2. **Os mockups dos materiais.** `mockup:` fica fora enquanto os PDFs finais
+1. **Os mockups dos materiais.** `mockup:` fica fora enquanto os PDFs finais
    não existirem. Não se inventa tela de material.
-3. **Cross-sell com o Casa Organizada.** Previsto, não implementado, e fora
+2. **Cross-sell com o Casa Organizada.** Previsto, não implementado, e fora
    das LPs por decisão: produto não entra na landing page de outro produto
    sem uma decisão específica.
 

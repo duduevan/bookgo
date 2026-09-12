@@ -25,7 +25,7 @@ público.
 | Categoria na home | `criancas-e-brincadeiras` [APROVAR o rótulo] |
 | Preço | [APROVAR] |
 | Checkout | [APROVAR] |
-| Garantia | [APROVAR, condição configurada na Kiwify] |
+| Garantia | 7 dias, o padrão da BookGo |
 
 **Não é curso.** Nenhum texto público chama este material de curso, aula,
 módulo ou treinamento. O vocabulário é coleção, material, livro para colorir e
@@ -212,7 +212,6 @@ Nada abaixo vira texto público antes da sua decisão.
 |---|---|---|
 | 1 | **Preço** | Define posicionamento, volume da oferta e o argumento de valor da LP. |
 | 2 | **Checkout** | Sem URL, todos os CTAs renderizam sem virar link, e o build avisa. |
-| 3 | **Garantia** | É condição configurada na Kiwify, não decisão de copy. Sem confirmação, o bloco não existe. |
 | 4 | **Rótulo da categoria na home** | "Crianças e brincadeiras" é proposta. Ela cria a terceira prateleira da home. |
 | 5 | **Nome final e subtítulo** | Ver as opções na base comercial. |
 | 6 | **Produção da arte** | Quem desenha, com que ferramenta, em que prazo, e quem revisa página a página. |

@@ -17,8 +17,8 @@
 #     a arte é original;
 #  3. que chega alguma coisa em casa. É arquivo digital, e a reimpressão
 #     sem custo depende justamente disso;
-#  4. que existe garantia. Ela é condição configurada na Kiwify e não foi
-#     confirmada, então o bloco `guarantee` está ausente de propósito.
+#  4. que chega alguma coisa em casa, de novo: material digital, e nada
+#     é enviado pelo correio.
 #
 #  As cinco avaliações são reais e estão publicadas por corte. Ver o bloco
 #  `reviews`, que registra o que saiu e por quê.
@@ -296,6 +296,8 @@ offer:
         - Acesso liberado após a aprovação do pagamento
   priceNote: Material digital. Nada é enviado pelo correio, e é justamente isso que permite reimprimir sem custo novo.
   reassurances:
+    - icon: shield
+      text: 7 dias de garantia para conhecer o material
     - icon: printer
       text: Feito para impressora doméstica comum, em papel A4
     - icon: star
@@ -374,6 +376,15 @@ reviews:
         - sender: bookgo
           text: "Isso não tem preço, Amanda! Momentos simples assim ficam guardados para sempre na memória deles. Adoramos saber que você também entrou na brincadeira! 💛✨"
           read: true
+
+# ── Garantia ─────────────────────────────────────────────────
+# Sete dias, o padrão da BookGo, configurado na Kiwify. Texto comercial e
+# objetivo, sem interpretação jurídica: a garantia é oferecida
+# voluntariamente e não substitui o direito de arrependimento do CDC.
+guarantee:
+  icon: shield
+  title: Garantia de 7 dias
+  text: Você terá 7 dias de garantia para conhecer o conteúdo. Se não for para você, basta pedir o reembolso dentro desse prazo.
 
 # ── FAQ ──────────────────────────────────────────────────────
 faq:

@@ -422,6 +422,11 @@ for (const [nome, caminho, viewports, lp] of PAGINAS) {
         registrar(`         oferta: preço ${precoNaOferta}, garantia ${oferta.garantia ? 'presente' : 'ausente'}`);
         if (precoNaOferta === '(nenhum)')
           problemas.push('a seção da oferta não mostra preço');
+        /* Sete dias é o padrão da BookGo, em todo material. Isto deixou de
+           ser observação registrada e virou afirmação: uma LP que perder o
+           bloco da garantia passa a reprovar aqui. */
+        if (!oferta.garantia)
+          problemas.push('a seção da oferta não traz a garantia');
       }
     }
 
