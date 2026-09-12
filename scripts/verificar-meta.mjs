@@ -53,9 +53,20 @@ const exigir = (ok, msg) => {
   if (!ok) problemas.push(msg);
 };
 
+/**
+ * O navegador precisa não se anunciar como automação.
+ *
+ * O Pixel carrega, inicializa, grava `_fbp` e não envia evento nenhum
+ * quando `navigator.webdriver` é verdadeiro: ele descarta o que parece robô,
+ * em silêncio, sem erro no console. Isso fez a conferência anterior acusar
+ * dez falhas que não existiam no site.
+ *
+ * Esconder a automação aqui não burla nada do produto: é o que permite
+ * observar o comportamento que uma pessoa real teria.
+ */
 const browser = await chromium.launch({
   executablePath: BROWSER,
-  args: ['--no-sandbox'],
+  args: ['--no-sandbox', '--disable-blink-features=AutomationControlled'],
 });
 
 /**
@@ -68,6 +79,10 @@ const browser = await chromium.launch({
 async function abrir(caminho, { consent } = {}) {
   const ctx = await browser.newContext({
     viewport: { width: 1280, height: 900 },
+  });
+
+  await ctx.addInitScript(() => {
+    Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
   });
 
   /* A escolha é gravada antes da primeira navegação, no mesmo formato que o
@@ -254,7 +269,7 @@ const ACEITO = { analytics: true, advertising: true };
    * entre corrigir código aqui e mexer na conta lá. */
   const antesDaSonda = eventos().length;
   await page.evaluate(() => {
-    window.fbq('track', 'ViewContent', { content_type: 'sonda' });
+    window.fbq('track', 'ViewContent', { content_type: 'product' });
   });
   await page.waitForTimeout(3000);
   const depoisDaSonda = eventos().length;
