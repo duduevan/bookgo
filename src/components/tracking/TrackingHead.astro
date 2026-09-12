@@ -30,6 +30,10 @@ const render = isTrackingActive() || needsConsentBanner();
 const gtm = shouldLoadGtm() ? TRACKING.gtm.id : null;
 const ga4 = shouldLoadGa4Directly() ? TRACKING.ga4.measurementId : null;
 const meta = shouldLoadMetaPixelDirectly() ? TRACKING.meta.pixelId : null;
+/* O retransmissor só entra quando o Pixel entra: sem Pixel não há
+   `_fbp` nem deduplicação possível, e um evento de servidor sozinho não
+   representaria a mesma coisa. */
+const capi = meta ? TRACKING.meta.capiEndpoint : null;
 const googleAds = TRACKING.enabled ? TRACKING.googleAds.id : null;
 const adsense = shouldLoadAdsense() ? ADS.adsenseClient : null;
 
@@ -39,6 +43,7 @@ const runtime = {
   gtm,
   ga4,
   meta,
+  capi,
   ads: googleAds,
   adsense,
 };
@@ -77,6 +82,9 @@ const adsenseSource = adsense
     load('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client='+R.adsense,true);}`
   : '';
 
+/* Meta Pixel: tecnologia de marketing, presa à categoria `advertising`.
+   Aceitar apenas analytics não o carrega, e é por isso que as duas
+   categorias existem em separado na barra de consentimento. */
 const metaSource = meta
   ? `if(R.meta&&c.advertising&&!done.meta){done.meta=1;
     !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -84,8 +92,80 @@ const metaSource = meta
     n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
     t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
     (w,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-    w.fbq('init',R.meta);w.fbq('track','PageView');}`
+    w.fbq('init',R.meta);
+    var pv=eventId();w.fbq('track','PageView',{},{eventID:pv});capiSend('PageView',null,pv);
+    flushMeta();}`
   : '';
+
+/**
+ * Ponte para o Meta Pixel.
+ *
+ * Mesma ideia da ponte do GA4: a camada da BookGo dispara eventos próprios,
+ * e cada fornecedor traduz o que lhe interessa. O mapa abaixo é a tradução
+ * inteira, e o que não está nele **não vira evento na Meta**:
+ *
+ *  - `page_view` fica de fora porque o `init` do Pixel já envia um PageView,
+ *    e repetir dobraria a contagem;
+ *  - `product_click` é um clique de artigo para a LP. Não é visualização de
+ *    conteúdo nem início de compra, e mapeá-lo para qualquer um dos dois
+ *    inventaria um momento de funil que não aconteceu;
+ *  - `affiliate_click` leva a uma loja de terceiro. Tratar isso como
+ *    InitiateCheckout da BookGo misturaria a receita de afiliado com a
+ *    venda do produto próprio e estragaria a otimização das campanhas;
+ *  - `Purchase` não existe aqui em hipótese nenhuma. A compra acontece na
+ *    Kiwify, e o site não tem como sabê-la.
+ *
+ * `eventID` acompanha cada evento para permitir a deduplicação quando a
+ * Conversions API entrar: browser e servidor precisam mandar o mesmo id
+ * para o mesmo acontecimento. Ver docs/meta-capi.md.
+ */
+const metaBridge = meta
+  ? `var pendMeta=[];
+/* Envio server-side, em paralelo ao Pixel e com o MESMO event_id.
+
+   É o que permite a Meta deduplicar: dois caminhos, um acontecimento. O
+   token da Conversions API não aparece aqui nem em lugar nenhum do
+   navegador — quem o conhece é o retransmissor no servidor.
+
+   sendBeacon de propósito: ele entrega a requisição mesmo quando a página
+   está saindo, que é exatamente o caso do InitiateCheckout, e não atrasa a
+   navegação para o checkout em nada. Sem ele, fetch com keepalive faz o
+   mesmo papel. */
+function capiSend(name,params,id){
+  if(!R.capi||!done.meta)return;
+  var body={event_name:name,event_id:id,event_source_url:location.href};
+  if(params)body.custom_data=params;
+  try{
+    var blob=new Blob([JSON.stringify(body)],{type:'application/json'});
+    if(navigator.sendBeacon&&navigator.sendBeacon(R.capi,blob))return;
+    fetch(R.capi,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(body),keepalive:true,credentials:'same-origin'});
+  }catch(e){}
+}
+var META_MAP={
+  view_content:function(p){return ['ViewContent',{content_type:'article',
+    content_name:p.content_title,content_category:p.category,
+    content_ids:[p.content_slug]}];},
+  product_view:function(p){return ['ViewContent',{content_type:'product',
+    content_name:p.product_name,content_ids:[p.product_slug],
+    value:p.value,currency:p.currency}];},
+  checkout_click:function(p){return ['InitiateCheckout',{content_type:'product',
+    content_name:p.product_name,content_ids:[p.product_slug],
+    value:p.value,currency:p.currency,num_items:1}];}
+};
+function metaEvent(name,params,id){
+  var m=META_MAP[name];if(!m)return;
+  var e=m(params||{});
+  /* Antes do aceite em marketing não existe Pixel para receber. A fila vive
+     na memória da página, nada é gravado, e morre com a navegação se o
+     visitante recusar. */
+  if(!done.meta){if(pendMeta.length<20)pendMeta.push([e[0],e[1],id]);return;}
+  w.fbq('track',e[0],e[1],{eventID:id});
+  capiSend(e[0],e[1],id);
+}
+function flushMeta(){while(pendMeta.length){var e=pendMeta.shift();
+  w.fbq('track',e[0],e[1],{eventID:e[2]});capiSend(e[0],e[1],e[2]);}}`
+  : `function capiSend(){}function metaEvent(){}function flushMeta(){}`;
 
 const source = `(function(){
 var R=${JSON.stringify(runtime)},w=window;
@@ -123,6 +203,19 @@ function ga4Event(name,params){
 }
 function flush(){while(pending.length){var e=pending.shift();push('event',e[0],e[1]||{});}}
 
+/* Identificador do evento, compartilhado entre navegador e servidor.
+
+   Hoje só o navegador o usa, como eventID do Pixel. Ele existe desde já
+   porque a deduplicação da Conversions API depende de os dois lados
+   mandarem o mesmo id para o mesmo acontecimento, e um id inventado depois
+   não deduplica nada do que já passou. */
+function eventId(){
+  try{if(w.crypto&&w.crypto.randomUUID)return w.crypto.randomUUID();}catch(e){}
+  return 'e'+Date.now().toString(36)+Math.random().toString(36).slice(2,10);
+}
+
+${metaBridge}
+
 function providers(c){
   /* Com consentimento exigido, o container só entra depois de um "sim" em
      alguma categoria. Recusar significa não carregar nada — inclusive o
@@ -148,10 +241,17 @@ function apply(c){
    dataLayer; quem escuta é problema do GTM, não do site. */
 w.bookgo=w.bookgo||{};
 w.bookgo.track=function(name,params){
-  var p={event:name};
+  var id=eventId(),p={};
   if(params)for(var k in params)p[k]=params[k];
+  p.event=name;p.event_id=id;
   w.dataLayer.push(p);
+  w.bookgo.lastEventId=id;
+  /* O GA4 recebe os parâmetros originais, sem event_id: a deduplicação é
+     assunto da Meta, e acrescentar um parâmetro novo mudaria os eventos que
+     já estão sendo coletados hoje. */
   ga4Event(name,params);
+  metaEvent(name,params,id);
+  return id;
 };
 w.bookgo.setConsent=function(c){
   var v={analytics:!!c.analytics,advertising:!!c.advertising,ts:new Date().toISOString()};

@@ -2,23 +2,36 @@
 /**
  * Banner de consentimento.
  *
- * Só existe quando há algo a consentir (ver `needsConsentBanner`). Hoje não
- * é renderizado — sem fornecedor configurado, não há decisão a pedir.
+ * Só existe quando há algo a consentir (ver `needsConsentBanner`).
  *
- * O texto descreve o que existe hoje — medição de audiência. Mencionar
- * "medir campanhas" enquanto nenhuma tag de publicidade é carregada seria
- * pedir consentimento para algo que não acontece. Quando a publicidade for
- * ligada, o texto muda junto.
+ * **Duas categorias independentes.** Medição de audiência e marketing
+ * carregam tecnologias diferentes, de empresas diferentes, com finalidades
+ * diferentes: uma conta quantas pessoas leram um artigo, a outra permite
+ * reconhecer quem visitou o site em campanhas pagas. Um botão só, valendo
+ * para as duas ao mesmo tempo, obrigaria quem aceita ser medido a aceitar
+ * também ser reconhecido em anúncio, e isso não é consentimento específico.
  *
- * Sem dark pattern: as duas ações têm o mesmo peso visual e o mesmo tamanho
- * de alvo. Recusar não é escondido, não é um link cinza, não exige passos
- * extras. Enquanto não houver decisão, nada de analytics ou publicidade
- * carrega — o botão "Aceitar" não vem pré-selecionado nem destacado como
- * caminho único.
+ * Sem dark pattern: as três ações têm o mesmo peso visual e o mesmo tamanho
+ * de alvo, nenhuma caixa vem marcada, e recusar é um clique só, exatamente
+ * como aceitar tudo. Enquanto não houver decisão, nada carrega.
  */
-import { needsConsentBanner } from '../../lib/tracking';
+import { TRACKING } from '../../config/tracking';
+import { needsConsentBanner, shouldLoadAdsense } from '../../lib/tracking';
 
 const show = needsConsentBanner();
+
+/* O rótulo de cada categoria nomeia a tecnologia que está em jogo, não uma
+   abstração. "Marketing" sem dizer Meta Pixel é vago; dizer o nome deixa a
+   escolha informada, que é o que a LGPD pede. */
+const analyticsLabel = TRACKING.ga4.measurementId
+  ? 'Medição de audiência (Google Analytics)'
+  : 'Medição de audiência';
+
+const adsLabel = TRACKING.meta.pixelId
+  ? shouldLoadAdsense()
+    ? 'Marketing e publicidade (Meta Pixel e anúncios)'
+    : 'Marketing (Meta Pixel)'
+  : 'Marketing e publicidade';
 
 const css = `
 /* Barra discreta no rodapé. Não cobre o conteúdo nem bloqueia a leitura.
@@ -29,9 +42,14 @@ background:var(--color-bg);border-top:1px solid var(--color-border);box-shadow:v
 .consent-inner{max-width:var(--w-container);margin-inline:auto;display:grid;gap:var(--s-4)}
 .consent-title{font-weight:var(--w-semibold);font-size:var(--t-0);margin-bottom:var(--s-1)}
 .consent-text p:last-child{font-size:var(--t--1);color:var(--color-muted);max-width:62ch}
+.consent-options{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:var(--s-3) var(--s-5)}
+.consent-options legend{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.consent-options label{display:inline-flex;align-items:center;gap:var(--s-2);
+min-height:2.75rem;font-size:var(--t--1);color:var(--color-text);cursor:pointer}
+.consent-options input{width:1.1rem;height:1.1rem;accent-color:var(--color-primary);cursor:pointer}
 .consent-actions{display:flex;flex-wrap:wrap;gap:var(--s-3)}
-/* Os dois botões têm o mesmo tamanho e o mesmo peso: recusar não é
-   penalizado visualmente. */
+/* Os três botões têm o mesmo tamanho e o mesmo peso: recusar não é
+   penalizado visualmente, e aceitar tudo não é o caminho destacado. */
 .consent-actions button{flex:1 1 auto;min-height:2.75rem;padding:.7rem 1.25rem;
 border-radius:var(--radius-pill);border:1px solid var(--color-border);
 background:var(--color-surface-raised);color:var(--color-text);
@@ -47,15 +65,18 @@ var el=document.getElementById('consent-banner');
 if(!el)return;
 /* Só aparece quando ainda não houve decisão. */
 if(!document.documentElement.hasAttribute('data-consent-pending')){el.hidden=true;return;}
+function box(n){return el.querySelector('[data-consent-category="'+n+'"]');}
 el.addEventListener('click',function(e){
   var btn=e.target.closest('[data-consent]');
   if(!btn)return;
-  var accept=btn.getAttribute('data-consent')==='accept';
-  window.bookgo.setConsent({analytics:accept,advertising:accept});
+  var mode=btn.getAttribute('data-consent'),a=box('analytics'),m=box('advertising');
+  var choice=mode==='all'?{analytics:true,advertising:true}
+    :mode==='none'?{analytics:false,advertising:false}
+    :{analytics:!!(a&&a.checked),advertising:!!(m&&m.checked)};
+  window.bookgo.setConsent(choice);
   el.hidden=true;
 });
 })();`;
-
 ---
 
 {
@@ -65,15 +86,26 @@ el.addEventListener('click',function(e){
         <div class="consent-text">
           <p id="consent-title" class="consent-title">Cookies e medição</p>
           <p id="consent-text">
-            Usamos medição de audiência para entender como o site é usado.
-            Nada é carregado antes da sua escolha, e recusar não muda o site
-            em nada. Detalhes na
+            Você escolhe cada categoria em separado. Nada é carregado antes da
+            sua escolha, e recusar não muda o site em nada. Detalhes na
             <a href="/politica-de-cookies/">Política de Cookies</a>.
           </p>
+          <fieldset class="consent-options">
+            <legend>Categorias não essenciais</legend>
+            <label>
+              <input type="checkbox" data-consent-category="analytics" />
+              {analyticsLabel}
+            </label>
+            <label>
+              <input type="checkbox" data-consent-category="advertising" />
+              {adsLabel}
+            </label>
+          </fieldset>
         </div>
         <div class="consent-actions">
-          <button type="button" data-consent="reject">Recusar não essenciais</button>
-          <button type="button" data-consent="accept">Aceitar</button>
+          <button type="button" data-consent="none">Recusar não essenciais</button>
+          <button type="button" data-consent="selected">Salvar escolha</button>
+          <button type="button" data-consent="all">Aceitar tudo</button>
         </div>
       </div>
     </div>

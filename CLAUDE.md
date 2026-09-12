@@ -878,9 +878,11 @@ Regras que valem para qualquer revisão desses textos:
 - **não afirmar que o site exibe anúncios** enquanto `ADS.enabled` for false;
 - **não apresentar o Search Console como cookie ou rastreamento** — é só uma
   etiqueta de verificação de propriedade do domínio;
-- **não descrever opção que o banner não oferece.** Hoje a escolha é única e
-  vale para as duas categorias não essenciais ao mesmo tempo; não existe
-  seletor por categoria;
+- **não descrever opção que o banner não oferece.** Hoje existem duas caixas,
+  uma por categoria, e três ações: recusar tudo, salvar a escolha marcada e
+  aceitar tudo. Analytics e marketing são independentes;
+- **não dizer que o site exibe anúncios por causa do Meta Pixel.** Ele mede
+  campanha veiculada fora daqui. O site não tem espaço publicitário;
 - **não inventar** prazo de retenção, encarregado, foro, telefone ou segundo
   e-mail;
 - **não reduzir direito do consumidor.** A garantia comercial de 7 dias é
@@ -1040,8 +1042,31 @@ O banner de consentimento só existe quando há algo a consentir. Com o GA4
 ligado, ele passou a existir. Desligar o tracking o faz desaparecer sozinho,
 junto com o JavaScript — pedir consentimento para nada seria ruído.
 
+**Meta Pixel `28163448079989110` está ligado**, na categoria `advertising`, e
+os mesmos eventos saem também pela Conversions API, de um retransmissor em
+PHP no próprio domínio (`/api/meta-capi.php`, gerado no build a partir de
+`src/server/meta-capi.php`). Cada evento leva um `event_id` compartilhado
+entre os dois caminhos, que é o que permite a Meta contá-lo uma vez só.
+
+**O token da Conversions API nunca entra no repositório.** Ele vive no GitHub
+Secret `META_CAPI_ACCESS_TOKEN`, é escrito no deploy em `api/credenciais.php`,
+o Apache recusa servir esse arquivo e o deploy falha se o valor aparecer em
+qualquer outro arquivo de `dist/`. Sem token, o endpoint responde 503 e o site
+segue igual.
+
+**Verificação de domínio da Meta** vive em `SITE.metaDomainVerification`, ao
+lado da do Search Console: é etiqueta de posse do domínio, não medição, então
+não depende de consentimento e não é descrita como rastreamento.
+
+Três eventos, e só três, chegam à Meta: `PageView`, `ViewContent` e
+`InitiateCheckout`. `product_click` e `affiliate_click` continuam existindo na
+camada interna e **não** viram evento da Meta: o primeiro é um clique de
+artigo para a LP, o segundo leva à loja de um terceiro, e tratar qualquer um
+deles como início de compra inventaria um momento de funil que não aconteceu.
+
 Como configurar cada fornecedor, como integrar a Kiwify e como evitar contar a
-mesma conversão duas vezes: **[docs/tracking.md](docs/tracking.md)**.
+mesma conversão duas vezes: **[docs/tracking.md](docs/tracking.md)**. A
+integração com a Meta inteira: **[docs/meta-capi.md](docs/meta-capi.md)**.
 
 A Política de Cookies documenta os cookies do GA4 e está publicada. A
 Política de Privacidade descreve tudo corretamente, mas segue em `noindex`

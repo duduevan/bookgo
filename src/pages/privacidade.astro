@@ -108,10 +108,11 @@ import { TRACKING } from '../config/tracking';
 
   <h2>7. Consentimento</h2>
   <p>
-    Na primeira visita, uma barra no rodapé apresenta duas opções de mesmo
-    peso: aceitar ou recusar os itens não essenciais. Nada de medição é
-    carregado antes dessa escolha, e recusar é um caminho tão direto quanto
-    aceitar. Não há passo extra, botão escondido nem opção pré-marcada.
+    Na primeira visita, uma barra no rodapé apresenta as categorias não
+    essenciais <strong>em separado</strong>, cada uma com a sua caixa:
+    medição de audiência e marketing. Você pode aceitar uma e recusar a
+    outra. Nada é carregado antes dessa escolha, recusar tudo é um clique
+    só, como aceitar tudo, e nenhuma caixa vem marcada.
   </p>
   <p>
     Você pode mudar de ideia quando quiser, pela
@@ -129,10 +130,10 @@ import { TRACKING } from '../config/tracking';
     desses dados é regido também pela política da própria plataforma.
   </p>
   <p>
-    Nesta etapa o checkout <strong>ainda não está conectado</strong>: os
-    botões de compra existem na página do produto, mas não levam a lugar
-    nenhum enquanto a URL definitiva não for publicada. Ou seja, hoje nenhum
-    dado de compra é tratado por este site nem por terceiros a partir dele.
+    Os botões de compra da página do produto levam ao checkout da Kiwify.
+    Este site não recebe, não guarda e não transmite dado de pagamento
+    nenhum: ao clicar, você sai daqui e passa a tratar diretamente com a
+    plataforma.
   </p>
   <p>
     Os meios de pagamento, as condições comerciais e a forma de acesso
@@ -145,18 +146,40 @@ import { TRACKING } from '../config/tracking';
     suporte (art. 7º, V, da LGPD).
   </p>
 
-  <h2>9. Publicidade</h2>
+  <h2>9. Marketing e publicidade</h2>
   <p>
-    <strong>O site não exibe anúncios hoje.</strong> Nenhum espaço
-    publicitário é renderizado e nenhum script de anúncios é carregado.
+    <strong>O site não exibe anúncios.</strong> Nenhum espaço publicitário é
+    renderizado aqui e nenhuma rede de anúncios é carregada.
   </p>
   <p>
-    A arquitetura está preparada para que isso possa mudar no futuro, com
-    Google AdSense. Se e quando for ativado, a publicidade ficará submetida à
-    categoria <em>publicidade</em> do banner de consentimento (isto é, só
-    carregará com aceite), e esta política e a Política de Cookies serão
-    atualizadas <strong>antes</strong>, descrevendo os cookies e as
-    tecnologias envolvidas e, quando aplicável, a personalização de anúncios.
+    O que existe é medição de campanha: o <strong>Meta Pixel</strong>, da
+    Meta Platforms, registra que uma página foi vista ou que um botão de
+    compra foi clicado, para que anúncios veiculados no Facebook e no
+    Instagram possam ser avaliados e direcionados. Isso <strong>só acontece
+    se você aceitar a categoria de marketing</strong>: sem esse aceite, nada
+    da Meta é carregado e nenhuma informação sai daqui para ela.
+  </p>
+  <p>
+    Os mesmos eventos também são enviados <strong>do nosso servidor</strong>
+    para a Meta, pela Conversions API, sempre com um identificador que
+    permite reconhecer que são o mesmo acontecimento e não contá-lo duas
+    vezes. Esse envio segue a mesma decisão: sem aceite em marketing, ele
+    não ocorre. Nele vão apenas o endereço da página, o seu endereço IP, o
+    identificador do seu navegador e os identificadores que o próprio Pixel
+    gravou. <strong>Não enviamos e-mail, telefone, nome ou endereço</strong>,
+    porque o site não coleta esses dados em lugar nenhum.
+  </p>
+  <p>
+    <strong>Compra não é registrada por este site.</strong> Clicar em um
+    botão de checkout é intenção, não compra, e nenhum evento de venda é
+    enviado à Meta a partir daqui.
+  </p>
+  <p>
+    O Google AdSense segue preparado no código e desligado na configuração.
+    Se um dia for ativado, ficará submetido à mesma categoria de
+    consentimento, e esta política e a
+    <a href="/politica-de-cookies/">Política de Cookies</a> serão
+    atualizadas <strong>antes</strong>.
   </p>
 
   <h2>10. Google Search Console</h2>
@@ -181,14 +204,19 @@ import { TRACKING } from '../config/tracking';
       apenas se você tiver aceitado;
     </li>
     <li>
+      a <strong>Meta Platforms</strong>, como operadora da medição de
+      campanhas, e apenas se você tiver aceitado a categoria de marketing;
+    </li>
+    <li>
       a <strong>Kiwify</strong>, quando houver compra, para processar o
       pagamento e entregar o material.
     </li>
   </ul>
   <p>
-    A BookGo <strong>não vende dados pessoais</strong>, não os cede para fins
-    de marketing de terceiros e não mantém nenhuma outra integração de
-    medição, pixel ou rede de anúncios.
+    A BookGo <strong>não vende dados pessoais</strong> e não os cede para
+    fins de marketing de terceiros. Fora dos operadores listados acima, não
+    existe nenhuma outra integração de medição, pixel ou rede de anúncios
+    neste site.
   </p>
 
   <h2>12. Segurança</h2>

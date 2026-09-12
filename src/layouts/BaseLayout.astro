@@ -63,6 +63,13 @@ const {
         <meta name="google-site-verification" content={SITE.googleSiteVerification} />
       )
     }
+    {/* Verificação de domínio da Meta. Independe do Pixel e do
+        consentimento: é etiqueta de posse do domínio, não medição. */}
+    {
+      SITE.metaDomainVerification && (
+        <meta name="facebook-domain-verification" content={SITE.metaDomainVerification} />
+      )
+    }
     {schema.length > 0 && <JsonLd nodes={schema} />}
     <slot name="head" />
     {/* Não renderiza nada enquanto não houver fornecedor configurado. */}

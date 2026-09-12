@@ -64,6 +64,20 @@ ErrorDocument 404 /404.html
   Header set Referrer-Policy "strict-origin-when-cross-origin"
 </IfModule>
 
+# ── Credencial da Conversions API ────────────────────────────
+# api/credenciais.php guarda o token da Meta e existe só no servidor.
+# O PHP consegue incluí-lo; a web, não. Duas sintaxes porque o cPanel pode
+# rodar Apache 2.2 ou 2.4, e a errada é ignorada em silêncio pela outra.
+<Files "credenciais.php">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</Files>
+
 <IfModule mod_mime.c>
   AddType image/avif .avif
   AddType image/webp .webp

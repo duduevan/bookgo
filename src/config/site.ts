@@ -25,6 +25,21 @@ export const SITE = {
   googleSiteVerification: 'oBqSFgvHkSPpe1vSmnJ_Aip9_LlG5cEmEtevdcWHQTM' as
     | string
     | null,
+
+  /**
+   * Verificação de domínio da Meta (Business Manager).
+   *
+   * Mesma natureza da etiqueta do Search Console: prova posse do domínio
+   * para quem já administra a conta, não grava nada no navegador e não
+   * acompanha navegação. Não é cookie e não é rastreamento.
+   *
+   * Vive aqui, e não no `TRACKING`, de propósito: ela não depende do
+   * consentimento nem da chave mestra de medição. Desligar o Pixel não pode
+   * derrubar a verificação do domínio, porque as duas coisas não têm
+   * relação. `BaseLayout` é o único lugar que lê o campo, e emite a meta uma
+   * vez por página.
+   */
+  metaDomainVerification: 'qsja81fszd5g3tt0qnvhw5epqeoz6z' as string | null,
 } as const;
 
 /** Navegação institucional. `Explorar` e `Sobre` são âncoras da home
