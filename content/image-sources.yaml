@@ -228,3 +228,33 @@ images:
     previewPath: /free-photo/high-angle-messy-drawer-with-clothes_23-2149363752.jpg
     ratio: "16:10"
     width: 1400
+
+  # ── LP: Cardápio da Semana em 20 Minutos ────────────────────
+  - target: src/assets/products/cardapio-da-semana-em-20-minutos/hero-planejando-a-semana.webp
+    provider: freepik
+    assetId: 80257304
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/portrait-woman-writing-down-list-groceries-making-notes-recipe-sitting-kitchen-near_80257304.htm
+    previewPath: /free-photo/portrait-woman-writing-down-list-groceries-making-notes-recipe-sitting-kitchen-near_1258-194985.jpg
+    ratio: "4:5"
+    width: 1040
+    note: >-
+      Elemento de LCP da LP. Alguém sentada na cozinha anotando a lista de
+      compras: é literalmente a sessão de planejamento que o produto vende,
+      e não comida pronta nem prato montado. Cozinha comum, sem estética de
+      dieta e sem prato de restaurante.
+
+  - target: src/assets/products/cardapio-da-semana-em-20-minutos/geladeira-fim-do-dia.webp
+    provider: freepik
+    assetId: 34002375
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/side-view-woman-checking-fridge_34002375.htm
+    previewPath: /free-photo/side-view-woman-checking-fridge_23-2149894805.jpg
+    ratio: "16:9"
+    width: 1400
+    note: >-
+      A cena que abre a página, e também o bloco "olhar" do método: alguém
+      de frente para a geladeira aberta, conferindo o que tem. Entra depois
+      dos três blocos, ligando a dor ao primeiro passo do método.

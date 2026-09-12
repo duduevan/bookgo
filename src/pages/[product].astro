@@ -180,7 +180,7 @@ const crumbs = [
           <CardGrid items={[...d.method.pillars]} cols={1} min="100%" />
         </div>
       ) : (
-        <CardGrid items={[...d.method.pillars]} cols={2} min="20rem" />
+        <CardGrid items={[...d.method.pillars]} min="16rem" />
       )
     }
     {d.method.note && <p class="note note-center">{d.method.note}</p>}
@@ -199,9 +199,19 @@ const crumbs = [
     ))
   }
 
-  {/* Benefícios */}
+  {/* Benefícios.
+
+      O primeiro cartão só ocupa duas colunas quando isso fecha a grade.
+      Com `feature`, a contagem efetiva de células é `itens + 1`, e a
+      última linha só fica cheia numa grade de três quando esse total é
+      múltiplo de três. Cinco benefícios fecham; seis, não, e o destaque
+      sai sozinho para a grade não terminar num órfão. */}
   <Section title={d.benefits.title} intro={d.benefits.intro}>
-    <CardGrid items={[...d.benefits.items]} feature />
+    <CardGrid
+      items={[...d.benefits.items]}
+      cols={3}
+      feature={(d.benefits.items.length + 1) % 3 === 0}
+    />
   </Section>
 
   {/* Como funciona */}

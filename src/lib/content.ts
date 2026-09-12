@@ -55,6 +55,19 @@ export const getProducts = () =>
 
 export const getProduct = (id: string) => getEntry('products', id);
 
+/**
+ * Produto em destaque na home.
+ *
+ * Marcado com `featured: true` vence; havendo mais de um, o primeiro. Sem
+ * nenhum marcado, cai no primeiro publicado, para a home não depender de
+ * alguém lembrar de marcar. Rascunho nunca entra, porque `getProducts` já
+ * os exclui.
+ */
+export async function getFeaturedProduct(): Promise<Product | undefined> {
+  const products = await getProducts();
+  return products.find((p) => p.data.featured) ?? products[0];
+}
+
 /** O CTA só vira link quando existe uma URL de checkout configurada. */
 export const hasCheckout = (product: Product): boolean =>
   typeof product.data.checkout.url === 'string' &&

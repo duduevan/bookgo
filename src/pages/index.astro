@@ -11,7 +11,7 @@ import {
   getPosts,
   getPillars,
   getPostsByPillar,
-  getProducts,
+  getFeaturedProduct,
   pillarUrl,
   productUrl,
 } from '../lib/content';
@@ -99,8 +99,8 @@ const categoryCards = await Promise.all(
 const latestPosts = (await getPosts()).slice(0, 3);
 const categoryNameById = new Map(categories.map((c) => [c.id, c.data.name]));
 
-/** Material em destaque: o produto ativo, com a paleta dele no card. */
-const [featuredProduct] = await getProducts();
+/** Material em destaque, declarado no YAML do produto. */
+const featuredProduct = await getFeaturedProduct();
 ---
 
 <SiteLayout

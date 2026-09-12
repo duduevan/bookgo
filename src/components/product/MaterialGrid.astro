@@ -123,5 +123,13 @@ const resolved = items.map((item) => ({
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: var(--s-6);
     }
+
+    /* Número ímpar de materiais: o último ocupa a faixa inteira em vez de
+       ficar sozinho ao lado de uma célula vazia. `:last-child:nth-child(odd)`
+       só é verdade quando o total é ímpar, então uma grade de quatro não
+       muda em nada. */
+    .materials > :last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
   }
 </style>

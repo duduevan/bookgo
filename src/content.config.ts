@@ -165,6 +165,17 @@ const products = defineCollection({
     tagline: z.string(),
 
     /**
+     * Produto em destaque na home.
+     *
+     * A home mostra um material só, e com dois produtos no ar "o primeiro
+     * que o `getCollection` devolver" passa a depender da ordem alfabética
+     * do slug. Isso é o tipo de coisa que muda a home sem ninguém decidir,
+     * então o destaque é declarado. Sem nenhum marcado, cai no primeiro
+     * publicado, e a home nunca fica sem material.
+     */
+    featured: z.boolean().default(false),
+
+    /**
      * Rascunho. Igual ao `draft` do artigo: o produto continua sendo
      * validado por este schema a cada build — é essa validação que prova
      * que o esqueleto está completo —, mas não gera URL, não entra no

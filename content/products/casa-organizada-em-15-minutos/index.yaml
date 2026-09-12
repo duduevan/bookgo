@@ -6,6 +6,10 @@
 
 slug: casa-organizada-em-15-minutos
 name: Casa Organizada em 15 Minutos por Dia
+
+# Material em destaque na home. Declarado aqui, e não deduzido da ordem
+# alfabética dos slugs, que mudaria a home sozinha a cada produto novo.
+featured: true
 tagline: Um método simples para manter a casa organizada em sessões curtas, sem mutirão de fim de semana.
 promise: Ensinar uma rotina simples para manter a casa mais organizada usando pequenos ciclos de 15 minutos, sem depender de grandes períodos de organização.
 
