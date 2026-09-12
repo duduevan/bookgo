@@ -9,9 +9,10 @@ import { SITE, NAV_CTA } from '../config/site';
 import {
   getCategories,
   getPosts,
-  getPostsByCategory,
+  getPillars,
+  getPostsByPillar,
   getProducts,
-  categoryUrl,
+  pillarUrl,
   productUrl,
 } from '../lib/content';
 import { categoryCover } from '../lib/category-images';
@@ -64,26 +65,31 @@ const PRINCIPLES = [
 ];
 
 /**
- * Vitrine de categorias, montada a partir das categorias reais.
+ * Vitrine de pilares, montada a partir dos pilares reais.
  *
- * Nenhuma categoria é inventada para fechar a linha da grade: com uma só,
- * aparece uma só. A capa é resolvida pelo id, então uma categoria nova
- * entra aqui sem tocar neste arquivo.
+ * Pilar, não categoria: Organização e Cozinha vivem dentro de Casa, e
+ * mostrá-las lado a lado na home as apresentaria como temas independentes,
+ * contradizendo a árvore que a própria navegação usa.
+ *
+ * Nenhum pilar é inventado para fechar a linha da grade: com um só, aparece
+ * um só. A capa é resolvida pelo id, então um pilar novo entra aqui sem
+ * tocar neste arquivo.
  *
  * A contagem de artigos é calculada, nunca escrita à mão. Mesmo assim só
  * aparece a partir de três: "1 artigo" não informa nada que o próprio card
  * já não diga, e anunciar escassez de conteúdo não ajuda ninguém.
  */
 const categories = await getCategories();
+const pillars = await getPillars();
 const categoryCards = await Promise.all(
-  categories.map(async (category) => {
-    const posts = await getPostsByCategory(category.id);
+  pillars.map(async (pillar) => {
+    const posts = await getPostsByPillar(pillar.id);
     return {
-      id: category.id,
-      name: category.data.name,
-      text: category.data.description,
-      href: categoryUrl(category.id),
-      cover: categoryCover(category.id),
+      id: pillar.id,
+      name: pillar.data.name,
+      text: pillar.data.description,
+      href: pillarUrl(pillar.id),
+      cover: categoryCover(pillar.id),
       count: posts.length >= 3 ? posts.length : null,
     };
   })

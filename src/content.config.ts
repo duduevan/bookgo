@@ -310,11 +310,40 @@ const products = defineCollection({
 /*  Categorias — content/categories/<slug>.yaml                        */
 /* ------------------------------------------------------------------ */
 
+/* ------------------------------------------------------------------ */
+/*  Pilares — content/pillars/<slug>.yaml                              */
+/*                                                                     */
+/*  O pilar é o grande tema editorial; a categoria é um recorte dentro  */
+/*  dele. Formato e intenção (comparativo, review, guia, afiliado) são  */
+/*  outra dimensão e não viram categoria: ver `type` no artigo.         */
+/* ------------------------------------------------------------------ */
+
+const pillars = defineCollection({
+  loader: glob({ pattern: '*.yaml', base: './content/pillars' }),
+  schema: z.object({
+    name: z.string(),
+    description: z.string(),
+    /** Título editorial da página do pilar. Sem ele, usa `name`. */
+    headline: z.string().optional(),
+    intro: z.array(z.string()).default([]),
+    seo: z
+      .object({
+        title: z.string().optional(),
+        description: z.string().optional(),
+      })
+      .default({}),
+    order: z.number().default(100),
+  }),
+});
+
 const categories = defineCollection({
   loader: glob({ pattern: '*.yaml', base: './content/categories' }),
   schema: z.object({
     name: z.string(),
     description: z.string(),
+
+    /** Pilar a que a categoria pertence. Define a URL: /blog/<pilar>/<cat>/ */
+    pillar: reference('pillars'),
 
     /** Título editorial do hub. Sem ele, usa `name`. */
     headline: z.string().optional(),
@@ -466,6 +495,21 @@ const blog = defineCollection({
     category: reference('categories'),
     /** Quando definido, o artigo exibe CTA contextual do produto. */
     product: reference('products').optional(),
+
+    /**
+     * Formato e intenção editorial do artigo.
+     *
+     * Dimensão separada da taxonomia temática de propósito: um comparativo
+     * de air fryer pertence a Casa › Cozinha, e "comparativo" descreve o
+     * formato, não o assunto. Transformar formato em categoria criaria uma
+     * segunda árvore concorrendo com a primeira, e o mesmo artigo passaria
+     * a ter dois lugares para morar.
+     *
+     * **Não vira página, menu nem URL.** É metadado editorial.
+     */
+    type: z
+      .enum(['informacional', 'guia', 'comparativo', 'review'])
+      .default('informacional'),
     keywords: z.array(z.string()).default([]),
     author: z.string().default('BookGo'),
     draft: z.boolean().default(false),
@@ -570,4 +614,4 @@ const blog = defineCollection({
   }),
 });
 
-export const collections = { products, categories, blog };
+export const collections = { products, pillars, categories, blog };

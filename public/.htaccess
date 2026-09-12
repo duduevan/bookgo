@@ -27,6 +27,17 @@ ErrorDocument 404 /404.html
   # à mão e de parte das ferramentas, e devolvia 404. O redirecionamento
   # resolve isso sem renomear arquivo já conhecido pelo Search Console.
   RewriteRule ^sitemap\.xml$ /sitemap-index.xml [L,R=301]
+
+  # ── Migração do blog para a árvore com pilar ─────────────────
+  # Organização deixou de ser um tema solto e passou a ser subcategoria de
+  # Casa. As URLs antigas foram indexadas e compartilhadas, então continuam
+  # respondendo, por 301 direto para o novo endereço.
+  #
+  # A regra do artigo vem antes da regra da categoria de propósito: a
+  # segunda também casaria com o caminho do artigo, e o resultado seria um
+  # redirecionamento para a listagem em vez da página pedida.
+  RewriteRule ^blog/organizacao/([^/]+)/?$ /blog/casa/organizacao/$1/ [L,R=301]
+  RewriteRule ^blog/organizacao/?$ /blog/casa/organizacao/ [L,R=301]
 </IfModule>
 
 # ── Compressão ───────────────────────────────────────────────

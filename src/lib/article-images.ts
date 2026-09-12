@@ -83,7 +83,9 @@ export function articleImageById(
 export async function postFromPathname(
   pathname: string
 ): Promise<Post | undefined> {
-  const match = pathname.match(/^\/blog\/([^/]+)\/([^/]+)\//);
+  /* /blog/<pilar>/<categoria>/<slug>/ — o pilar não participa da busca: o
+     slug já é único na coleção, e a categoria basta para desambiguar. */
+  const match = pathname.match(/^\/blog\/[^/]+\/([^/]+)\/([^/]+)\//);
   if (!match) return undefined;
   const [, category, slug] = match;
   const posts = await getPosts();

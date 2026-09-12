@@ -1,15 +1,15 @@
 ---
 import { render } from 'astro:content';
-import SiteLayout from '../../../layouts/SiteLayout.astro';
-import Breadcrumbs from '../../../components/seo/Breadcrumbs.astro';
-import ArticleSummary from '../../../components/blog/ArticleSummary.astro';
-import AffiliateDisclosure from '../../../components/blog/AffiliateDisclosure.astro';
-import TableOfContents from '../../../components/blog/TableOfContents.astro';
-import SourcesList from '../../../components/blog/SourcesList.astro';
-import RelatedPosts from '../../../components/blog/RelatedPosts.astro';
-import ProductCta from '../../../components/blog/ProductCta.astro';
-import AdSlot from '../../../components/ads/AdSlot.astro';
-import TrackPageEvent from '../../../components/tracking/TrackPageEvent.astro';
+import SiteLayout from '../../../../layouts/SiteLayout.astro';
+import Breadcrumbs from '../../../../components/seo/Breadcrumbs.astro';
+import ArticleSummary from '../../../../components/blog/ArticleSummary.astro';
+import AffiliateDisclosure from '../../../../components/blog/AffiliateDisclosure.astro';
+import TableOfContents from '../../../../components/blog/TableOfContents.astro';
+import SourcesList from '../../../../components/blog/SourcesList.astro';
+import RelatedPosts from '../../../../components/blog/RelatedPosts.astro';
+import ProductCta from '../../../../components/blog/ProductCta.astro';
+import AdSlot from '../../../../components/ads/AdSlot.astro';
+import TrackPageEvent from '../../../../components/tracking/TrackPageEvent.astro';
 import {
   getPosts,
   getCategories,
@@ -20,16 +20,22 @@ import {
   postUrl,
   markdownUrl,
   categoryUrl,
+  pillarUrl,
+  getPillars,
   type Post,
-} from '../../../lib/content';
-import * as schema from '../../../lib/schema';
-import { ADS } from '../../../config/site';
-import { resolveRhythm } from '../../../lib/commercial-blocks';
-import { missingArticleImages } from '../../../lib/article-images';
-import { hasAffiliates } from '../../../lib/affiliates';
+} from '../../../../lib/content';
+import * as schema from '../../../../lib/schema';
+import { ADS } from '../../../../config/site';
+import { resolveRhythm } from '../../../../lib/commercial-blocks';
+import { missingArticleImages } from '../../../../lib/article-images';
+import { hasAffiliates } from '../../../../lib/affiliates';
 
 export async function getStaticPaths() {
-  const [posts, categories] = await Promise.all([getPosts(), getCategories()]);
+  const [posts, categories, pillars] = await Promise.all([
+    getPosts(),
+    getCategories(),
+    getPillars(),
+  ]);
 
   /* Imagem declarada cujo arquivo ainda não chegou. Não é erro: é assim que
      a arquitetura do artigo fica pronta antes da fotografia existir. Mas
@@ -49,8 +55,19 @@ export async function getStaticPaths() {
   return posts.map((post) => {
     const category = categories.find((c) => c.id === post.data.category.id);
     return {
-      params: { category: post.data.category.id, slug: post.data.slug },
-      props: { post, categoryName: category?.data.name ?? post.data.category.id },
+      params: {
+        pillar: category!.data.pillar.id,
+        category: post.data.category.id,
+        slug: post.data.slug,
+      },
+      props: {
+        post,
+        categoryName: category?.data.name ?? post.data.category.id,
+        pillarId: category!.data.pillar.id,
+        pillarName:
+          pillars.find((p) => p.id === category!.data.pillar.id)?.data.name ??
+          category!.data.pillar.id,
+      },
     };
   });
 }
@@ -58,9 +75,11 @@ export async function getStaticPaths() {
 interface Props {
   post: Post;
   categoryName: string;
+  pillarId: string;
+  pillarName: string;
 }
 
-const { post, categoryName } = Astro.props;
+const { post, categoryName, pillarId, pillarName } = Astro.props;
 const d = post.data;
 const path = postUrl(post);
 const { Content, headings } = await render(post);
@@ -118,6 +137,7 @@ for (const drop of rhythm.dropped) {
 const crumbs = [
   { name: 'Início', path: '/' },
   { name: 'Blog', path: '/blog/' },
+  { name: pillarName, path: pillarUrl(pillarId) },
   { name: categoryName, path: categoryUrl(d.category.id) },
   { name: d.title, path },
 ];

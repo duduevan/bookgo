@@ -316,12 +316,45 @@ Ao escolher as cores, verifique o contraste de `text` sobre `background` e de
 `onPrimary` sobre `primary` — o mínimo é 4.5:1 para texto corrido.
 
 
+## Taxonomia editorial
+
+Três dimensões, e só a primeira vira URL.
+
+**Pilar.** O grande tema editorial. Hoje existe um: `Casa`. Mora em
+`content/pillars/<slug>.yaml` e gera `/blog/<pilar>/`.
+
+**Subcategoria.** Um recorte dentro do pilar: `Organização`, `Cozinha`. Mora
+em `content/categories/<slug>.yaml`, declara `pillar:` e gera
+`/blog/<pilar>/<categoria>/`. Um artigo vive em `/blog/<pilar>/<cat>/<slug>/`.
+
+**Tipo de conteúdo.** Formato e intenção do artigo: `informacional`, `guia`,
+`comparativo`, `review`. É o campo `type` no frontmatter e **não vira página,
+menu nem URL**.
+
+A separação é o ponto. Um comparativo de air fryer pertence a Casa › Cozinha,
+e "comparativo" descreve o formato, não o assunto. Criar uma categoria
+"Comparativos" ou "Reviews" porque existem artigos comerciais montaria uma
+segunda árvore concorrendo com a primeira, e o mesmo artigo passaria a ter
+dois lugares para morar. Monetização é outra dimensão ainda, e vive em
+`monetization`.
+
+**Categoria nasce de conteúdo, não de layout.** Nenhuma subcategoria é criada
+para preencher grade. Limpeza, Eletrodomésticos, Lavanderia e Decoração são
+recortes plausíveis de Casa para o futuro, e nada além disso enquanto não
+existir artigo real.
+
+Mudar um artigo de categoria muda a URL, então a antiga precisa de um 301 em
+`public/.htaccess`. Redirecionamento direto, nunca em cadeia: a regra do
+artigo vem antes da regra da categoria, senão a segunda captura o caminho do
+artigo e devolve a listagem no lugar da página pedida.
+
 ## Criar uma categoria
 
 Crie `content/categories/<slug>.yaml`:
 
 ```yaml
 name: Organização
+pillar: casa                       # obrigatório: define a URL
 description: Frase que aparece no topo da página da categoria.
 seo:
   title: Organização da casa      # opcional
@@ -329,7 +362,7 @@ seo:
 order: 10                          # menor aparece primeiro
 ```
 
-O nome do arquivo é o slug da URL: `/blog/<slug>/`.
+O nome do arquivo é o slug: a URL fica `/blog/<pilar>/<slug>/`.
 
 ## Criar um artigo
 
@@ -350,7 +383,7 @@ keywords:
 Texto do artigo em Markdown.
 ```
 
-URL resultante: `/blog/<categoria>/<slug>/`.
+URL resultante: `/blog/<pilar>/<categoria>/<slug>/`.
 
 Campos opcionais: `updated`, `author`, `draft: true` (exclui do site).
 

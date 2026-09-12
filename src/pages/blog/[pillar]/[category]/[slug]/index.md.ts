@@ -1,5 +1,5 @@
 import type { APIRoute, GetStaticPaths } from 'astro';
-import { SITE, absoluteUrl } from '../../../../config/site';
+import { SITE, absoluteUrl } from '../../../../../config/site';
 import {
   getPosts,
   getCategories,
@@ -9,8 +9,8 @@ import {
   productUrl,
   isoDate,
   type Post,
-} from '../../../../lib/content';
-import { resolveArticleImages } from '../../../../lib/article-images';
+} from '../../../../../lib/content';
+import { resolveArticleImages } from '../../../../../lib/article-images';
 
 /**
  * Versão Markdown do artigo, servida ao lado da HTML.
@@ -61,15 +61,20 @@ function toPlainMarkdown(
 export const getStaticPaths: GetStaticPaths = async () => {
   const [posts, categories] = await Promise.all([getPosts(), getCategories()]);
 
-  return posts.map((post) => ({
-    params: { category: post.data.category.id, slug: post.data.slug },
-    props: {
-      post,
-      categoryName:
-        categories.find((c) => c.id === post.data.category.id)?.data.name ??
-        post.data.category.id,
-    },
-  }));
+  return posts.map((post) => {
+    const category = categories.find((c) => c.id === post.data.category.id);
+    return {
+      params: {
+        pillar: category!.data.pillar.id,
+        category: post.data.category.id,
+        slug: post.data.slug,
+      },
+      props: {
+        post,
+        categoryName: category?.data.name ?? post.data.category.id,
+      },
+    };
+  });
 };
 
 export const GET: APIRoute = async ({ props }) => {

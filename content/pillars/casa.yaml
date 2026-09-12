@@ -1,0 +1,14 @@
+name: Casa
+headline: Conteúdos práticos para a casa funcionar melhor
+description: Organização, cozinha e rotina doméstica, com métodos que cabem no tempo que você realmente tem.
+intro:
+  - A BookGo reúne aqui o que ajuda a casa a funcionar sem virar projeto. São
+    métodos curtos, critérios de escolha e materiais para aplicar enquanto
+    você lê.
+  - Os conteúdos se dividem por assunto. Organização trata de rotina e
+    manutenção; Cozinha trata das escolhas de equipamento e utensílio que
+    mudam o dia a dia.
+seo:
+  title: Casa
+  description: Organização, cozinha e rotina doméstica com métodos práticos que cabem na rotina real.
+order: 10

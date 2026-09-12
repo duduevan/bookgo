@@ -1,28 +1,36 @@
 ---
-import SiteLayout from '../../../layouts/SiteLayout.astro';
-import Breadcrumbs from '../../../components/seo/Breadcrumbs.astro';
-import PostCard from '../../../components/blog/PostCard.astro';
-import CategoryChips from '../../../components/blog/CategoryChips.astro';
-import ProductCta from '../../../components/blog/ProductCta.astro';
+import SiteLayout from '../../../../layouts/SiteLayout.astro';
+import Breadcrumbs from '../../../../components/seo/Breadcrumbs.astro';
+import PostCard from '../../../../components/blog/PostCard.astro';
+import CategoryChips from '../../../../components/blog/CategoryChips.astro';
+import ProductCta from '../../../../components/blog/ProductCta.astro';
 import {
   getCategories,
   getPostsByCategory,
   getProduct,
   categoryUrl,
+  pillarUrl,
+  getPillars,
   type Category,
+  type Pillar,
   type Post,
-} from '../../../lib/content';
-import * as schema from '../../../lib/schema';
+} from '../../../../lib/content';
+import * as schema from '../../../../lib/schema';
 
 export async function getStaticPaths() {
   const categories = await getCategories();
 
   return Promise.all(
     categories.map(async (category) => ({
-      params: { category: category.id },
+      params: { pillar: category.data.pillar.id, category: category.id },
       props: {
         category,
-        categories,
+        pillar: (await getPillars()).find((p) => p.id === category.data.pillar.id)!,
+        /* Só as irmãs do mesmo pilar: as pílulas de navegação existem para
+           circular dentro do assunto, não para saltar de pilar. */
+        categories: categories.filter(
+          (c) => c.data.pillar.id === category.data.pillar.id
+        ),
         posts: await getPostsByCategory(category.id),
       },
     }))
@@ -31,11 +39,12 @@ export async function getStaticPaths() {
 
 interface Props {
   category: Category;
+  pillar: Pillar;
   categories: Category[];
   posts: Post[];
 }
 
-const { category, categories, posts } = Astro.props;
+const { category, pillar, categories, posts } = Astro.props;
 const d = category.data;
 const path = categoryUrl(category.id);
 
@@ -47,6 +56,7 @@ const product = d.relatedProduct
 const crumbs = [
   { name: 'Início', path: '/' },
   { name: 'Blog', path: '/blog/' },
+  { name: pillar.data.name, path: pillarUrl(pillar.id) },
   { name: d.name, path },
 ];
 ---

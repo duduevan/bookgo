@@ -3,13 +3,40 @@ import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
 export type Product = CollectionEntry<'products'>;
 export type Post = CollectionEntry<'blog'>;
 export type Category = CollectionEntry<'categories'>;
+export type Pillar = CollectionEntry<'pillars'>;
 
 /* ── URLs (única fonte de verdade das rotas) ─────────────────── */
 
+/**
+ * Mapa categoria → pilar, resolvido uma vez na carga do módulo.
+ *
+ * Existe para `categoryUrl` e `postUrl` continuarem síncronos. A alternativa
+ * era torná-los assíncronos, o que obrigaria a mudar todo componente que
+ * monta um link, inclusive os que só recebem um post pronto.
+ */
+const pillarByCategory = new Map(
+  (await getCollection('categories')).map((c) => [c.id, c.data.pillar.id])
+);
+
+const pillarOf = (categoryId: string): string => {
+  const pillar = pillarByCategory.get(categoryId);
+  if (!pillar) {
+    throw new Error(
+      `Categoria "${categoryId}" não declara pilar. Toda categoria vive dentro de um.`
+    );
+  }
+  return pillar;
+};
+
 export const productUrl = (slug: string) => `/${slug}/`;
-export const categoryUrl = (categoryId: string) => `/blog/${categoryId}/`;
+
+export const pillarUrl = (pillarId: string) => `/blog/${pillarId}/`;
+
+export const categoryUrl = (categoryId: string) =>
+  `/blog/${pillarOf(categoryId)}/${categoryId}/`;
+
 export const postUrl = (post: Post) =>
-  `/blog/${post.data.category.id}/${post.data.slug}/`;
+  `${categoryUrl(post.data.category.id)}${post.data.slug}/`;
 
 /** Versão Markdown do artigo, servida ao lado da HTML. */
 export const markdownUrl = (post: Post) => `${postUrl(post)}index.md`;
@@ -25,6 +52,15 @@ export const hasCheckout = (product: Product): boolean =>
   typeof product.data.checkout.url === 'string' &&
   product.data.checkout.url.length > 0;
 
+/* ── Pilares ─────────────────────────────────────────────────── */
+
+export async function getPillars(): Promise<Pillar[]> {
+  const pillars = await getCollection('pillars');
+  return pillars.sort(
+    (a, b) => a.data.order - b.data.order || a.data.name.localeCompare(b.data.name)
+  );
+}
+
 /* ── Categorias ──────────────────────────────────────────────── */
 
 export async function getCategories(): Promise<Category[]> {
@@ -32,6 +68,12 @@ export async function getCategories(): Promise<Category[]> {
   return categories.sort(
     (a, b) => a.data.order - b.data.order || a.data.name.localeCompare(b.data.name)
   );
+}
+
+/** Categorias de um pilar, já ordenadas. */
+export async function getCategoriesByPillar(pillarId: string): Promise<Category[]> {
+  const categories = await getCategories();
+  return categories.filter((c) => c.data.pillar.id === pillarId);
 }
 
 /* ── Artigos ─────────────────────────────────────────────────── */
@@ -48,6 +90,12 @@ export async function getPosts(): Promise<Post[]> {
 export async function getPostsByCategory(categoryId: string): Promise<Post[]> {
   const posts = await getPosts();
   return posts.filter((post) => post.data.category.id === categoryId);
+}
+
+/** Artigos de todas as categorias de um pilar. */
+export async function getPostsByPillar(pillarId: string): Promise<Post[]> {
+  const posts = await getPosts();
+  return posts.filter((post) => pillarOf(post.data.category.id) === pillarId);
 }
 
 export async function getPostsByProduct(productId: string): Promise<Post[]> {

@@ -91,7 +91,7 @@ images:
   # ── Home: capa de categoria ─────────────────────────────────
   #  O arquivo é nomeado pelo id da categoria. A home resolve a capa por
   #  esse nome, então uma categoria nova só precisa de um arquivo aqui.
-  - target: src/assets/categories/organizacao.webp
+  - target: src/assets/categories/casa.webp
     provider: freepik
     assetId: 19468982
     license: free
@@ -116,7 +116,7 @@ images:
 #  um comparativo que mostra meia air fryer não compara nada. O fundo é o
 #  mesmo nos três, para as fotos ficarem comparáveis entre si.
 
-  - target: src/assets/blog/organizacao/comparativo-air-fryer-philips-electrolux-britania/philips-na130.webp
+  - target: src/assets/blog/cozinha/comparativo-air-fryer-philips-electrolux-britania/philips-na130.webp
     provider: philips-walita
     model: NA130/00
     pageUrl: https://www.walita.com.br/fritadeira-airfryer-serie-1000-xl-philips-walita-preta-1700w-na130-na130_00/p
@@ -126,7 +126,7 @@ images:
     fit: contain
     background: "#FFFFFF"
 
-  - target: src/assets/blog/organizacao/comparativo-air-fryer-philips-electrolux-britania/electrolux-eaf40.webp
+  - target: src/assets/blog/cozinha/comparativo-air-fryer-philips-electrolux-britania/electrolux-eaf40.webp
     provider: electrolux
     model: EAF40
     pageUrl: https://loja.electrolux.com.br/air-fryer-electrolux-por-rita-lobo-5-6-l-cinza-efficient-timer-e-conveccao-1400w-eaf40/p
@@ -136,7 +136,7 @@ images:
     fit: contain
     background: "#FFFFFF"
 
-  - target: src/assets/blog/organizacao/comparativo-air-fryer-philips-electrolux-britania/britania-baf65a.webp
+  - target: src/assets/blog/cozinha/comparativo-air-fryer-philips-electrolux-britania/britania-baf65a.webp
     provider: britania
     model: BAF65A
     pageUrl: https://www.britania.com.br/air-fryer-6-5l-1700w-baf65a/p
