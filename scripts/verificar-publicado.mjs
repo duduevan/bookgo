@@ -29,7 +29,16 @@ const PAGINAS = [
 ];
 
 /** Recursos sem tela, conferidos só pelo status e pelo corpo. */
-const RECURSOS = ['/sitemap-index.xml', '/sitemap.xml', '/robots.txt', '/llms.txt'];
+const RECURSOS = ['/sitemap-index.xml', '/robots.txt', '/llms.txt'];
+
+/**
+ * Caminhos que devem responder com redirecionamento.
+ *
+ * Seguir o redirect e ver 200 no fim não prova nada: um arquivo de verdade
+ * em `/sitemap.xml` daria o mesmo 200 e seria conteúdo duplicado. O que
+ * precisa ser conferido é o 301 em si, então aqui o redirect não é seguido.
+ */
+const REDIRECIONAM = { '/sitemap.xml': '/sitemap-index.xml' };
 
 const VIEWPORTS = { desktop: { width: 1440, height: 1000 }, mobile: { width: 390, height: 844 } };
 
@@ -50,6 +59,14 @@ for (const caminho of RECURSOS) {
   const corpo = await res.text();
   registrar(`  ${String(res.status).padEnd(4)} ${caminho.padEnd(22)} ${corpo.length} bytes`);
   if (!res.ok) problemas.push(`${caminho} respondeu ${res.status}`);
+}
+
+for (const [caminho, destino] of Object.entries(REDIRECIONAM)) {
+  const res = await fetch(BASE + caminho, { redirect: 'manual' });
+  const para = res.headers.get('location') ?? '(sem Location)';
+  const ok = res.status >= 300 && res.status < 400 && para.endsWith(destino);
+  registrar(`  ${String(res.status).padEnd(4)} ${caminho.padEnd(22)} → ${para}`);
+  if (!ok) problemas.push(`${caminho} deveria redirecionar para ${destino} (recebido ${res.status} → ${para})`);
 }
 
 registrar('');
