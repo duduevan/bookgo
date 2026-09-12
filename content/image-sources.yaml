@@ -171,11 +171,11 @@ images:
 
   - target: src/assets/blog/organizacao/casa-desarruma-no-dia-seguinte/sala-vivida-fim-de-tarde.webp
     provider: freepik
-    assetId: 9434386
+    assetId: 181380285
     license: free
     author: magnific
-    sourcePage: https://www.magnific.com/free-photo/still-life-cozy-home_9434386.htm
-    previewPath: /free-photo/still-life-cozy-home-interior-details-living-room_169016-3294.jpg
+    sourcePage: https://www.magnific.com/free-photo/lifestyle-person-living-messy-interior_181380285.htm
+    previewPath: /free-photo/lifestyle-person-living-messy-interior_52683-160589.jpg
     ratio: "16:10"
     width: 1400
 
@@ -219,12 +219,12 @@ images:
     ratio: "16:10"
     width: 1400
 
-  - target: src/assets/blog/organizacao/pontos-de-acumulo-da-casa/bancada-livre-depois.webp
+  - target: src/assets/blog/organizacao/pontos-de-acumulo-da-casa/gaveta-desorganizada.webp
     provider: freepik
-    assetId: 30896223
+    assetId: 24996499
     license: free
     author: magnific
-    sourcePage: https://www.magnific.com/free-photo/modern-white-kitchen-countertop_30896223.htm
-    previewPath: /free-photo/modern-white-kitchen-countertop-with-free-space_43614-889.jpg
+    sourcePage: https://www.magnific.com/free-photo/high-angle-messy-drawer-with-clothes_24996499.htm
+    previewPath: /free-photo/high-angle-messy-drawer-with-clothes_23-2149363752.jpg
     ratio: "16:10"
     width: 1400
