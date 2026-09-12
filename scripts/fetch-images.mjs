@@ -25,6 +25,42 @@ const CDN = 'https://img.magnific.com';
 const force = process.argv.includes('--force');
 
 /**
+ * Descobre a imagem oficial a partir da página do produto.
+ *
+ * Existe porque comparativo de produto exige a foto daquele modelo, e a foto
+ * daquele modelo mora na página do fabricante, não num banco de imagens. O
+ * fluxo do manifesto sabe baixar uma URL direta; o que faltava era chegar
+ * até ela sem inventar endereço.
+ *
+ * `og:image` é o caminho certo para isso: é a imagem que o próprio
+ * fabricante declara como representação da página, servida por ele.
+ *
+ * Roda no runner, que alcança esses domínios. O ambiente de edição não
+ * alcança, e é por isso que a descoberta não pode acontecer lá.
+ */
+async function ogImage(pageUrl) {
+  const res = await fetch(pageUrl, {
+    headers: {
+      'user-agent':
+        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36',
+      'accept-language': 'pt-BR,pt;q=0.9',
+    },
+  });
+  if (!res.ok) throw new Error(`página respondeu HTTP ${res.status}`);
+  const html = await res.text();
+
+  for (const re of [
+    /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i,
+    /<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i,
+    /<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i,
+  ]) {
+    const m = html.match(re);
+    if (m) return new URL(m[1], pageUrl).href;
+  }
+  throw new Error('a página não declara og:image');
+}
+
+/**
  * Candidatos de URL para uma entrada, em ordem de preferência.
  *
  * Nunca lê URL assinada do manifesto — token com expiração não é dado
@@ -44,6 +80,7 @@ function urlCandidates(item) {
   const out = [];
   const fromEnv = item.assetId && process.env[`IMAGE_URL_${item.assetId}`];
   if (fromEnv) out.push({ url: fromEnv, via: 'assinada' });
+  if (item.imageUrl) out.push({ url: item.imageUrl, via: 'direta' });
   if (item.previewPath) out.push({ url: CDN + item.previewPath, via: 'preview' });
   return out;
 }
@@ -55,7 +92,19 @@ function urlCandidates(item) {
 async function fetchBest(item) {
   const tentativas = [];
 
-  for (const cand of urlCandidates(item)) {
+  /* A página oficial vem primeiro: é a origem mais confiável para a foto de
+     um modelo específico. Falhar aqui não derruba a entrada, que ainda pode
+     ter URL direta declarada. */
+  const candidatos = urlCandidates(item);
+  if (item.pageUrl) {
+    try {
+      candidatos.unshift({ url: await ogImage(item.pageUrl), via: 'og:image' });
+    } catch (error) {
+      tentativas.push(`og:image: ${error.message}`);
+    }
+  }
+
+  for (const cand of candidatos) {
     try {
       const res = await fetch(cand.url);
       if (!res.ok) {
@@ -119,11 +168,19 @@ for (const item of entries) {
 
     let pipeline = sharp(input);
 
-    /* Corte central para a proporção pedida. A origem raramente entrega a
-       proporção exata — modelos e bancos têm a grade deles — e esticar a
-       imagem para caber seria pior do que cortar. */
+    /* `fit: contain` para foto de produto: cortar o quadro cortaria o
+       aparelho, e um comparativo que mostra meia air fryer não compara
+       nada. O fundo vem do manifesto e fica igual nas três. */
     const target_ratio = parseRatio(ratio);
-    if (target_ratio) {
+    if (target_ratio && item.fit === 'contain') {
+      const larguraFinal = width ?? meta.width;
+      pipeline = pipeline.resize({
+        width: larguraFinal,
+        height: Math.round(larguraFinal / target_ratio),
+        fit: 'contain',
+        background: item.background ?? '#ffffff',
+      });
+    } else if (target_ratio) {
       const current = meta.width / meta.height;
       if (Math.abs(current - target_ratio) > 0.005) {
         const [w, h] =
@@ -139,7 +196,9 @@ for (const item of entries) {
       }
     }
 
-    if (width) pipeline = pipeline.resize({ width, withoutEnlargement: true });
+    if (width && item.fit !== 'contain') {
+      pipeline = pipeline.resize({ width, withoutEnlargement: true });
+    }
 
     const out = await pipeline.webp({ quality: 78 }).toBuffer();
     await mkdir(path.dirname(target), { recursive: true });

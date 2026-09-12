@@ -105,3 +105,43 @@ images:
       degradê escuro no card da home, então precisa ter madeira e profundidade
       para não virar chapado branco. Escolhida entre quatro candidatas vistas
       lado a lado.
+
+# ── Comparativo de air fryers ───────────────────────────────
+#  Foto de produto, não fotografia de banco. O comparativo precisa do
+#  aparelho exato, então a origem é a página oficial do fabricante: o
+#  script lê o `og:image` dela, que é a imagem que o próprio fabricante
+#  declara como representação daquele produto.
+#
+#  `fit: contain` em vez de corte: cortar o quadro cortaria o aparelho, e
+#  um comparativo que mostra meia air fryer não compara nada. O fundo é o
+#  mesmo nos três, para as fotos ficarem comparáveis entre si.
+
+  - target: src/assets/blog/organizacao/comparativo-air-fryer-philips-electrolux-britania/philips-na130.webp
+    provider: philips-walita
+    model: NA130/00
+    pageUrl: https://www.walita.com.br/fritadeira-airfryer-serie-1000-xl-philips-walita-preta-1700w-na130-na130_00/p
+    origem: og:image da página oficial do fabricante
+    ratio: "4:3"
+    width: 1000
+    fit: contain
+    background: "#FFFFFF"
+
+  - target: src/assets/blog/organizacao/comparativo-air-fryer-philips-electrolux-britania/electrolux-eaf40.webp
+    provider: electrolux
+    model: EAF40
+    pageUrl: https://loja.electrolux.com.br/air-fryer-electrolux-por-rita-lobo-5-6-l-cinza-efficient-timer-e-conveccao-1400w-eaf40/p
+    origem: og:image da página oficial do fabricante
+    ratio: "4:3"
+    width: 1000
+    fit: contain
+    background: "#FFFFFF"
+
+  - target: src/assets/blog/organizacao/comparativo-air-fryer-philips-electrolux-britania/britania-baf65a.webp
+    provider: britania
+    model: BAF65A
+    pageUrl: https://www.britania.com.br/air-fryer-6-5l-1700w-baf65a/p
+    origem: og:image da página oficial do fabricante
+    ratio: "4:3"
+    width: 1000
+    fit: contain
+    background: "#FFFFFF"
