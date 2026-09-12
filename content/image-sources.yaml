@@ -87,3 +87,38 @@ images:
       Sessão curta de organização. Cozinha real — tijolo aparente, prateleira
       aberta com copos, escorredor, cafeteira — e a pessoa concentrada na
       tarefa, sem posar. É "cabe na minha rotina", não "faxina pesada".
+
+# ── Bloco TEMPORÁRIO de candidatas ──────────────────────────
+#  Capa da categoria na home. Sai daqui assim que uma for escolhida.
+
+  - target: src/assets/_candidatos/home-12418672.webp
+    provider: freepik
+    assetId: 12418672
+    license: free
+    previewPath: /free-photo/living-room-interior-design-with-bookcase_23-2148848678.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/_candidatos/home-7075929.webp
+    provider: freepik
+    assetId: 7075929
+    license: free
+    previewPath: /free-photo/nordic-style-bookshelf-with-plant_23-2148461338.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/_candidatos/home-25811416.webp
+    provider: freepik
+    assetId: 25811416
+    license: free
+    previewPath: /free-photo/interior-design-with-photoframes-shelves_23-2149385440.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/_candidatos/home-19468982.webp
+    provider: freepik
+    assetId: 19468982
+    license: free
+    previewPath: /free-photo/creative-fengshui-practice-living-room-arrangement_23-2149135759.jpg
+    ratio: "16:10"
+    width: 1400

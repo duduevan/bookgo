@@ -266,6 +266,8 @@ const products = defineCollection({
       items: z.array(titledItem.extend({ mockup: z.string().optional() })),
     }),
 
+    /** Cabeçalho comum aos dois blocos de público. */
+    audience: section,
     forWho: section.extend({ items: z.array(z.string()) }),
     notForWho: section.extend({ items: z.array(z.string()) }),
 

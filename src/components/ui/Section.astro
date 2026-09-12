@@ -17,6 +17,15 @@ interface Props {
   align?: 'start' | 'center';
   narrow?: boolean;
   layout?: 'stack' | 'split';
+  /**
+   * Largura da coluna do cabeçalho no `split`.
+   *
+   * A régua estreita padrão serve a títulos de três ou quatro palavras.
+   * Um título longo nela quebra em sete linhas curtas e alonga a coluna
+   * muito além do corpo ao lado, que é o vazio que o split existe para
+   * evitar. Nesses casos, alargar o cabeçalho fecha a mancha.
+   */
+  headWidth?: string;
 }
 
 const {
@@ -28,11 +37,15 @@ const {
   align = 'start',
   narrow = false,
   layout = 'stack',
+  headWidth,
 } = Astro.props;
 ---
 
 <section id={id} class:list={['section', `tone-${tone}`, `align-${align}`]}>
-  <div class:list={['container', `l-${layout}`]}>
+  <div
+    class:list={['container', `l-${layout}`]}
+    style={headWidth ? `--split-head:${headWidth};--split-gap:var(--s-7)` : undefined}
+  >
     {
       (eyebrow || title || intro) && (
         <header class="head">
@@ -81,8 +94,8 @@ const {
   @media (min-width: 62rem) {
     .l-split {
       display: grid;
-      grid-template-columns: minmax(0, 19rem) minmax(0, 1fr);
-      gap: var(--s-9);
+      grid-template-columns: minmax(0, var(--split-head, 19rem)) minmax(0, 1fr);
+      gap: var(--split-gap, var(--s-9));
       align-items: start;
     }
 

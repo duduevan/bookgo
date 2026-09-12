@@ -4,20 +4,37 @@ import Icon from '../ui/Icon.astro';
 
 interface Props {
   items: string[];
-  /** `minus` é a exclusão neutra de "para quem não é" — nunca um X. */
-  marker?: 'check' | 'minus' | 'dot' | 'dash';
+  /**
+   * `minus` é a exclusão neutra; `x` é a exclusão explícita, para quando a
+   * oposição ao `check` é o argumento da seção e precisa ser lida de
+   * relance. O X nunca aparece em vermelho de alerta: quem não é o público
+   * do material não está diante de um erro.
+   */
+  marker?: 'check' | 'minus' | 'x' | 'dot' | 'dash';
   columns?: boolean;
+  /**
+   * Põe o ícone num disco de fundo suave. Só onde o marcador carrega
+   * significado, não onde ele apenas pontua uma lista.
+   */
+  badge?: boolean;
 }
 
-const { items, marker = 'dot', columns = false } = Astro.props;
+const { items, marker = 'dot', columns = false, badge = false } = Astro.props;
+const iconMarker = marker === 'check' || marker === 'minus' || marker === 'x';
 ---
 
-<ul class:list={['list', `m-${marker}`, { columns }]}>
+<ul class:list={['list', `m-${marker}`, { columns, badge }]}>
   {
     items.map((item) => (
       <li>
-        {marker === 'check' || marker === 'minus' ? (
-          <Icon name={marker} class="bullet" />
+        {iconMarker ? (
+          badge ? (
+            <span class="disc" aria-hidden="true">
+              <Icon name={marker} class="bullet" />
+            </span>
+          ) : (
+            <Icon name={marker} class="bullet" />
+          )
         ) : (
           <span class="mark" aria-hidden="true" />
         )}
@@ -59,6 +76,43 @@ const { items, marker = 'dot', columns = false } = Astro.props;
   /* Exclusão é informação neutra, não alerta: fica no tom secundário. */
   .m-minus :global(.bullet) {
     color: var(--color-muted);
+  }
+
+  /* O X usa o acento da paleta do produto, não vermelho de sistema. */
+  .m-x :global(.bullet) {
+    color: var(--color-accent);
+  }
+
+  /* Disco de fundo: o marcador ganha presença sem crescer de tamanho, e os
+     dois lados ficam distinguíveis de relance, não só pela leitura. */
+  .badge li {
+    grid-template-columns: 1.75rem 1fr;
+    gap: var(--s-4);
+    align-items: start;
+  }
+
+  .disc {
+    width: 1.75rem;
+    height: 1.75rem;
+    margin-top: -0.05em;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+  }
+
+  .disc :global(.bullet) {
+    --icon-size: 1rem;
+    margin-top: 0;
+  }
+
+  .badge.m-check .disc {
+    background: color-mix(in srgb, var(--color-primary) 24%, transparent);
+    color: var(--color-primary-dark);
+  }
+
+  .badge.m-x .disc {
+    background: color-mix(in srgb, var(--color-accent) 26%, transparent);
+    color: color-mix(in srgb, var(--color-accent) 78%, var(--color-text));
   }
 
   .mark {

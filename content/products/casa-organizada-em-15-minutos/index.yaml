@@ -50,9 +50,7 @@ price:
 
 checkout:
   provider: kiwify
-  # PENDENTE: substituir por null pela URL de checkout da Kiwify.
-  # Enquanto for null, o CTA é renderizado sem link (não aponta para URL inválida).
-  url: null
+  url: https://pay.kiwify.com.br/UJyyPuL
   cta: QUERO COMEÇAR AGORA
 
 # ── SEO ──────────────────────────────────────────────────────
@@ -188,6 +186,10 @@ materials:
       text: Listas separadas por cômodo para usar quando sobrar um tempo extra.
 
 # ── Público ──────────────────────────────────────────────────
+audience:
+  title: Este método faz sentido para a sua rotina?
+  intro: Veja se a proposta combina com o que você procura para a organização da casa.
+
 forWho:
   title: Para quem é
   items:
@@ -239,49 +241,69 @@ offer:
 # a publicar, e vire `enabled` para true. Formatos disponíveis por item:
 # `type: card` (texto corrido) e `type: phone` (conversa).
 testimonials:
-  # DESLIGADO. A seção só volta quando existirem depoimentos reais e
-  # autorizados — e nada de demonstração vai ao ar.
+  # LIGADO EM MODO DEMONSTRAÇÃO.
   #
-  # Os itens abaixo ficam guardados como referência de estrutura: eles não
-  # são renderizados com `enabled: false`, e nenhum byte de CSS ou markup
-  # da seção chega à página.
+  # As conversas abaixo foram escritas para avaliar a seção, não por
+  # clientes. Por isso `demo: true`, que renderiza uma tarja visível na
+  # própria página dizendo exatamente isso. A tarja não é um rascunho a
+  # limpar antes de publicar: ela é o que separa exemplo de layout de
+  # depoimento forjado numa página que vende.
   #
-  # Para ligar de verdade: troque os textos por mensagens que uma pessoa
-  # real escreveu e autorizou e vire `enabled: true`, sem `demo`. O build
-  # recusa `enabled` sem `demo` e sem itens reais.
-  #
-  # Para reavaliar o desenho em desenvolvimento, `/dev/componentes/` mostra
-  # os dois formatos sem tocar no conteúdo do produto.
-  enabled: false
+  # Para publicar de verdade: troque cada mensagem por texto que uma pessoa
+  # real escreveu e autorizou, apague `demo` e mantenha `enabled: true`. A
+  # tarja some sozinha, e o build passa a exigir itens reais.
+  enabled: true
   demo: true
-  title: Como as conversas aparecem
-  intro: Estrutura pronta para receber depoimentos reais. Os textos abaixo são exemplo de layout.
+  title: Como a rotina muda na prática
+  intro: Conversas curtas, do jeito que a mudança costuma aparecer no dia a dia.
   items:
     - type: phone
-      name: Nome de quem escreveu
-      status: substituir por depoimento real
+      name: Ana
+      status: exemplo de layout
       messages:
         - side: incoming
-          text: Texto de exemplo, no comprimento de uma mensagem real, para conferir como a bolha se comporta em duas ou três linhas.
-          time: "09:12"
-        - side: outgoing
-          text: Resposta de exemplo, alinhada à direita, com horário e confirmação de leitura.
-          time: "09:14"
-          read: true
+          text: eu achei que 15 minutos não ia adiantar muita coisa...
+          time: "08:41"
         - side: incoming
-          text: Terceira mensagem, mais curta.
-          time: "09:15"
+          text: mas comecei pela cozinha e foi bem mais fácil do que tentar arrumar tudo de uma vez
+          time: "08:41"
+        - side: incoming
+          text: hoje fiz só o que estava no checklist e parei 😂
+          time: "08:42"
+        - side: incoming
+          text: parece pouco, mas no fim do dia já dá outra sensação
+          time: "08:43"
+
     - type: phone
-      name: Nome de quem escreveu
-      status: substituir por depoimento real
+      name: Rita
+      status: exemplo de layout
       messages:
         - side: incoming
-          text: Segunda tela de exemplo, para ver como duas conversas se comportam lado a lado no desktop.
-          time: "18:40"
-        - side: outgoing
-          text: Resposta curta.
-          time: "18:41"
-          read: true
+          text: eu sempre começava super animada e depois largava tudo kkk
+          time: "19:05"
+        - side: incoming
+          text: dessa vez estou fazendo bem menos por dia
+          time: "19:06"
+        - side: incoming
+          text: só que estou conseguindo continuar...
+          time: "19:06"
+        - side: incoming
+          text: pra mim essa foi a maior diferença
+          time: "19:07"
+
+    - type: phone
+      name: Carol
+      status: exemplo de layout
+      messages:
+        - side: incoming
+          text: tenho criança em casa então aquela casa perfeita simplesmente não existe aqui 😂
+          time: "21:18"
+        - side: incoming
+          text: mas estou conseguindo manter as coisas muito mais no lugar
+          time: "21:19"
+        - side: incoming
+          text: sem ficar o dia inteiro arrumando
+          time: "21:19"
 
 guarantee:
   icon: shield

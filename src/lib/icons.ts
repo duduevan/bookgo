@@ -20,8 +20,11 @@ export const ICONS = {
   /** Confirmação. Listas de inclusão, "para quem é". */
   check: '<path d="M5 12.5 9.5 17 19 7"/>',
 
-  /** Exclusão neutra. "Para quem não é" — nunca um X, que soa a erro. */
+  /** Exclusão neutra, para listas onde a ausência não é o argumento. */
   minus: '<path d="M6 12h12"/>',
+
+  /** Exclusão explícita. Usado só onde a oposição a `check` é o argumento. */
+  x: '<path d="M6.75 6.75 17.25 17.25"/><path d="M17.25 6.75 6.75 17.25"/>',
 
   /** Divulgar/recolher do FAQ. Gira 180° quando aberto. */
   'chevron-down': '<path d="M6 9.5 12 15.5 18 9.5"/>',

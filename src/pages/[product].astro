@@ -1,6 +1,5 @@
 ---
 import ProductLayout from '../layouts/ProductLayout.astro';
-import Breadcrumbs from '../components/seo/Breadcrumbs.astro';
 import Section from '../components/ui/Section.astro';
 import Cta from '../components/ui/Cta.astro';
 import Icon from '../components/ui/Icon.astro';
@@ -127,12 +126,16 @@ const crumbs = [
     }}
   />
 
-  <div class="crumb-bar container">
-    <Breadcrumbs items={crumbs} />
-  </div>
-
   {/* Problema */}
-  <Section layout="split" title={d.problem.title} intro={d.problem.intro}>
+  {/* Cabeçalho largo: a manchete da dor é longa e, na coluna estreita
+      padrão, quebrava em sete linhas curtas que esticavam o lado esquerdo
+      muito além dos bullets ao lado. */}
+  <Section
+    layout="split"
+    headWidth="27rem"
+    title={d.problem.title}
+    intro={d.problem.intro}
+  >
     <BulletList items={[...d.problem.items]} marker="dot" columns />
     {d.problem.close && <p class="close">{d.problem.close}</p>}
   </Section>
@@ -214,15 +217,15 @@ const crumbs = [
   }
 
   {/* Público */}
-  <Section>
+  <Section title={d.audience.title} intro={d.audience.intro} align="center">
     <div class="audience">
       <div class="aud yes">
-        <h2>{d.forWho.title}</h2>
-        <BulletList items={[...d.forWho.items]} marker="check" />
+        <h3>{d.forWho.title}</h3>
+        <BulletList items={[...d.forWho.items]} marker="check" badge />
       </div>
       <div class="aud no">
-        <h2>{d.notForWho.title}</h2>
-        <BulletList items={[...d.notForWho.items]} marker="minus" />
+        <h3>{d.notForWho.title}</h3>
+        <BulletList items={[...d.notForWho.items]} marker="x" badge />
       </div>
     </div>
   </Section>
@@ -456,9 +459,15 @@ const crumbs = [
     background: var(--color-surface-raised);
   }
 
-  .audience h2 {
+  .audience h3 {
     font-size: var(--t-2);
     margin-bottom: var(--s-5);
+  }
+
+  /* O lado da exclusão não é um alerta: recebe o acento da paleta numa
+     borda fina, o suficiente para separar os dois lados de relance. */
+  .aud.no {
+    border-color: color-mix(in srgb, var(--color-accent) 26%, var(--color-border));
   }
 
   @media (min-width: 56rem) {
@@ -535,10 +544,4 @@ const crumbs = [
     font-size: var(--t--1);
   }
 
-  @media (min-width: 46rem) {
-    .audience {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: var(--s-9);
-    }
-  }
 </style>
