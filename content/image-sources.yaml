@@ -88,37 +88,20 @@ images:
       aberta com copos, escorredor, cafeteira — e a pessoa concentrada na
       tarefa, sem posar. É "cabe na minha rotina", não "faxina pesada".
 
-# ── Bloco TEMPORÁRIO de candidatas ──────────────────────────
-#  Capa da categoria na home. Sai daqui assim que uma for escolhida.
-
-  - target: src/assets/_candidatos/home-12418672.webp
-    provider: freepik
-    assetId: 12418672
-    license: free
-    previewPath: /free-photo/living-room-interior-design-with-bookcase_23-2148848678.jpg
-    ratio: "16:10"
-    width: 1400
-
-  - target: src/assets/_candidatos/home-7075929.webp
-    provider: freepik
-    assetId: 7075929
-    license: free
-    previewPath: /free-photo/nordic-style-bookshelf-with-plant_23-2148461338.jpg
-    ratio: "16:10"
-    width: 1400
-
-  - target: src/assets/_candidatos/home-25811416.webp
-    provider: freepik
-    assetId: 25811416
-    license: free
-    previewPath: /free-photo/interior-design-with-photoframes-shelves_23-2149385440.jpg
-    ratio: "16:10"
-    width: 1400
-
-  - target: src/assets/_candidatos/home-19468982.webp
+  # ── Home: capa de categoria ─────────────────────────────────
+  #  O arquivo é nomeado pelo id da categoria. A home resolve a capa por
+  #  esse nome, então uma categoria nova só precisa de um arquivo aqui.
+  - target: src/assets/categories/organizacao.webp
     provider: freepik
     assetId: 19468982
     license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/creative-fengshui-practice-living-room-arrangement_19468982.htm
     previewPath: /free-photo/creative-fengshui-practice-living-room-arrangement_23-2149135759.jpg
     ratio: "16:10"
     width: 1400
+    note: >-
+      Sala habitada com prateleiras, cestos e cadeira de madeira. Fica sob um
+      degradê escuro no card da home, então precisa ter madeira e profundidade
+      para não virar chapado branco. Escolhida entre quatro candidatas vistas
+      lado a lado.
