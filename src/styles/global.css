@@ -282,3 +282,57 @@ ol {
     scroll-behavior: auto !important;
   }
 }
+
+/* ── Linguagem de interação dos cartões ─────────────────────
+   Um só comportamento de hover para todo cartão do site: categoria da home,
+   artigo, cartão editorial, princípio, subtópico. Mora aqui, e não em cada
+   componente, porque a consistência é o ponto: seis efeitos diferentes em
+   seis cartões parecem seis produtos.
+
+   Quem participa marca `data-card` no elemento raiz. O movimento é discreto
+   de propósito, nada de salto, inclinação ou brilho.
+
+   `prefers-reduced-motion` já zera as transições globalmente mais acima,
+   mas transformação não é transição: sem a regra do fim, o cartão ainda
+   saltaria de uma vez. */
+[data-card] {
+  transition:
+    transform var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    background-color var(--dur) var(--ease);
+}
+
+[data-card]:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--color-primary) 32%, var(--color-border));
+  box-shadow: var(--shadow);
+}
+
+/* A foto acompanha com um zoom que quase não se percebe. Precisa de
+   `overflow: hidden` no recorte, que os cartões com imagem já têm. */
+[data-card] img {
+  transition: transform calc(var(--dur) * 2) var(--ease);
+}
+
+[data-card]:hover img {
+  transform: scale(1.04);
+}
+
+/* Seta e ícone de avanço andam junto, sem virar animação própria. */
+[data-card] .icon,
+[data-card] .u-arrow {
+  transition: transform var(--dur) var(--ease);
+}
+
+[data-card]:hover .u-arrow {
+  transform: translateX(3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-card]:hover,
+  [data-card]:hover img,
+  [data-card]:hover .u-arrow {
+    transform: none;
+  }
+}

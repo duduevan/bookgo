@@ -36,7 +36,7 @@ const thumb = thumbnail
   : undefined;
 ---
 
-<article class:list={['card', { featured, 'has-thumb': thumb }]}>
+<article class:list={['card', { featured, 'has-thumb': thumb }]} data-card>
   {
     thumb && (
       <div class="thumb">
@@ -71,7 +71,7 @@ const thumb = thumbnail
 
   <span class="more" aria-hidden="true">
     Ler artigo
-    <Icon name="arrow-right" />
+    <Icon name="arrow-right" class="u-arrow" />
   </span>
 </article>
 
@@ -98,21 +98,6 @@ const thumb = thumbnail
     height: 100%;
     object-fit: cover;
     display: block;
-    transition: transform var(--dur) var(--ease);
-  }
-
-  .card:hover .thumb :global(img) {
-    transform: scale(1.03);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .thumb :global(img) {
-      transition: none;
-    }
-
-    .card:hover .thumb :global(img) {
-      transform: none;
-    }
   }
 
   .card {
@@ -127,16 +112,8 @@ const thumb = thumbnail
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     background: var(--color-surface-raised);
-    transition:
-      border-color var(--dur) var(--ease),
-      transform var(--dur) var(--ease),
-      box-shadow var(--dur) var(--ease);
-  }
-
-  .card:hover {
-    border-color: color-mix(in srgb, var(--color-primary) 32%, var(--color-border));
-    transform: translateY(-2px);
-    box-shadow: var(--shadow);
+    /* Transição e hover vivem em `global.css`, sob `[data-card]`: a
+       linguagem de interação é a mesma em todo cartão do site. */
   }
 
   .meta {
@@ -193,11 +170,6 @@ const thumb = thumbnail
 
   .more :global(.icon) {
     --icon-size: 1rem;
-    transition: transform var(--dur) var(--ease);
-  }
-
-  .card:hover .more :global(.icon) {
-    transform: translateX(3px);
   }
 
   /* Empurra o rodapé do card para baixo, alinhando cards de alturas

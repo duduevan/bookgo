@@ -18,7 +18,7 @@ no produto, muda aqui primeiro — e só depois na copy.
 | Mecanismo | Método dos 15 Minutos |
 | Formato da V1 | Curso digital predominantemente textual |
 | Vídeos | **Não fazem parte da V1** |
-| Checkout | Kiwify |
+| Checkout | Kiwify, `https://pay.kiwify.com.br/UJyyPuL` |
 | Entrega | Área de membros da Kiwify |
 | Liberação | Após a aprovação do pagamento |
 | Garantia | 7 dias |
@@ -88,13 +88,11 @@ qualquer cenário; "imediato" não.
 
 A copy da LP **não** é escrita à mão: sai de
 `content/products/casa-organizada-em-15-minutos/index.yaml`. Para alterar
-preço, checkout, módulos ou materiais, edite o YAML — o schema em
+preço, checkout, módulos ou materiais, edite o YAML. O schema em
 `src/content.config.ts` recusa campo faltando ou com tipo errado.
 
 Pontos ainda em aberto, fora do escopo deste documento:
 
-- **URL definitiva de checkout** — hoje `checkout.url: null`, e os CTAs são
-  renderizados sem link em vez de apontar para URL inválida.
-- **Mockups dos quatro PDFs** — a seção de materiais já aceita
+- **Mockups dos quatro PDFs.** A seção de materiais já aceita
   `mockup:` por item; os arquivos só devem ser produzidos a partir dos PDFs
   reais, nunca de páginas inventadas.
