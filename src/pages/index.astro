@@ -12,8 +12,7 @@ import {
   getPosts,
   getPillars,
   getPostsByPillar,
-  getFeaturedProduct,
-  getProductsByCategory,
+  getShowcaseProducts,
   pillarUrl,
   productUrl,
 } from '../lib/content';
@@ -101,11 +100,8 @@ const categoryCards = await Promise.all(
 const latestPosts = (await getPosts()).slice(0, 3);
 const categoryNameById = new Map(categories.map((c) => [c.id, c.data.name]));
 
-/** Material em destaque, declarado no YAML do produto. */
-const featuredProduct = await getFeaturedProduct();
-
-/** Materiais práticos, agrupados pela categoria declarada em cada um. */
-const productGroups = await getProductsByCategory();
+/** Materiais práticos publicados, com o destaque abrindo a grade. */
+const products = await getShowcaseProducts();
 ---
 
 <SiteLayout
@@ -236,39 +232,42 @@ const productGroups = await getProductsByCategory();
     </div>
   </section>
 
-  {/* ── Material em destaque ─────────────────────────────── */}
-  {
-    featuredProduct && (
-      <section class="section tone-soft">
-        <div class="container">
-          <header class="head">
-            <p class="eyebrow">Material em destaque</p>
-            <h2>Feito para caber numa rotina que não para.</h2>
-          </header>
+  {/* ── Materiais práticos ───────────────────────────────────
+      A vitrine dos produtos próprios, em grade, logo depois das
+      categorias: quem chegou em "Explorar" quer ver o que existe, e o
+      que existe são os materiais e os artigos.
 
-          <article
-            class="product"
-            style={themeToStyle(featuredProduct.data.theme)}
-            data-card
-          >
-            <div class="product-body">
-              <h3>
-                <a href={productUrl(featuredProduct.data.slug)}>
-                  <span class="overlay" />
-                  {featuredProduct.data.name}
-                </a>
-              </h3>
-              <p>{featuredProduct.data.tagline}</p>
-              <p class="product-meta">
-                <span class="price">{featuredProduct.data.price.display}</span>
-                <span>pagamento único</span>
+      Uma grade só, e não uma prateleira por categoria. Com poucos
+      materiais, a prateleira gastava a largura inteira da tela com um
+      cartão esticado, e o destaque gastava outra faixa repetindo o
+      mesmo produto. A categoria de cada material continua aparecendo,
+      dentro do cartão, que é onde ela informa sem custar uma linha.
+
+      Nenhum cartão é escrito aqui: material novo entra por existir, e o
+      destaque do YAML apenas abre a grade. Os cartões levam à landing
+      page, nunca ao checkout. */}
+  {
+    products.length > 0 && (
+      <section class="section tone-warm" id="materiais">
+        <div class="container">
+          <header class="head row">
+            <div>
+              <p class="eyebrow">Materiais práticos</p>
+              <h2>Para colocar em prática no seu ritmo.</h2>
+              <p class="lede">
+                Método em texto direto e materiais para usar enquanto aprende.
+                Pagamento único, sem mensalidade.
               </p>
             </div>
-            <span class="go" aria-hidden="true">
-              Conhecer o método
-              <Icon name="arrow-right" class="u-arrow" />
-            </span>
-          </article>
+          </header>
+
+          <ul class="products">
+            {products.map((product) => (
+              <li>
+                <ProductCard product={product} showCategory />
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
     )
@@ -303,81 +302,38 @@ const productGroups = await getProductsByCategory();
     )
   }
 
-  {/* ── Materiais práticos ───────────────────────────────────
-      O catálogo dos produtos próprios, agrupado pela categoria que cada
-      um declara no seu YAML. Nenhum cartão é escrito aqui: material novo
-      entra por existir, e categoria sem material publicado simplesmente
-      não aparece.
-
-      Fica depois do blog de propósito. O destaque já estabelece, lá em
-      cima, que a BookGo tem produtos próprios; repetir o mesmo cartão
-      duas telas antes transformaria a home numa sequência de chamadas
-      comerciais, que é o oposto da hierarquia editorial dela.
-
-      Os cartões levam à landing page, nunca ao checkout. */}
-  {
-    productGroups.length > 0 && (
-      <section class="section tone-warm" id="materiais">
-        <div class="container">
-          <header class="head">
-            <p class="eyebrow">Materiais práticos</p>
-            <h2>Métodos, guias e materiais para colocar em prática no seu ritmo.</h2>
-          </header>
-
-          <div class="groups">
-            {productGroups.map((group) => (
-              <section class="group" aria-labelledby={`grupo-${group.id}`}>
-                <h3 class="group-title" id={`grupo-${group.id}`}>
-                  {group.label}
-                </h3>
-                <ul class="products">
-                  {group.products.map((product) => (
-                    <li>
-                      <ProductCard product={product} />
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ))}
-          </div>
-        </div>
-      </section>
-    )
-  }
 </SiteLayout>
 
 <style>
-  /* Materiais práticos: uma prateleira por categoria. A grade usa
-     `auto-fill`, e não `auto-fit`, para que uma categoria com um material
-     só ocupe uma célula em vez de esticar pela faixa inteira. */
-  .groups {
-    display: grid;
-    gap: var(--s-8);
-  }
+  /* Materiais práticos: uma grade só, no máximo três por linha.
 
-  .group-title {
-    font-size: var(--t--1);
-    letter-spacing: var(--tr-eyebrow);
-    text-transform: uppercase;
-    font-weight: var(--w-semibold);
-    color: var(--color-muted);
-    padding-bottom: var(--s-3);
-    border-bottom: 1px solid var(--color-border);
-    margin-bottom: var(--s-5);
-  }
-
+     Os cartões são limitados a um terço da faixa, alinhados à esquerda
+     junto do título da seção: dois materiais aparecem do mesmo tamanho
+     que apareceriam três, e não como duas metades esticadas. Material
+     novo entra na terceira coluna e depois quebra a linha sozinho. */
   .products {
     list-style: none;
     margin: 0;
     padding: 0;
-    display: grid;
+    display: flex;
+    flex-wrap: wrap;
     gap: var(--s-5);
-    grid-template-columns: repeat(auto-fill, minmax(min(20rem, 100%), 1fr));
   }
 
-  @media (min-width: 64rem) {
-    .products {
-      grid-template-columns: repeat(auto-fill, minmax(min(22rem, 100%), 1fr));
+  .products > li {
+    flex: 1 1 min(20rem, 100%);
+    max-width: 100%;
+    display: flex;
+  }
+
+  .products > li > :global(*) {
+    width: 100%;
+  }
+
+  @media (min-width: 60rem) {
+    .products > li {
+      flex-basis: calc((100% - 2 * var(--s-5)) / 3);
+      max-width: calc((100% - 2 * var(--s-5)) / 3);
     }
   }
 
@@ -674,55 +630,6 @@ const productGroups = await getProductsByCategory();
 
   .category.has-cover .go {
     color: #ffffff;
-  }
-
-  /* ── Material em destaque ─────────────────────────────────── */
-  .product {
-    position: relative;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: end;
-    justify-content: space-between;
-    gap: var(--s-5);
-    padding: clamp(1.5rem, 1.2rem + 1.6vw, 2.5rem);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    /* Paleta do próprio produto: quem clica cai numa landing page com as
-       mesmas cores, e o card já anuncia isso. */
-    background: var(--color-primary-soft);
-    border-color: color-mix(in srgb, var(--color-primary) 24%, var(--color-border));
-  }
-
-  .product h3 {
-    font-size: var(--t-2);
-    max-width: 20ch;
-  }
-
-  .product h3 a {
-    color: var(--color-text);
-    text-decoration: none;
-  }
-
-  .product-body > p {
-    margin-top: var(--s-3);
-    color: var(--color-muted);
-    font-size: var(--t-0);
-    max-width: 52ch;
-  }
-
-  .product-meta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: var(--s-3);
-    margin-top: var(--s-4);
-    font-size: var(--t--1);
-  }
-
-  .price {
-    font-size: var(--t-1);
-    font-weight: var(--w-semibold);
-    color: var(--color-text);
   }
 
   /* ── Últimos artigos ──────────────────────────────────────── */

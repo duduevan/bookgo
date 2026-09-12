@@ -56,40 +56,25 @@ export const getProducts = () =>
 export const getProduct = (id: string) => getEntry('products', id);
 
 /**
- * Materiais práticos agrupados por categoria, para a home.
+ * Materiais práticos para a vitrine da home, em ordem de exibição.
  *
- * Só entra categoria que tem produto publicado: rascunho já é excluído por
- * `getProducts`, e uma categoria sem nada dentro simplesmente não aparece.
- * A ordem das categorias é alfabética pelo rótulo, que é uma regra
- * explicável e estável; dentro de cada uma, a ordem é a da coleção.
- */
-export async function getProductsByCategory(): Promise<
-  Array<{ id: string; label: string; products: Product[] }>
-> {
-  const products = await getProducts();
-  const grupos = new Map<string, { id: string; label: string; products: Product[] }>();
-
-  for (const product of products) {
-    const { id, label } = product.data.category;
-    const grupo = grupos.get(id) ?? { id, label, products: [] };
-    grupo.products.push(product);
-    grupos.set(id, grupo);
-  }
-
-  return [...grupos.values()].sort((a, b) => a.label.localeCompare(b.label, 'pt-BR'));
-}
-
-/**
- * Produto em destaque na home.
+ * O destaque abre a grade e o resto segue na ordem da coleção. É o que
+ * mantém a flag `featured` valendo alguma coisa sem devolver a ela uma
+ * faixa inteira da página: material novo entra na grade por existir, e
+ * não toma o primeiro lugar de ninguém em silêncio.
  *
- * Marcado com `featured: true` vence; havendo mais de um, o primeiro. Sem
- * nenhum marcado, cai no primeiro publicado, para a home não depender de
- * alguém lembrar de marcar. Rascunho nunca entra, porque `getProducts` já
- * os exclui.
+ * Rascunho não entra, porque `getProducts` já o exclui. A categoria de
+ * cada material continua sendo dado do YAML, exibida no próprio cartão,
+ * em vez de virar uma prateleira por linha: com poucos materiais, uma
+ * linha por categoria gasta a largura inteira da tela com um cartão só.
  */
-export async function getFeaturedProduct(): Promise<Product | undefined> {
+export async function getShowcaseProducts(): Promise<Product[]> {
   const products = await getProducts();
-  return products.find((p) => p.data.featured) ?? products[0];
+  const destaque = products.find((p) => p.data.featured);
+
+  return destaque
+    ? [destaque, ...products.filter((p) => p !== destaque)]
+    : products;
 }
 
 /** O CTA só vira link quando existe uma URL de checkout configurada. */
