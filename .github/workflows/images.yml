@@ -82,7 +82,20 @@ jobs:
 
           git add src/assets
           git commit -m "Materializa imagens declaradas em content/image-sources.yaml"
-          git push origin HEAD:${{ github.ref_name }}
+
+          # A branch pode ter andado enquanto as imagens eram baixadas: os
+          # workflows de conferência também commitam nela. Sem o rebase, o
+          # push é recusado e todo o download é jogado fora, que foi o que
+          # aconteceu. O commit só toca em src/assets, então não há conflito
+          # possível com o que chegou por fora.
+          for tentativa in 1 2 3; do
+            git pull --rebase origin "${{ github.ref_name }}" && \
+              git push origin HEAD:${{ github.ref_name }} && exit 0
+            echo "::warning::Push recusado na tentativa $tentativa. A branch andou; tentando de novo."
+            sleep $((tentativa * 5))
+          done
+          echo "::error::Não foi possível publicar as imagens depois de três tentativas."
+          exit 1
 
       - name: Conferir que o site ainda constrói
         run: npm run build
