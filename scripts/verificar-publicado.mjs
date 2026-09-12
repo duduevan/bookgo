@@ -33,9 +33,9 @@ const PAGINAS = [
   }],
   ['lp-cardapio', '/cardapio-da-semana-em-20-minutos/', ['desktop', 'mobile'], {
     checkout: 'https://pay.kiwify.com.br/6VGDS8V',
-    /* Este produto ainda não tem avaliação própria, e a seção não deve
-       existir vazia. */
-    avaliacoes: 'nenhuma',
+    /* Uma avaliação real publicada. Com um item só, a seção existe e os
+       controles do carrossel não: não há o que navegar. */
+    avaliacoes: 'pelo menos uma',
   }],
   ['artigo', '/blog/casa/organizacao/como-manter-a-casa-organizada/', ['desktop', 'tablet', 'mobile']],
   ['cozinha15', '/blog/casa/organizacao/organizar-a-cozinha-em-15-minutos/', ['desktop', 'mobile']],
@@ -46,6 +46,10 @@ const PAGINAS = [
   ['organizacao', '/blog/casa/organizacao/', ['desktop', 'mobile']],
   ['cozinha', '/blog/casa/cozinha/', ['desktop', 'mobile']],
   ['comparativo', '/blog/casa/cozinha/comparativo-air-fryer-philips-electrolux-britania/', ['desktop', 'tablet', 'mobile']],
+  ['cardapio-simples', '/blog/casa/cozinha/cardapio-semanal-simples/', ['desktop', 'mobile']],
+  ['lista-compras', '/blog/casa/cozinha/lista-de-compras-a-partir-do-cardapio/', ['desktop', 'mobile']],
+  ['jantar', '/blog/casa/cozinha/nao-sei-o-que-fazer-para-o-jantar/', ['desktop', 'mobile']],
+  ['semana-muda', '/blog/casa/cozinha/planejar-refeicoes-quando-a-semana-muda/', ['desktop', 'mobile']],
 ];
 
 /**
