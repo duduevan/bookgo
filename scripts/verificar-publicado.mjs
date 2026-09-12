@@ -24,8 +24,11 @@ const OUT = '_verificacao';
 const PAGINAS = [
   ['home', '/', ['desktop', 'mobile']],
   ['lp', '/casa-organizada-em-15-minutos/', ['desktop', 'mobile']],
-  ['artigo', '/blog/organizacao/como-manter-a-casa-organizada/', ['desktop', 'mobile']],
-  ['categoria', '/blog/organizacao/', ['desktop', 'mobile']],
+  ['artigo', '/blog/casa/organizacao/como-manter-a-casa-organizada/', ['desktop', 'mobile']],
+  ['pilar', '/blog/casa/', ['desktop', 'mobile']],
+  ['organizacao', '/blog/casa/organizacao/', ['desktop', 'mobile']],
+  ['cozinha', '/blog/casa/cozinha/', ['desktop', 'mobile']],
+  ['comparativo', '/blog/casa/cozinha/comparativo-air-fryer-philips-electrolux-britania/', ['desktop', 'mobile']],
 ];
 
 /**
@@ -47,7 +50,14 @@ const RECURSOS = ['/sitemap-index.xml', '/robots.txt', '/llms.txt'];
  * em `/sitemap.xml` daria o mesmo 200 e seria conteúdo duplicado. O que
  * precisa ser conferido é o 301 em si, então aqui o redirect não é seguido.
  */
-const REDIRECIONAM = { '/sitemap.xml': '/sitemap-index.xml' };
+const REDIRECIONAM = {
+  '/sitemap.xml': '/sitemap-index.xml',
+  /* Migração do blog. Destino direto, nunca em cadeia: o que se confere aqui
+     é que uma URL antiga chega ao novo endereço num salto só. */
+  '/blog/organizacao/': '/blog/casa/organizacao/',
+  '/blog/organizacao/como-manter-a-casa-organizada/':
+    '/blog/casa/organizacao/como-manter-a-casa-organizada/',
+};
 
 const VIEWPORTS = { desktop: { width: 1440, height: 1000 }, mobile: { width: 390, height: 844 } };
 
@@ -126,6 +136,29 @@ for (const [nome, caminho, viewports] of PAGINAS) {
     await page.screenshot({ path: `${OUT}/${nome}-${vp}.jpg`, fullPage: true, quality: 80, type: 'jpeg' });
 
     /* Na LP, todo CTA de compra tem que apontar para o checkout real. */
+    /* No comparativo, todo link de afiliado precisa sair com a relação
+       declarada e em aba nova. */
+    if (nome === 'comparativo' && vp === 'desktop') {
+      const afiliados = await page.evaluate(() =>
+        [...document.querySelectorAll('a[href*="meli.la"]')].map((a) => ({
+          href: a.href,
+          rel: a.rel,
+          target: a.target,
+          evento: a.dataset.bookgoEvent ?? '',
+        }))
+      );
+      registrar(`         afiliados: ${afiliados.length} link(s)`);
+      for (const a of afiliados) {
+        registrar(`         · ${a.href}  rel="${a.rel}"  target=${a.target}  ${a.evento}`);
+        if (!a.rel.includes('sponsored') || !a.rel.includes('nofollow') || !a.rel.includes('noopener'))
+          problemas.push(`link de afiliado sem rel completo: ${a.href}`);
+        if (a.target !== '_blank') problemas.push(`link de afiliado fora de aba nova: ${a.href}`);
+        if (a.evento !== 'affiliate_click')
+          problemas.push(`link de afiliado sem affiliate_click: ${a.href}`);
+      }
+      if (afiliados.length === 0) problemas.push('o comparativo não tem link de afiliado');
+    }
+
     if (nome === 'lp' && vp === 'desktop') {
       const hrefs = await page.evaluate(() =>
         [...document.querySelectorAll('a')].map((a) => a.href)
