@@ -125,9 +125,21 @@ async function abrir(caminho, { consent } = {}) {
   /* O status das respostas da Meta importa: um script bloqueado e um script
      ausente dão a mesma tela, e só o tráfego separa os dois casos. */
   const respostas = [];
-  page.on('response', (r) => {
+  /* A resposta de `signals/config` é a instrução que o Pixel segue: é ali
+     que a Meta diz o que aquele conjunto de dados aceita. Com o Pixel
+     carregando, validando o evento e não enviando nada, essa resposta é o
+     único lugar que ainda pode explicar o silêncio. */
+  const configs = [];
+  page.on('response', async (r) => {
     if (/connect\.facebook\.net|facebook\.com\/tr/.test(r.url())) {
       respostas.push(`${r.status()} ${r.url().split('?')[0]}`);
+    }
+    if (r.url().includes('/signals/config/')) {
+      try {
+        configs.push((await r.text()).slice(0, 700));
+      } catch (e) {
+        configs.push('(corpo indisponível)');
+      }
     }
   });
   page.on('requestfailed', (r) => {
@@ -173,7 +185,7 @@ async function abrir(caminho, { consent } = {}) {
       fbp: (document.cookie.match(/_fbp=[^;]+/) || [null])[0],
     }));
 
-  return { ctx, page, meta, capi, respostas, erros, bruto, estadoPixel, eventos };
+  return { ctx, page, meta, capi, respostas, configs, erros, bruto, estadoPixel, eventos };
 }
 
 /** Pares navegador/servidor do mesmo evento, casados pelo event_id. */
@@ -258,7 +270,7 @@ registrar('');
 const ACEITO = { analytics: true, advertising: true };
 
 {
-  const { ctx, page, eventos, capi, respostas, erros, bruto, estadoPixel } =
+  const { ctx, page, eventos, capi, respostas, configs, erros, bruto, estadoPixel } =
     await abrir('/', { consent: ACEITO });
 
   /* Sonda decisiva: chama o Pixel à mão, já carregado, e espera.
@@ -282,6 +294,7 @@ const ACEITO = { analytics: true, advertising: true };
   for (const r of respostas) registrar(`  rede Meta              ${r}`);
   for (const x of erros.slice(0, 12)) registrar(`  console                ${x}`);
   registrar(`  estado do Pixel        ${JSON.stringify(await estadoPixel())}`);
+  for (const c of configs) registrar(`  config do conjunto     ${c}`);
   registrar(`  home                   Pixel: ${e.map((x) => x.ev).join(', ') || '(nenhum)'}`);
   registrar(`                         CAPI:  ${capi.map((c) => c.corpo?.event_name).join(', ') || '(nenhum)'}`);
   conferirDeduplicacao('home', e, capi);
