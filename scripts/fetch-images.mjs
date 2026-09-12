@@ -151,7 +151,17 @@ const falhas = [];
 for (const item of entries) {
   const { target, ratio, width } = item;
 
-  if (!item.previewPath && !(item.assetId && process.env[`IMAGE_URL_${item.assetId}`])) {
+  /* Toda forma de chegar aos bytes conta como origem: caminho do CDN, URL
+     direta, URL assinada por ambiente e página oficial a descobrir. A lista
+     tem que ficar ao lado de `urlCandidates`, senão uma origem nova é aceita
+     lá e descartada aqui antes de ser tentada. */
+  const temOrigem =
+    item.previewPath ||
+    item.imageUrl ||
+    item.pageUrl ||
+    (item.assetId && process.env[`IMAGE_URL_${item.assetId}`]);
+
+  if (!temOrigem) {
     pendentes.push(target);
     continue;
   }
@@ -223,7 +233,7 @@ console.log(
 );
 
 if (pendentes.length > 0) {
-  console.log('\nSem origem resolvível — declare provider/assetId/previewPath:');
+  console.log('\nSem origem resolvível. Declare previewPath, imageUrl ou pageUrl:');
   for (const t of pendentes) console.log(`  · ${t}`);
 }
 
