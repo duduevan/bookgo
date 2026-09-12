@@ -283,15 +283,19 @@ images:
     ratio: "16:10"
     width: 1400
 
-  - target: src/assets/blog/cozinha/cardapio-semanal-simples/plano-da-semana-em-papel.webp
+  - target: src/assets/blog/cozinha/cardapio-semanal-simples/cozinha-com-ingredientes.webp
     provider: freepik
-    assetId: 3124129
+    assetId: 86739611
     license: free
     author: magnific
-    sourcePage: https://www.magnific.com/free-photo/weekly-plan-clipboard-cup-coffee-wooden-desk_3124129.htm
-    previewPath: /free-photo/weekly-plan-clipboard-cup-coffee-wooden-desk_23-2147898418.jpg
+    sourcePage: https://www.magnific.com/free-photo/portrait-young-woman-standing-kitchen-with-vegetables-chopping-board-holding_86739611.htm
+    previewPath: /free-photo/portrait-young-woman-standing-kitchen-with-vegetables-chopping-board-holding_1258-203763.jpg
     ratio: "16:10"
     width: 1400
+    note: >-
+      Substitui a prancheta de planner (3124129), descartada depois de vista:
+      trazia "EVERY MOMENT MATTERS" e os dias da semana em inglês impressos na
+      folha. Texto embutido em outro idioma não entra em página da BookGo.
 
   - target: src/assets/blog/cozinha/lista-de-compras-a-partir-do-cardapio/lista-escrita-antes-da-compra.webp
     provider: freepik
@@ -303,15 +307,19 @@ images:
     ratio: "16:10"
     width: 1400
 
-  - target: src/assets/blog/cozinha/lista-de-compras-a-partir-do-cardapio/despensa-com-mantimentos.webp
+  - target: src/assets/blog/cozinha/lista-de-compras-a-partir-do-cardapio/mantimentos-guardados.webp
     provider: freepik
-    assetId: 29006471
+    assetId: 13559809
     license: free
     author: magnific
-    sourcePage: https://www.magnific.com/free-photo/pasta-beans-grains-uncooked-cereals-glass-canister-with-labels-wooden-rack_29006471.htm
-    previewPath: /free-photo/pasta-beans-grains-uncooked-cereals-glass-canister-with-labels-wooden-rack_181624-59320.jpg
+    sourcePage: https://www.magnific.com/free-photo/food-containers-shelves-assortment_13559809.htm
+    previewPath: /free-photo/food-containers-shelves-assortment_23-2148927381.jpg
     ratio: "16:10"
     width: 1400
+    note: >-
+      Substitui a despensa de potes rotulados (29006471), descartada depois de
+      vista: rótulos em inglês e prateleira perfeita de catálogo, duas coisas
+      que a direção visual do projeto recusa.
 
   - target: src/assets/blog/cozinha/nao-sei-o-que-fazer-para-o-jantar/geladeira-aberta-fim-do-dia.webp
     provider: freepik
@@ -327,28 +335,34 @@ images:
       evitada de propósito: o artigo é sobre decidir o jantar, não sobre
       beliscar de madrugada.
 
-  - target: src/assets/blog/cozinha/nao-sei-o-que-fazer-para-o-jantar/refeicao-simples-na-mesa.webp
+  - target: src/assets/blog/cozinha/nao-sei-o-que-fazer-para-o-jantar/refeicao-na-mesa-de-casa.webp
     provider: freepik
-    assetId: 11106862
+    assetId: 19924940
     license: free
     author: magnific
-    sourcePage: https://www.magnific.com/free-photo/view-brazilian-food-with-rice_11106862.htm
-    previewPath: /free-photo/view-brazilian-food-with-rice_23-2148751899.jpg
+    sourcePage: https://www.magnific.com/free-photo/close-up-people-eating-together_19924940.htm
+    previewPath: /free-photo/close-up-people-eating-together_23-2149152939.jpg
     ratio: "16:10"
     width: 1400
     note: >-
-      Comida caseira brasileira com arroz. Prato de casa, e não montagem
-      de restaurante nem bowl de dieta.
+      Substitui o prato de arroz com pimentões (11106862), descartado depois de
+      visto: fundo branco de estúdio, folha de salsa posicionada e talheres
+      alinhados. Era montagem fotográfica, e o trecho fala justamente da
+      refeição simples que resolve o dia.
 
-  - target: src/assets/blog/cozinha/planejar-refeicoes-quando-a-semana-muda/agenda-marcada-na-semana.webp
+  - target: src/assets/blog/cozinha/planejar-refeicoes-quando-a-semana-muda/rotina-mudando-na-cozinha.webp
     provider: freepik
-    assetId: 5637810
+    assetId: 5508595
     license: free
     author: magnific
-    sourcePage: https://www.magnific.com/free-photo/hand-noting-important-plans-calendar_5637810.htm
-    previewPath: /free-photo/hand-noting-important-plans-calendar_23-2148304848.jpg
+    sourcePage: https://www.magnific.com/free-photo/young-woman-kitchen-cooking-breakfast-talking-phone_5508595.htm
+    previewPath: /free-photo/young-woman-kitchen-cooking-breakfast-talking-phone_1303-16461.jpg
     ratio: "16:10"
     width: 1400
+    note: >-
+      Substitui o calendário de parede (5637810), descartado depois de visto:
+      era um mockup de design, com "NOV / 2019", "COMPANY NAME" e um cartaz em
+      inglês num quadro de cortiça de escritório. Nada ali é cozinha.
 
   - target: src/assets/blog/cozinha/planejar-refeicoes-quando-a-semana-muda/potes-com-sobras-na-geladeira.webp
     provider: freepik

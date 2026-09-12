@@ -87,32 +87,52 @@ Os títulos são definitivos e não mudam sem decisão de produto.
 - resultado de cliente. Os personagens e os "Exemplos de rotina" dos
   módulos são **didáticos** e não viram depoimento.
 
+## Padrão interno de entrega
+
+Registro do que a Kiwify precisa entregar, para a página e a área de membros
+dizerem a mesma coisa. **Nada aqui altera a configuração da plataforma**: é a
+referência contra a qual ela é conferida.
+
+| Item | Padrão |
+|---|---|
+| Formato | Curso digital em texto, cinco módulos, mais cinco materiais em PDF |
+| Onde | Área de membros da Kiwify |
+| Liberação | Após a aprovação do pagamento, nunca "acesso imediato" |
+| Prazo de acesso | Vitalício, sem renovação e sem mensalidade |
+| Materiais | PDF para ler no celular, no tablet, no computador ou impresso |
+| Preenchimento | Impresso ou em aplicativo de anotação do próprio aparelho. **Não afirmar PDF preenchível digitalmente** enquanto o arquivo final não tiver campos de formulário |
+| Suporte | E-mail institucional da BookGo, o mesmo de `src/config/company.ts` |
+| Garantia | Pendente. Ver abaixo |
+
+## Avaliações
+
+Só entra avaliação real, com autorização e **texto literal de quem escreveu**.
+Hoje há uma publicada, da Patrícia Lima, no formato de conversa do componente
+global.
+
+Quatro outras clientes enviaram mensagens e estão fora da página: as falas
+recebidas tratam de receitas e de preparo rápido, e publicá-las faria a LP
+afirmar o que o produto não entrega. Elas voltam a ser consideradas quando
+existir texto revisado e autorizado por cada uma. Enquanto isso, nada de
+versão reescrita em nome delas.
+
 ## Pendências
 
-1. **O pacote de conteúdo.** Sem ele, os `objective` dos cinco módulos, as
-   descrições dos cinco materiais e as respostas do FAQ são derivadas do
-   briefing, não do texto real. Estão marcadas `# CONFERIR:` no YAML. O
-   risco concreto é afirmar na página um recurso que o módulo não tem.
-2. **A garantia.** Está **omitida** do YAML de propósito, e o schema passou
-   a aceitar produto sem ela. Garantia é condição configurada na Kiwify, não
-   decisão de copy: afirmar um prazo sem ele estar ligado lá seria prometer
-   em nome de terceiro. Confirmada a configuração, acrescentar o bloco
-   `guarantee` e a reasseguração correspondente.
-3. **A paleta.** Páprica com acento âmbar, proposta e não decidida. Verde
-   ficou fora como cor principal de propósito: puxaria para alimentação
-   saudável, que é o que este produto não vende.
-4. **As imagens.** Nenhuma declarada. Sem o arquivo, o hero usa a
-   ambientação em CSS e os slots não renderizam. Direção visual: cozinha
-   real, rotina, agenda, lista, mercado, comida comum. Sem estética fitness,
-   sem prato gourmet, sem cozinha de catálogo.
-5. **Cross-sell com o Casa Organizada.** Previsto, não implementado.
+1. **A garantia.** Está **omitida** do YAML de propósito, e o schema aceita
+   produto sem ela. Garantia é condição configurada na Kiwify, não decisão de
+   copy: afirmar um prazo sem ele estar ligado lá seria prometer em nome de
+   terceiro. Confirmada a configuração, acrescentar o bloco `guarantee` e a
+   reasseguração correspondente.
+2. **Os mockups dos materiais.** `mockup:` fica fora enquanto os PDFs finais
+   não existirem. Não se inventa tela de material.
+3. **Cross-sell com o Casa Organizada.** Previsto, não implementado, e fora
+   das LPs por decisão: produto não entra na landing page de outro produto
+   sem uma decisão específica.
 
-## Como publicar quando fechar
+## Publicado
 
-1. Conferir os pontos `# CONFERIR:` do YAML contra o pacote de conteúdo.
-2. Resolver as pendências acima.
-3. Apagar a linha `draft: true`.
-4. `npm run build`. A página aparece em `/cardapio-da-semana-em-20-minutos/`.
-
-Não é preciso criar arquivo em `src/pages/`, nem tocar em componente, nem
-duplicar CSS.
+A LP está no ar em `/cardapio-da-semana-em-20-minutos/`, indexável, no sitemap
+e no `llms.txt`. Alterar preço, checkout, copy ou paleta é editar
+`content/products/cardapio-da-semana-em-20-minutos/index.yaml` e rodar
+`npm run build`. Não é preciso criar arquivo em `src/pages/`, nem tocar em
+componente, nem duplicar CSS.
