@@ -30,17 +30,19 @@ const PAGINAS = [
   ['lp', '/casa-organizada-em-15-minutos/', ['desktop', 'mobile'], {
     checkout: 'https://pay.kiwify.com.br/UJyyPuL',
     avaliacoes: 'pelo menos uma',
+    includesTitle: 'O que você recebe',
   }],
   ['lp-cardapio', '/cardapio-da-semana-em-20-minutos/', ['desktop', 'mobile'], {
     checkout: 'https://pay.kiwify.com.br/6VGDS8V',
-    /* Uma avaliação real publicada. Com um item só, a seção existe e os
-       controles do carrossel não: não há o que navegar. */
+    /* Cinco avaliações reais publicadas. */
     avaliacoes: 'pelo menos uma',
+    includesTitle: 'O que você recebe',
   }],
   ['lp-colorir', '/mundo-de-colorir/', ['desktop', 'mobile'], {
     checkout: 'https://pay.kiwify.com.br/Q2uHeTE',
     /* Nenhum cliente escreveu ainda: a seção não pode existir vazia. */
     avaliacoes: 'nenhuma',
+    includesTitle: 'O que vem no arquivo',
   }],
   ['artigo', '/blog/casa/organizacao/como-manter-a-casa-organizada/', ['desktop', 'tablet', 'mobile']],
   ['cozinha15', '/blog/casa/organizacao/organizar-a-cozinha-em-15-minutos/', ['desktop', 'mobile']],
@@ -397,16 +399,20 @@ for (const [nome, caminho, viewports, lp] of PAGINAS) {
 
       /* A oferta é um bloco só: conteúdo, preço, botão, reasseguranças e
          garantia. Se a garantia voltar a ser uma seção solta, isto quebra. */
-      const oferta = await page.evaluate(() => {
+      /* O título da coluna do conteúdo vem do YAML de cada produto, porque
+         cada um tem a sua voz: um método "inclui", uma coleção "vem com".
+         Procurar aqui uma frase fixa reprovaria a LP por usar o campo que
+         o schema oferece. Cada LP declara o seu em PAGINAS. */
+      const oferta = await page.evaluate((titulo) => {
         const sec = document.getElementById('oferta');
         if (!sec) return null;
         const t = sec.innerText;
         return {
           texto: t,
-          incluso: /O que você recebe/.test(t),
+          incluso: t.includes(titulo),
           garantia: /[Gg]arantia/.test(t),
         };
-      });
+      }, lp.includesTitle);
       if (!oferta) problemas.push('a LP não tem a âncora #oferta');
       else {
         if (!oferta.incluso)
