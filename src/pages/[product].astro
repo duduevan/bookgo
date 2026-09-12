@@ -15,6 +15,7 @@ import TestimonialsSection from '../components/testimonials/TestimonialsSection.
 import PostCard from '../components/blog/PostCard.astro';
 import AdSlot from '../components/ads/AdSlot.astro';
 import ProductImage from '../components/product/ProductImage.astro';
+import MaterialGrid from '../components/product/MaterialGrid.astro';
 import { productImage, missingProductImages } from '../lib/product-images';
 import TrackPageEvent from '../components/tracking/TrackPageEvent.astro';
 import { eventAttrs } from '../lib/tracking';
@@ -137,15 +138,17 @@ const crumbs = [
   </Section>
 
   {/* Mecanismo */}
+  {/* Composição central: quebra a sequência de cabeçalhos laterais e dá ao
+      mecanismo do produto o peso de um manifesto, não de mais uma lista. */}
   <Section
     tone="warm"
-    layout="split"
+    align="center"
     eyebrow={d.method.name}
     title={d.method.title}
     intro={d.method.intro}
   >
-    <CardGrid items={[...d.method.pillars]} variant="plain" min="22rem" />
-    {d.method.note && <p class="note">{d.method.note}</p>}
+    <CardGrid items={[...d.method.pillars]} cols={2} min="20rem" />
+    {d.method.note && <p class="note note-center">{d.method.note}</p>}
   </Section>
 
   {
@@ -167,7 +170,14 @@ const crumbs = [
   </Section>
 
   {/* Como funciona */}
-  <Section tone="warm" title={d.howItWorks.title} intro={d.howItWorks.intro}>
+  {/* Jornada horizontal no desktop, empilhada no mobile. Os números deixam
+      de ser marcador e passam a ser a estrutura da composição. */}
+  <Section
+    tone="warm"
+    align="center"
+    title={d.howItWorks.title}
+    intro={d.howItWorks.intro}
+  >
     <StepList steps={[...d.howItWorks.steps]} />
   </Section>
 
@@ -181,8 +191,13 @@ const crumbs = [
   </Section>
 
   {/* Materiais incluídos */}
-  <Section tone="warm" title={d.materials.title} intro={d.materials.intro}>
-    <CardGrid items={[...d.materials.items]} min="24rem" />
+  <Section
+    tone="warm"
+    align="center"
+    title={d.materials.title}
+    intro={d.materials.intro}
+  >
+    <MaterialGrid slug={d.slug} items={[...d.materials.items]} />
   </Section>
 
   {
@@ -360,6 +375,12 @@ const crumbs = [
      ritmo vertical entre blocos. */
   .figure-wrap {
     padding-block: var(--s-8);
+  }
+
+  .note-center {
+    margin-inline: auto;
+    text-align: center;
+    max-width: 60ch;
   }
 
   /* As mesmas reasseguranças da oferta fecham a página. Quem rolou até aqui

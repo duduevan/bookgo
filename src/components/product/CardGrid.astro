@@ -17,12 +17,28 @@ interface Props {
    * de abertura ganha o peso que a ordem já sugeria.
    */
   feature?: boolean;
+  /**
+   * Colunas fixas nas telas largas. `auto` deixa a grade decidir pelo `min`,
+   * que é o certo quando a contagem de itens varia; um número é para quando
+   * a composição é a decisão — 2x2 se lê como quatro princípios, e a mesma
+   * lista em três colunas se lê como três mais um órfão.
+   */
+  cols?: 'auto' | 2 | 3;
 }
 
-const { items, variant = 'card', min = '17rem', feature = false } = Astro.props;
+const {
+  items,
+  variant = 'card',
+  min = '17rem',
+  feature = false,
+  cols = 'auto',
+} = Astro.props;
 ---
 
-<ul class:list={['grid', `v-${variant}`, { feature }]} style={`--min:${min}`}>
+<ul
+  class:list={['grid', `v-${variant}`, { feature }, cols !== 'auto' && `c-${cols}`]}
+  style={`--min:${min}`}
+>
   {
     items.map((item) => (
       <li>
@@ -76,7 +92,17 @@ const { items, variant = 'card', min = '17rem', feature = false } = Astro.props;
     border-top: 2px solid var(--color-border);
   }
 
+  @media (min-width: 48rem) {
+    .c-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
   @media (min-width: 64rem) {
+    .c-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
     .feature {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }

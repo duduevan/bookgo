@@ -258,7 +258,12 @@ const products = defineCollection({
     }),
 
     materials: section.extend({
-      items: z.array(titledItem),
+      /**
+       * `mockup` é opcional: o cartão fica completo sem ele. Quando o
+       * arquivo existir em `src/assets/products/<slug>/`, o quadro aparece
+       * com a proporção já reservada — sem reconstruir a seção.
+       */
+      items: z.array(titledItem.extend({ mockup: z.string().optional() })),
     }),
 
     forWho: section.extend({ items: z.array(z.string()) }),

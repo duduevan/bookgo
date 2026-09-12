@@ -25,6 +25,35 @@ theme:
   muted: "#697068"
   border: "#E8E2D8"
 
+# ─────────────────────────────────────────────────────────────
+#  AFIRMAÇÕES A CONFIRMAR ANTES DE PUBLICAR
+#
+#  Auditoria de procedência. A copy abaixo está no ar como fato, mas nem
+#  toda ela veio de dado confirmado do produto. Nada foi alterado: trocar
+#  por um palpite diferente não melhoraria nada.
+#
+#  CONFIRMADO (veio do briefing):
+#    · Kiwify como plataforma de checkout
+#    · os nomes dos 5 módulos e dos 4 materiais
+#    · o texto da garantia de 7 dias
+#      (mas a "confirmação final da garantia" segue pendente em
+#       /termos-de-compra/ — ver src/config/legal.ts)
+#
+#  A CONFIRMAR — provável inferência, não dado:
+#    · "em PDF"  → formato de arquivo dos materiais.
+#      Aparece em seo.description, hero.highlights, materials.intro e
+#      offer.priceNote.
+#    · "em texto direto, feitos para ler rápido"  → formato dos módulos.
+#      Aparece em hero.highlights e contents.intro.
+#    · "Acesso imediato após a confirmação do pagamento"  → prazo de
+#      liberação. Aparece em hero.highlights, offer.includes,
+#      offer.reassurances e no FAQ.
+#
+#  CONTRADIÇÃO A RESOLVER: a LP afirma acesso imediato, enquanto
+#  /termos-de-compra/ declara o prazo de liberação como pendente. Os dois
+#  não podem ir ao ar assim.
+# ─────────────────────────────────────────────────────────────
+
 # ── Comercial ────────────────────────────────────────────────
 price:
   amount: 37
@@ -222,15 +251,20 @@ offer:
 # a publicar, e vire `enabled` para true. Formatos disponíveis por item:
 # `type: card` (texto corrido) e `type: phone` (conversa).
 testimonials:
-  # `demo: true` renderiza a seção com uma tarja visível dizendo que é
-  # exemplo de layout. Serve para avaliar o desenho antes de existirem
-  # depoimentos reais — e a tarja garante que publicar por engano fique
-  # óbvio na própria página, não só num comentário no código.
+  # DESLIGADO. A seção só volta quando existirem depoimentos reais e
+  # autorizados — e nada de demonstração vai ao ar.
   #
-  # Para publicar de verdade: troque os textos por mensagens que uma pessoa
-  # real escreveu e autorizou, apague `demo` e mantenha `enabled: true`.
-  # Sem `demo`, o build exige itens reais.
-  enabled: true
+  # Os itens abaixo ficam guardados como referência de estrutura: eles não
+  # são renderizados com `enabled: false`, e nenhum byte de CSS ou markup
+  # da seção chega à página.
+  #
+  # Para ligar de verdade: troque os textos por mensagens que uma pessoa
+  # real escreveu e autorizou e vire `enabled: true`, sem `demo`. O build
+  # recusa `enabled` sem `demo` e sem itens reais.
+  #
+  # Para reavaliar o desenho em desenvolvimento, `/dev/componentes/` mostra
+  # os dois formatos sem tocar no conteúdo do produto.
+  enabled: false
   demo: true
   title: Como as conversas aparecem
   intro: Estrutura pronta para receber depoimentos reais. Os textos abaixo são exemplo de layout.
