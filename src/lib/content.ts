@@ -28,6 +28,9 @@ const pillarOf = (categoryId: string): string => {
   return pillar;
 };
 
+/** Pilar a que uma categoria pertence. Categoria sem pilar quebra o build. */
+export const pillarOfCategory = pillarOf;
+
 export const productUrl = (slug: string) => `/${slug}/`;
 
 export const pillarUrl = (pillarId: string) => `/blog/${pillarId}/`;
@@ -96,6 +99,19 @@ export async function getPostsByCategory(categoryId: string): Promise<Post[]> {
 export async function getPostsByPillar(pillarId: string): Promise<Post[]> {
   const posts = await getPosts();
   return posts.filter((post) => pillarOf(post.data.category.id) === pillarId);
+}
+
+/**
+ * Artigo do destaque do blog.
+ *
+ * Marcado com `featured: true` vence; havendo mais de um, o mais recente.
+ * Sem nenhum marcado, cai no mais recente publicado, para a página não
+ * depender de alguém lembrar de marcar. Rascunho nunca entra, porque
+ * `getPosts` já os exclui.
+ */
+export async function getFeaturedPost(): Promise<Post | undefined> {
+  const posts = await getPosts();
+  return posts.find((p) => p.data.featured) ?? posts[0];
 }
 
 export async function getPostsByProduct(productId: string): Promise<Post[]> {

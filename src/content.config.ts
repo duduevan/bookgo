@@ -515,6 +515,15 @@ const blog = defineCollection({
     draft: z.boolean().default(false),
 
     /**
+     * Artigo do destaque do blog.
+     *
+     * Com mais de um marcado, vence o mais recente. Sem nenhum, o destaque
+     * cai no artigo público mais recente: a página nunca fica sem topo por
+     * falta de alguém ter marcado uma caixa.
+     */
+    featured: z.boolean().default(false),
+
+    /**
      * `date`   = datePublished
      * `updated` = dateModified (opcional)
      * Mantidos com estes nomes para não gerar migração desnecessária.
