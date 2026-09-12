@@ -407,6 +407,32 @@ const productCta = z.object({
 });
 
 /**
+ * Produto afiliado citado por um artigo.
+ *
+ * Mora no frontmatter, como tudo que é conteúdo: o componente não conhece
+ * marca, modelo nem link. O corpo do MDX carrega só a posição, pelo `id`.
+ *
+ * `url` é **sempre** o link de afiliado, e é ele que vai para o HTML. A
+ * página oficial do produto entra em `sourceUrl` e serve para conferência
+ * editorial: é de lá que as especificações precisam sair, não do título do
+ * anúncio.
+ *
+ * Preço não existe aqui de propósito. Ele muda, e um número copiado para
+ * dentro do artigo transforma a página em mentira sozinha, sem ninguém
+ * mexer em nada.
+ */
+const affiliateProduct = z.object({
+  id: z.string(),
+  brand: z.string(),
+  model: z.string(),
+  /** Link de afiliado. Vai para o href com `sponsored nofollow noopener`. */
+  url: z.string().url(),
+  /** Página oficial ou anúncio, para conferência. Não vira link na página. */
+  sourceUrl: z.string().url().optional(),
+  cta: z.string().default('Ver oferta atual'),
+});
+
+/**
  * Metadados internos de monetização.
  *
  * Orientam a redação e o planejamento editorial. **Não viram tag, meta,
@@ -489,6 +515,15 @@ const blog = defineCollection({
 
     /** CTA contextual do produto. Exige `product` definido. */
     productCta: productCta.optional(),
+
+    /**
+     * Produtos afiliados do artigo.
+     *
+     * Com a lista preenchida, o artigo passa a exibir a nota de
+     * transparência: um texto que depende de alguém lembrar de escrevê-lo
+     * não é transparência, é sorte.
+     */
+    affiliates: z.array(affiliateProduct).default([]),
 
     /** Interno. Nunca sai no HTML. */
     monetization: monetization.optional(),

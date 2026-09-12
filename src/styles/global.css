@@ -336,3 +336,19 @@ ol {
     transform: none;
   }
 }
+
+/* ── Tabela larga dentro de artigo ──────────────────────────
+   Comparativo com quatro colunas não cabe em 390px, e o corpo da página
+   nunca deve rolar na horizontal. A rolagem fica presa à tabela: é a
+   única coisa que pode ser mais larga que a tela. */
+.tabela-rolavel {
+  overflow-x: auto;
+  margin-block: var(--s-6);
+  /* Sem isto o teclado não alcança a rolagem. */
+  scrollbar-width: thin;
+}
+
+.tabela-rolavel table {
+  min-width: 34rem;
+  margin-block: 0;
+}

@@ -1,0 +1,31 @@
+---
+/**
+ * Nota de transparência de afiliados.
+ *
+ * Renderizada automaticamente quando o artigo declara `affiliates`. Não
+ * depende de alguém lembrar de escrevê-la no corpo do texto: transparência
+ * que depende de memória não é transparência, é sorte.
+ *
+ * Fica no começo, antes do conteúdo, porque quem precisa da informação
+ * precisa dela **antes** de ler a recomendação, não depois.
+ *
+ * Sem caixa de alerta: é uma informação, não um aviso de perigo.
+ */
+---
+
+<p class="aff-nota">
+  Este conteúdo tem links de afiliado. Se você comprar por um deles, a BookGo
+  pode receber uma comissão, sem custo adicional para você. Isso não muda o
+  que está escrito aqui.
+</p>
+
+<style>
+  .aff-nota {
+    margin-block: var(--s-6);
+    padding-left: var(--s-4);
+    border-left: 2px solid var(--color-border);
+    color: var(--color-muted);
+    font-size: var(--t--1);
+    line-height: 1.55;
+  }
+</style>

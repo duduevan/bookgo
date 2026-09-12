@@ -3,6 +3,7 @@ import { render } from 'astro:content';
 import SiteLayout from '../../../layouts/SiteLayout.astro';
 import Breadcrumbs from '../../../components/seo/Breadcrumbs.astro';
 import ArticleSummary from '../../../components/blog/ArticleSummary.astro';
+import AffiliateDisclosure from '../../../components/blog/AffiliateDisclosure.astro';
 import TableOfContents from '../../../components/blog/TableOfContents.astro';
 import SourcesList from '../../../components/blog/SourcesList.astro';
 import RelatedPosts from '../../../components/blog/RelatedPosts.astro';
@@ -25,6 +26,7 @@ import * as schema from '../../../lib/schema';
 import { ADS } from '../../../config/site';
 import { resolveRhythm } from '../../../lib/commercial-blocks';
 import { missingArticleImages } from '../../../lib/article-images';
+import { hasAffiliates } from '../../../lib/affiliates';
 
 export async function getStaticPaths() {
   const [posts, categories] = await Promise.all([getPosts(), getCategories()]);
@@ -169,6 +171,10 @@ const crumbs = [
       <h1>{d.title}</h1>
       <p class="deck">{d.description}</p>
     </header>
+
+    {/* A nota de afiliados vem antes do conteúdo, nunca depois: quem
+        precisa dessa informação precisa dela antes de ler a recomendação. */}
+    {hasAffiliates(post) && <AffiliateDisclosure />}
 
     {d.summary && <ArticleSummary points={d.summary} />}
 
