@@ -58,10 +58,20 @@ padding:var(--s-6);display:flex;flex-direction:column;gap:var(--s-5);height:100%
 /* Proporção de smartphone de verdade. A altura vem da proporção, não do
    conteúdo: três celulares de alturas diferentes lado a lado denunciam que
    são caixas de texto com moldura, não aparelhos. */
-.tst-frame{width:min(100%,19.5rem);aspect-ratio:9/18.5;display:flex;
+.tst-frame{width:min(100%,19.5rem);aspect-ratio:9/19.5;display:flex;
 flex-direction:column;overflow:hidden;background:var(--color-surface);
 border:1px solid var(--color-border);border-radius:2.25rem;
 box-shadow:var(--shadow);padding:.4rem}
+
+/* Tela muito estreita: a proporção fixa deixa de mandar.
+   Abaixo de 24rem o texto quebra em mais linhas do que a altura de um
+   aparelho comporta, e o resultado era mensagem cortada no topo. Aqui os
+   celulares já estão empilhados, um por vez na tela, então altura própria
+   não denuncia nada: o que denunciaria é a conversa começar pela metade. */
+@media (max-width:24rem){
+.tst-frame{aspect-ratio:auto}
+.tst-thread{overflow:visible}
+}
 
 .tst-statusbar{flex:none;position:relative;height:1.75rem;display:flex;align-items:center;
 justify-content:flex-end;gap:.3rem;padding-inline:var(--s-4);
@@ -85,13 +95,14 @@ border-bottom:1px solid var(--color-border);background:var(--color-surface-raise
    desenhadas aqui mesmo, em opacidade muito baixa. Lembra o ambiente de um
    mensageiro sem copiar asset de ninguém. */
 .tst-thread{margin:0;padding:var(--s-4);flex:1;min-height:0;display:flex;
-flex-direction:column;justify-content:flex-end;gap:var(--s-3);overflow:hidden;
+flex-direction:column;justify-content:flex-end;gap:.55rem;overflow:hidden;
 background-color:color-mix(in srgb, var(--color-primary) 5%, var(--color-background));
 background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128' viewBox='0 0 128 128'%3E%3Cg fill='none' stroke='%23000' stroke-opacity='.045' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 28l6 6 11-12'/%3E%3Ccircle cx='96' cy='26' r='7'/%3E%3Cpath d='M26 88h18M35 79v18'/%3E%3Cpath d='M86 84c6 0 10 4 10 10v8H76v-8c0-6 4-10 10-10z'/%3E%3C/g%3E%3C/svg%3E");
 background-size:8rem 8rem}
 
 .tst-bubble{margin:0;max-width:82%;padding:var(--s-3) var(--s-4);font-size:var(--t--1);
 line-height:1.5;border-radius:1.125rem;
+font-family:var(--font-sans),'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji';
 /* Entra uma vez e fica. Sem laço, sem JavaScript. */
 animation:tst-in .42s var(--ease,ease-out) backwards;animation-delay:var(--delay)}
 .tst-in{align-self:flex-start;background:var(--color-surface-raised);

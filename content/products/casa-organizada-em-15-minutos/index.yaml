@@ -248,6 +248,11 @@ testimonials:
   # responder, e as respostas são da BookGo. Ninguém é nomeado e nada aqui
   # afirma resultado de cliente, porque nenhum cliente escreveu isto.
   #
+  # A linguagem é de conversa de verdade de propósito: frase curta, bolha
+  # quebrada, emoji, minúscula. Isso é tom, não é fingir pessoa. O que
+  # continua proibido é a pergunta virar relato de resultado ("comecei e já
+  # mudou"), porque aí deixaria de ser dúvida e viraria depoimento inventado.
+  #
   # O schema impede a confusão nos dois sentidos: em `demonstracao` nenhum
   # item pode ter `name`, e em `depoimento` todo item precisa ter. Não é
   # convenção de quem escreve, é trava de build.
@@ -267,54 +272,64 @@ testimonials:
       status: Método dos 15 Minutos
       messages:
         - side: incoming
-          text: 15 minutos por dia resolvem mesmo? parece pouco
+          text: 15 min por dia resolve mesmo? 😅
+          time: "08:41"
+        - side: incoming
+          text: parece pouco pra bagunça daqui
           time: "08:41"
         - side: outgoing
-          text: sozinhos, não. o que resolve é a frequência
+          text: sozinho não 💚 o que resolve é a frequência
           time: "08:43"
           read: true
         - side: outgoing
-          text: uma sessão curta todo dia impede o acúmulo de se formar. o mutirão de sábado só limpa o que já se formou
-          time: "08:43"
+          text: todo dia impede o acúmulo. o mutirão só limpa o que já se formou
+          time: "08:44"
           read: true
         - side: incoming
-          text: faz sentido... é o acúmulo que cansa, não a arrumação
+          text: ahh faz sentido... é o acúmulo que cansa
           time: "08:46"
 
     - type: phone
       status: Método dos 15 Minutos
       messages:
         - side: incoming
-          text: eu sempre começo animada e largo na segunda semana
+          text: sempre começo animada e largo na segunda semana kkk
           time: "19:05"
         - side: outgoing
-          text: isso costuma ser tamanho de meta, não falta de disciplina
+          text: isso é tamanho de meta, não falta de disciplina 💚
           time: "19:08"
           read: true
         - side: outgoing
-          text: o checklist já traz o alvo do dia, e o plano é semanal. pular um dia não derruba a semana
+          text: o alvo do dia já vem pronto, a janela não é gasta decidindo
           time: "19:09"
           read: true
         - side: incoming
-          text: então não preciso acertar todos os dias pra funcionar
+          text: e se eu pular um dia?
           time: "19:11"
+        - side: outgoing
+          text: pula numa boa 🙂 o plano é semanal por isso mesmo
+          time: "19:12"
+          read: true
 
     - type: phone
       status: Método dos 15 Minutos
       messages:
         - side: incoming
-          text: preciso imprimir os materiais pra usar?
+          text: preciso imprimir os materiais?
           time: "21:18"
         - side: outgoing
-          text: não precisa. são PDFs, funcionam no celular
+          text: não precisa! são PDFs, funcionam no celular
           time: "21:20"
           read: true
         - side: outgoing
-          text: quem prefere marcar no papel imprime, mas é gosto, não requisito
-          time: "21:20"
+          text: quem gosta de papel imprime, mas é gosto 🙂
+          time: "21:21"
           read: true
         - side: incoming
-          text: perfeito, era só isso que faltava saber
+          text: ah que bom
+          time: "21:24"
+        - side: incoming
+          text: era só isso que faltava saber 😄
           time: "21:24"
 
 guarantee:

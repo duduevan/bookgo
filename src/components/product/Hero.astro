@@ -191,6 +191,7 @@ const {
     gap: var(--s-4) var(--s-5);
   }
 
+
   /* O preço ganha peso próprio em vez de virar mais uma linha cinza ao
      lado do botão. */
   .price {
@@ -334,6 +335,51 @@ const {
        embaixo para ele não encostar na borda da seção. */
     .media {
       margin-bottom: var(--s-8);
+    }
+  }
+  /* Celular estreito: a composição muda de propósito.
+   *
+   * Lado a lado, o preço cabia no simulador de 390px e quebrava em aparelho
+   * real menor, caindo embaixo do botão como sobra. Abaixo de 480px o
+   * arranjo passa a ser deliberado: o preço numa linha compacta em cima, o
+   * botão inteiro embaixo.
+   *
+   * `column-reverse` inverte só o visual, e isso é seguro aqui: o único
+   * elemento focável do bloco é o botão, então não existe ordem de foco a
+   * embaralhar. */
+  @media (max-width: 30rem) {
+    .action {
+      flex-direction: column-reverse;
+      align-items: stretch;
+      gap: var(--s-4);
+    }
+
+    /* Preço e "pagamento único" na mesma linha, com um ponto separando.
+       O separador é decoração e vive no CSS: no texto ele seria lido em voz
+       alta por um leitor de tela sem significar nada. */
+    .price {
+      flex-direction: row;
+      align-items: baseline;
+      justify-content: center;
+      flex-wrap: nowrap;
+      gap: var(--s-2);
+    }
+
+    .price span {
+      white-space: nowrap;
+    }
+
+    .price span::before {
+      content: '\2022';
+      margin-right: var(--s-2);
+      color: var(--color-border);
+    }
+
+    /* Botão ocupando a largura toda: num alvo de toque, meia largura é
+       desperdício de área clicável. */
+    .action :global(.cta) {
+      width: 100%;
+      justify-content: center;
     }
   }
 </style>
