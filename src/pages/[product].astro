@@ -9,6 +9,8 @@ import StepList from '../components/product/StepList.astro';
 import ModuleList from '../components/product/ModuleList.astro';
 import OfferBox from '../components/product/OfferBox.astro';
 import Faq from '../components/product/Faq.astro';
+import PlayfulBackdrop from '../components/product/PlayfulBackdrop.astro';
+import ColoringPagesArt from '../components/product/ColoringPagesArt.astro';
 import ReviewsSection from '../components/reviews/ReviewsSection.astro';
 import AdSlot from '../components/ads/AdSlot.astro';
 import ProductImage from '../components/product/ProductImage.astro';
@@ -113,6 +115,10 @@ const crumbs = [
     schema.breadcrumbs(crumbs),
   ]}
 >
+  {/* Ambientação lúdica, só onde o YAML pede. Nenhuma LP existente muda
+      por este bloco existir. */}
+  {d.ambience === 'playful' && <PlayfulBackdrop />}
+
   <Hero
     eyebrow={d.hero.eyebrow}
     headline={d.hero.headline}
@@ -124,7 +130,11 @@ const crumbs = [
     image={heroImage}
     imageAlt={d.hero.imageAlt}
     track={checkoutEvent}
-  />
+  >
+    {/* Enquanto a foto do material não existir, a LP lúdica desenha a
+        própria composição em vez de deixar o quadro vazio. */}
+    {d.ambience === 'playful' && !heroImage && <ColoringPagesArt slot="art" />}
+  </Hero>
 
   <TrackPageEvent
     event="product_view"

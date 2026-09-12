@@ -77,6 +77,24 @@ export const ICONS = {
   rooms:
     '<path d="M5 4.5h14A1.5 1.5 0 0 1 20.5 6v12a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 18V6A1.5 1.5 0 0 1 5 4.5Z"/><path d="M10 4.5V13"/><path d="M10 13h10.5"/>',
 
+  /* --- material para imprimir e colorir ----------------------------- */
+
+  /** Desenhar, colorir. Lápis inclinado com a ponta para baixo. */
+  pencil:
+    '<path d="M4.5 19.5h3l10-10a2.12 2.12 0 0 0-3-3l-10 10Z"/><path d="M14.5 7.5l2 2"/>',
+
+  /** Imprimir em casa. Corpo da impressora com a folha saindo por cima. */
+  printer:
+    '<path d="M7.5 9V4.5h9V9"/><path d="M6 9h12a2 2 0 0 1 2 2v4.5h-3.5"/><path d="M4 15.5h3.5"/><path d="M7.5 13.5h9v6h-9Z"/>',
+
+  /** Estrelinha. Usada onde o assunto é encantamento, nunca como nota. */
+  star:
+    '<path d="M12 4.5l2.3 4.9 5.2.7-3.8 3.7.9 5.2-4.6-2.5-4.6 2.5.9-5.2L4.5 10l5.2-.7Z"/>',
+
+  /** Paleta de cores. Escolha de cor, variedade. */
+  palette:
+    '<path d="M12 4a8 8 0 0 0 0 16c1.1 0 1.8-.8 1.8-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.4-.6-.4-1 0-.9.7-1.6 1.6-1.6h1.4A4.1 4.1 0 0 0 20 10.3C20 6.8 16.4 4 12 4Z"/><path d="M8 11.5h.01"/><path d="M10.5 8h.01"/><path d="M14.5 8h.01"/>',
+
   /* --- garantia ---------------------------------------------------- */
 
   /** Garantia. Escudo com confirmação — proteção, não selo de autoridade. */

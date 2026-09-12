@@ -1,0 +1,314 @@
+# ─────────────────────────────────────────────────────────────
+#  Mundo de Colorir
+#  Toda a copy da landing page vive neste arquivo.
+#  Para alterar preço, checkout ou headline, edite apenas aqui.
+#
+#  FONTE: docs/mundo-de-colorir-source-of-truth.md e os três documentos
+#  irmãos (producao, paginas, comercial). Se não está lá, não se afirma
+#  aqui.
+#
+#  QUATRO COISAS QUE ESTA PÁGINA NUNCA PODE DIZER:
+#
+#  1. que colorir desenvolve coordenação motora, concentração, calma ou
+#     qualquer outra coisa. É verdade conhecida sobre a atividade e vira
+#     promessa do produto quando escrita numa página de venda. A BookGo
+#     não vende desenvolvimento infantil;
+#  2. que existe personagem conhecido, franquia ou desenho animado. Toda
+#     a arte é original;
+#  3. que chega alguma coisa em casa. É arquivo digital, e a reimpressão
+#     sem custo depende justamente disso;
+#  4. que existe garantia. Ela é condição configurada na Kiwify e não foi
+#     confirmada, então o bloco `guarantee` está ausente de propósito.
+#
+#  Sem avaliações: nenhum cliente escreveu ainda, e a seção não é
+#  renderizada com zero itens.
+# ─────────────────────────────────────────────────────────────
+
+slug: mundo-de-colorir
+name: Mundo de Colorir
+
+# Terceira prateleira da home. Nasce com este material e cabe o que vier
+# depois: atividade, jogo, material de imprimir para criança.
+category:
+  id: criancas-e-brincadeiras
+  label: Crianças e brincadeiras
+
+tagline: Uma coleção com 80 desenhos originais para imprimir e colorir, em 8 temas.
+promise: Ter uma atividade pronta guardada para qualquer hora, com 80 desenhos originais em 8 temas, prontos para imprimir em casa quantas vezes quiser.
+
+# ── Ambientação ──────────────────────────────────────────────
+# Nuvem, estrelinha e rabisco de baixa opacidade ao fundo. O público desta
+# página é pai e mãe escolhendo material para criança, e a régua estrutural
+# continua a mesma das outras LPs.
+ambience: playful
+
+# ── Identidade visual ────────────────────────────────────────
+# Nem o azul institucional, nem o sálvia do Casa Organizada, nem a páprica
+# do Cardápio. Entra um azul-caneta alegre com acento manga, que é a dupla
+# de lápis de cor mais reconhecível de um estojo infantil, sobre creme bem
+# claro. Colorido sem virar festa: as cores fortes ficam no botão e nos
+# destaques, e o corpo do texto segue em cinza-grafite.
+#
+# Contrastes conferidos: texto sobre fundo 14,2:1, branco sobre primary
+# 5,1:1, branco sobre primaryDark 8,7:1, muted sobre fundo 5,4:1.
+theme:
+  primary: "#2E6BD6"       # azul-caneta, CTAs e destaques
+  primaryDark: "#1E4AA0"   # azul profundo, hover e contraste
+  accent: "#E0821F"        # manga, acento pontual
+  background: "#FFFBF4"    # creme muito claro, fundo da página
+  surface: "#FFFFFF"       # branco, cartões
+  text: "#25292F"
+  muted: "#5E6773"
+  border: "#E8E2D6"
+
+# ── Comercial ────────────────────────────────────────────────
+price:
+  amount: 14.9
+  currency: BRL
+  display: R$ 14,90
+
+checkout:
+  provider: kiwify
+  url: https://pay.kiwify.com.br/Q2uHeTE
+  cta: Quero meu acesso
+
+# ── SEO ──────────────────────────────────────────────────────
+seo:
+  title: "Mundo de Colorir: 80 desenhos para imprimir e colorir"
+  description: Coleção com 80 desenhos originais para imprimir e colorir, em 8 temas. Material digital em PDF, em A4, pronto para imprimir em casa quantas vezes quiser. R$ 14,90.
+  ogImage: /images/og-mundo-de-colorir.png
+
+# ── Hero ─────────────────────────────────────────────────────
+hero:
+  eyebrow: Material digital para imprimir
+  headline: "80 desenhos prontos para quando a pergunta for: o que a gente faz agora?"
+  subheadline: "Uma coleção de arte original em 8 temas, para imprimir em casa e colorir quantas vezes quiser. É um arquivo em PDF, em A4, que fica com você para sempre."
+  # Fatos do produto, nunca prova social.
+  highlights:
+    - text: 80 páginas para colorir, em 8 temas
+      icon: palette
+    - text: PDF em A4, para a impressora de casa
+      icon: printer
+    - text: Imprima quantas vezes quiser
+      icon: star
+  imageAlt: Páginas do material empilhadas, com desenhos de contorno preto, ao lado de lápis de cor
+
+# ── Problema: a tarde que não passa ──────────────────────────
+problem:
+  title: A tarde não passa e a pergunta chega
+  items:
+    - Está chovendo, o parque saiu dos planos e ainda faltam três horas para o jantar.
+    - A sala de espera do médico tem meia hora pela frente e nada para fazer.
+    - O tablet está sem bateria, e a criança já descobriu isso.
+    - Você precisa de quarenta minutos para terminar uma coisa, e precisa deles agora.
+    - A viagem de carro é longa e a janela já perdeu a graça.
+    - O convite da festa é hoje e falta um presente que ainda dê tempo.
+  close: "Em todas essas horas a pergunta é a mesma: o que a gente faz agora? Ter 80 desenhos guardados no computador é ter essa resposta pronta antes de ela ser feita."
+
+# ── Mecanismo: o que faz ser uma coleção ─────────────────────
+method:
+  title: Uma coleção de verdade, e não uma pasta de desenhos soltos
+  name: Um traço só, oito temas
+  intro: >-
+    Baixar desenho avulso na internet todo mundo já fez. O que cansa é o
+    resultado: um desenho de cada estilo, em qualidade diferente, sem ordem
+    nenhuma. Aqui são três decisões que mudam isso.
+  pillars:
+    - title: O mesmo traço nas 80 páginas
+      icon: pencil
+      text: "Contorno preto uniforme, formas cheias, nada de detalhe minúsculo. A criança reconhece que é o mesmo mundo em todas as páginas, e é isso que faz parecer uma coleção."
+    - title: Feito para a impressora de casa
+      icon: printer
+      text: "Fundo branco, sem área preta grande, sem sangria. Papel comum resolve, e papel um pouco mais grosso segura melhor a canetinha."
+    - title: Área confortável para colorir
+      icon: palette
+      text: "Nenhuma região fechada menor que uma moeda no tamanho impresso. É o limite da mão de uma criança de cinco anos, e ele foi respeitado nas oitenta páginas."
+  note: Tudo é arte original, desenhada para esta coleção. Não há personagem de desenho animado, franquia ou marca em nenhuma página.
+
+# ── Benefícios: o que muda na sua casa ───────────────────────
+benefits:
+  title: O que você leva junto com os desenhos
+  items:
+    - title: Uma atividade sempre à mão
+      icon: spark
+      text: 80 desenhos guardados resolvem a tarde de chuva e a espera do médico sem nenhum planejamento.
+    - title: Imprima quantas vezes quiser
+      icon: printer
+      text: O mesmo desenho serve para dois irmãos hoje e para a mesma criança de novo daqui a três meses.
+    - title: Oito temas, não um só
+      icon: palette
+      text: Quem só quer dinossauro encontra dez, e ainda tem setenta para descobrir depois.
+    - title: Dos 4 aos 8 anos
+      icon: check
+      text: Cada tema abre com páginas simples e termina com páginas mais cheias, então o material acompanha a criança.
+    - title: Tudo original
+      icon: star
+      text: Arte feita para esta coleção, sem personagem de franquia e sem desenho copiado.
+    - title: Chega na hora
+      icon: checklist
+      text: Acesso liberado após a aprovação do pagamento, e o arquivo é seu para baixar e guardar.
+
+# ── Como funciona: quatro passos ─────────────────────────────
+howItWorks:
+  title: Do clique ao lápis na mão
+  intro: Não tem nada para montar, recortar antes ou combinar. São quatro passos, e o terceiro é o único que exige você.
+  steps:
+    - title: Você compra
+      text: Pagamento único, sem mensalidade e sem renovação. O acesso é liberado após a aprovação do pagamento.
+    - title: Você baixa o arquivo
+      text: Um PDF só, com as 80 páginas. Guarde no computador ou no celular, porque ele é seu.
+    - title: Você escolhe e imprime
+      text: Abra o índice, escolha o tema, imprima a página em A4 na opção tamanho real. Papel comum funciona.
+    - title: A criança colore
+      text: Entregue os lápis e pronto. Quando a folha acabar, imprima de novo, sem custo nenhum.
+
+# ── Conteúdo: os oito temas ──────────────────────────────────
+contents:
+  title: Os oito temas
+  intro: São dez desenhos por tema, do mais simples ao mais cheio. Em qualquer tema que a criança escolher, existem páginas do tamanho dela.
+  modules:
+    - number: 1
+      title: Animais fofos
+      objective: "Gatinho com o novelo, coelho com a cenoura, ursinho e o pote de mel, pinguim de cachecol, panda, raposinha dormindo, preguiça no galho, elefantinho na poça e a família de patinhos."
+    - number: 2
+      title: Dinossauros
+      objective: "Bebê saindo do ovo, tiranossauro sorridente, tricerátops, anquilossauro, estegossauro com borboletas nas placas, brontossauro alcançando as folhas altas, pterossauro planando e o vale com o vulcão ao fundo."
+    - number: 3
+      title: Fundo do mar
+      objective: "Peixinho entre bolhas, estrela-do-mar, caranguejo, cavalo-marinho, tartaruga, polvo acenando, golfinho saltando, água-viva, baleia com o esguicho e o passeio pelo recife."
+    - number: 4
+      title: Espaço
+      objective: "Foguete decolando, lua sorridente, planeta com anéis, alienígena simpático, astronauta flutuando, nave com janelinha, a bandeira na lua, cometa, a criança no telescópio e o sistema solar."
+    - number: 5
+      title: Veículos e aventuras
+      objective: "Carrinho de corrida, balão de ar quente, bicicleta com cestinha, barco a vela, caminhão de bombeiros, avião entre as nuvens, trator, ônibus escolar, escavadeira e o trem da ponte."
+    - number: 6
+      title: Jardim e natureza
+      objective: "Girassol, joaninha na folha, cogumelos, regador, borboleta na flor, abelhinha e a colmeia, passarinho no ninho, árvore com balanço, arco-íris e a horta."
+    - number: 7
+      title: Comidinhas divertidas
+      objective: "Cupcake sorridente, sorvete de casquinha, rosquinha com cobertura, fatia de pizza, as frutinhas amigas, hambúrguer, chocolate quente, pipoca, bolo de aniversário e a mesa de piquenique."
+    - number: 8
+      title: Fantasia e personagens mágicos
+      objective: "Fadinha, poção mágica, coruja da noite, gnomo do jardim, unicórnio, dragãozinho, sereia na pedra, aprendiz de mago, castelo e o baú do tesouro."
+
+# ── O que vem no arquivo ─────────────────────────────────────
+# `mockup:` fica de fora enquanto as artes finais não existirem: não se
+# inventa página do material.
+materials:
+  title: O que vem dentro do arquivo
+  intro: Além das 80 páginas para colorir, o PDF traz o que transforma um monte de desenhos num material organizado.
+  items:
+    - title: 80 páginas para colorir
+      icon: palette
+      text: Uma arte por página, em A4, com fundo branco e contorno bem definido. Dez desenhos em cada um dos oito temas.
+    - title: Este livro pertence a
+      icon: pencil
+      text: "A primeira página é da criança: o nome, um quadro para ela se desenhar e a data em que começou."
+    - title: Índice por tema
+      icon: list
+      text: Para achar em segundos aquele dos dinossauros, sem rolar o arquivo inteiro.
+    - title: Divisórias dos oito temas
+      icon: star
+      text: Uma folha de abertura por tema, com o nome em letra vazada para a criança colorir o próprio título.
+    - title: Uma folha de instruções curta
+      icon: printer
+      text: Para você, não para a criança. Como imprimir em tamanho real, que papel usar e como aproveitar melhor o material.
+
+# ── Para quem é ──────────────────────────────────────────────
+audience:
+  title: Para quem é este material
+  intro: Ele resolve muito bem um tipo de necessidade, e não resolve outros. Melhor dizer os dois.
+
+forWho:
+  title: É para você que
+  items:
+    - quer uma atividade pronta guardada, para quando precisar
+    - tem criança de aproximadamente 4 a 8 anos em casa
+    - prefere imprimir em casa a comprar livro novo toda vez
+    - tem mais de uma criança e quer o mesmo desenho para as duas
+    - trabalha com crianças e precisa de material que não acaba
+
+notForWho:
+  title: Talvez não seja para você que
+  items:
+    - procura material físico, impresso e entregue em casa
+    - espera desenhos de personagens conhecidos de desenho animado
+    - quer atividade de alfabetização, número ou caligrafia
+    - não tem como imprimir
+
+# ── Oferta ───────────────────────────────────────────────────
+offer:
+  title: Leve o Mundo de Colorir
+  intro: Pagamento único. Sem mensalidade, sem renovação e sem limite de impressão.
+  includesTitle: O que vem no arquivo
+  priceTerms: pagamento único · sem mensalidade
+  highlights:
+    - value: "80"
+      label: páginas para colorir
+    - value: "8"
+      label: temas
+    - value: "10"
+      label: desenhos por tema
+  groups:
+    - title: A coleção
+      icon: palette
+      items:
+        - 80 páginas para colorir, com arte original
+        - 8 temas, com 10 desenhos cada
+        - Do desenho mais simples ao mais cheio, dentro de cada tema
+    - title: A organização
+      icon: list
+      items:
+        - Página "este livro pertence a", para a criança escrever o nome
+        - Índice por tema
+        - Uma folha de abertura para cada um dos oito temas
+        - Folha de instruções curta, para você
+    - title: O acesso
+      icon: printer
+      items:
+        - Arquivo em PDF, para baixar e guardar
+        - Impressão sem limite, para as crianças da sua casa
+        - Acesso liberado após a aprovação do pagamento
+  priceNote: Material digital. Nada é enviado pelo correio, e é justamente isso que permite reimprimir sem custo novo.
+  reassurances:
+    - icon: printer
+      text: Feito para impressora doméstica comum, em papel A4
+    - icon: star
+      text: Arte original, sem personagem de franquia
+    - icon: check
+      text: Indicado para crianças de aproximadamente 4 a 8 anos
+
+# ── FAQ ──────────────────────────────────────────────────────
+faq:
+  title: Perguntas frequentes
+  items:
+    - q: O que eu recebo exatamente?
+      a: Um arquivo em PDF com 80 páginas para colorir, organizadas em 8 temas, mais a capa, o índice, a página "este livro pertence a", as folhas de abertura de cada tema e uma folha curta de instruções.
+    - q: É material físico? Chega em casa?
+      a: Não. É digital, para você baixar e imprimir em casa quantas vezes quiser. É isso que permite reimprimir o mesmo desenho sem custo novo.
+    - q: Preciso de impressora especial?
+      a: Não. Foi feito para impressora doméstica comum, em papel A4, com fundo branco e sem área preta grande. Papel comum funciona bem, e papel um pouco mais grosso segura melhor a canetinha.
+    - q: Posso imprimir mais de uma vez?
+      a: Pode, sem limite, para as crianças da sua casa ou da sua turma.
+    - q: Para que idade é?
+      a: Aproximadamente 4 a 8 anos. Cada tema tem páginas mais simples e páginas mais cheias, então a faixa é larga de propósito e o material acompanha a criança por um bom tempo.
+    - q: Tem personagem de desenho animado?
+      a: Não. Toda a arte é original e foi desenhada para esta coleção.
+    - q: Como eu recebo o acesso?
+      a: O acesso é liberado após a aprovação do pagamento, e o arquivo fica disponível para baixar na área de membros. De lá você pode baixar de novo sempre que precisar.
+    - q: Posso usar na escola ou no meu espaço infantil?
+      a: Para imprimir e usar com as crianças que você atende, sim. Revender o arquivo, distribuí-lo ou publicá-lo, não.
+
+# ── Faixa de continuidade ────────────────────────────────────
+# Rola até a oferta, na própria página. Não é intenção de pagamento e não
+# dispara checkout_click.
+midCta:
+  - after: materials
+    text: Oitenta desenhos, oito temas e um arquivo que fica com você.
+    label: Ver o que está incluído
+
+# ── Fechamento ───────────────────────────────────────────────
+finalCta:
+  title: A próxima tarde de chuva já tem resposta
+  text: Baixe uma vez, imprima sempre que precisar e deixe a criança escolher o mundo dela.

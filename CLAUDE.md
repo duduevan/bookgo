@@ -428,9 +428,33 @@ entra no sitemap, não entra no `llms.txt` e não aparece na home. É o que
 permite deixar a arquitetura de um produto novo pronta sem publicar uma
 página com texto de espera.
 
-Nenhum produto está nesse estado hoje. O `cardapio-da-semana-em-20-minutos`
-passou por ele e foi publicado; a source of truth dele vive em
-`docs/cardapio-da-semana-source-of-truth.md`.
+Nenhum produto está nesse estado hoje. Os três publicados são o Casa
+Organizada em 15 Minutos por Dia, o Cardápio da Semana em 20 Minutos e o
+Mundo de Colorir, cada um com a sua source of truth em `docs/`.
+
+### Ambientação da landing page
+
+A régua estrutural é a mesma para todos os materiais: as mesmas seções, a
+mesma tipografia, o mesmo espaçamento. O que muda é o clima, porque o
+público muda.
+
+```yaml
+ambience: playful     # opcional; sem o campo, a LP usa a ambientação padrão
+```
+
+`playful` liga o `PlayfulBackdrop`: uma camada fixa atrás de tudo, com
+nuvem, estrelinha e rabisco em opacidade baixa, desenhada em SVG inline com
+a paleta do próprio produto. Ela é `position: fixed` de propósito, porque
+enfeite que rola junto compete com a leitura o tempo todo; parado, ele vira
+papel de parede. Nenhuma cor literal, nenhuma imagem baixada e nada sobre
+bloco de texto em densidade que atrapalhe contraste.
+
+**O hero aceita uma composição própria pelo slot `art`**, usada quando não
+existe arquivo de imagem. É o que permite uma LP nascer com o quadro cheio
+antes de a fotografia do material existir, sem quadro vazio e sem foto de
+banco de imagens fingindo ser o produto. O Mundo de Colorir usa isso com o
+`ColoringPagesArt`, que desenha três páginas empilhadas no traço da própria
+coleção. Quando a foto chegar, ela entra no mesmo lugar e a composição sai.
 
 ### Materiais práticos: a nomenclatura pública
 

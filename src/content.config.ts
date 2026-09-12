@@ -205,6 +205,20 @@ const products = defineCollection({
 
     theme,
 
+    /**
+     * Ambientação visual da landing page.
+     *
+     * A régua estrutural é a mesma para todos os materiais: as mesmas
+     * seções, a mesma tipografia, o mesmo espaçamento. O que muda é o
+     * clima, e ele muda porque o público muda: a página de um material
+     * infantil pode ter nuvem, estrelinha e rabisco de baixa opacidade ao
+     * fundo, e a de um método de rotina não pode.
+     *
+     * Sem o campo, a LP usa a ambientação padrão, que é a que as duas
+     * primeiras já usam. Nenhuma página existente muda por isto existir.
+     */
+    ambience: z.enum(['playful']).optional(),
+
     /** Promessa central — base da descrição do schema Product. */
     promise: z.string(),
 

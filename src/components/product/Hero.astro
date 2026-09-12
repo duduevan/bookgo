@@ -39,6 +39,11 @@ interface Props {
   track?: Record<string, string>;
 }
 
+/* A LP pode entregar a sua própria composição pelo slot `art`. Saber
+   disso aqui muda o tratamento do quadro: com arte dentro, o gradiente
+   recua e a trama diagonal sai, porque ela passaria por cima do desenho. */
+const hasArt = Astro.slots.has('art');
+
 const {
   eyebrow,
   headline,
@@ -75,7 +80,7 @@ const {
     </div>
 
     <div class="media">
-      <div class:list={['frame', { empty: !image }]}>
+      <div class:list={['frame', { empty: !image, 'has-art': !image && hasArt }]}>
         {
           image && (
             /* Elemento de LCP: carrega cedo, com prioridade e dimensões
@@ -91,6 +96,10 @@ const {
             />
           )
         }
+        {/* Sem arquivo de imagem, a LP pode entregar a sua própria
+            composição pelo slot. O quadro continua tendo a mesma
+            proporção, então nada se desloca quando a foto chegar. */}
+        {!image && <slot name="art" />}
       </div>
 
       {
@@ -251,6 +260,18 @@ const {
       );
   }
 
+  /* Com a composição própria dentro, o quadro vira palco: gradiente
+     suave, sem trama, e a arte ocupa a altura toda. */
+  .frame.has-art {
+    display: grid;
+    place-items: center;
+    background: linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--color-primary) 14%, var(--color-surface)) 0%,
+      color-mix(in srgb, var(--color-accent) 12%, var(--color-surface)) 100%
+    );
+  }
+
   .frame.empty::after {
     content: '';
     position: absolute;
@@ -260,6 +281,12 @@ const {
       color-mix(in srgb, var(--color-text) 6%, transparent) 0 1px,
       transparent 1px 13px
     );
+  }
+
+  /* Depois da regra acima de propósito: a trama existe para o quadro
+     vazio, e passaria por cima do desenho quando há arte. */
+  .frame.has-art::after {
+    content: none;
   }
 
   .card {

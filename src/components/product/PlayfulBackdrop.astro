@@ -1,0 +1,106 @@
+---
+/**
+ * Ambientação lúdica da landing page, para materiais infantis.
+ *
+ * Uma camada só, atrás de tudo, com nuvem, estrelinha, rabisco e bolinha
+ * em opacidade baixa. Ela existe para a página ter clima de material de
+ * criança sem que nenhuma seção precise virar decorada: o conteúdo
+ * continua sendo o mesmo, com a mesma régua e a mesma tipografia.
+ *
+ * **Três decisões que mantêm isso de bom gosto e não de carnaval:**
+ *
+ * · o desenho é SVG inline, com `currentColor` puxando a paleta do próprio
+ *   produto. Nenhuma cor literal e nenhuma imagem baixada;
+ * · a camada é `position: fixed` e não rola junto. Elemento decorativo que
+ *   acompanha a rolagem compete com a leitura o tempo todo; parado, ele
+ *   vira papel de parede e some da atenção depois do primeiro instante;
+ * · nada aparece sobre bloco de texto em densidade suficiente para
+ *   atrapalhar contraste. As formas moram nas margens, e a opacidade é
+ *   baixa o bastante para o corpo do texto nunca disputar com elas.
+ *
+ * `aria-hidden`, sem foco e sem papel: é enfeite, e leitor de tela não
+ * anuncia enfeite.
+ */
+---
+
+<div class="backdrop" aria-hidden="true">
+  <svg viewBox="0 0 1440 1200" preserveAspectRatio="xMidYMid slice" focusable="false">
+    <g class="soft">
+      {/* nuvens */}
+      <path d="M120 180c0-26 21-47 47-47 8 0 16 2 23 6 9-20 29-34 52-34 31 0 57 25 57 57 0 3 0 6-1 9 20 5 35 23 35 45 0 26-21 47-47 47H167c-26 0-47-21-47-47 0-14 6-27 16-36Z" />
+      <path d="M1075 300c0-21 17-38 38-38 6 0 13 2 18 5 8-16 24-27 42-27 25 0 46 21 46 46 0 2 0 5-1 7 16 4 28 19 28 36 0 21-17 38-38 38h-95c-21 0-38-17-38-38Z" />
+      <path d="M210 880c0-21 17-38 38-38 6 0 13 2 18 5 8-16 24-27 42-27 25 0 46 21 46 46v7c16 4 28 19 28 36 0 21-17 38-38 38h-96c-21 0-38-17-38-38Z" />
+    </g>
+
+    <g class="accent">
+      {/* estrelinhas */}
+      <path d="M300 420l12 26 28 4-20 20 5 28-25-14-25 14 5-28-20-20 28-4Z" />
+      <path d="M1220 620l9 19 21 3-15 15 4 21-19-10-19 10 4-21-15-15 21-3Z" />
+      <path d="M640 120l8 16 18 3-13 13 3 18-16-9-16 9 3-18-13-13 18-3Z" />
+      <path d="M1340 140l9 19 21 3-15 15 4 21-19-10-19 10 4-21-15-15 21-3Z" />
+      <path d="M170 560l8 16 18 3-13 13 3 18-16-9-16 9 3-18-13-13 18-3Z" />
+      <path d="M980 1010l9 19 21 3-15 15 4 21-19-10-19 10 4-21-15-15 21-3Z" />
+    </g>
+
+    <g class="line">
+      {/* rabiscos delicados */}
+      <path d="M60 700c40-38 80 38 120 0s80 38 120 0" />
+      <path d="M1120 830c34-32 68 32 102 0s68 32 102 0" />
+      <path d="M420 1060c30-28 60 28 90 0s60 28 90 0" />
+      <path d="M880 250c26-24 52 24 78 0" />
+      {/* bolinhas soltas */}
+      <circle cx="520" cy="700" r="7" />
+      <circle cx="560" cy="740" r="4" />
+      <circle cx="1050" cy="120" r="6" />
+      <circle cx="760" cy="960" r="5" />
+      <circle cx="90" cy="330" r="5" />
+      <circle cx="1390" cy="430" r="7" />
+    </g>
+  </svg>
+</div>
+
+<style>
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    /* O fundo da página continua sendo o da paleta do produto. A camada
+       só desenha por cima dele. */
+    background: var(--color-bg);
+  }
+
+  .backdrop svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .soft {
+    fill: color-mix(in srgb, var(--color-primary) 6%, transparent);
+  }
+
+  .accent {
+    fill: color-mix(in srgb, var(--color-accent) 8%, transparent);
+  }
+
+  .line {
+    fill: color-mix(in srgb, var(--color-primary) 10%, transparent);
+    stroke: color-mix(in srgb, var(--color-primary) 14%, transparent);
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
+
+  .line path {
+    fill: none;
+  }
+
+  /* No celular a camada fica ainda mais discreta: a tela é estreita, o
+     texto ocupa quase toda a largura e qualquer forma passa a ficar
+     atrás de parágrafo em vez de ficar na margem. */
+  @media (max-width: 47.99rem) {
+    .backdrop {
+      opacity: 0.55;
+    }
+  }
+</style>

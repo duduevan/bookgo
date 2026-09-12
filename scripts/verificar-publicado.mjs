@@ -37,6 +37,11 @@ const PAGINAS = [
        controles do carrossel não: não há o que navegar. */
     avaliacoes: 'pelo menos uma',
   }],
+  ['lp-colorir', '/mundo-de-colorir/', ['desktop', 'mobile'], {
+    checkout: 'https://pay.kiwify.com.br/Q2uHeTE',
+    /* Nenhum cliente escreveu ainda: a seção não pode existir vazia. */
+    avaliacoes: 'nenhuma',
+  }],
   ['artigo', '/blog/casa/organizacao/como-manter-a-casa-organizada/', ['desktop', 'tablet', 'mobile']],
   ['cozinha15', '/blog/casa/organizacao/organizar-a-cozinha-em-15-minutos/', ['desktop', 'mobile']],
   ['desarruma', '/blog/casa/organizacao/casa-desarruma-no-dia-seguinte/', ['desktop', 'mobile']],
