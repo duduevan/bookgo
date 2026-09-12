@@ -139,6 +139,16 @@ const productImageEntry = z.object({
   src: z.string().regex(/\.(webp|avif|jpe?g|png)$/i),
   alt: z.string().min(15).max(180),
   caption: z.string().optional(),
+  /**
+   * Proporção do quadro, quando a padrão não serve.
+   *
+   * O padrão editorial da LP é 16/9, que é o formato de uma foto de cena.
+   * Uma página do material é A4 em pé, e recortá-la em 16/9 mostraria a
+   * faixa do meio de um desenho inteiro. Declarar a proporção aqui é o
+   * que permite a mesma seção receber cena e amostra sem cortar nenhuma
+   * das duas.
+   */
+  ratio: z.string().optional(),
   /** Âncoras conhecidas pela página do produto. */
   placement: z.enum([
     /* Ao lado do mecanismo, em duas colunas. É a âncora para a foto que

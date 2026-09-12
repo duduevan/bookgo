@@ -91,7 +91,8 @@ hero:
       icon: printer
     - text: Imprima quantas vezes quiser
       icon: star
-  imageAlt: Páginas do material empilhadas, com desenhos de contorno preto, ao lado de lápis de cor
+  image: capa.webp
+  imageAlt: Capa do Mundo de Colorir, com bichinhos coloridos ao redor do título e cinco páginas do material embaixo
 
 # ── Problema: a tarde que não passa ──────────────────────────
 problem:
@@ -214,6 +215,29 @@ materials:
     - title: Uma folha de instruções curta
       icon: printer
       text: Para você, não para a criança. Como imprimir em tamanho real, que papel usar e como aproveitar melhor o material.
+
+# ── Imagens ──────────────────────────────────────────────────
+# Arquivos em src/assets/products/mundo-de-colorir/. Enquanto um deles não
+# existir, o slot não renderiza e o build lista o que falta: a página fica
+# inteira, sem moldura vazia, e a foto entra depois sem tocar em layout.
+#
+# `ratio` existe por causa da amostra: ela é uma página A4 em pé, e o
+# quadro editorial padrão é 16/9. Sem declarar a proporção, a página
+# apareceria como uma tira do meio de um desenho inteiro.
+images:
+  - id: colorindo-na-mesa
+    src: colorindo-na-mesa.webp
+    alt: Criança colorindo uma página do material na mesa, com lápis de cor ao lado e a capa apoiada atrás
+    caption: A coleção impressa em casa, na mesa, com os lápis que já existem por aí.
+    placement: after-method
+    ratio: "4 / 3"
+
+  - id: pagina-dos-personagens
+    src: pagina-dos-personagens.webp
+    alt: Página do material com oito personagens de contorno preto, cada um com o nome embaixo
+    caption: Uma das páginas, no tamanho em que ela sai da impressora.
+    placement: after-materials
+    ratio: "1 / 1.41"
 
 # ── Para quem é ──────────────────────────────────────────────
 audience:

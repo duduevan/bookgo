@@ -80,7 +80,7 @@ const {
     </div>
 
     <div class="media">
-      <div class:list={['frame', { empty: !image, 'has-art': !image && hasArt }]}>
+      <div class:list={['frame', { empty: !image, 'has-image': !!image, 'has-art': !image && hasArt }]}>
         {
           image && (
             /* Elemento de LCP: carrega cedo, com prioridade e dimensões
@@ -233,6 +233,18 @@ const {
     aspect-ratio: 4 / 5;
     border: 1px solid var(--color-border);
     background: var(--color-surface);
+  }
+
+  /* Com imagem, o quadro segue a proporção do arquivo em vez de recortar
+     em 4/5. As duas primeiras LPs já usam heroes 4/5, então nada muda
+     nelas; o que isto permite é um hero deitado, como a capa de um
+     material, aparecer inteiro em vez de virar uma tira do meio. */
+  .frame.has-image {
+    aspect-ratio: auto;
+  }
+
+  .frame.has-image :global(img) {
+    height: auto;
   }
 
   .frame :global(img) {
