@@ -117,10 +117,15 @@ for (const file of htmlFiles) {
       fail(page, `marcador "${leak}" vazou como texto para o HTML`);
   }
 
-  // Imagens: alt ausente é erro; alt="" (decorativa) é intencional e passa.
+  /* Imagens: alt ausente é erro; alt="" (decorativa) é intencional e passa.
+
+     O atributo vazio chega ao HTML como `alt` pelado, sem `=""`: é assim
+     que o Astro serializa uma string vazia, e é HTML válido. Exigir o sinal
+     de igual reprovaria justamente a miniatura que está certa — o título do
+     artigo ao lado já é o nome acessível do link. */
   for (const img of html.match(/<img\b[^>]*>/g) || []) {
     const src = img.match(/src="([^"]*)"/)?.[1] ?? '(sem src)';
-    if (!/\salt=/.test(img)) {
+    if (!/\salt(?=[\s=>])/.test(img)) {
       fail(page, `imagem sem atributo alt: ${src}`);
       continue;
     }
