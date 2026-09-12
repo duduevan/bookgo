@@ -199,7 +199,7 @@ materials:
 # materializados pelo workflow a partir de content/image-sources.yaml.
 # Sem o arquivo, o slot não renderiza e o build lista o que falta.
 images:
-  - id: geladeira-fim-do-dia
+  - id: compras-na-bancada
     src: compras-na-bancada.webp
     alt: Compras recém-chegadas sobre a bancada da cozinha, com pão e frutas
     caption: A compra que nasce do cardápio traz o que falta, e não o que se lembra no corredor.
