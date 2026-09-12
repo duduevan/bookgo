@@ -45,181 +45,83 @@ images:
       composição de bandeja sobre azulejo, estética de catálogo.
 
   - target: src/assets/blog/organizacao/como-manter-a-casa-organizada/cadeira-do-quarto-com-roupas.webp
-    provider: null
-    assetId: null
-    width: 1400
-    note: >-
-      Quarto habitado, cadeira com roupas acumuladas, guarda-roupa
-      parcialmente aberto ao fundo. Sem caricatura de bagunça.
-
-  # ── Landing page: Casa Organizada em 15 Minutos por Dia ─────
-  - target: src/assets/products/casa-organizada-em-15-minutos/hero-cozinha-manha.webp
-    provider: null
-    assetId: null
-    ratio: "4:5"
-    width: 1040
-    note: >-
-      Elemento de LCP da LP. Mulher adulta guardando louça na bancada,
-      manhã, luz natural. Casa habitada, não catálogo.
-
-  - target: src/assets/products/casa-organizada-em-15-minutos/sessao-curta-cozinha.webp
-    provider: null
-    assetId: null
-    ratio: "16:9"
-    width: 1600
-    note: >-
-      Sessão curta de organização. Precisa transmitir "isso cabe na minha
-      rotina", não "faxina pesada". O corte tira topo e base: a ação
-      precisa estar centralizada verticalmente.
-
-  # materiais-impressos-mesa.webp fica de fora de propósito: o mockup só
-  # deve sair dos quatro PDFs reais, nunca de páginas inventadas.
-
-# ── Bloco TEMPORÁRIO de candidatas ──────────────────────────
-#  Materializadas só para serem vistas. Nada em `_candidatos/` é importado,
-#  então não entra no build do site. O bloco e os arquivos saem assim que a
-#  escolha estiver feita.
-
-  - target: src/assets/_candidatos/bancada-422283230.webp
-    provider: freepik
-    assetId: 422283230
-    license: free
-    previewPath: /free-photo/morning-detox-kitchen-counter-with-citrus-pear-juice-water_169016-69427.jpg
-    ratio: "16:10"
-    width: 1400
-
-  - target: src/assets/_candidatos/bancada-422146427.webp
-    provider: freepik
-    assetId: 422146427
-    license: free
-    previewPath: /free-photo/fresh-set-home-kitchen-near-board-knife-orange-juice_169016-69324.jpg
-    ratio: "16:10"
-    width: 1400
-
-  - target: src/assets/_candidatos/bancada-5081039.webp
-    provider: freepik
-    assetId: 5081039
-    license: free
-    previewPath: /free-photo/close-up-dishes-kitchen-decoration-shelf_23-2148238581.jpg
-    ratio: "16:10"
-    width: 1400
-
-  - target: src/assets/_candidatos/bancada-5080935.webp
-    provider: freepik
-    assetId: 5080935
-    license: free
-    previewPath: /free-photo/close-up-bowls-tabletop-modern-kitchen_23-2148238629.jpg
-    ratio: "16:10"
-    width: 1400
-
-  - target: src/assets/_candidatos/bancada-34653888.webp
-    provider: freepik
-    assetId: 34653888
-    license: free
-    previewPath: /free-photo/high-angle-delicious-groceries-countertop_23-2149936248.jpg
-    ratio: "16:10"
-    width: 1400
-
-  - target: src/assets/_candidatos/hero-12975758.webp
-    provider: freepik
-    assetId: 12975758
-    license: free
-    previewPath: /free-photo/medium-shot-woman-cleaning-plate_23-2148883390.jpg
-    ratio: "4:5"
-    width: 1400
-
-  - target: src/assets/_candidatos/hero-12975762.webp
-    provider: freepik
-    assetId: 12975762
-    license: free
-    previewPath: /free-photo/medium-shot-woman-cleaning_23-2148883394.jpg
-    ratio: "4:5"
-    width: 1400
-
-  - target: src/assets/_candidatos/hero-57312636.webp
-    provider: freepik
-    assetId: 57312636
-    license: free
-    previewPath: /free-photo/young-woman-drinking-coffee-kitchen_23-2150656207.jpg
-    ratio: "4:5"
-    width: 1400
-
-  - target: src/assets/_candidatos/hero-78042833.webp
-    provider: freepik
-    assetId: 78042833
-    license: free
-    previewPath: /free-photo/portrait-modern-woman-morning-standing-kitchen-making-herself-cup-coffee_1258-193475.jpg
-    ratio: "4:5"
-    width: 1400
-
-  - target: src/assets/_candidatos/hero-22706503.webp
-    provider: freepik
-    assetId: 22706503
-    license: free
-    previewPath: /free-photo/woman-looking-busy-while-cleaning-kitchen_259150-59485.jpg
-    ratio: "4:5"
-    width: 1400
-
-  - target: src/assets/_candidatos/sessao-24747629.webp
-    provider: freepik
-    assetId: 24747629
-    license: free
-    previewPath: /free-photo/medium-shot-woman-cleaning-kitchen_23-2149358488.jpg
-    ratio: "16:9"
-    width: 1400
-
-  - target: src/assets/_candidatos/sessao-22706508.webp
-    provider: freepik
-    assetId: 22706508
-    license: free
-    previewPath: /free-photo/woman-looking-busy-while-cleaning-kitchen_259150-59486.jpg
-    ratio: "16:9"
-    width: 1400
-
-  - target: src/assets/_candidatos/sessao-418364313.webp
-    provider: freepik
-    assetId: 418364313
-    license: free
-    previewPath: /free-photo/teenage-girl-cleans-kitchen-house-cleaning-daily-routine-housework_169016-67990.jpg
-    ratio: "16:9"
-    width: 1400
-
-  - target: src/assets/_candidatos/sessao-12975741.webp
-    provider: freepik
-    assetId: 12975741
-    license: free
-    previewPath: /free-photo/happy-woman-cleaning-bowl-medium-shot_23-2148883373.jpg
-    ratio: "16:9"
-    width: 1400
-
-  - target: src/assets/_candidatos/cadeira-24996528.webp
-    provider: freepik
-    assetId: 24996528
-    license: free
-    previewPath: /free-photo/high-angle-clothes-chair_23-2149363742.jpg
-    ratio: "16:10"
-    width: 1400
-
-  - target: src/assets/_candidatos/cadeira-24996545.webp
-    provider: freepik
-    assetId: 24996545
-    license: free
-    previewPath: /free-photo/dirty-home-with-clothes-chair_23-2149363744.jpg
-    ratio: "16:10"
-    width: 1400
-
-  - target: src/assets/_candidatos/cadeira-9243677.webp
-    provider: freepik
-    assetId: 9243677
-    license: free
-    previewPath: /free-photo/front-view-casual-clothes-top-chair_23-2148610412.jpg
-    ratio: "16:10"
-    width: 1400
-
-  - target: src/assets/_candidatos/cadeira-24996542.webp
     provider: freepik
     assetId: 24996542
     license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/high-angle-messy-bedroom-with-clothes-chair_24996542.htm
     previewPath: /free-photo/high-angle-messy-bedroom-with-clothes-chair_23-2149363750.jpg
+    ratio: "16:10"
+    width: 1400
+    note: >-
+      Quarto habitado: cama desfeita em primeiro plano e cadeira com roupas
+      acumuladas ao lado. Mostra o cômodo, não só a cadeira — e não
+      caricatura a bagunça.
+
+  # ── Landing page: Casa Organizada em 15 Minutos por Dia ─────
+  - target: src/assets/products/casa-organizada-em-15-minutos/hero-cozinha-manha.webp
+    provider: freepik
+    assetId: 12975762
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/medium-shot-woman-cleaning_12975762.htm
+    previewPath: /free-photo/medium-shot-woman-cleaning_23-2148883394.jpg
+    ratio: "4:5"
+    width: 1040
+    note: >-
+      Elemento de LCP da LP. Mulher lavando um prato na bancada, luz natural,
+      cozinha habitada com planta e azulejo bege. Escolhida entre cinco
+      candidatas vistas lado a lado: as outras posavam para a câmera ou
+      usavam luvas, virando cena de faxina.
+
+  - target: src/assets/products/casa-organizada-em-15-minutos/sessao-curta-cozinha.webp
+    provider: freepik
+    assetId: 24747629
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/medium-shot-woman-cleaning-kitchen_24747629.htm
+    previewPath: /free-photo/medium-shot-woman-cleaning-kitchen_23-2149358488.jpg
+    ratio: "16:9"
+    width: 1600
+    note: >-
+      Sessão curta de organização. Cozinha real — tijolo aparente, prateleira
+      aberta com copos, escorredor, cafeteira — e a pessoa concentrada na
+      tarefa, sem posar. É "cabe na minha rotina", não "faxina pesada".
+
+
+# ── Bloco TEMPORÁRIO de candidatas ──────────────────────────
+#  Só a bancada do artigo segue em aberto: a foto atual comunica "louça
+#  suja", e o que a página precisa dizer é "cozinha recém-usada, pequena
+#  arrumação pendente". Estas quatro testam esse registro.
+
+  - target: src/assets/_candidatos/bancada-19100536.webp
+    provider: freepik
+    assetId: 19100536
+    license: free
+    previewPath: /free-photo/interiors-homely-kitchen_53876-146777.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/_candidatos/bancada-9923303.webp
+    provider: freepik
+    assetId: 9923303
+    license: free
+    previewPath: /free-photo/kitchen-countertop-sink-with-dishes_1153-5786.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/_candidatos/bancada-1382926.webp
+    provider: freepik
+    assetId: 1382926
+    license: free
+    previewPath: /free-photo/modern-white-kitchen-sink-with-morning-sun-rays_1253-1544.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/_candidatos/bancada-10108467.webp
+    provider: freepik
+    assetId: 10108467
+    license: free
+    previewPath: /free-photo/modern-stylish-scandinavian-kitchen-interior-with-kitchen-accessories-bright-white-kitchen-with-household-items_169016-4791.jpg
     ratio: "16:10"
     width: 1400
