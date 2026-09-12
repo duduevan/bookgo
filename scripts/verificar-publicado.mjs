@@ -18,7 +18,7 @@ import { chromium } from 'playwright-core';
 
 const BASE = process.argv[2] ?? 'https://bookgo.com.br';
 const BROWSER = process.env.CHROMIUM_PATH || '/usr/bin/google-chrome';
-const OUT = '_verificacao';
+const OUT = '_verificacao'; // rodada da migração
 
 /** Páginas com tela; a chave é o nome do arquivo. */
 const PAGINAS = [
