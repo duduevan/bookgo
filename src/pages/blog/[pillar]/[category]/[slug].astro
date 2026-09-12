@@ -237,8 +237,10 @@ const crumbs = [
 
   .article {
     padding-bottom: var(--section-y);
-    /* Largura confortável de leitura, centralizada na página. */
-    max-width: var(--w-text);
+    /* Largura confortável de leitura, centralizada na página. O token é
+       próprio do artigo: aumentar --w-text mexeria em home, hubs e páginas
+       institucionais, que não pediram nada. */
+    max-width: var(--w-article);
   }
 
   .article > :global(* + *) {

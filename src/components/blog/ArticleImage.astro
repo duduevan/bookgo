@@ -47,12 +47,15 @@ const img = articleImageById(post, id);
      caixa vazia ou a um ícone de imagem quebrada no meio do texto. O build
      avisa exatamente qual arquivo falta. */
   img.image && (
-    <figure class="article-figure">
+    <figure
+      class="article-figure"
+      style={`--largura-real:${img.image.width}px`}
+    >
       <Image
         src={img.image}
         alt={img.alt}
         widths={[480, 768, 1024, 1400]}
-        sizes="(min-width: 48rem) 44rem, calc(100vw - 2 * var(--gutter))"
+        sizes="(min-width: 60rem) 47.5rem, calc(100vw - 2 * var(--gutter))"
         loading={priority ? 'eager' : 'lazy'}
         decoding={priority ? 'sync' : 'async'}
         fetchpriority={priority ? 'high' : 'auto'}
@@ -69,8 +72,14 @@ const img = articleImageById(post, id);
 }
 
 <style>
+  /* A figura acompanha a coluna, mas nunca passa da largura real do
+     arquivo: esticar uma foto de 626px para preencher 760px não a torna
+     maior, torna-a borrada. Quando a imagem é menor que a coluna, ela para
+     no próprio tamanho e fica centralizada, que lê como decisão e não como
+     desalinhamento. */
   .article-figure {
-    margin: var(--s-8) 0;
+    margin: var(--s-8) auto;
+    max-width: min(100%, var(--largura-real, 100%));
   }
 
   .article-figure :global(img) {

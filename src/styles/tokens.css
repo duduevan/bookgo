@@ -66,6 +66,10 @@
   --w-container: 78rem;
   --w-text: 46rem;
   --w-prose: 40rem;
+  /* Coluna do artigo. Mais larga que --w-text de propósito: a página de
+     artigo é a única em que o texto é o conteúdo inteiro, e ali a coluna
+     estreita fazia o artigo parecer menor do que é. Fora daqui nada muda. */
+  --w-article: 52.5rem;
   --gutter: clamp(1.25rem, 0.85rem + 1.8vw, 2.5rem);
 
   /* Forma — cards amplos e bem arredondados */
