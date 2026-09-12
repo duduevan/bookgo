@@ -25,11 +25,11 @@ const PAGINAS = [
   ['home', '/', ['desktop', 'mobile']],
   ['blog', '/blog/', ['desktop', 'tablet', 'mobile']],
   ['lp', '/casa-organizada-em-15-minutos/', ['desktop', 'mobile']],
-  ['artigo', '/blog/casa/organizacao/como-manter-a-casa-organizada/', ['desktop', 'mobile']],
+  ['artigo', '/blog/casa/organizacao/como-manter-a-casa-organizada/', ['desktop', 'tablet', 'mobile']],
   ['pilar', '/blog/casa/', ['desktop', 'mobile']],
   ['organizacao', '/blog/casa/organizacao/', ['desktop', 'mobile']],
   ['cozinha', '/blog/casa/cozinha/', ['desktop', 'mobile']],
-  ['comparativo', '/blog/casa/cozinha/comparativo-air-fryer-philips-electrolux-britania/', ['desktop', 'mobile']],
+  ['comparativo', '/blog/casa/cozinha/comparativo-air-fryer-philips-electrolux-britania/', ['desktop', 'tablet', 'mobile']],
 ];
 
 /**
@@ -187,6 +187,61 @@ for (const [nome, caminho, viewports] of PAGINAS) {
       if (hub.destaque && hub.recentes.includes(hub.destaque))
         problemas.push('o destaque do blog se repete na lista de recentes');
       if (hub.temas.length === 0) problemas.push('o hub do blog está sem "Explore por tema"');
+    }
+
+    /* Coluna do artigo: o número tem que vir do navegador, não do CSS lido
+       à mão. Confere também que nenhum bloco escapa da coluna e que o aviso
+       de afiliado aparece no comparativo e só nele. */
+    if (nome === 'artigo' || nome === 'comparativo') {
+      const col = await page.evaluate(() => {
+        const art = document.querySelector('.article');
+        if (!art) return null;
+        const pad = parseFloat(getComputedStyle(art).paddingLeft);
+        const r = art.getBoundingClientRect();
+        const esq = Math.round(r.left + pad);
+        const dir = Math.round(r.right - pad);
+        const fora = [];
+        for (const e of art.querySelectorAll(':scope > *, .prose > *')) {
+          const b = e.getBoundingClientRect();
+          if (b.width === 0) continue;
+          if (Math.round(b.left) < esq - 1 || Math.round(b.right) > dir + 1) {
+            fora.push(e.tagName + '.' + String(e.className || '').slice(0, 24));
+          }
+        }
+        const tabela = document.querySelector('.tabela-rolavel');
+        return {
+          largura: dir - esq,
+          fora,
+          avisos: document.querySelectorAll('.aff-nota').length,
+          aviso: (document.querySelector('.aff-nota') || {}).textContent?.trim() ?? '',
+          tabelaRola: tabela ? tabela.scrollWidth > tabela.clientWidth : null,
+          esticadas: [...document.querySelectorAll('.article-figure img')]
+            .filter((i) => i.naturalWidth > 0 && i.getBoundingClientRect().width > i.naturalWidth + 1)
+            .map((i) => i.currentSrc.split('/').pop()),
+        };
+      });
+      if (col) {
+        registrar(
+          `         coluna=${col.largura}px  blocos fora=${col.fora.length}  avisos=${col.avisos}` +
+            (col.tabelaRola === null ? '' : `  tabela rola=${col.tabelaRola}`)
+        );
+        if (vp === 'desktop' && (col.largura < 700 || col.largura > 800)) {
+          problemas.push(`${nome}: coluna de ${col.largura}px no desktop, fora do esperado para 840px de max-width`);
+        }
+        for (const f of col.fora) problemas.push(`${nome}/${vp}: ${f} escapa da coluna do artigo`);
+        for (const i of col.esticadas)
+          problemas.push(`${nome}/${vp}: ${i} renderizada acima da resolução real`);
+
+        const esperado = nome === 'comparativo' ? 1 : 0;
+        if (col.avisos !== esperado)
+          problemas.push(`${nome}: ${col.avisos} aviso(s) de afiliado, esperado ${esperado}`);
+        if (nome === 'comparativo') {
+          if (!col.aviso.startsWith('Este artigo contém links de afiliado.'))
+            problemas.push('o aviso de afiliado não está com o texto atual');
+          if (col.aviso.includes('Isso não muda'))
+            problemas.push('o aviso de afiliado ainda traz a frase removida');
+        }
+      }
     }
 
     if (nome === 'lp' && vp === 'desktop') {
