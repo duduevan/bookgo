@@ -10,16 +10,16 @@ Origem: https://bookgo.com.br
   200  home/desktop         overflow=0px  imagens=6 quebradas=0
          · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
          · 544×339     casa.BmFrDVE1_Z1gO5TD.webp
-         · 352×220     sala-vivida-fim-de-tarde.BD8Ju4Fs_Z1KUtPI.webp
          · 352×198     capa.BpV5ZOGt_ZmInwq.webp
-         · 352×220     bancada-depois-do-jantar.Iv4kEMRy_Z1x2DPt.webp
+         · 352×220     sala-vivida-fim-de-tarde.BD8Ju4Fs_Z1KUtPI.webp
+         · 352×220     entrada-da-casa-fim-do-dia.C94KtVEW_26k5kW.webp
          · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
   200  home/mobile          overflow=0px  imagens=6 quebradas=0
          · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
          · 389×243     casa.BmFrDVE1_ZJE8FG.webp
-         · 389×243     sala-vivida-fim-de-tarde.BD8Ju4Fs_Z1KUtPI.webp
          · 389×219     capa.BpV5ZOGt_ZmInwq.webp
-         · 389×243     bancada-depois-do-jantar.Iv4kEMRy_Z1x2DPt.webp
+         · 389×243     sala-vivida-fim-de-tarde.BD8Ju4Fs_Z1KUtPI.webp
+         · 389×243     entrada-da-casa-fim-do-dia.C94KtVEW_26k5kW.webp
          · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
          destaque: /blog/casa/cozinha/comparativo-air-fryer-philips-electrolux-britania/
          recentes: 5 · temas: Organização, Cozinha
@@ -27,8 +27,8 @@ Origem: https://bookgo.com.br
          · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
          · 608×342     capa.BpV5ZOGt_UGrsN.webp
          · 352×220     sala-vivida-fim-de-tarde.BD8Ju4Fs_Z1KUtPI.webp
-         · 352×220     bancada-depois-do-jantar.Iv4kEMRy_Z1x2DPt.webp
          · 352×220     entrada-da-casa-fim-do-dia.C94KtVEW_26k5kW.webp
+         · 352×220     bancada-depois-do-jantar.Iv4kEMRy_Z1x2DPt.webp
          · 352×220     cadeira-quarto-acumulo.Bl-vEajD_ZPoLU0.webp
          · 352×220     bancada-cozinha-em-uso.BdDZlDYS_1MJ9CL.webp
          · 480×270     organizacao.DfxBXnVi_ZlGK9N.webp
@@ -38,8 +38,8 @@ Origem: https://bookgo.com.br
          · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
          · 834×469     capa.BpV5ZOGt_PHsUN.webp
          · 834×520     sala-vivida-fim-de-tarde.BD8Ju4Fs_Z9f6PQ.webp
-         · 834×520     bancada-depois-do-jantar.Iv4kEMRy_4CI9o.webp
          · 834×520     entrada-da-casa-fim-do-dia.C94KtVEW_Z2nppc0.webp
+         · 834×520     bancada-depois-do-jantar.Iv4kEMRy_4CI9o.webp
          · 834×520     cadeira-quarto-acumulo.Bl-vEajD_1hXaaH.webp
          · 834×520     bancada-cozinha-em-uso.BdDZlDYS_Z19525s.webp
          · 834×468     organizacao.DfxBXnVi_Z1XhRJl.webp
@@ -49,33 +49,23 @@ Origem: https://bookgo.com.br
          · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
          · 389×219     capa.BpV5ZOGt_JEV7O.webp
          · 389×243     sala-vivida-fim-de-tarde.BD8Ju4Fs_Z1KUtPI.webp
-         · 389×243     bancada-depois-do-jantar.Iv4kEMRy_Z1x2DPt.webp
          · 389×243     entrada-da-casa-fim-do-dia.C94KtVEW_26k5kW.webp
+         · 389×243     bancada-depois-do-jantar.Iv4kEMRy_Z1x2DPt.webp
          · 389×243     cadeira-quarto-acumulo.Bl-vEajD_ZPoLU0.webp
          · 389×243     bancada-cozinha-em-uso.BdDZlDYS_1MJ9CL.webp
          · 389×219     organizacao.DfxBXnVi_ZlGK9N.webp
          · 389×219     cozinha.BYhMMxgN_Zba90e.webp
          · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
          checkout: 3 link(s), destino https://pay.kiwify.com.br/UJyyPuL
-         links para o blog: 5
-         CTAs: 0 de compra, 0 de continuidade
-  200  lp/desktop           overflow=0px  imagens=8 quebradas=0
+         links para o blog: 0
+         CTAs: 3 de compra, 2 de continuidade
+  200  lp/desktop           overflow=0px  imagens=3 quebradas=0
          · 604×755     hero-cozinha-manha.CvmdvNea_Z2n8Vox.webp
          · 1024×575    sessao-curta-cozinha.B_eU-lAT_Z7eIcp.webp
-         · 352×220     sala-vivida-fim-de-tarde.BD8Ju4Fs_Z1KUtPI.webp
-         · 352×220     bancada-depois-do-jantar.Iv4kEMRy_Z1x2DPt.webp
-         · 352×220     entrada-da-casa-fim-do-dia.C94KtVEW_26k5kW.webp
-         · 352×220     cadeira-quarto-acumulo.Bl-vEajD_ZPoLU0.webp
-         · 352×220     bancada-cozinha-em-uso.BdDZlDYS_1MJ9CL.webp
          · 50×18       bookgo-wordmark-blue.CUzJguyw_kOMiD.webp
-  200  lp/mobile            overflow=0px  imagens=8 quebradas=0
+  200  lp/mobile            overflow=0px  imagens=3 quebradas=0
          · 390×487     hero-cozinha-manha.CvmdvNea_Z2n8Vox.webp
          · 390×219     sessao-curta-cozinha.B_eU-lAT_Z7eIcp.webp
-         · 389×243     sala-vivida-fim-de-tarde.BD8Ju4Fs_Z1KUtPI.webp
-         · 389×243     bancada-depois-do-jantar.Iv4kEMRy_Z1x2DPt.webp
-         · 389×243     entrada-da-casa-fim-do-dia.C94KtVEW_26k5kW.webp
-         · 389×243     cadeira-quarto-acumulo.Bl-vEajD_ZPoLU0.webp
-         · 389×243     bancada-cozinha-em-uso.BdDZlDYS_1MJ9CL.webp
          · 50×18       bookgo-wordmark-blue.CUzJguyw_kOMiD.webp
          CTA do curso: /casa-organizada-em-15-minutos/ · checkout=0 · afiliado=0
          coluna=760px  blocos fora=0  avisos=0
@@ -208,13 +198,4 @@ Origem: https://bookgo.com.br
          · 389×292     britania-baf65a.Ll8lfuwi_Z1ddmmg.webp
          · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
 
-PROBLEMAS (9):
-  ✗ a LP tem link para o blog: https://bookgo.com.br/blog/casa/organizacao/casa-desarruma-no-dia-seguinte/
-  ✗ a LP tem link para o blog: https://bookgo.com.br/blog/casa/organizacao/organizar-a-cozinha-em-15-minutos/
-  ✗ a LP tem link para o blog: https://bookgo.com.br/blog/casa/organizacao/o-minimo-para-manter-a-casa-em-ordem/
-  ✗ a LP tem link para o blog: https://bookgo.com.br/blog/casa/organizacao/pontos-de-acumulo-da-casa/
-  ✗ a LP tem link para o blog: https://bookgo.com.br/blog/casa/organizacao/como-manter-a-casa-organizada/
-  ✗ a LP não tem nenhum CTA de compra
-  ✗ a LP não tem nenhum CTA de continuidade
-  ✗ a seção da oferta não traz: garantia
-  ✗ a seção da oferta não traz: incluso
+Nenhum problema encontrado.
