@@ -111,7 +111,7 @@ Origem: https://bookgo.com.br
          checkout: 3 link(s), destino https://pay.kiwify.com.br/Q2uHeTE
          links para o blog: 0
          CTAs: 3 de compra, 1 de continuidade
-         avaliações: 0 aparelho(s) em 0 seção(ões), nomes (nenhum)
+         avaliações: 5 aparelho(s) em 1 seção(ões), nomes Larissa Moreira, Juliana Paiva, Renata Albuquerque, Carolina Mendonça, Amanda Vieira
          oferta: preço R$ 14,90, garantia ausente
   200  lp-colorir/desktop   overflow=0px  imagens=1 quebradas=0
          · 50×18       bookgo-wordmark-blue.CUzJguyw_kOMiD.webp
