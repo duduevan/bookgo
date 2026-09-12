@@ -1,0 +1,234 @@
+---
+/**
+ * Trilho de conteúdo do hero: os últimos artigos e os materiais, lado a
+ * lado, logo abaixo do título da home.
+ *
+ * **O hero não vira carrossel.** O H1, a linha de apoio e o botão ficam
+ * parados onde estão: girar o título da página custaria o elemento de LCP,
+ * o texto de posicionamento da BookGo e a leitura de quem chega. O que
+ * gira é a faixa de baixo, que antes rodava palavras soltas de decoração e
+ * agora leva conteúdo real, com destino.
+ *
+ * A miniatura é pequena de propósito. Uma capa grande aqui disputaria o
+ * LCP com o título, que é o que a página tem de mais importante no topo.
+ *
+ * Mesma mecânica do carrossel de avaliações, pelo mesmo script: rolagem
+ * nativa com scroll-snap, arraste no celular, trackpad e teclado de
+ * graça, setas acrescentadas por JavaScript e **nenhum autoplay**. Sem
+ * JavaScript o trilho continua rolável.
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Icon from '../ui/Icon.astro';
+import { carouselScript } from '../../scripts/carousel';
+
+export interface RailItem {
+  href: string;
+  kicker: string;
+  title: string;
+  thumb?: ImageMetadata;
+}
+
+interface Props {
+  items: RailItem[];
+  /** Nome acessível da região rolável. */
+  label: string;
+}
+
+const { items, label } = Astro.props;
+---
+
+{
+  items.length > 0 && (
+    <div class="hr-wrap" data-hr-carousel>
+      <ul class="hr-track" role="group" aria-roledescription="carrossel" aria-label={label}>
+        {items.map((item) => (
+          <li class="hr-item">
+            <a class="hr-card" href={item.href}>
+              {item.thumb ? (
+                <Image
+                  class="hr-thumb"
+                  src={item.thumb}
+                  alt=""
+                  widths={[144, 216]}
+                  sizes="4.5rem"
+                  loading="lazy"
+                  decoding="async"
+                  quality={70}
+                />
+              ) : (
+                <span class="hr-thumb hr-thumb-empty" aria-hidden="true" />
+              )}
+              <span class="hr-body">
+                <span class="hr-kicker">{item.kicker}</span>
+                <span class="hr-title">{item.title}</span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <div class="hr-nav" hidden>
+        <button type="button" data-hr-prev aria-label="Conteúdo anterior">
+          <Icon name="arrow-right" />
+        </button>
+        <button type="button" data-hr-next aria-label="Próximo conteúdo">
+          <Icon name="arrow-right" />
+        </button>
+      </div>
+    </div>
+  )
+}
+
+{items.length > 0 && <script is:inline set:html={carouselScript('hr')} />}
+
+<style>
+  .hr-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+  }
+
+  .hr-track {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    gap: var(--s-4);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, #ffffff 40%, transparent) transparent;
+  }
+
+  /* Com o script no ar, as setas dizem melhor o que a barra dizia. Sem
+     ele, a barra fica à mostra como pista de que há mais ao lado. */
+  .hr-wrap[data-hr-js] .hr-track {
+    scrollbar-width: none;
+  }
+
+  .hr-wrap[data-hr-js] .hr-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hr-track:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 4px;
+    border-radius: var(--radius-md);
+  }
+
+  .hr-item {
+    flex: 0 0 min(19rem, 78%);
+    scroll-snap-align: start;
+  }
+
+  .hr-card {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--s-4);
+    padding: var(--s-3);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    color: #ffffff;
+    background: color-mix(in srgb, #ffffff 12%, transparent);
+    border: 1px solid color-mix(in srgb, #ffffff 22%, transparent);
+    transition: background var(--motion-fast) var(--ease-out);
+  }
+
+  .hr-card:hover {
+    background: color-mix(in srgb, #ffffff 20%, transparent);
+  }
+
+  .hr-thumb {
+    flex: 0 0 auto;
+    width: 4.5rem;
+    height: 4.5rem;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+  }
+
+  .hr-thumb-empty {
+    background: color-mix(in srgb, #ffffff 18%, transparent);
+  }
+
+  .hr-body {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-1);
+  }
+
+  .hr-kicker {
+    font-size: var(--t--2);
+    letter-spacing: var(--tr-eyebrow);
+    text-transform: uppercase;
+    font-weight: var(--w-semibold);
+    color: color-mix(in srgb, #ffffff 78%, transparent);
+  }
+
+  .hr-title {
+    font-size: var(--t--1);
+    line-height: 1.35;
+    font-weight: var(--w-medium);
+    /* Três linhas bastam para o título inteiro dos artigos do site; o
+       que passar disso é cortado aqui, e não na página do artigo. */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .hr-nav {
+    flex: 0 0 auto;
+    display: flex;
+    gap: var(--s-2);
+  }
+
+  .hr-nav[hidden] {
+    display: none;
+  }
+
+  .hr-nav button {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: 1px solid color-mix(in srgb, #ffffff 30%, transparent);
+    background: color-mix(in srgb, #ffffff 10%, transparent);
+    color: #ffffff;
+    cursor: pointer;
+    transition:
+      background var(--motion-fast) var(--ease-out),
+      opacity var(--motion-fast) var(--ease-out);
+  }
+
+  .hr-nav button:hover:not(:disabled) {
+    background: color-mix(in srgb, #ffffff 24%, transparent);
+  }
+
+  .hr-nav button:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .hr-nav button:first-child :global(.icon) {
+    transform: rotate(180deg);
+  }
+
+  .hr-nav :global(.icon) {
+    --icon-size: 1.1rem;
+  }
+
+  /* No celular as setas saem: o arraste é o gesto natural ali, e dois
+     botões roubariam largura de um trilho que já é estreito. */
+  @media (max-width: 47.99rem) {
+    .hr-nav {
+      display: none !important;
+    }
+  }
+</style>

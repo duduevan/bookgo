@@ -318,8 +318,51 @@ offer:
 reviews:
   enabled: true
   title: O que estão dizendo sobre o método
-  subtitle: Publicado com autorização de quem escreveu.
+  subtitle: Mensagens de quem já está usando o método.
+  # ─────────────────────────────────────────────────────────
+  #  AS CINCO MENSAGENS SÃO REAIS, E ESTÃO PUBLICADAS POR CORTE.
+  #
+  #  Quatro delas traziam frases que afirmam o que este material
+  #  NÃO entrega: receita pronta, prato específico, escolha de
+  #  ingrediente e preparo em 20 minutos. Essas frases saíram
+  #  inteiras. Nada foi reescrito, nada foi acrescentado, e nenhuma
+  #  frase publicada aqui é diferente do que a pessoa escreveu.
+  #
+  #  O que foi cortado, por pessoa:
+  #
+  #  Mariana  "As receitas são super fáceis e realmente rápidas de
+  #           fazer, cronometrei ontem e deu certinho os 20
+  #           minutinhos." Os 20 minutos são da sessão de
+  #           planejamento, e a página afirma isso em quatro lugares.
+  #  Camila   "O frango cremoso virou o favorito aqui em casa, meus
+  #           filhos adoraram!" Não existe receita no material.
+  #  Fernanda "Não usa ingredientes caros ou difíceis de achar, é
+  #           comida de verdade pro dia a dia." O material não
+  #           escolhe ingrediente nem prato.
+  #  Beatriz  "O método de preparar tudo rápido funciona de verdade.
+  #           Super prático e muito saboroso!" Não há método de
+  #           preparo, e sabor não é coisa que este produto entregue.
+  #
+  #  Camila e Fernanda receberam reação da equipe (emoji), e não
+  #  resposta escrita. O aparelho delas mostra só a mensagem: uma
+  #  resposta que não existiu não é inventada aqui.
+  # ─────────────────────────────────────────────────────────
   items:
+    - id: mariana-sampaio
+      name: Mariana Sampaio
+      messages:
+        - sender: person
+          text: "Gente, sério... salvou minha rotina! Trabalho fora o dia todo e chegava em casa sem ânimo nenhum pra cozinhar, acabava pedindo delivery direto. Super recomendo! 😍🍲✨"
+        - sender: bookgo
+          text: "Que felicidade ler isso, Mari! Nosso objetivo é exatamente devolver esse tempo e leveza pro seu dia. Bom apetite a semana toda! 🥰❤️"
+          read: true
+
+    - id: camila-duarte
+      name: Camila Duarte
+      messages:
+        - sender: person
+          text: "Melhor compra que fiz esse mês! A lista de compras e a organização semanal ajudaram até a economizar no mercado, porque não estrago mais nada na geladeira. 👏👩‍👧‍👦😋"
+
     - id: patricia-lima
       name: Patrícia Lima
       messages:
@@ -327,6 +370,21 @@ reviews:
           text: "Prático, direto ao ponto e sem frescura! Eu sou meio perdida na cozinha, mas o passo a passo é muito bem explicado. Consegui planejar a semana inteira no domingo e agora não fico mais com aquela dúvida clássica do 'o que vou fazer pro jantar hoje?'. Maravilhoso! 🥗⏰💖"
         - sender: bookgo
           text: "O fim do 'o que fazer pro jantar' é uma verdadeira vitória, né Pati? Haha! Muito bom saber que está curtindo! 🥳🍳"
+          read: true
+
+    - id: fernanda-costa
+      name: Fernanda Costa
+      messages:
+        - sender: person
+          text: "Comprei achando que seria mais do mesmo, mas me surpreendi demais. Já indiquei até pro grupo das amigas do trabalho! Vale cada centavo. 🥦✨🤩"
+
+    - id: beatriz-meireles
+      name: Beatriz Meireles
+      messages:
+        - sender: person
+          text: "Eu detesto passar horas na frente do fogão lavando panela depois, então esse guia caiu como uma luva. 🥘👏❤️"
+        - sender: bookgo
+          text: "Menos louça e mais tempo livre pra descansar! Obrigada pelo carinho, Bia! 💛✨"
           read: true
 
 # ── FAQ ──────────────────────────────────────────────────────

@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import PillButton from '../components/ui/PillButton.astro';
 import Marquee from '../components/ui/Marquee.astro';
+import HeroRail, { type RailItem } from '../components/home/HeroRail.astro';
 import Icon from '../components/ui/Icon.astro';
 import PostCard from '../components/blog/PostCard.astro';
 import ProductCard from '../components/product/ProductCard.astro';
@@ -14,21 +15,14 @@ import {
   getPostsByPillar,
   getShowcaseProducts,
   pillarUrl,
+  postUrl,
   productUrl,
 } from '../lib/content';
+import { resolveArticleImages } from '../lib/article-images';
 import { categoryCover } from '../lib/category-images';
+import { productImage } from '../lib/product-images';
 import { themeToStyle } from '../lib/theme';
 import * as schema from '../lib/schema';
-
-const HERO_TOPICS = [
-  'Organização',
-  'Tecnologia',
-  'Família',
-  '50+',
-  'Dinheiro',
-  'Carreira',
-  'Empreendedorismo',
-] as const;
 
 const FORMATS = [
   'Métodos práticos',
@@ -102,6 +96,38 @@ const categoryNameById = new Map(categories.map((c) => [c.id, c.data.name]));
 
 /** Materiais práticos publicados, com o destaque abrindo a grade. */
 const products = await getShowcaseProducts();
+
+/**
+ * Trilho do hero: o que a BookGo publicou, artigo e material intercalados.
+ *
+ * Intercalar não é enfeite. Em blocos, quem arrasta pouco veria só uma
+ * das duas coisas, e o trilho existe justamente para dizer que o site tem
+ * as duas. A ordem é determinística: artigo mais recente, material do
+ * destaque, e assim por diante.
+ *
+ * A miniatura é a mesma imagem que a peça já usa nas listagens. Sem
+ * arquivo, o cartão continua existindo com o quadro da paleta, como em
+ * todo o resto do projeto.
+ */
+const railPosts: RailItem[] = latestPosts.map((post) => ({
+  href: postUrl(post),
+  kicker: categoryNameById.get(post.data.category.id) ?? 'Artigo',
+  title: post.data.title,
+  thumb: resolveArticleImages(post).find((i) => i.image)?.image,
+}));
+
+const railProducts: RailItem[] = products.map((product) => ({
+  href: productUrl(product.data.slug),
+  kicker: 'Material',
+  title: product.data.name,
+  thumb: productImage(product.data.slug, product.data.hero.image),
+}));
+
+const railItems: RailItem[] = [];
+for (let i = 0; i < Math.max(railPosts.length, railProducts.length); i++) {
+  if (railPosts[i]) railItems.push(railPosts[i]);
+  if (railProducts[i]) railItems.push(railProducts[i]);
+}
 ---
 
 <SiteLayout
@@ -137,8 +163,8 @@ const products = await getShowcaseProducts();
           />
         </div>
 
-        <div class="hero-marquee">
-          <Marquee items={HERO_TOPICS} variant="hero" duration="38s" />
+        <div class="hero-rail">
+          <HeroRail items={railItems} label="Últimos artigos e materiais" />
         </div>
       </div>
     </div>
@@ -419,8 +445,11 @@ const products = await getShowcaseProducts();
     max-width: 32rem;
   }
 
-  .hero-marquee {
-    margin-inline: calc(-1 * clamp(1.75rem, 1.2rem + 2.4vw, 3.5rem));
+  /* O trilho respeita o padding do card, ao contrário da faixa de
+     palavras que sangrava até a borda: aqui os cartões são clicáveis, e
+     um alvo cortado pela borda do card é um alvo pela metade. */
+  .hero-rail {
+    margin-top: var(--s-2);
   }
 
   /* ── Seções ───────────────────────────────────────────────── */

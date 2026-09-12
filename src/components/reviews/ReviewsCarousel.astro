@@ -20,7 +20,7 @@
  * não depende do número absoluto de itens: três celulares não rolam num
  * desktop largo e rolam no tablet, e a mesma peça acerta nos dois.
  */
-import { REVIEWS_CAROUSEL_JS } from '../../scripts/reviews-carousel';
+import { carouselScript } from '../../scripts/carousel';
 
 interface Props {
   /** Quantos itens o trilho carrega. Limita quantos cabem por vez. */
@@ -79,4 +79,4 @@ const { count, label } = Astro.props;
   </div>
 </div>
 
-<script is:inline set:html={REVIEWS_CAROUSEL_JS} />
+<script is:inline set:html={carouselScript('rv')} />

@@ -1,9 +1,14 @@
 /**
- * Carrossel das avaliações, como string.
+ * Carrossel, como string, para qualquer trilho do site.
+ *
+ * Nasceu nas avaliações e serve também ao trilho de conteúdo do hero: a
+ * mecânica é a mesma, só mudam os cartões. O prefixo das classes e dos
+ * atributos entra por parâmetro, então duas peças podem usar o mesmo
+ * comportamento sem disputar seletor na mesma página.
  *
  * Emitido inline **dentro da guarda de renderização**, pelo mesmo motivo do
- * CSS: um produto sem avaliações, ou com uma ou duas, não paga um byte por
- * isto. Ver src/styles/reviews.css.ts.
+ * CSS: uma página sem carrossel, ou com um trilho que já cabe inteiro na
+ * tela, não paga um byte por isto. Ver src/styles/reviews.css.ts.
  *
  * O que o navegador já faz sozinho não está aqui. A rolagem, o arraste no
  * celular, o trackpad, o scroll-snap e as setas do teclado sobre a região
@@ -20,11 +25,11 @@
  * que está nesta string é baixado por quem abre a LP, e explicação que o
  * navegador não lê pertence aqui em cima. O que ele faz, em ordem:
  *
- *  · `montar` roda uma vez por seção. A guarda de `data-rv-js` existe
- *    porque o script é emitido por seção: numa página com duas, a segunda
- *    cópia ligaria um segundo ouvinte em cada seta e o clique andaria duas
- *    páginas de uma vez;
- *  · marcar `data-rv-js` no invólucro esconde a barra de rolagem e revela
+ *  · `montar` roda uma vez por seção. A guarda de `data-${p}-js` existe
+ *    porque o script é emitido junto de cada trilho: numa página com dois,
+ *    a segunda cópia ligaria um segundo ouvinte em cada seta e o clique
+ *    andaria duas páginas de uma vez;
+ *  · marcar `data-${p}-js` no invólucro esconde a barra de rolagem e revela
  *    os controles, que dizem a mesma coisa melhor;
  *  · `andar` rola uma largura visível do trilho, seja ela um cartão, dois
  *    ou três. Nenhum número fixo: o scroll-snap encaixa no item mais
@@ -45,24 +50,24 @@
  * Sem crase em lugar nenhum da string: ela vive dentro de um template
  * literal, e uma crase ali a encerraria no meio.
  */
-export const REVIEWS_CAROUSEL_JS = `
+export const carouselScript = (p: string) => `
 (function(){
-  var wraps = document.querySelectorAll('[data-rv-carousel]');
+  var wraps = document.querySelectorAll('[data-${p}-carousel]');
   for (var i = 0; i < wraps.length; i++) montar(wraps[i]);
 
   function montar(wrap){
-    if (wrap.hasAttribute('data-rv-js')) return;
-    var track = wrap.querySelector('.rv-track');
-    var nav = wrap.querySelector('.rv-nav');
+    if (wrap.hasAttribute('data-${p}-js')) return;
+    var track = wrap.querySelector('.${p}-track');
+    var nav = wrap.querySelector('.${p}-nav');
     if (!track || !nav || !track.children.length) return;
 
-    var prev = nav.querySelector('[data-rv-prev]');
-    var next = nav.querySelector('[data-rv-next]');
-    var dots = nav.querySelectorAll('[data-rv-dot]');
+    var prev = nav.querySelector('[data-${p}-prev]');
+    var next = nav.querySelector('[data-${p}-next]');
+    var dots = nav.querySelectorAll('[data-${p}-dot]');
     var itens = track.children;
     var pendente = 0;
 
-    wrap.setAttribute('data-rv-js', '');
+    wrap.setAttribute('data-${p}-js', '');
 
     function suave(){
       return window.matchMedia('(prefers-reduced-motion: reduce)').matches

@@ -71,6 +71,29 @@ Só CSS: marquee, hover e pequenas transformações. `prefers-reduced-motion` é
 tratado uma vez, globalmente, em `src/styles/global.css`, e o marquee vira uma
 lista estática rolável.
 
+### Carrossel, um só para o site inteiro
+
+`src/scripts/carousel.ts` emite o comportamento como string, com o prefixo
+das classes por parâmetro: `carouselScript('rv')` nas avaliações,
+`carouselScript('hr')` no trilho do hero. Duas peças, um comportamento, e
+nenhuma disputa de seletor quando as duas estão na mesma página.
+
+O que o navegador já faz não está no script: rolagem, arraste, trackpad,
+scroll-snap e teclado são nativos. Ele acrescenta as setas, os pontos e o
+estado deles, e some com a linha de controles quando tudo cabe na tela.
+**Nunca autoplay.**
+
+### O hero da home
+
+O H1, a linha de apoio e o botão ficam parados. Abaixo deles, um trilho com
+os últimos artigos e os materiais, intercalados: artigo, material, artigo.
+A miniatura é pequena de propósito, para não disputar o LCP com o título.
+
+**O hero não vira carrossel de slides.** Girar o título custaria o elemento
+de LCP, o texto de posicionamento e a leitura de quem chega. O que gira é a
+faixa de baixo, que antes rodava palavras soltas e agora leva conteúdo com
+destino.
+
 ---
 
 ### Ícones
@@ -148,6 +171,14 @@ banco de imagens apresentada como cliente seria pior ainda.
 
 **Avaliação não se inventa.** Só entra aqui texto que uma pessoa real
 escreveu e autorizou a publicar. Sem isso, `enabled: false` ou nenhum item.
+
+**Quando a mensagem afirma o que o material não entrega, corta-se a frase,
+nunca se reescreve.** Acontece: a pessoa elogia de verdade e, no meio,
+descreve o produto errado. A frase sai inteira, o resto fica literal, e o
+YAML registra em comentário o que saiu de cada uma e por quê. Reescrever a
+fala e publicá-la como se fosse o texto da pessoa é outra coisa, e essa não
+se faz. Inventar resposta da BookGo onde houve só uma reação de emoji,
+também não: o aparelho mostra só a mensagem.
 
 #### Quantos aparecem por vez
 
@@ -423,19 +454,22 @@ category:
   label: Cozinha e planejamento
 ```
 
-`getProductsByCategory()` agrupa sozinho, em ordem alfabética do rótulo, e
-**só devolve categoria que tenha produto publicado**: prateleira vazia não
-existe, e produto novo com categoria nova cria a dela sem lista para
-atualizar em lugar nenhum. Rascunho não entra.
+A categoria aparece **dentro do cartão**, como sobretítulo, e não como uma
+prateleira por linha: com poucos materiais, uma linha por categoria gastava
+a largura inteira da tela com um cartão só.
+
+`getShowcaseProducts()` devolve os materiais publicados na ordem de
+exibição, com o destaque abrindo a grade. Rascunho não entra.
 
 O cartão da home leva à **landing page**, nunca ao checkout, e dispara
 `product_click`. É a mesma regra do CTA do artigo, pela mesma razão: quem
 clica ali ainda não viu preço, conteúdo nem garantia.
 
-**A home não é catálogo.** A prateleira existe para mostrar o que a BookGo
-publica, com o destaque editorial continuando acima dela. O produto em
-destaque é escolhido pela flag `featured` do YAML, e não pela ordem
-alfabética: material novo não toma o lugar de ninguém em silêncio.
+**A home não é catálogo.** Uma seção só de materiais, em grade de até três
+colunas, logo depois de "Por onde começar". O destaque do YAML (`featured`)
+abre a grade em vez de ganhar uma faixa própria: duas faixas comerciais
+dizendo a mesma coisa é o que a home tinha antes, e material novo não toma
+o primeiro lugar de ninguém em silêncio.
 
 **Bloco comercial de produto não entra em página legal.** Termos,
 privacidade, política de cookies, termos de compra e contato ficam fora, e
