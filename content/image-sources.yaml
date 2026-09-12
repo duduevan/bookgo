@@ -12,10 +12,15 @@
 #  sozinho quando o token vencesse.
 #
 #  Como o script resolve os bytes, nesta ordem:
-#    1. variável de ambiente `IMAGE_URL_<assetId>`, se existir — é assim que
-#       uma URL assinada de alta resolução chega ao runner sem ser
-#       versionada;
+#    1. variável de ambiente `IMAGE_URL_<assetId>`, se existir — a URL
+#       assinada de download, que chega ao runner sem ser versionada;
 #    2. `previewPath`, o caminho público do CDN, sem token e estável.
+#
+#  LIMITE MEDIDO: o caminho público devolve ~626px. Pedir largura a ele
+#  (`?w=1480`) devolve 1400px **com marca d'água ladrilhada** sobre a foto
+#  inteira — foi testado e descartado. Alta resolução sem marca d'água só
+#  pela URL assinada, que precisa chegar por `workflow_dispatch` ou por uma
+#  chave de API guardada em secret do repositório.
 #
 #  Por que este arquivo existe: o ambiente onde o conteúdo é editado tem
 #  bloqueio de egress para os CDNs do Magnific e do Freepik. Escolher e
@@ -25,16 +30,19 @@
 images:
   # ── Artigo: como manter a casa organizada ───────────────────
   - target: src/assets/blog/organizacao/como-manter-a-casa-organizada/bancada-cozinha-em-uso.webp
-    provider: null
-    assetId: null
+    provider: freepik
+    assetId: 23591471
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/high-angle-dirty-home-concept-with-dishes_23591471.htm
+    previewPath: /free-photo/high-angle-dirty-home-concept-with-dishes_23-2149311296.jpg
     ratio: "16:10"
     width: 1400
     note: >-
-      Bancada de cozinha com louça do café da manhã, casa habitada, luz
-      natural. A escolha está em avaliação: ver o bloco de candidatas no
-      fim deste arquivo. O asset 12418721 foi materializado, inspecionado
-      e RECUSADO — composição de bandeja estilizada sobre azulejo branco,
-      exatamente a estética de catálogo que a direção visual exclui.
+      Louça do café da manhã acumulada na bancada de madeira, azulejo branco
+      ao fundo, luz natural. Escolhida entre seis candidatas materializadas e
+      vistas uma a uma — inclusive a anterior (12418721), recusada por ser
+      composição de bandeja sobre azulejo, estética de catálogo.
 
   - target: src/assets/blog/organizacao/como-manter-a-casa-organizada/cadeira-do-quarto-com-roupas.webp
     provider: null
@@ -66,76 +74,3 @@ images:
 
   # materiais-impressos-mesa.webp fica de fora de propósito: o mockup só
   # deve sair dos quatro PDFs reais, nunca de páginas inventadas.
-
-# ─────────────────────────────────────────────────────────────
-#  Candidatas em avaliação — bloco TEMPORÁRIO
-#
-#  O ambiente onde a escolha é feita não alcança o CDN, então a única
-#  forma de ver uma foto antes de publicá-la é materializá-la. Estas
-#  entradas existem só para isso: o runner as converte, elas entram no
-#  repositório, são inspecionadas uma a uma e o bloco inteiro sai junto
-#  com os arquivos assim que uma for escolhida.
-#
-#  Nada em `_candidatos/` é importado por componente nenhum, então não
-#  entra no build do site nem em `dist/`.
-# ─────────────────────────────────────────────────────────────
-
-  - target: src/assets/_candidatos/22120753-pratos-usados-em-casa.webp
-    provider: freepik
-    assetId: 22120753
-    license: free
-    author: magnific
-    sourcePage: https://www.magnific.com/free-photo/close-up-dirty-plates-left-around-home_22120753.htm
-    previewPath: /free-photo/close-up-dirty-plates-left-around-home_23-2149248527.jpg
-    ratio: "16:10"
-    width: 1400
-
-  - target: src/assets/_candidatos/24996522-louca-na-mesa-de-cima.webp
-    provider: freepik
-    assetId: 24996522
-    license: free
-    author: magnific
-    sourcePage: https://www.magnific.com/free-photo/dirty-dishes-table-high-angle_24996522.htm
-    previewPath: /free-photo/dirty-dishes-table-high-angle_23-2149363718.jpg
-    ratio: "16:10"
-    width: 1400
-
-  - target: src/assets/_candidatos/23591471-louca-acumulada.webp
-    provider: freepik
-    assetId: 23591471
-    license: free
-    author: magnific
-    sourcePage: https://www.magnific.com/free-photo/high-angle-dirty-home-concept-with-dishes_23591471.htm
-    previewPath: /free-photo/high-angle-dirty-home-concept-with-dishes_23-2149311296.jpg
-    ratio: "16:10"
-    width: 1400
-
-  - target: src/assets/_candidatos/13307403-cafe-da-manha-prensa-francesa.webp
-    provider: freepik
-    assetId: 13307403
-    license: free
-    author: rawpixel.com
-    sourcePage: https://www.magnific.com/free-photo/french-press-coffee-breakfast-kitchen_13307403.htm
-    previewPath: /free-photo/french-press-coffee-breakfast-kitchen_53876-97155.jpg
-    ratio: "16:10"
-    width: 1400
-
-  - target: src/assets/_candidatos/5180487-bancada-com-cafeteira.webp
-    provider: freepik
-    assetId: 5180487
-    license: free
-    author: magnific
-    sourcePage: https://www.magnific.com/free-photo/modern-home-decor-with-coffee-machine_5180487.htm
-    previewPath: /free-photo/modern-home-decor-with-coffee-machine_23-2148255062.jpg
-    ratio: "16:10"
-    width: 1400
-
-  - target: src/assets/_candidatos/423529017-ilha-de-cozinha-em-uso.webp
-    provider: freepik
-    assetId: 423529017
-    license: free
-    author: DC Studio
-    sourcePage: https://www.magnific.com/free-photo/empty-kitchen-with-pizza-ingredients-laid-out-kitchen-island-bowl-tomatoes-sauce-placed_423529017.htm
-    previewPath: /free-photo/empty-kitchen-with-pizza-ingredients-laid-out-kitchen-island-bowl-tomatoes-sauce-placed_482257-134666.jpg
-    ratio: "16:10"
-    width: 1400

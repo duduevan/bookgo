@@ -21,7 +21,7 @@ import { parse } from 'yaml';
 import sharp from 'sharp';
 
 const MANIFEST = 'content/image-sources.yaml';
-const CDN_HOSTS = ['https://img.magnific.com', 'https://img.freepik.com'];
+const CDN = 'https://img.magnific.com';
 const force = process.argv.includes('--force');
 
 /**
@@ -30,37 +30,29 @@ const force = process.argv.includes('--force');
  * Nunca lê URL assinada do manifesto — token com expiração não é dado
  * durável e não pode viver num arquivo versionado.
  *
- *   1. `IMAGE_URL_<assetId>` — é por aqui que uma URL assinada de alta
- *      resolução chega ao runner sem ser versionada.
- *   2. `previewPath` com pedido de largura, nos dois espelhos do CDN. O
- *      caminho público sem parâmetro devolve uma miniatura de ~626px, que
- *      não serve para um slot de 1400px.
- *   3. `previewPath` cru, como último recurso.
+ *   1. `IMAGE_URL_<assetId>`, a URL assinada de download, injetada por
+ *      ambiente. É o **único** caminho para o arquivo limpo em alta
+ *      resolução.
+ *   2. `previewPath`, o caminho público do CDN, sem token. Devolve ~626px.
+ *
+ * MEDIDO, NÃO SUPOSTO: pedir largura ao CDN (`?w=1480`) devolve, sim, 1400px
+ * — e com a marca d'água do banco ladrilhada por cima da foto inteira. O
+ * caminho público sem parâmetro vem limpo, mas pequeno. Não existe terceira
+ * opção pública: alta resolução sem marca d'água exige a URL assinada.
  */
 function urlCandidates(item) {
   const out = [];
   const fromEnv = item.assetId && process.env[`IMAGE_URL_${item.assetId}`];
-  if (fromEnv) out.push({ url: fromEnv, via: 'env' });
-
-  if (item.previewPath) {
-    for (const host of CDN_HOSTS) {
-      out.push({ url: `${host}${item.previewPath}?w=1480`, via: 'preview@1480' });
-    }
-    out.push({ url: CDN_HOSTS[0] + item.previewPath, via: 'preview' });
-  }
-
+  if (fromEnv) out.push({ url: fromEnv, via: 'assinada' });
+  if (item.previewPath) out.push({ url: CDN + item.previewPath, via: 'preview' });
   return out;
 }
 
 /**
- * Busca os candidatos e fica com o de maior largura real.
- *
- * Pedir largura ao CDN não garante recebê-la: o espelho pode ignorar o
- * parâmetro e devolver a mesma miniatura. Quem decide é o pixel que
- * chegou, não a URL que foi pedida.
+ * Fica com o primeiro candidato que responder — a ordem já é a preferência,
+ * e aqui o maior arquivo não é o melhor: o grande é o que tem marca d'água.
  */
 async function fetchBest(item) {
-  let best = null;
   const tentativas = [];
 
   for (const cand of urlCandidates(item)) {
@@ -73,15 +65,13 @@ async function fetchBest(item) {
       const buffer = Buffer.from(await res.arrayBuffer());
       const meta = await sharp(buffer).metadata();
       tentativas.push(`${cand.via}: ${meta.width}×${meta.height}`);
-      if (!best || meta.width > best.meta.width) best = { ...cand, buffer, meta };
-      /* Uma origem assinada já é a maior possível: não há o que superar. */
-      if (cand.via === 'env') break;
+      return { best: { ...cand, buffer, meta }, tentativas };
     } catch (error) {
       tentativas.push(`${cand.via}: ${error.message}`);
     }
   }
 
-  return { best, tentativas };
+  return { best: null, tentativas };
 }
 
 /** "16:9" → 1.777…; sem proporção, devolve null e o corte é pulado. */
