@@ -328,10 +328,21 @@ const products = defineCollection({
         message: 'offer precisa de `groups` ou de `includes`.',
       }),
 
-    guarantee: section.extend({
-      text: z.string(),
-      icon: iconName.optional(),
-    }),
+    /**
+     * Garantia comercial, quando existir.
+     *
+     * **Opcional de propósito.** A garantia é uma condição configurada na
+     * plataforma de pagamento, não uma decisão de copy: afirmá-la na página
+     * sem ela estar ligada lá seria prometer em nome de terceiro. Um produto
+     * cuja garantia ainda não foi conferida omite o bloco, e a oferta é
+     * renderizada sem ele em vez de trazer um prazo inventado.
+     */
+    guarantee: section
+      .extend({
+        text: z.string(),
+        icon: iconName.optional(),
+      })
+      .optional(),
 
     /**
      * Avaliações deste produto. Desligadas por padrão; ver o bloco

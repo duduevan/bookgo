@@ -7,11 +7,11 @@ Regra do projeto, igual à do Casa Organizada: **se não está aqui, não se
 afirma em lugar nenhum.** Quando algo mudar no produto, muda aqui primeiro e
 só depois na copy.
 
-> **Estado: em aberto.** Só os campos marcados como aprovados abaixo têm
-> lastro. Todo o resto está pendente de definição sua, e por isso o YAML do
-> produto está em `draft: true` com os campos marcados `[PREENCHER]`: a LP
-> não é gerada, não entra no sitemap nem no `llms.txt`, e não existe copy
-> provisória de venda que alguém possa publicar por engano.
+> **Estado: rascunho de copy, aguardando o pacote de conteúdo.**
+> O YAML do produto já está escrito a partir do briefing comercial e valida
+> no build, mas segue em `draft: true`: não gera página, não entra no
+> sitemap nem no `llms.txt`. **O pacote de conteúdo do produto (os módulos e
+> os materiais escritos) não chegou**, então nada foi conferido contra ele.
 
 ---
 
@@ -24,71 +24,95 @@ só depois na copy.
 | Preço | R$ 27,00 |
 | Cobrança | Pagamento único |
 | Checkout | Kiwify, `https://pay.kiwify.com.br/6VGDS8V` |
+| Entrega | Área de membros da Kiwify |
+| Liberação | Após a aprovação do pagamento |
 
-## Padrão do projeto, já aplicado
+## Posicionamento
 
-Estes não dependem de decisão de produto: são regras da BookGo e valem para
-qualquer material.
+O produto **não** vende receita, dieta, alimentação saudável nem culinária.
+Vende **tirar a decisão do jantar do fim do dia** e resolvê-la uma vez por
+semana.
 
-| Campo | Valor |
-|---|---|
-| Garantia | 7 dias, comercial e objetiva |
-| Texto da garantia | "Você terá 7 dias de garantia para conhecer o conteúdo. Se não for para você, basta pedir o reembolso dentro desse prazo." |
-| Liberação do acesso | "Acesso liberado após a aprovação do pagamento" (nunca "acesso imediato") |
-| Prova social | Nenhuma. Sem depoimento, sem número de alunos, sem escassez |
+**Os 20 minutos são de planejamento.** Nenhuma linha de copy pode sugerir
+que as refeições são preparadas em 20 minutos. A LP repete isso em três
+lugares: na subheadline, na nota do método e no FAQ.
 
-## Pendente de definição
+O jantar é a porta de entrada da promessa. O almoço aparece como sobra
+planejada e uso opcional do planner, nunca como "sete dias de almoço e
+jantar planejados em 20 minutos".
 
-Cada linha aqui corresponde a um ou mais campos `[PREENCHER]` em
-`content/products/cardapio-da-semana-em-20-minutos/index.yaml`.
+**Público:** quem decide as refeições da casa. A comunicação fala de rotina
+familiar sem excluir quem mora sozinho, casais e quem não tem filhos.
 
-1. **Promessa central.** Uma frase do que o material entrega, e o que ele
-   explicitamente não promete.
-2. **Mecanismo.** O nome do método e os pilares que o sustentam. O "20
-   minutos" do nome precisa significar algo verificável: 20 minutos de quê,
-   com que frequência.
-3. **Formato.** Curso em texto, e-book, planner, ou combinação. Se houver
-   vídeo, dizer aqui; se não houver, dizer também.
-4. **Estrutura.** Quantos módulos ou capítulos, e o título e objetivo de cada
-   um.
-5. **Materiais.** Quantos, quais e em que formato. Se são PDFs, dizer.
-6. **Entrega.** Área de membros da Kiwify, ou outra forma.
-7. **Público.** Para quem é e para quem não é.
-8. **Objeções.** As perguntas reais que chegam, para o FAQ e para a seção de
-   conversas.
-9. **Imagens.** Hero e editoriais. Enquanto não existirem, a página se fecha
-   sozinha: o hero usa a ambientação em CSS e os slots não renderizam.
+## Estrutura — 5 módulos
 
-## Identidade visual proposta
+Os títulos são definitivos e não mudam sem decisão de produto.
 
-A LP não pode parecer uma variação da do Casa Organizada. A proposta troca a
-cor principal em vez de ajustar o mesmo sálvia: entra um páprica quente, e o
-verde passa a acento pontual. Mesmo sistema de componentes, outra voz.
+1. Pare de decidir o jantar todos os dias
+2. O Método dos 20 Minutos
+3. Monte seu cardápio sem complicar
+4. Do cardápio para a lista de compras
+5. Faça funcionar na vida real
 
-| Papel | Valor |
-|---|---|
-| `primary` | `#9C4221` |
-| `primaryDark` | `#6B2C14` |
-| `accent` | `#3F6B52` |
-| `background` | `#FDF8F3` |
-| `surface` | `#FFFFFF` |
-| `text` | `#2A211C` |
-| `muted` | `#6E5F56` |
-| `border` | `#EADFD3` |
+## Materiais — 5 PDFs
 
-Contrastes conferidos: texto sobre fundo 14,9:1; branco sobre `primary`
-6,5:1; branco sobre `primaryDark` 10,5:1; `muted` sobre fundo 5,8:1. Todos
-acima do mínimo de 4,5:1 para texto corrido.
+1. Planner de Cardápio Semanal
+2. Lista de Compras Inteligente
+3. Inventário Rápido de Geladeira, Freezer e Despensa
+4. Banco de Refeições da Casa
+5. Plano de 7 Dias para Começar
 
-**A paleta é uma proposta, não uma decisão.** Trocar as oito linhas no YAML
-muda a LP inteira sem tocar em código.
+## O Método dos 20 Minutos
 
-## Como publicar quando a source of truth fechar
+| Bloco | Tempo | O que acontece |
+|---|---|---|
+| Olhar | 0 a 5 min | Ver o que já existe na geladeira, no freezer e na despensa |
+| Decidir | 5 a 12 min | Ver a agenda, marcar os dias corridos e escolher as refeições |
+| Listar | 12 a 20 min | Transformar o cardápio na lista do que está faltando |
 
-1. Preencher os campos `[PREENCHER]` do YAML a partir das decisões acima.
-2. Apagar a linha `draft: true`.
-3. `npm run build`. A página aparece em `/cardapio-da-semana-em-20-minutos/`.
+## Conceitos do método
+
+- **Refeição base:** uma refeição que a casa já conhece, gosta e sabe preparar.
+- **Dia corrido:** dia conhecido de antemão em que cozinhar é pouco provável.
+- **Refeição de segurança:** algo disponível para quando a semana muda.
+- **Repetição planejada:** repetir de propósito porque funciona, e não por falta de ideia.
+- **Inventário rápido:** olhar o que já existe antes de montar a compra.
+
+## O que a copy nunca afirma
+
+- economia garantida ou redução percentual de desperdício;
+- emagrecimento, dieta ou alimentação saudável;
+- acabar com o delivery;
+- preparar todas as refeições em 20 minutos;
+- resultado de cliente. Os personagens e os "Exemplos de rotina" dos
+  módulos são **didáticos** e não viram depoimento.
+
+## Pendências
+
+1. **O pacote de conteúdo.** Sem ele, os `objective` dos cinco módulos, as
+   descrições dos cinco materiais e as respostas do FAQ são derivadas do
+   briefing, não do texto real. Estão marcadas `# CONFERIR:` no YAML. O
+   risco concreto é afirmar na página um recurso que o módulo não tem.
+2. **A garantia.** Está **omitida** do YAML de propósito, e o schema passou
+   a aceitar produto sem ela. Garantia é condição configurada na Kiwify, não
+   decisão de copy: afirmar um prazo sem ele estar ligado lá seria prometer
+   em nome de terceiro. Confirmada a configuração, acrescentar o bloco
+   `guarantee` e a reasseguração correspondente.
+3. **A paleta.** Páprica com acento âmbar, proposta e não decidida. Verde
+   ficou fora como cor principal de propósito: puxaria para alimentação
+   saudável, que é o que este produto não vende.
+4. **As imagens.** Nenhuma declarada. Sem o arquivo, o hero usa a
+   ambientação em CSS e os slots não renderizam. Direção visual: cozinha
+   real, rotina, agenda, lista, mercado, comida comum. Sem estética fitness,
+   sem prato gourmet, sem cozinha de catálogo.
+5. **Cross-sell com o Casa Organizada.** Previsto, não implementado.
+
+## Como publicar quando fechar
+
+1. Conferir os pontos `# CONFERIR:` do YAML contra o pacote de conteúdo.
+2. Resolver as pendências acima.
+3. Apagar a linha `draft: true`.
+4. `npm run build`. A página aparece em `/cardapio-da-semana-em-20-minutos/`.
 
 Não é preciso criar arquivo em `src/pages/`, nem tocar em componente, nem
-duplicar CSS. `src/pages/[product].astro` gera a LP a partir do YAML, e o
-tema vira custom properties no `<body>` da página.
+duplicar CSS.

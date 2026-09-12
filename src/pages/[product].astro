@@ -347,11 +347,13 @@ const crumbs = [
       ctaLabel={d.checkout.cta}
       ctaHref={checkoutHref}
       reassurances={[...(d.offer.reassurances ?? [])]}
-      guarantee={{
-        title: d.guarantee.title,
-        text: d.guarantee.text,
-        icon: d.guarantee.icon,
-      }}
+      guarantee={
+        d.guarantee && {
+          title: d.guarantee.title,
+          text: d.guarantee.text,
+          icon: d.guarantee.icon,
+        }
+      }
       track={checkoutEvent}
     />
   </Section>
