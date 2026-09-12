@@ -20,8 +20,8 @@
 #  4. que existe garantia. Ela é condição configurada na Kiwify e não foi
 #     confirmada, então o bloco `guarantee` está ausente de propósito.
 #
-#  Sem avaliações: nenhum cliente escreveu ainda, e a seção não é
-#  renderizada com zero itens.
+#  As cinco avaliações são reais e estão publicadas por corte. Ver o bloco
+#  `reviews`, que registra o que saiu e por quê.
 # ─────────────────────────────────────────────────────────────
 
 slug: mundo-de-colorir
@@ -278,6 +278,78 @@ offer:
       text: Arte original, sem personagem de franquia
     - icon: check
       text: Indicado para crianças de aproximadamente 4 a 8 anos
+
+# ── Avaliações ───────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────
+#  AS CINCO MENSAGENS SÃO REAIS. UMA FRASE FOI CORTADA.
+#
+#  Renata  "Comprei na hora do almoço e recebi o acesso no e-mail no
+#          mesmo minuto." Quem libera o acesso é a plataforma, e esse
+#          prazo não é nosso: a página inteira diz "acesso liberado após
+#          a aprovação do pagamento", e publicar "no mesmo minuto" seria
+#          prometer em nome de terceiro. O resto da mensagem dela está
+#          literal.
+#
+#  As outras quatro entraram inteiras: tudo o que elas afirmam sobre o
+#  material é verdade, do traço grosso com áreas grandes ao fundo branco
+#  que rende tinta, das divisórias por tema à pizza e ao sorvete
+#  sorridentes, que são mesmo dois dos dez desenhos de comidinhas.
+#
+#  Juliana e Carolina receberam reação da equipe (emoji), e não resposta
+#  escrita. O aparelho delas mostra só a mensagem: resposta que não
+#  existiu não se inventa.
+#
+#  O que veio como "⭐⭐⭐⭐⭐" não entra: o formato da BookGo não tem
+#  estrela, e nenhum aggregateRating é gerado por existir esta seção.
+# ─────────────────────────────────────────────────────────────
+reviews:
+  enabled: true
+  title: O que estão dizendo sobre o material
+  subtitle: Mensagens de quem já está imprimindo em casa.
+  items:
+    - id: larissa-moreira
+      name: Larissa Moreira
+      status: Mãe do Theo, 4 anos
+      messages:
+        - sender: person
+          text: "Gente, que alívio foi achar esse material! Meu filho de 4 anos estava passando tempo demais no tablet e eu já não sabia mais o que inventar em dia de chuva. O traço dos desenhos é bem grosso e com áreas grandes, então ele consegue pintar com giz de cera sem ficar frustrado saindo toda hora da linha. Imprimi só 5 folhas no primeiro dia e ele passou a tarde inteira entretido. Valeu cada centavo! 🖍️🌧️🧸❤️"
+        - sender: bookgo
+          text: "Ver o Theo se divertindo longe das telas é exatamente o que nos motiva, Larissa! Que essas tardes sejam sempre cheias de cor por aí. Muito carinho para vocês! 🥰✨"
+          read: true
+
+    - id: juliana-paiva
+      name: Juliana Paiva
+      status: Mãe da Alice, 6 anos, e do Davi, 8 anos
+      messages:
+        - sender: person
+          text: "A melhor parte para mim é poder imprimir mais de uma vez! Tenho dois filhos com idades diferentes e se comprasse livro físico na livraria seria briga na certa ou teria que gastar o dobro. Aqui cada um escolheu o tema que mais gostou (a Alice foi direto no de fantasia e o Davi nos dinossauros). A qualidade do traço na folha A4 comum fica perfeita e a tinta da impressora rende super bem porque o fundo é branquinho. Recomendo demais! 👏📄🦖🧚‍♀️"
+
+    - id: renata-albuquerque
+      name: Renata Albuquerque
+      status: Mãe da Maitê, 5 anos
+      messages:
+        - sender: person
+          text: "Baixei, mandei imprimir umas folhinhas do fundo do mar e do tema de comidinhas... a Maitê simplesmente amou a pizza e o sorvete sorridentes, achei as artes muito fofas e delicadas! É muito prático ter isso guardado no computador pra puxar sempre que precisa de uma atividade rápida. Parabéns pelo capricho, BookGo! 🍦🐙💖"
+        - sender: bookgo
+          text: "Que alegria saber disso, Renata! A seção de comidinhas é mesmo super divertida de pintar. Um beijo enorme pra pequena Maitê! 🎨🍕💛"
+          read: true
+
+    - id: carolina-mendonca
+      name: Carolina Mendonça
+      status: Mãe do Lucas, 5 anos
+      messages:
+        - sender: person
+          text: "O que eu mais gostei foi a simplicidade bonita dos desenhos. Na internet a gente até acha imagem solta, mas ou vem cheia de detalhes minúsculos que irritam a criança, ou vem com fundo cinza borrado que detona o cartucho preto. Esse PDF é limpo, organizado e as divisões por tema deixam tudo muito fácil de achar. Uma verdadeira mão na roda pra nossa rotina! 🖨️🚀👏✨"
+
+    - id: amanda-vieira
+      name: Amanda Vieira
+      status: Mãe da Sofia, 7 anos
+      messages:
+        - sender: person
+          text: "Virou nosso ritual de sábado à tarde. A gente senta na mesa com a caixa de lápis de cor e vai pintando juntas enquanto conversa. Os desenhos do espaço e dos bichinhos são encantadores, até eu entro na brincadeira e pinto também haha! Uma delícia de compra, super recomendo para quem quer um tempo de qualidade de verdade com os filhos. 👩‍👧🪐🖍️🥰"
+        - sender: bookgo
+          text: "Isso não tem preço, Amanda! Momentos simples assim ficam guardados para sempre na memória deles. Adoramos saber que você também entrou na brincadeira! 💛✨"
+          read: true
 
 # ── FAQ ──────────────────────────────────────────────────────
 faq:

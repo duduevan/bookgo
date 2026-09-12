@@ -227,7 +227,9 @@ por Dia e Cardápio da Semana em 20 Minutos. Vale tudo o que já vale para eles:
 - **paleta própria no YAML do produto.** A LP não usa o azul institucional, e
   não pode parecer a mesma página dos outros dois;
 - **sem depoimento até existir mensagem real e autorizada.** A seção de
-  avaliações não é renderizada com zero itens;
+  avaliações não é renderizada com zero itens. Cinco já estão publicadas, e
+  uma frase saiu por corte: "recebi o acesso no e-mail no mesmo minuto".
+  Quem libera o acesso é a plataforma, e esse prazo não é nosso;
 - **sem `aggregateRating`, sem nota, sem contador de vendas**;
 - **sem escassez artificial**, em nenhuma forma;
 - **acesso liberado após a aprovação do pagamento**, nunca "acesso imediato";

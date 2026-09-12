@@ -40,8 +40,8 @@ const PAGINAS = [
   }],
   ['lp-colorir', '/mundo-de-colorir/', ['desktop', 'mobile'], {
     checkout: 'https://pay.kiwify.com.br/Q2uHeTE',
-    /* Nenhum cliente escreveu ainda: a seção não pode existir vazia. */
-    avaliacoes: 'nenhuma',
+    /* Cinco avaliações reais publicadas. */
+    avaliacoes: 'pelo menos uma',
     includesTitle: 'O que vem no arquivo',
   }],
   ['artigo', '/blog/casa/organizacao/como-manter-a-casa-organizada/', ['desktop', 'tablet', 'mobile']],
