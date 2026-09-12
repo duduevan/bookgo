@@ -80,6 +80,8 @@ const thumb = thumbnail
       grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
       gap: 0 var(--s-7);
       align-content: center;
+      /* Sem isto as linhas implícitas esticam e a data descola do título. */
+      grid-auto-rows: min-content;
     }
 
     /* O cartão não tem um invólucro de texto — meta, título, descrição e
