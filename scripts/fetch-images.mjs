@@ -21,7 +21,22 @@ import { parse } from 'yaml';
 import sharp from 'sharp';
 
 const MANIFEST = 'content/image-sources.yaml';
+const CDN = 'https://img.magnific.com';
 const force = process.argv.includes('--force');
+
+/**
+ * Resolve os bytes de uma entrada, sem nunca ler URL assinada do manifesto.
+ *
+ * 1. `IMAGE_URL_<assetId>` — é por aqui que uma URL assinada de alta
+ *    resolução chega ao runner sem ser versionada.
+ * 2. `previewPath` — caminho público do CDN, sem token e estável.
+ */
+function resolveUrl(item) {
+  const fromEnv = item.assetId && process.env[`IMAGE_URL_${item.assetId}`];
+  if (fromEnv) return { url: fromEnv, via: 'env' };
+  if (item.previewPath) return { url: CDN + item.previewPath, via: 'previewPath' };
+  return { url: null, via: null };
+}
 
 /** "16:9" → 1.777…; sem proporção, devolve null e o corte é pulado. */
 function parseRatio(ratio) {
@@ -49,7 +64,8 @@ const pendentes = [];
 const falhas = [];
 
 for (const item of entries) {
-  const { target, url, ratio, width } = item;
+  const { target, ratio, width } = item;
+  const { url, via } = resolveUrl(item);
 
   if (!url) {
     pendentes.push(target);
@@ -96,7 +112,10 @@ for (const item of entries) {
     await writeFile(target, out);
 
     const { width: fw, height: fh } = await sharp(out).metadata();
-    console.log(`  ✓ ${target}  ${fw}×${fh}  ${(out.length / 1024) | 0} KB`);
+    console.log(
+      `  ✓ ${target}\n      ${fw}×${fh}  ${(out.length / 1024) | 0} KB  ` +
+        `origem: ${item.provider ?? '?'}#${item.assetId ?? '?'} (via ${via})`
+    );
     baixadas += 1;
   } catch (error) {
     falhas.push({ target, message: error.message });
@@ -109,7 +128,7 @@ console.log(
 );
 
 if (pendentes.length > 0) {
-  console.log('\nSem `url` no manifesto — declare a origem para materializar:');
+  console.log('\nSem origem resolvível — declare provider/assetId/previewPath:');
   for (const t of pendentes) console.log(`  · ${t}`);
 }
 

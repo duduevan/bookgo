@@ -1,58 +1,70 @@
 # ─────────────────────────────────────────────────────────────
 #  Origem das imagens do site
 #
-#  Declara, para cada arquivo de imagem do projeto, de onde ele vem.
-#  `npm run images:fetch` lê este arquivo, baixa, corta, converte para WebP
-#  e grava no destino. O mesmo script roda no runner do GitHub Actions
-#  (.github/workflows/images.yml), que tem saída de rede sem restrição.
+#  Guarda a **identidade durável** de cada imagem: provedor, id do asset,
+#  licença, autor e página de origem. `npm run images:fetch` resolve isso em
+#  bytes, corta, converte para WebP e grava no destino. O mesmo script roda
+#  no workflow "Materializar imagens declaradas".
 #
-#  Por que isso existe: o ambiente do Claude tem bloqueio de egress para os
-#  CDNs do Magnific e do Freepik, então os bytes não podem ser materializados
-#  de dentro dele. Isso é infraestrutura, não trabalho manual — a escolha e a
-#  declaração ficam aqui, e a materialização acontece onde a rede permite.
+#  URL ASSINADA NÃO ENTRA AQUI. Os links de download do Freepik e do
+#  Magnific carregam token com expiração — persistir um deles seria guardar
+#  credencial temporária num arquivo versionado, e o manifesto quebraria
+#  sozinho quando o token vencesse.
 #
-#  Trocar de imagem é trocar `url` e `credit`. Nada mais muda: o alt, a
-#  legenda e a posição vivem no YAML do produto e no frontmatter do artigo.
+#  Como o script resolve os bytes, nesta ordem:
+#    1. variável de ambiente `IMAGE_URL_<assetId>`, se existir — é assim que
+#       uma URL assinada de alta resolução chega ao runner sem ser
+#       versionada;
+#    2. `previewPath`, o caminho público do CDN, sem token e estável.
+#
+#  Por que este arquivo existe: o ambiente onde o conteúdo é editado tem
+#  bloqueio de egress para os CDNs do Magnific e do Freepik. Escolher e
+#  declarar acontecem lá; buscar os bytes acontece onde a rede permite.
 # ─────────────────────────────────────────────────────────────
 
 images:
-  # ── Landing page: Casa Organizada em 15 Minutos por Dia ──────
-  - target: src/assets/products/casa-organizada-em-15-minutos/hero-cozinha-manha.webp
-    # Elemento de LCP da LP.
-    ratio: "4:5"
-    width: 1040
-    url: null
-    credit: null
-    note: >-
-      Mulher adulta guardando louça na bancada da cozinha, manhã, luz natural.
-      Casa habitada, não catálogo. Sem texto.
-
-  - target: src/assets/products/casa-organizada-em-15-minutos/sessao-curta-cozinha.webp
-    ratio: "16:9"
-    width: 1600
-    url: null
-    credit: null
-    note: >-
-      Sessão curta de organização em cozinha real. Precisa transmitir "isso
-      cabe na minha rotina", não "faxina pesada". Atenção ao corte: a ação
-      deve estar centralizada verticalmente.
-
   # ── Artigo: como manter a casa organizada ───────────────────
   - target: src/assets/blog/organizacao/como-manter-a-casa-organizada/bancada-cozinha-em-uso.webp
+    provider: freepik
+    assetId: 12418721
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/high-angle-kitchen-items-counter_12418721.htm
+    previewPath: /free-photo/high-angle-kitchen-items-counter_23-2148848701.jpg
     width: 1400
-    url: null
-    credit: null
     note: >-
-      Bancada de cozinha depois do uso do café da manhã, sem pessoas.
-      Levemente desarrumada, nunca suja nem caótica.
+      Bancada de cozinha com objetos do uso cotidiano, sem pessoas.
+      PROVA DE PIPELINE: escolhida pelo título, ainda não avaliada
+      visualmente — o ambiente de edição não alcança o CDN. A avaliação
+      acontece depois que o runner materializar o arquivo.
 
   - target: src/assets/blog/organizacao/como-manter-a-casa-organizada/cadeira-do-quarto-com-roupas.webp
+    provider: null
+    assetId: null
     width: 1400
-    url: null
-    credit: null
     note: >-
       Quarto habitado, cadeira com roupas acumuladas, guarda-roupa
       parcialmente aberto ao fundo. Sem caricatura de bagunça.
+
+  # ── Landing page: Casa Organizada em 15 Minutos por Dia ─────
+  - target: src/assets/products/casa-organizada-em-15-minutos/hero-cozinha-manha.webp
+    provider: null
+    assetId: null
+    ratio: "4:5"
+    width: 1040
+    note: >-
+      Elemento de LCP da LP. Mulher adulta guardando louça na bancada,
+      manhã, luz natural. Casa habitada, não catálogo.
+
+  - target: src/assets/products/casa-organizada-em-15-minutos/sessao-curta-cozinha.webp
+    provider: null
+    assetId: null
+    ratio: "16:9"
+    width: 1600
+    note: >-
+      Sessão curta de organização. Precisa transmitir "isso cabe na minha
+      rotina", não "faxina pesada". O corte tira topo e base: a ação
+      precisa estar centralizada verticalmente.
 
   # materiais-impressos-mesa.webp fica de fora de propósito: o mockup só
   # deve sair dos quatro PDFs reais, nunca de páginas inventadas.

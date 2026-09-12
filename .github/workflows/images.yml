@@ -12,6 +12,7 @@ name: Materializar imagens declaradas
 # Nenhum download manual, nenhum upload por FTP imagem a imagem.
 
 on:
+  # Disparo manual, depois que o arquivo existir na branch padrão.
   workflow_dispatch:
     inputs:
       force:
@@ -19,6 +20,19 @@ on:
         type: boolean
         required: true
         default: false
+
+  # Nas branches de trabalho, roda sozinho quando o manifesto muda. É o que
+  # permite materializar uma imagem sem esperar o workflow chegar à main.
+  #
+  # Não entra em laço: o commit do bot toca apenas `src/assets/**`, que não
+  # está entre os caminhos observados abaixo.
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - 'content/image-sources.yaml'
+      - 'scripts/fetch-images.mjs'
+      - '.github/workflows/images.yml'
 
 permissions:
   contents: write
@@ -64,7 +78,7 @@ jobs:
 
           git add src/assets
           git commit -m "Materializa imagens declaradas em content/image-sources.yaml"
-          git push
+          git push origin HEAD:${{ github.ref_name }}
 
       - name: Conferir que o site ainda constrói
         run: npm run build
