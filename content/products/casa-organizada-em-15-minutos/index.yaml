@@ -26,32 +26,20 @@ theme:
   border: "#E8E2D8"
 
 # ─────────────────────────────────────────────────────────────
-#  AFIRMAÇÕES A CONFIRMAR ANTES DE PUBLICAR
+#  FONTE DOS DADOS
 #
-#  Auditoria de procedência. A copy abaixo está no ar como fato, mas nem
-#  toda ela veio de dado confirmado do produto. Nada foi alterado: trocar
-#  por um palpite diferente não melhoraria nada.
+#  Toda a copy deste arquivo segue docs/casa-organizada-source-of-truth.md.
+#  Se não está lá, não se afirma aqui.
 #
-#  CONFIRMADO (veio do briefing):
-#    · Kiwify como plataforma de checkout
-#    · os nomes dos 5 módulos e dos 4 materiais
-#    · o texto da garantia de 7 dias
-#      (mas a "confirmação final da garantia" segue pendente em
-#       /termos-de-compra/ — ver src/config/legal.ts)
+#  A auditoria anterior apontava três afirmações sem lastro — "em PDF",
+#  "em texto direto" e "acesso imediato". As duas primeiras foram
+#  confirmadas; a terceira estava errada e foi corrigida:
 #
-#  A CONFIRMAR — provável inferência, não dado:
-#    · "em PDF"  → formato de arquivo dos materiais.
-#      Aparece em seo.description, hero.highlights, materials.intro e
-#      offer.priceNote.
-#    · "em texto direto, feitos para ler rápido"  → formato dos módulos.
-#      Aparece em hero.highlights e contents.intro.
-#    · "Acesso imediato após a confirmação do pagamento"  → prazo de
-#      liberação. Aparece em hero.highlights, offer.includes,
-#      offer.reassurances e no FAQ.
+#    "acesso imediato após a confirmação do pagamento"
+#      → "Acesso liberado após a aprovação do pagamento."
 #
-#  CONTRADIÇÃO A RESOLVER: a LP afirma acesso imediato, enquanto
-#  /termos-de-compra/ declara o prazo de liberação como pendente. Os dois
-#  não podem ir ao ar assim.
+#  Quem aprova o pagamento é a plataforma, e esse prazo não é nosso.
+#  "Após a aprovação" é verdadeiro em qualquer cenário; "imediato" não.
 # ─────────────────────────────────────────────────────────────
 
 # ── Comercial ────────────────────────────────────────────────
@@ -85,7 +73,7 @@ hero:
       icon: list
     - text: 4 materiais práticos em PDF
       icon: checklist
-    - text: Acesso imediato após a confirmação do pagamento
+    - text: Acesso liberado após a aprovação do pagamento
       icon: spark
   # Imagem do hero. Arquivo ainda não fornecido: sem ele o quadro usa a
   # ambientação em CSS, sem parecer buraco.
@@ -163,7 +151,7 @@ howItWorks:
 # ── Conteúdo do produto ──────────────────────────────────────
 contents:
   title: O que você vai aprender
-  intro: Cinco módulos objetivos, em texto direto, para ler e aplicar no mesmo dia.
+  intro: Curso digital em texto. Cinco módulos objetivos, para ler e aplicar no mesmo dia.
   modules:
     - number: 1
       title: Pare de tentar organizar tudo
@@ -228,7 +216,7 @@ offer:
     - Planner Semanal da Casa
     - Plano Casa Organizada em 7 Dias
     - Checklist por Ambiente
-    - Acesso imediato após a confirmação do pagamento
+    - Acesso pela área de membros da Kiwify, liberado após a aprovação do pagamento
   priceNote: Materiais digitais em PDF. Pagamento processado pela Kiwify.
   # Reasseguranças sob o botão. São fatos do produto — nunca prova social,
   # número de alunos ou escassez.
@@ -236,7 +224,7 @@ offer:
     - icon: shield
       text: 7 dias de garantia para conhecer o conteúdo
     - icon: spark
-      text: Acesso imediato após a confirmação do pagamento
+      text: Acesso liberado após a aprovação do pagamento
     - icon: checklist
       text: Materiais em PDF para usar no celular ou impressos
 
@@ -334,7 +322,7 @@ faq:
     - q: Preciso comprar caixas ou organizadores?
       a: Não. O método trabalha com o que você já tem em casa.
     - q: Como recebo os materiais?
-      a: Após a confirmação do pagamento, o acesso é liberado pela Kiwify, plataforma responsável pelo checkout.
+      a: Após a aprovação do pagamento, o acesso é liberado na área de membros da Kiwify, plataforma responsável pelo checkout.
 
 # ── CTA final ────────────────────────────────────────────────
 finalCta:

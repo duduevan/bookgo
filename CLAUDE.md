@@ -168,6 +168,19 @@ produto e continua sendo superfície intencional. No mobile, porém, ele é
 escondido: ali seria uma tela inteira de rolagem sem entregar nada. Quando o
 arquivo chegar, entra sem mudar layout: a proporção já está reservada.
 
+### Source of truth do produto
+
+`docs/casa-organizada-source-of-truth.md` é a referência do produto: preço,
+formato, módulos, materiais, entrega e garantia. Vale para LP, curso, PDFs,
+FAQ, checkout, artigos e anúncios.
+
+**Se não está lá, não se afirma em lugar nenhum.** Quando o produto mudar,
+muda ali primeiro e só depois na copy.
+
+Formulação que a auditoria corrigiu: **"acesso liberado após a aprovação do
+pagamento"**, nunca "acesso imediato" — quem aprova é a plataforma, e esse
+prazo não é nosso.
+
 ### Depoimentos em modo demonstração
 
 `testimonials.demo: true` renderiza a seção com uma **tarja visível** na

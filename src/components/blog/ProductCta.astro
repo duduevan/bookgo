@@ -31,16 +31,27 @@ import { themeToStyle } from '../../lib/theme';
 
 interface Props {
   product: Product;
-  label: string;
-  headline: string;
-  text: string;
-  buttonLabel: string;
+  /**
+   * Copy contextual. Opcional de propósito: a página de categoria não tem
+   * artigo de onde tirar o texto, e um CTA sem headline renderizava uma
+   * caixa com nome e preço e mais nada. Sem copy, o componente cai no que o
+   * próprio produto já afirma — nunca num bloco vazio.
+   */
+  label?: string;
+  headline?: string;
+  text?: string;
+  buttonLabel?: string;
   /** Distingue o CTA do meio do texto do de fechamento na medição. */
   placement: 'inline' | 'end';
 }
 
-const { product, label, headline, text, buttonLabel, placement } = Astro.props;
-const { name, price, checkout } = product.data;
+const { product, placement } = Astro.props;
+const { name, price, checkout, tagline } = product.data;
+
+const label = Astro.props.label ?? 'Material relacionado';
+const headline = Astro.props.headline ?? name;
+const text = Astro.props.text ?? tagline;
+const buttonLabel = Astro.props.buttonLabel ?? 'Conhecer o material';
 const href = productUrl(product.data.slug);
 
 const checkoutEvent = eventAttrs('checkout_click', {

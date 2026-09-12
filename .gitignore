@@ -144,3 +144,6 @@ vite.config.ts.timestamp-*
 
 # Astro
 .astro/
+
+# Pacote de preview para cPanel, gerado sob demanda a partir de dist/.
+bookgo-visual-preview.zip

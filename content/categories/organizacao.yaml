@@ -25,6 +25,18 @@ subtopics:
 
 relatedProduct: casa-organizada-em-15-minutos
 
+# Copy do CTA neste hub. Conversa com o recorte da categoria, não repete a
+# tagline do produto. Sem este bloco, o CTA cai no nome e na tagline — nunca
+# renderiza caixa vazia.
+productCta:
+  label: Material da BookGo
+  headline: Um método para aplicar isso na casa inteira
+  text: >-
+    Os textos desta seção tratam de rotina e manutenção. O Casa Organizada em 15
+    Minutos por Dia reúne esse raciocínio em cinco módulos e quatro materiais
+    práticos, para usar ambiente por ambiente.
+  buttonLabel: Conhecer o método
+
 seo:
   title: Organização da casa
   description: Artigos práticos sobre rotina, manutenção e organização da casa para quem tem pouco tempo e não quer passar o fim de semana arrumando.

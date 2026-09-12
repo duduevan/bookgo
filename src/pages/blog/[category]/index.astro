@@ -64,18 +64,29 @@ const crumbs = [
     <Breadcrumbs items={crumbs} />
   </div>
 
-  <header class="container page-head">
-    <p class="eyebrow">Categoria</p>
-    <h1>{d.headline ?? d.name}</h1>
-    {d.intro.length > 0 ? (
-      <div class="intro">
-        {d.intro.map((paragraph) => <p>{paragraph}</p>)}
+  {/* Faixa própria: separa o hub do resto da página e dá ao título um
+      fundo, em vez de deixá-lo solto sobre o branco com meia tela vazia
+      à direita. A intro sobe para a mesma altura do título. */}
+  <div class="hero-band">
+    <header class="container page-head">
+      <div class="head-main">
+        <p class="eyebrow">Categoria</p>
+        <h1>{d.headline ?? d.name}</h1>
       </div>
-    ) : (
-      <p class="lede">{d.description}</p>
-    )}
-    <CategoryChips categories={categories} current={category.id} />
-  </header>
+
+      {d.intro.length > 0 ? (
+        <div class="intro">
+          {d.intro.map((paragraph) => <p>{paragraph}</p>)}
+        </div>
+      ) : (
+        <p class="lede">{d.description}</p>
+      )}
+    </header>
+
+    <div class="container chips-row">
+      <CategoryChips categories={categories} current={category.id} />
+    </div>
+  </div>
 
   {
     d.subtopics.length > 0 && (
@@ -100,7 +111,7 @@ const crumbs = [
         <ul class="posts">
           {posts.map((post, index) => (
             <li class:list={{ wide: index === 0 }}>
-              <PostCard post={post} featured={index === 0} />
+              <PostCard post={post} featured={index === 0} thumbnail />
             </li>
           ))}
         </ul>
@@ -113,7 +124,14 @@ const crumbs = [
   {
     product && (
       <div class="container product-wrap">
-        <ProductCta product={product} />
+        <ProductCta
+          product={product}
+          label={d.productCta?.label}
+          headline={d.productCta?.headline}
+          text={d.productCta?.text}
+          buttonLabel={d.productCta?.buttonLabel}
+          placement="end"
+        />
       </div>
     )
   }
@@ -124,22 +142,33 @@ const crumbs = [
     padding-block: var(--s-5) var(--s-2);
   }
 
+  .hero-band {
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--s-9);
+  }
+
   .page-head {
-    padding-block: var(--section-y-tight) var(--s-8);
+    padding-block: var(--section-y-tight) var(--s-6);
   }
 
   .page-head h1 {
-    margin-block: var(--s-3) var(--s-5);
+    margin-top: var(--s-3);
     font-size: var(--t-4);
-    max-width: 18ch;
+    max-width: 16ch;
+    text-wrap: balance;
+  }
+
+  .chips-row {
+    padding-bottom: var(--s-6);
   }
 
   .intro {
     display: grid;
     gap: var(--s-4);
     max-width: var(--w-text);
-    margin-bottom: var(--s-7);
-    font-size: var(--t-1);
+    margin-top: var(--s-5);
+    font-size: var(--t-0);
     color: var(--color-muted);
     line-height: 1.58;
   }
@@ -163,14 +192,21 @@ const crumbs = [
     margin-bottom: var(--s-5);
   }
 
+  /* Cartões em vez de parágrafos soltos: os recortes da categoria são uma
+     lista de opções, e como blocos isso fica explícito. */
   .subtopics ul {
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
-    gap: var(--s-5);
-    border-top: 1px solid var(--color-border);
-    padding-top: var(--s-6);
+    gap: var(--s-4);
+  }
+
+  .subtopics li {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--s-6);
   }
 
   .subtopics h3 {
@@ -204,10 +240,25 @@ const crumbs = [
     padding-bottom: var(--section-y);
   }
 
+  @media (min-width: 60rem) {
+    /* Título e intro lado a lado: o hub abre com as duas informações na
+       mesma altura, em vez de uma coluna longa e um vazio ao lado. */
+    .page-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--s-9);
+      align-items: end;
+    }
+
+    .intro {
+      margin-top: 0;
+    }
+  }
+
   @media (min-width: 52rem) {
     .subtopics ul {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: var(--s-7) var(--s-8);
+      gap: var(--s-5);
     }
 
     .posts {

@@ -324,6 +324,18 @@ const categories = defineCollection({
       .default([]),
     /** Produto da categoria, quando houver. */
     relatedProduct: reference('products').optional(),
+    /**
+     * Copy do CTA do produto neste hub. Sem ela, o CTA usa o nome e a
+     * tagline do próprio produto — nunca fica vazio.
+     */
+    productCta: z
+      .object({
+        label: z.string().optional(),
+        headline: z.string(),
+        text: z.string(),
+        buttonLabel: z.string(),
+      })
+      .optional(),
 
     seo: z
       .object({

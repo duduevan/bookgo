@@ -1,19 +1,53 @@
 ---
+import { Image } from 'astro:assets';
 import Icon from '../ui/Icon.astro';
 import { formatDate, postUrl, type Post } from '../../lib/content';
+import { resolveArticleImages } from '../../lib/article-images';
 
 interface Props {
   post: Post;
   categoryName?: string;
   /** Destaque: ocupa mais espaço na grade e usa tipografia maior. */
   featured?: boolean;
+  /**
+   * Mostra a primeira imagem editorial do artigo como miniatura.
+   *
+   * Só onde a miniatura ajuda a escolher o que ler — o hub da categoria.
+   * Na lista dentro da própria LP ela competiria com a oferta.
+   *
+   * O `alt` fica vazio de propósito: o título do artigo está ao lado e é o
+   * nome acessível do link. Repetir a descrição da cena faria o leitor de
+   * tela anunciar a mesma entrada duas vezes.
+   */
+  thumbnail?: boolean;
 }
 
-const { post, categoryName, featured = false } = Astro.props;
+const { post, categoryName, featured = false, thumbnail = false } = Astro.props;
 const href = postUrl(post);
+
+/* Sem arquivo, não há miniatura e o cartão volta ao formato de texto —
+   nenhuma moldura vazia. */
+const thumb = thumbnail
+  ? resolveArticleImages(post).find((i) => i.image)?.image
+  : undefined;
 ---
 
-<article class:list={['card', { featured }]}>
+<article class:list={['card', { featured, 'has-thumb': thumb }]}>
+  {
+    thumb && (
+      <div class="thumb">
+        <Image
+          src={thumb}
+          alt=""
+          widths={[320, 480, 720]}
+          sizes="(min-width: 60rem) 22rem, calc(100vw - 2 * var(--gutter))"
+          loading="lazy"
+          decoding="async"
+          quality={70}
+        />
+      </div>
+    )
+  }
   <p class="meta">
     {categoryName && <span class="cat">{categoryName}</span>}
     <time datetime={post.data.date.toISOString()}>
@@ -38,6 +72,57 @@ const href = postUrl(post);
 </article>
 
 <style>
+  /* Cartão de destaque com miniatura: imagem ao lado do texto, não acima.
+     Empilhada, a chamada principal empurrava o título para fora da dobra. */
+  @media (min-width: 60rem) {
+    .featured.has-thumb {
+      display: grid;
+      grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
+      gap: var(--s-7);
+      align-items: center;
+    }
+
+    .featured.has-thumb .thumb {
+      margin-bottom: 0;
+      height: 100%;
+    }
+  }
+
+  /* Sem miniatura, o texto do destaque não estica pela largura inteira. */
+  .featured .desc {
+    max-width: 62ch;
+  }
+
+  .thumb {
+    aspect-ratio: 16 / 10;
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: var(--s-5);
+    background: var(--color-surface);
+  }
+
+  .thumb :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform var(--dur) var(--ease);
+  }
+
+  .card:hover .thumb :global(img) {
+    transform: scale(1.03);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .thumb :global(img) {
+      transition: none;
+    }
+
+    .card:hover .thumb :global(img) {
+      transform: none;
+    }
+  }
+
   .card {
     position: relative;
     display: flex;
