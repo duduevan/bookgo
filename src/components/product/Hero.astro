@@ -56,6 +56,12 @@ const {
   imageAlt,
   track = {},
 } = Astro.props;
+
+/* Imagem deitada muda a composição do hero. Numa foto 4/5 o cartão de
+   reforços sobrepõe o canto e vira uma composição só; sobre uma capa
+   deitada ele cobriria justamente a parte de baixo da arte, que é onde a
+   capa mostra as páginas. Nesse caso ele desce para baixo do quadro. */
+const wideImage = !!image && image.width > image.height;
 ---
 
 <section class="hero">
@@ -79,7 +85,7 @@ const {
       </div>
     </div>
 
-    <div class="media">
+    <div class:list={['media', { wide: wideImage }]}>
       <div class:list={['frame', { empty: !image, 'has-image': !!image, 'has-art': !image && hasArt }]}>
         {
           image && (
@@ -370,10 +376,21 @@ const {
       margin-top: 0;
     }
 
+    /* Com imagem deitada, o cartão volta ao fluxo: sobrepor cobriria a
+       faixa de baixo da arte, que numa capa é onde ela mostra o material. */
+    .media.wide .card {
+      position: static;
+      margin-top: var(--s-5);
+    }
+
     /* O cartão avança para fora do quadro; a coluna precisa desse respiro
        embaixo para ele não encostar na borda da seção. */
     .media {
       margin-bottom: var(--s-8);
+    }
+
+    .media.wide {
+      margin-bottom: 0;
     }
   }
   /* Celular estreito: a composição muda de propósito.
