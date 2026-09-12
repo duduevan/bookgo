@@ -26,6 +26,10 @@ const PAGINAS = [
   ['blog', '/blog/', ['desktop', 'tablet', 'mobile']],
   ['lp', '/casa-organizada-em-15-minutos/', ['desktop', 'mobile']],
   ['artigo', '/blog/casa/organizacao/como-manter-a-casa-organizada/', ['desktop', 'tablet', 'mobile']],
+  ['cozinha15', '/blog/casa/organizacao/organizar-a-cozinha-em-15-minutos/', ['desktop', 'mobile']],
+  ['desarruma', '/blog/casa/organizacao/casa-desarruma-no-dia-seguinte/', ['desktop', 'mobile']],
+  ['minimo', '/blog/casa/organizacao/o-minimo-para-manter-a-casa-em-ordem/', ['desktop', 'mobile']],
+  ['acumulo', '/blog/casa/organizacao/pontos-de-acumulo-da-casa/', ['desktop', 'mobile']],
   ['pilar', '/blog/casa/', ['desktop', 'mobile']],
   ['organizacao', '/blog/casa/organizacao/', ['desktop', 'mobile']],
   ['cozinha', '/blog/casa/cozinha/', ['desktop', 'mobile']],
@@ -192,6 +196,32 @@ for (const [nome, caminho, viewports] of PAGINAS) {
     /* Coluna do artigo: o número tem que vir do navegador, não do CSS lido
        à mão. Confere também que nenhum bloco escapa da coluna e que o aviso
        de afiliado aparece no comparativo e só nele. */
+    /* Artigos do curso: o CTA tem que levar à landing page, e nenhum deles
+       pode mandar alguém direto ao checkout. A regra vale para os quatro
+       novos e para o que já existia. */
+    const DO_CURSO = ['artigo', 'cozinha15', 'desarruma', 'minimo', 'acumulo'];
+    if (DO_CURSO.includes(nome) && vp === 'desktop') {
+      const cta = await page.evaluate(() => ({
+        produto: [...document.querySelectorAll('[data-bookgo-event="product_click"]')]
+          .map((a) => new URL(a.href).pathname),
+        checkout: [...document.querySelectorAll('a[href*="pay.kiwify"]')].length,
+        afiliado: [...document.querySelectorAll('a[href*="meli.la"]')].length,
+      }));
+      registrar(
+        `         CTA do curso: ${cta.produto.join(', ') || '(nenhum)'} · checkout=${cta.checkout} · afiliado=${cta.afiliado}`
+      );
+      if (cta.produto.length === 0)
+        problemas.push(`${nome}: nenhum CTA para a landing page do curso`);
+      for (const p of cta.produto) {
+        if (p !== '/casa-organizada-em-15-minutos/')
+          problemas.push(`${nome}: CTA do curso aponta para ${p}`);
+      }
+      if (cta.checkout > 0)
+        problemas.push(`${nome}: artigo com ${cta.checkout} link(s) direto(s) para o checkout`);
+      if (cta.afiliado > 0)
+        problemas.push(`${nome}: artigo informacional com link de afiliado`);
+    }
+
     if (nome === 'artigo' || nome === 'comparativo') {
       const col = await page.evaluate(() => {
         const art = document.querySelector('.article');
