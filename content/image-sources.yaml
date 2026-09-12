@@ -245,16 +245,34 @@ images:
       e não comida pronta nem prato montado. Cozinha comum, sem estética de
       dieta e sem prato de restaurante.
 
-  - target: src/assets/products/cardapio-da-semana-em-20-minutos/geladeira-fim-do-dia.webp
+  # Duas candidatas para a figura que entra depois dos três blocos. A
+  # escolhida fica; a outra sai do manifesto e do disco.
+  #
+  # A primeira tentativa (34002375, "side view woman checking the fridge")
+  # foi descartada depois de vista: era lanche noturno com pés na mesa e
+  # migalhas espalhadas, não alguém conferindo o que tem em casa. Título de
+  # banco de imagem não descreve a foto.
+  - target: src/assets/products/cardapio-da-semana-em-20-minutos/compras-na-bancada.webp
     provider: freepik
-    assetId: 34002375
+    assetId: 420145745
     license: free
     author: magnific
-    sourcePage: https://www.magnific.com/free-photo/side-view-woman-checking-fridge_34002375.htm
-    previewPath: /free-photo/side-view-woman-checking-fridge_23-2149894805.jpg
+    sourcePage: https://www.magnific.com/free-photo/woman-sorting-groceries-top-view-fruits-wine-bread-simple-kitchen-life_420145745.htm
+    previewPath: /free-photo/woman-sorting-groceries-top-view-fruits-wine-bread-simple-kitchen-life_169016-68825.jpg
     ratio: "16:9"
     width: 1400
     note: >-
-      A cena que abre a página, e também o bloco "olhar" do método: alguém
-      de frente para a geladeira aberta, conferindo o que tem. Entra depois
-      dos três blocos, ligando a dor ao primeiro passo do método.
+      Candidata A. Compra chegando na bancada, com pão, fruta e comida
+      comum. É o fim do bloco "listar" e o começo da semana planejada.
+
+  - target: src/assets/products/cardapio-da-semana-em-20-minutos/planejamento-na-bancada.webp
+    provider: freepik
+    assetId: 425655786
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/fresh-produce-counter-menu-planning-meal-prep_425655786.htm
+    previewPath: /free-photo/fresh-produce-counter-menu-planning-meal-prep_169016-71143.jpg
+    ratio: "16:9"
+    width: 1400
+    note: >-
+      Candidata B. Bancada com ingredientes e o cardápio sendo anotado.
