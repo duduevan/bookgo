@@ -6,8 +6,13 @@
  *
  *     <AffiliateProduct id="philips-na130" />
  *
- * Marca, modelo, link e imagem vêm do frontmatter. O corpo marca **onde** o
- * bloco entra, que é decisão editorial.
+ * Marca, modelo e link vêm do frontmatter. O corpo marca **onde** o bloco
+ * entra, que é decisão editorial.
+ *
+ * A foto do produto **não** sai daqui: ela é um `<ArticleImage>` no corpo do
+ * texto, como qualquer outra imagem editorial, e quem decide onde ela entra
+ * é quem escreve. Renderizar a imagem aqui também duplicava a foto sempre
+ * que o artigo já a tinha posicionado, que é o caso normal.
  *
  * Três coisas que este bloco nunca faz:
  *
@@ -24,7 +29,6 @@
  * acesso da aba aberta à janela de origem.
  */
 import Icon from '../ui/Icon.astro';
-import ArticleImage from './ArticleImage.astro';
 import { affiliateById } from '../../lib/affiliates';
 import { postFromPathname } from '../../lib/article-images';
 import { eventAttrs } from '../../lib/tracking';
@@ -63,8 +67,6 @@ const track = eventAttrs('affiliate_click', {
 ---
 
 <aside class="aff" data-commercial="affiliate">
-  {temImagem && <ArticleImage id={produto.id} />}
-
   <div class="aff-row">
     <p class="aff-what">
       <span class="aff-brand">{produto.brand}</span>
