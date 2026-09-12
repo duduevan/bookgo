@@ -64,7 +64,11 @@ jobs:
 
       # Sem alterações, o job termina em silêncio: é o caso normal quando
       # todas as imagens declaradas já estão no repositório.
+      # `always()` porque sucesso parcial continua sendo sucesso para as
+      # imagens que chegaram: uma origem que falhou não deve levar junto as
+      # que foram baixadas na mesma execução.
       - name: Commitar o que mudou
+        if: always()
         run: |
           set -eu
 

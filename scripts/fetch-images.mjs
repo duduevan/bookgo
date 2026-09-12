@@ -49,15 +49,70 @@ async function ogImage(pageUrl) {
   if (!res.ok) throw new Error(`página respondeu HTTP ${res.status}`);
   const html = await res.text();
 
+  const absoluta = (u) => new URL(u.replace(/\\u002F/g, '/'), pageUrl).href;
+
+  /* 1. Metatags sociais. É o caminho mais confiável quando existe: a imagem
+        que o próprio fabricante declara como representação da página. */
   for (const re of [
     /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i,
     /<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i,
     /<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i,
+    /<link[^>]+rel=["']image_src["'][^>]+href=["']([^"']+)["']/i,
   ]) {
     const m = html.match(re);
-    if (m) return new URL(m[1], pageUrl).href;
+    if (m) return absoluta(m[1]);
   }
-  throw new Error('a página não declara og:image');
+
+  /* 2. JSON-LD de produto. Loja montada no cliente costuma não ter metatag
+        social no HTML do servidor, mas ainda embute os dados estruturados,
+        e `image` ali é a foto oficial do produto. */
+  for (const bloco of html.matchAll(
+    /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi
+  )) {
+    try {
+      const achada = imagemEmJsonLd(JSON.parse(bloco[1].trim()));
+      if (achada) return absoluta(achada);
+    } catch {
+      /* Bloco malformado não invalida os outros. */
+    }
+  }
+
+  /* 3. Último recurso: estado inicial embutido pela loja, onde a URL da
+        imagem aparece crua. Restrito a hosts de imagem conhecidos para não
+        capturar qualquer coisa que pareça um link. */
+  const crua = html.match(
+    /https?:\/\/[^"'\\ ]*(?:vteximg|vtexassets|scene7|cloudfront|akamaized)[^"'\\ ]*\.(?:jpe?g|png|webp)/i
+  );
+  if (crua) return absoluta(crua[0]);
+
+  throw new Error(
+    `nenhuma imagem declarada na página (HTTP ${res.status}, ${html.length} bytes)`
+  );
+}
+
+/** Procura `image` em qualquer profundidade de um bloco JSON-LD. */
+function imagemEmJsonLd(no) {
+  if (!no || typeof no !== 'object') return null;
+
+  if (Array.isArray(no)) {
+    for (const item of no) {
+      const achada = imagemEmJsonLd(item);
+      if (achada) return achada;
+    }
+    return null;
+  }
+
+  if (no.image) {
+    const img = Array.isArray(no.image) ? no.image[0] : no.image;
+    if (typeof img === 'string') return img;
+    if (img && typeof img.url === 'string') return img.url;
+  }
+
+  for (const valor of Object.values(no)) {
+    const achada = imagemEmJsonLd(valor);
+    if (achada) return achada;
+  }
+  return null;
 }
 
 /**
