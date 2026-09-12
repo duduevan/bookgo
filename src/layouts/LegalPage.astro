@@ -1,0 +1,81 @@
+---
+/**
+ * Moldura das páginas legais.
+ *
+ * Concentra o que era repetido nas cinco páginas: o `noindex`, o aviso de
+ * pendência, o título e a data de vigência. O `noindex` **não** é mais
+ * escrito à mão em cada página — ele decorre de `ready` no registro, o que
+ * torna impossível esquecer de tirá-lo ao publicar, ou tirá-lo antes da hora.
+ */
+import SiteLayout from './SiteLayout.astro';
+import PlaceholderNotice from '../components/site/PlaceholderNotice.astro';
+import { legalPage } from '../config/legal';
+
+interface Props {
+  /** Id do registro em src/config/legal.ts. */
+  id: string;
+}
+
+const page = legalPage(Astro.props.id);
+
+const updatedLabel = page.updated
+  ? new Intl.DateTimeFormat('pt-BR', { dateStyle: 'long' }).format(
+      new Date(`${page.updated}T12:00:00Z`)
+    )
+  : null;
+---
+
+<SiteLayout
+  title={page.title}
+  description={page.description}
+  noindex={!page.ready}
+>
+  <article class="container legal">
+    <h1>{page.title}</h1>
+    <PlaceholderNotice pending={page.pending} />
+
+    <div class="prose">
+      <slot />
+
+      <hr />
+      <p class="meta">
+        {
+          updatedLabel ? (
+            <>
+              <em>Última atualização:</em> {updatedLabel}.
+            </>
+          ) : (
+            <em>
+              Documento ainda não publicado: não há data de vigência enquanto
+              as pendências acima não forem resolvidas.
+            </em>
+          )
+        }
+      </p>
+    </div>
+  </article>
+</SiteLayout>
+
+<style>
+  .legal {
+    padding-block: var(--section-y-tight) var(--section-y);
+  }
+
+  .legal h1 {
+    font-size: var(--t-4);
+    margin-bottom: var(--s-7);
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px solid var(--color-border);
+    margin-top: var(--s-8);
+    margin-bottom: var(--s-5);
+    max-width: var(--w-prose);
+  }
+
+  .meta {
+    font-size: var(--t--1);
+    color: var(--color-muted);
+  }
+</style>

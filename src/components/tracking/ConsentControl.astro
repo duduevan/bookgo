@@ -1,0 +1,63 @@
+---
+/**
+ * Botão de revogar consentimento.
+ *
+ * A LGPD exige que revogar seja tão fácil quanto consentir. Sem este
+ * controle, a única saída seria limpar os dados do site no navegador — o que
+ * não é uma escolha oferecida, é um obstáculo.
+ *
+ * Não renderiza nada quando não há consentimento a revogar: sem banner, sem
+ * botão, e a Política de Cookies diz isso com todas as letras em vez de
+ * mostrar um controle inerte.
+ *
+ * O `<noscript>` é deliberado: sem JavaScript o botão não funcionaria, e um
+ * botão morto é pior do que a instrução correta.
+ */
+import { needsConsentBanner } from '../../lib/tracking';
+
+const show = needsConsentBanner();
+
+const js = `(function(){
+var b=document.getElementById('consent-reset');
+if(!b||!window.bookgo)return;
+/* Só há o que revogar depois de uma escolha. Enquanto a decisão está
+   pendente o banner já está na tela, e um botão de "rever minha escolha"
+   ao lado dele ofereceria desfazer algo que ainda não foi feito. */
+if(document.documentElement.hasAttribute('data-consent-pending'))return;
+b.hidden=false;
+b.addEventListener('click',function(){window.bookgo.resetConsent();});
+})();`;
+
+const css = `
+.consent-reset{display:inline-flex;align-items:center;min-height:2.75rem;
+padding:.7rem 1.25rem;margin-block:var(--s-4);border-radius:var(--radius-pill);
+border:1px solid var(--color-border);background:var(--color-surface-raised);
+color:var(--color-text);font:inherit;font-size:var(--t-0);
+font-weight:var(--w-medium);cursor:pointer}
+.consent-reset:hover{border-color:var(--color-text)}
+/* Sem isto, o display da classe vence o display:none que o navegador aplica
+   ao atributo [hidden], e o botão aparece mesmo marcado como oculto. */
+.consent-reset[hidden]{display:none}
+`;
+---
+
+{
+  show && (
+    <>
+      {/* Começa oculto e o script o revela: sem JavaScript, o botão não
+          chega a aparecer, e a instrução do <noscript> assume o lugar. */}
+      <button type="button" id="consent-reset" class="consent-reset" hidden>
+        Rever minha escolha sobre cookies
+      </button>
+      <noscript>
+        <p>
+          Para revogar sua escolha sem JavaScript, apague os dados deste site
+          nas configurações do seu navegador. Sem JavaScript, nenhuma medição
+          é carregada de qualquer forma.
+        </p>
+      </noscript>
+      <style is:inline set:html={css} />
+      <script is:inline set:html={js} />
+    </>
+  )
+}

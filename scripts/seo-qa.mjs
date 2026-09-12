@@ -75,6 +75,15 @@ for (const file of htmlFiles) {
   if (h1Count > 1) fail(page, `${h1Count} elementos <h1> (deve haver exatamente um)`);
   if (indexable && h1Count === 0) fail(page, 'página indexável sem <h1>');
 
+  /* Página indexável não pode conter marcação de pendência. É a rede de
+     segurança das páginas legais: `ready: true` tira o noindex, e uma
+     lacuna esquecida no texto iria a público com a chancela de documento
+     vigente. Aqui isso quebra o build. */
+  for (const marker of ['[PENDING INPUT', '[PREENCHER']) {
+    if (indexable && html.includes(marker))
+      fail(page, `página indexável contém marcação de pendência "${marker}…"`);
+  }
+
   // Imagens: alt ausente é erro; alt="" (decorativa) é intencional e passa.
   for (const img of html.match(/<img\b[^>]*>/g) || []) {
     if (!/\salt=/.test(img)) {

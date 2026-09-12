@@ -42,18 +42,13 @@ export const NAV_CTA = {
 } as const;
 
 /**
- * Links legais — rodapé institucional e rodapé das LPs.
+ * Links legais.
  *
- * `ready: false` enquanto a página ainda tem marcações [PREENCHER]: ela
- * continua acessível e linkada no rodapé, mas fica em noindex, fora do
- * sitemap e fora do llms.txt. Vire para `true` junto com a publicação do
- * texto definitivo.
+ * O registro vive em `src/config/legal.ts`, junto com o estado de cada
+ * documento — não aqui, para não existirem duas listas contando histórias
+ * diferentes sobre a mesma página. Reexportado para quem só precisa do menu.
  */
-export const LEGAL_NAV = [
-  { label: 'Termos de Uso', href: '/termos/', ready: false },
-  { label: 'Política de Privacidade', href: '/privacidade/', ready: false },
-  { label: 'Contato', href: '/contato/', ready: false },
-] as const;
+export { LEGAL_PAGES } from './legal';
 
 export const FOOTER = {
   legalName: 'BookGo',

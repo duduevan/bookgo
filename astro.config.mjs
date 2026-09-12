@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
+import { legalPathsNotReady } from './src/config/legal.ts';
 
 // Site 100% estático: o build gera apenas HTML/CSS/imagens em dist/.
 // Nenhum adapter, nenhum SSR — a produção (cPanel) não executa Node.
@@ -19,13 +20,12 @@ export default defineConfig({
   integrations: [
     mdx(),
     sitemap({
-      // Páginas ainda com placeholder estão em noindex; deixá-las fora do
-      // sitemap evita sinal contraditório. Remova o caminho daqui quando o
-      // conteúdo definitivo entrar e o noindex da página sair.
+      // Página legal incompleta está em noindex; deixá-la no sitemap seria
+      // sinal contraditório. A lista NÃO é escrita aqui: vem de
+      // src/config/legal.ts, onde `ready: true` tira a página do noindex e
+      // a coloca no sitemap no mesmo gesto. Nada a manter em dois lugares.
       filter: (page) =>
-        !['/404', '/termos/', '/privacidade/', '/contato/'].some((path) =>
-          page.includes(path)
-        ),
+        !['/404', ...legalPathsNotReady()].some((path) => page.includes(path)),
     }),
   ],
 

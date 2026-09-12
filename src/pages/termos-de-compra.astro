@@ -1,0 +1,160 @@
+---
+/**
+ * Termos de Compra e Reembolso.
+ *
+ * Documento separado dos Termos de Uso de propósito: ele vale só para quem
+ * compra e depende de dados do produto que ainda não existem (URL de
+ * checkout, formato de entrega, prazo de liberação). Separado, os Termos de
+ * Uso podem ir ao ar assim que os dados da empresa chegarem, sem esperar
+ * pelas definições comerciais.
+ *
+ * Preço e garantia vêm do YAML do produto: não há número escrito aqui que
+ * possa divergir da página de venda.
+ */
+import LegalPage from '../layouts/LegalPage.astro';
+import { COMPANY, addressLine } from '../config/company';
+import { getCollection } from 'astro:content';
+
+const products = await getCollection('products');
+/* Hoje há um produto. A listagem já lida com mais de um sem mudar o texto. */
+const catalog = products.map((p) => ({
+  name: p.data.name,
+  price: p.data.price.display,
+  connected: Boolean(p.data.checkout.url),
+}));
+const anyConnected = catalog.some((p) => p.connected);
+---
+
+<LegalPage id="compra">
+  <p>
+    Estas condições regulam a compra dos materiais digitais da BookGo. As
+    regras gerais de uso do site estão nos
+    <a href="/termos/">Termos de Uso</a>.
+  </p>
+
+  <h2>1. Quem vende</h2>
+  <p>
+    Os materiais são oferecidos por <strong>{COMPANY.legalName}</strong>,
+    CNPJ <strong>{COMPANY.cnpj}</strong>, sob o nome comercial
+    {' ' + COMPANY.brand}.
+  </p>
+  <p>
+    Endereço: {addressLine()}<br />
+    Atendimento: <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
+  </p>
+
+  <h2>2. Produtos e preços</h2>
+  <ul>
+    {
+      catalog.map((p) => (
+        <li>
+          <strong>{p.name}</strong> — {p.price}
+        </li>
+      ))
+    }
+  </ul>
+  <p>
+    O preço vigente é sempre o exibido na página do produto no momento da
+    compra. Materiais digitais são entregues em formato eletrônico, sem envio
+    de item físico.
+    <span class="fill">[PENDING INPUT: formato definitivo do produto e método
+    de entrega]</span>
+  </p>
+
+  <h2>3. Pagamento</h2>
+  <p>
+    O pagamento é processado pela plataforma <strong>Kiwify</strong>. A BookGo
+    não recebe nem armazena dados de cartão: eles são informados por você
+    diretamente à plataforma, que os trata segundo as políticas dela.
+  </p>
+  {
+    !anyConnected && (
+      <p>
+        <strong>O checkout ainda não está conectado.</strong> Os botões de
+        compra aparecem na página do produto, mas não levam a uma página de
+        pagamento enquanto a URL definitiva não for publicada. Nenhuma compra
+        pode ser concluída nesta etapa.
+        <span class="fill">[PENDING INPUT: URL definitiva de checkout]</span>
+      </p>
+    )
+  }
+
+  <h2>4. Entrega</h2>
+  <p>
+    O acesso ao material é liberado após a confirmação do pagamento pela
+    plataforma.
+    <span class="fill">[PENDING INPUT: método de entrega e prazo efetivo de
+    liberação]</span>
+  </p>
+  <p>
+    Se o acesso não chegar, verifique a caixa de spam e, em seguida, fale
+    conosco pelo canal de <a href="/contato/">contato</a>: o problema será
+    resolvido sem custo.
+  </p>
+
+  <h2>5. Direito de arrependimento</h2>
+  <p>
+    Por se tratar de compra feita fora de estabelecimento comercial, você tem
+    o <strong>direito de desistir da contratação no prazo de 7 dias corridos</strong>,
+    contados da contratação ou do recebimento do produto, nos termos do art.
+    49 do Código de Defesa do Consumidor. Exercido esse direito, os valores
+    pagos são devolvidos, monetariamente atualizados.
+  </p>
+  <p>
+    O pedido não precisa ser justificado. Basta comunicá-lo pelo canal de
+    <a href="/contato/">contato</a> ou diretamente pela plataforma de
+    checkout, dentro do prazo.
+  </p>
+
+  <h2>6. Garantia comercial</h2>
+  <p>
+    Além do direito legal acima, a BookGo oferece
+    <strong>7 dias de garantia</strong> para você conhecer o conteúdo: se não
+    for para você, peça o reembolso dentro desse prazo.
+  </p>
+  <p>
+    Essa garantia é uma condição comercial oferecida voluntariamente e
+    <strong>não substitui nem limita</strong> os direitos previstos no Código
+    de Defesa do Consumidor, inclusive o direito de arrependimento e as
+    garantias legais quanto a vícios do produto.
+    <span class="fill">[PENDING INPUT: confirmação final da garantia comercial de 7 dias]</span>
+  </p>
+
+  <h2>7. Licença de uso do material</h2>
+  <p>
+    A compra dá a você uma licença de uso <strong>pessoal e
+    intransferível</strong> do material. Não é permitido revender,
+    redistribuir, compartilhar publicamente, publicar em outras plataformas ou
+    usar o conteúdo comercialmente sem autorização prévia por escrito.
+  </p>
+  <p>
+    O uso pessoal inclui, naturalmente, ler, imprimir e aplicar o material na
+    sua própria rotina, quantas vezes quiser.
+  </p>
+
+  <h2>8. Suporte</h2>
+  <p>
+    Dúvidas sobre o material, problemas de acesso e pedidos de reembolso são
+    tratados em <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a> e
+    também pela plataforma de checkout.
+  </p>
+
+  <h2>9. Dados pessoais</h2>
+  <p>
+    O tratamento dos dados fornecidos na compra está descrito na
+    <a href="/privacidade/">Política de Privacidade</a>.
+  </p>
+
+  <h2>10. Alterações</h2>
+  <p>
+    Estas condições podem ser atualizadas. A versão aplicável a uma compra é a
+    que estiver publicada nesta página no momento em que ela for feita.
+  </p>
+
+  <h2>11. Legislação aplicável</h2>
+  <p>
+    Aplica-se a legislação brasileira, em especial o Código de Defesa do
+    Consumidor (Lei nº 8.078/1990). Nada nestas condições afasta ou reduz
+    direitos assegurados por lei ao consumidor.
+  </p>
+</LegalPage>

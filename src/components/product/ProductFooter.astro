@@ -4,8 +4,12 @@
  *
  * Assinatura institucional discreta: identifica quem publica e entrega os
  * links legais obrigatórios, sem oferecer saídas que concorram com a oferta.
+ *
+ * Traz apenas os documentos marcados com `inFooter` em src/config/legal.ts:
+ * cada linha a mais aqui é uma saída da página de venda.
  */
-import { SITE, LEGAL_NAV } from '../../config/site';
+import { SITE } from '../../config/site';
+import { LEGAL_PAGES } from '../../config/legal';
 import Logo from '../site/Logo.astro';
 
 const year = new Date().getFullYear();
@@ -20,7 +24,9 @@ const year = new Date().getFullYear();
 
     <nav aria-label="Links legais">
       <ul>
-        {LEGAL_NAV.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+        {LEGAL_PAGES.filter((i) => i.inFooter).map((item) => (
+          <li><a href={item.href}>{item.label}</a></li>
+        ))}
       </ul>
     </nav>
 

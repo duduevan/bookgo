@@ -1,0 +1,266 @@
+---
+/**
+ * Política de Cookies.
+ *
+ * As tabelas são geradas a partir da configuração real (`TRACKING` e `ADS`),
+ * não escritas à mão: se alguém ligar a publicidade ou trocar o ID do
+ * Analytics, esta página muda no mesmo build. Documento de cookies que
+ * descreve um estado diferente do código é pior do que documento nenhum.
+ */
+import LegalPage from '../layouts/LegalPage.astro';
+import ConsentControl from '../components/tracking/ConsentControl.astro';
+import { TRACKING } from '../config/tracking';
+import { shouldLoadAdsense, needsConsentBanner } from '../lib/tracking';
+
+const analyticsOn = Boolean(TRACKING.enabled && TRACKING.ga4.measurementId);
+const adsOn = shouldLoadAdsense();
+
+/* Calculado aqui, e não no template.
+   Duas armadilhas do compilador de template custaram tempo e ficam
+   registradas: `?.` dentro de uma expressão JSX faz o `?` ser lido como
+   início de ternário; e `<code>{expressão}</code>` dentro de `<td>` quebra o
+   parser de tabela — daí o `set:text` na célula abaixo. */
+const gaSessionCookie = `_ga_${(TRACKING.ga4.measurementId ?? '').replace('G-', '')}`;
+---
+
+<LegalPage id="cookies">
+  <p>
+    Esta página explica o que a BookGo grava no seu navegador, em quais
+    categorias e como você aceita ou recusa. Ela descreve o estado atual do
+    site — não um modelo genérico.
+  </p>
+
+  <h2>1. Antes de tudo: o que existe hoje</h2>
+  <p>
+    <strong>O site da BookGo não grava nenhum cookie próprio.</strong> A única
+    coisa guardada por padrão é a sua escolha sobre medição, e ela fica no
+    armazenamento local do navegador — não é cookie e não é enviada a lugar
+    nenhum.
+  </p>
+  <p>
+    Cookies de terceiros existem apenas se você aceitar a medição de
+    audiência. Se você recusar, ou enquanto não decidir, nenhum arquivo do
+    Google é baixado.
+  </p>
+
+  <h2>2. Cookie e armazenamento local: a diferença</h2>
+  <p>
+    <strong>Cookie</strong> é um arquivo pequeno que o navegador guarda e
+    <em>reenvia ao servidor</em> a cada requisição.
+    <strong>Armazenamento local</strong> (<code>localStorage</code>) também
+    fica no seu navegador, mas <em>não é enviado a servidor nenhum</em>: só o
+    código que roda na própria página consegue lê-lo.
+  </p>
+  <p>
+    Essa distinção importa aqui: a sua escolha de consentimento é guardada em
+    armazenamento local justamente para não trafegar.
+  </p>
+
+  <h2>3. As três categorias</h2>
+
+  <h3>Necessários</h3>
+  <p>
+    O que o site precisa para funcionar e para respeitar a sua decisão. Não
+    dependem de consentimento — sem eles, o site não conseguiria nem lembrar
+    que você recusou.
+  </p>
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Tipo</th>
+        <th>Para quê</th>
+        <th>Validade</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>{TRACKING.consent.storageKey}</code></td>
+        <td>Armazenamento local</td>
+        <td>
+          Guarda a sua escolha sobre medição e publicidade, para não perguntar
+          de novo a cada página. Fica só no seu navegador.
+        </td>
+        <td>Até você revogar ou limpar os dados do site</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Analytics</h3>
+  {
+    analyticsOn ? (
+      <>
+        <p>
+          Medição de audiência com <strong>Google Analytics 4</strong>, na
+          propriedade <code>{TRACKING.ga4.measurementId}</code>: quantas
+          pessoas chegam, por quais caminhos e quais conteúdos são lidos.
+          Serve para melhorar o conteúdo, não para identificar você.
+        </p>
+        <p>
+          <strong>Só carrega depois do seu aceite.</strong> Os cookies abaixo
+          são gravados pelo Google e só passam a existir nesse momento.
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Origem</th>
+              <th>Para quê</th>
+              <th>Validade</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>_ga</code></td>
+              <td>Google</td>
+              <td>Distingue navegadores entre visitas</td>
+              <td>2 anos (padrão do Google)</td>
+            </tr>
+            <tr>
+              <td><code set:text={gaSessionCookie} /></td>
+              <td>Google</td>
+              <td>Mantém o estado da sessão de medição</td>
+              <td>2 anos (padrão do Google)</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          As validades acima são os padrões documentados pelo Google e não
+          foram alteradas por nós. Por quanto tempo os dados de medição são
+          guardados dentro do Analytics é assunto da
+          <a href="/privacidade/">Política de Privacidade</a>.
+        </p>
+      </>
+    ) : (
+      <p>Nenhuma ferramenta de medição está configurada no momento.</p>
+    )
+  }
+
+  <h3>Publicidade</h3>
+  {
+    adsOn ? (
+      <p>
+        A publicidade está ativa e depende do seu aceite nesta categoria.
+      </p>
+    ) : (
+      <>
+        <p>
+          <strong>Desativada.</strong> O site não exibe anúncios e nenhum
+          script de publicidade é carregado — nem depois do aceite, porque não
+          há nada para carregar.
+        </p>
+        <p>
+          A integração com o Google AdSense está preparada no código e
+          desligada na configuração do site. Ter a integração pronta não
+          carrega nada: enquanto ela estiver desligada, o identificador de
+          publicidade nem chega ao HTML da página.
+        </p>
+        <p>
+          Se for ativada no futuro, ela ficará submetida a esta categoria:
+          só carregará com aceite, e esta página e a
+          <a href="/privacidade/">Política de Privacidade</a> serão
+          atualizadas <strong>antes</strong> — descrevendo os cookies e as
+          tecnologias do Google envolvidos e, quando aplicável, a
+          personalização de anúncios.
+        </p>
+      </>
+    )
+  }
+
+  <h2>4. O que não é cookie nem rastreamento</h2>
+  <p>
+    <strong>Google Search Console.</strong> O site inclui uma etiqueta de
+    verificação que apenas comprova a propriedade do domínio para quem
+    administra a conta. Não grava nada no seu navegador e não acompanha
+    navegação.
+  </p>
+  <p>
+    <strong>Fontes.</strong> A tipografia do site é servida pelo próprio
+    domínio. Não há requisição ao Google Fonts nem a qualquer outro serviço
+    externo para renderizar a página.
+  </p>
+
+  <h2>5. Como aceitar ou recusar</h2>
+  {
+    needsConsentBanner() ? (
+      <>
+        <p>
+          Na primeira visita, uma barra aparece no rodapé com duas opções de
+          mesmo peso:
+        </p>
+        <ul>
+          <li>
+            <strong>Aceitar</strong> — autoriza as categorias não
+            essenciais. Hoje isso significa, na prática, apenas a de
+            analytics, já que a de publicidade não carrega nada.
+          </li>
+          <li>
+            <strong>Recusar não essenciais</strong> — mantém apenas os itens
+            necessários. Nada de medição é carregado, e o site funciona
+            exatamente igual.
+          </li>
+        </ul>
+        <p>
+          Para ser exato sobre o que o banner oferece: a escolha é
+          <strong>única e vale para as duas categorias não essenciais ao
+          mesmo tempo</strong>. Não existe hoje um seletor por categoria, e
+          não faríamos essa promessa antes de ela existir na tela.
+        </p>
+
+        <h2>6. Como mudar de ideia</h2>
+        <p>
+          A qualquer momento, e sem justificativa. O botão abaixo apaga a sua
+          escolha e recarrega a página, que volta ao estado inicial: nada
+          carregado e a barra de consentimento de novo à sua disposição.
+        </p>
+        <ConsentControl />
+        <p>
+          Você também pode apagar cookies e dados de site pelas configurações
+          do seu navegador. Se fizer isso, a barra reaparece na próxima visita.
+        </p>
+      </>
+    ) : (
+      <p>
+        Não há banner de consentimento no momento, porque não existe nenhuma
+        categoria não essencial ativa — não há o que consentir.
+      </p>
+    )
+  }
+
+  <h2>7. Atualizações</h2>
+  <p>
+    Esta página é atualizada sempre que o site passar a usar — ou deixar de
+    usar — alguma dessas tecnologias. As tabelas acima são geradas
+    diretamente da configuração do site, de modo que elas não podem descrever
+    um estado diferente do que está no ar.
+  </p>
+</LegalPage>
+
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-block: var(--s-5);
+    font-size: var(--t--1);
+    display: block;
+    overflow-x: auto;
+  }
+
+  th,
+  td {
+    text-align: left;
+    vertical-align: top;
+    padding: var(--s-3);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  th {
+    font-weight: var(--w-semibold);
+    color: var(--color-text);
+    white-space: nowrap;
+  }
+
+  td {
+    color: var(--color-muted);
+  }
+</style>

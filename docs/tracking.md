@@ -12,7 +12,7 @@ Estado atual:
 | Google Ads | — | não configurado |
 
 Consequência honesta: o site **deixou de ser 0 KB de JavaScript**. Cada página
-passou a carregar ~4,3 KB inline (runtime de medição + banner). `npm run qa:perf`
+passou a carregar ~4,8 KB inline (runtime de medição + banner). `npm run qa:perf`
 mede e reporta esse número — ele não é escondido atrás da contagem de arquivos
 `.js`, que continua zero. Voltar `TRACKING.enabled` para `false` devolve a
 página a 0 KB.

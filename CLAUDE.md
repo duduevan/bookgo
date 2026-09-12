@@ -488,16 +488,69 @@ dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false
 
 ## Páginas legais
 
-`/termos/`, `/privacidade/` e `/contato/` existem com texto de referência e
-marcações `[PREENCHER]`. Enquanto estiverem assim:
+Cinco documentos, um registro só: **`src/config/legal.ts`**. Nenhuma página
+escreve o próprio `noindex`, e o sitemap não repete caminho nenhum.
 
-- as páginas estão em `noindex`;
-- ficam fora do sitemap (filtro em `astro.config.mjs`);
-- exibem o aviso `PlaceholderNotice`.
+| Página | Estado |
+|---|---|
+| `/termos/` | publicada |
+| `/politica-de-cookies/` | publicada |
+| `/contato/` | publicada |
+| `/privacidade/` | **noindex** — falta prazo de retenção |
+| `/termos-de-compra/` | **noindex** — faltam dados do produto |
 
-Ao publicar o conteúdo definitivo, desfaça os três — nenhum dado jurídico ou
-empresarial foi inventado.
+`ready: true` é a única chave. Virá-la faz, sozinho: sair o `noindex`, entrar
+no sitemap, entrar no `llms.txt` e sumir o aviso de pendência da página.
+`inFooter` decide o rodapé em separado — um documento pode existir e ser
+alcançável por links no texto sem ocupar uma linha da landing page.
 
+Três travas impedem publicar documento incompleto, e todas quebram o build:
+
+- `ready: true` com `pending` não vazio;
+- `ready: true` sem `updated` (política vigente precisa dizer desde quando vale);
+- página indexável contendo `[PENDING INPUT` ou `[PREENCHER]` — verificado em
+  `npm run qa:seo`, sobre o HTML gerado.
+
+Uma página incompleta continua **acessível e linkada** no rodapé: esconder
+política de privacidade seria pior do que publicá-la com o aviso.
+
+### Identificação da empresa
+
+`src/config/company.ts` é a fonte única — razão social, CNPJ, endereço e
+e-mail. Alimenta as cinco páginas e o JSON-LD `Organization`. Nenhuma dessas
+strings é escrita direto numa página.
+
+**BookGo é nome comercial, não marca registrada.** Nenhum texto deve
+apresentá-la como tal. A formulação padrão vive em `OPERATED_BY`.
+
+### O que os documentos afirmam
+
+O texto descreve a implementação real, e o que é gerado a partir da
+configuração não pode divergir dela: as tabelas de cookies saem de `TRACKING`
+e `ADS`, e o catálogo dos termos de compra sai do YAML do produto. Ligar a
+publicidade ou trocar o ID do Analytics muda a página no mesmo build.
+
+Regras que valem para qualquer revisão desses textos:
+
+- **não afirmar que o site exibe anúncios** enquanto `ADS.enabled` for false;
+- **não apresentar o Search Console como cookie ou rastreamento** — é só uma
+  etiqueta de verificação de propriedade do domínio;
+- **não descrever opção que o banner não oferece.** Hoje a escolha é única e
+  vale para as duas categorias não essenciais ao mesmo tempo; não existe
+  seletor por categoria;
+- **não inventar** prazo de retenção, encarregado, foro, telefone ou segundo
+  e-mail;
+- **não reduzir direito do consumidor.** A garantia comercial de 7 dias é
+  oferecida voluntariamente e não substitui o direito de arrependimento do
+  art. 49 do CDC.
+
+### Revogar consentimento
+
+`ConsentControl.astro`, na Política de Cookies, apaga a escolha e recarrega a
+página. A LGPD exige que revogar seja tão fácil quanto consentir — sem esse
+controle, a única saída seria limpar os dados do site no navegador, o que não
+é uma escolha oferecida, é um obstáculo. O botão só aparece depois de existir
+uma decisão a revogar.
 
 ## Regras de conteúdo (não negociáveis)
 
@@ -550,7 +603,7 @@ mais do que ajuda. Metas de campo — LCP ≤ 2,5s, INP ≤ 200ms, CLS ≤ 0,1 �
 objetivos de engenharia, medidos em campo.
 
 Padrão do projeto: **zero JavaScript no cliente** — hoje com uma exceção
-declarada, o runtime de medição e consentimento (~4,3 KB inline por página).
+declarada, o runtime de medição e consentimento (~4,8 KB inline por página).
 Fora isso, nenhum componente embarca JavaScript. `PhoneTestimonial`, o FAQ e o
 índice do artigo são HTML e CSS puros.
 
@@ -577,9 +630,10 @@ depois de validarmos o modelo.
 
 ### Search Console
 
-Em `src/config/site.ts`, `googleSiteVerification` é `null` e nada é renderizado.
-Para verificar o domínio, cole o valor do método "tag HTML" nesse campo — a meta
-aparece sozinha. Nunca preencha com valor fictício. Sitemap a enviar:
+`googleSiteVerification` em `src/config/site.ts` carrega o token real, e
+`BaseLayout` é o único lugar que o lê: a meta sai uma vez por página. É apenas
+verificação de propriedade do domínio — não é cookie, não coleta dado de
+visitante e não deve ser descrita como rastreamento. Sitemap a enviar:
 `https://bookgo.com.br/sitemap-index.xml`.
 
 ---
@@ -597,7 +651,7 @@ sai para o Google. Eventos disparados antes da escolha ficam numa fila em
 memória e só são enviados se a pessoa aceitar `analytics`.
 
 **O custo, declarado:** o site deixou de ser 0 KB de JavaScript no cliente.
-São ~4,3 KB inline por página (runtime + banner), medidos e reportados
+São ~4,8 KB inline por página (runtime + banner), medidos e reportados
 separadamente por `npm run qa:perf`. Voltar `TRACKING.enabled` para `false`
 devolve a página a 0 KB.
 
@@ -620,7 +674,7 @@ junto com o JavaScript — pedir consentimento para nada seria ruído.
 Como configurar cada fornecedor, como integrar a Kiwify e como evitar contar a
 mesma conversão duas vezes: **[docs/tracking.md](docs/tracking.md)**.
 
-**Pendência aberta:** a Política de Privacidade ainda é texto de referência com
-`[PREENCHER]` e está em `noindex`. A seção de cookies já aponta o GA4, mas
-precisa do texto definitivo — quais cookies, por quanto tempo, como revogar —
-antes do site ir para produção com medição ligada.
+A Política de Cookies documenta os cookies do GA4 e está publicada. A
+Política de Privacidade descreve tudo corretamente, mas segue em `noindex`
+por um item só: **o prazo de retenção** (Analytics › Admin › Retenção de
+dados, e por quanto tempo a hospedagem guarda os registros de acesso).

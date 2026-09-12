@@ -5,6 +5,11 @@
  * Só existe quando há algo a consentir (ver `needsConsentBanner`). Hoje não
  * é renderizado — sem fornecedor configurado, não há decisão a pedir.
  *
+ * O texto descreve o que existe hoje — medição de audiência. Mencionar
+ * "medir campanhas" enquanto nenhuma tag de publicidade é carregada seria
+ * pedir consentimento para algo que não acontece. Quando a publicidade for
+ * ligada, o texto muda junto.
+ *
  * Sem dark pattern: as duas ações têm o mesmo peso visual e o mesmo tamanho
  * de alvo. Recusar não é escondido, não é um link cinza, não exige passos
  * extras. Enquanto não houver decisão, nada de analytics ou publicidade
@@ -60,9 +65,10 @@ el.addEventListener('click',function(e){
         <div class="consent-text">
           <p id="consent-title" class="consent-title">Cookies e medição</p>
           <p id="consent-text">
-            Usamos cookies para entender como o site é usado e para medir
-            campanhas. Você decide. Detalhes na{' '}
-            <a href="/privacidade/">Política de Privacidade</a>.
+            Usamos medição de audiência para entender como o site é usado.
+            Nada é carregado antes da sua escolha, e recusar não muda o site
+            em nada. Detalhes na
+            <a href="/politica-de-cookies/">Política de Cookies</a>.
           </p>
         </div>
         <div class="consent-actions">

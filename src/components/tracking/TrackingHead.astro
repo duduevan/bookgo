@@ -161,6 +161,16 @@ w.bookgo.setConsent=function(c){
   document.documentElement.removeAttribute('data-consent-pending');
 };
 
+/* Revogar precisa ser tão fácil quanto consentir. Sem isto, a única saída
+   era limpar os dados do site no navegador — o que não é escolha oferecida,
+   é obstáculo. Recarregar depois de apagar deixa a página num estado
+   honesto: nada carregado e o banner de volta, sem meio-termo em que um
+   script já baixado continua vivo na aba. */
+w.bookgo.resetConsent=function(){
+  try{localStorage.removeItem(R.key);}catch(e){}
+  location.reload();
+};
+
 var stored=read();
 if(stored){apply(stored);}
 else if(!R.requireConsent){apply({analytics:true,advertising:true});}
