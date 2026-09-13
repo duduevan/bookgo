@@ -299,5 +299,100 @@ Origem: https://bookgo.com.br
          · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
          · 389×243     potes-com-sobras-na-geladeira.DAWNgVpO_ZdveFG.webp
          · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
+  403  pilar-criancas/desktopoverflow=0px  imagens=0 quebradas=0
+  403  pilar-criancas/mobileoverflow=205px  imagens=0 quebradas=0
+  403  cat-colorir/desktop  overflow=0px  imagens=0 quebradas=0
+  403  cat-colorir/mobile   overflow=205px  imagens=0 quebradas=0
+  403  cat-atividades/desktopoverflow=0px  imagens=0 quebradas=0
+  200  cat-atividades/mobileoverflow=0px  imagens=4 quebradas=0
+         · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
+         · 389×243     tarde-de-desenho.BrZrrfRT_Z1TtdlO.webp
+         · 389×243     mesa-de-atividade.DhfpKZYs_Zw5Q7l.webp
+         · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
+  403  colorir-imprimir/desktopoverflow=0px  imagens=0 quebradas=0
+  200  colorir-imprimir/tabletoverflow=0px  imagens=4 quebradas=0
+         · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
+         · 834×625     colorindo-na-mesa.DBGd22cR_Z20xyha.webp
+         · 834×694     capa.CFiWZpL1_uVlkK.webp
+         · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
+  200  colorir-imprimir/mobileoverflow=0px  imagens=4 quebradas=0
+         · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
+         · 389×292     colorindo-na-mesa.DBGd22cR_Z1iIjzs.webp
+         · 389×324     capa.CFiWZpL1_1RzOqe.webp
+         · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
+  200  colorir-animais/desktopoverflow=0px  imagens=4 quebradas=0
+         · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
+         · 760×386     personagens-bichinhos.CtnzMKl4_Z1zMVir.webp
+         · 759×474     criancas-desenhando.DhHQONJ4_Ztm44V.webp
+         · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
+  200  colorir-animais/mobileoverflow=0px  imagens=4 quebradas=0
+         · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
+         · 389×199     personagens-bichinhos.CtnzMKl4_b9UR4.webp
+         · 389×243     criancas-desenhando.DhHQONJ4_Z2hQm9E.webp
+         · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
+  200  colorir-dinossauros/desktopoverflow=0px  imagens=4 quebradas=0
+         · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
+         · 760×308     dino-na-capa.Dnj1q2KQ_IQ6OU.webp
+         · 760×540     pagina-dino-impressa.BgZHgDE6_Z1Hri5v.webp
+         · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
+  200  colorir-dinossauros/mobileoverflow=0px  imagens=4 quebradas=0
+         · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
+         · 389×158     dino-na-capa.Dnj1q2KQ_1KYOnw.webp
+         · 389×277     pagina-dino-impressa.BgZHgDE6_Z29JFbr.webp
+         · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
+  200  colorir-espaco/desktopoverflow=0px  imagens=4 quebradas=0
+         · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
+         · 760×484     pagina-espaco-impressa.VqU7xMJB_2nxyCR.webp
+         · 760×366     personagens-do-espaco.C2uco9g1_1zaE3f.webp
+         · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
+  200  colorir-espaco/mobileoverflow=0px  imagens=4 quebradas=0
+         · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
+         · 389×248     pagina-espaco-impressa.VqU7xMJB_1LGYOF.webp
+         · 389×187     personagens-do-espaco.C2uco9g1_2v9jB5.webp
+         · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
+  200  colorir-mar/desktop  overflow=0px  imagens=4 quebradas=0
+         · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
+         · 760×608     mar-na-capa.Q7MZSbb2_1fe9lU.webp
+         · 759×474     colorindo-o-mar.BY_fZsr-_CzaBK.webp
+         · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
+  200  colorir-mar/mobile   overflow=0px  imagens=4 quebradas=0
+         · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
+         · 389×311     mar-na-capa.Q7MZSbb2_npMK7.webp
+         · 389×243     colorindo-o-mar.BY_fZsr-_1Equ16.webp
+         · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
+  200  sem-tela/desktop     overflow=0px  imagens=4 quebradas=0
+         · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
+         · 759×474     mesa-de-atividade.DhfpKZYs_Z1EYLvu.webp
+         · 760×278     folha-pronta.Bd28iLpx_24vAi8.webp
+         · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
+  200  sem-tela/mobile      overflow=0px  imagens=4 quebradas=0
+         · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
+         · 389×243     mesa-de-atividade.DhfpKZYs_Z1TLCS.webp
+         · 389×142     folha-pronta.Bd28iLpx_Z2fstC2.webp
+         · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
+  200  dia-de-chuva/desktop overflow=0px  imagens=4 quebradas=0
+         · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
+         · 759×474     tarde-de-desenho.BrZrrfRT_2bMLUD.webp
+         · 760×570     material-na-mesa.DSjKbZfw_1vHqEd.webp
+         · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
+  200  dia-de-chuva/mobile  overflow=0px  imagens=4 quebradas=0
+         · 72×26       bookgo-wordmark-blue.CUzJguyw_6LVvT.webp
+         · 389×243     tarde-de-desenho.BrZrrfRT_ZfqTCd.webp
+         · 389×292     material-na-mesa.DSjKbZfw_1rPLpV.webp
+         · 78×28       bookgo-wordmark-blue.CUzJguyw_Z1tl5eC.webp
 
-Nenhum problema encontrado.
+PROBLEMAS (14):
+  ✗ /blog/criancas/ respondeu 403
+  ✗ pilar-criancas/desktop: 403 https://bookgo.com.br/blog/criancas/
+  ✗ /blog/criancas/ respondeu 403
+  ✗ pilar-criancas/mobile: rolagem horizontal de 205px
+  ✗ pilar-criancas/mobile: 403 https://bookgo.com.br/blog/criancas/
+  ✗ /blog/criancas/desenhos-para-colorir/ respondeu 403
+  ✗ cat-colorir/desktop: 403 https://bookgo.com.br/blog/criancas/desenhos-para-colorir/
+  ✗ /blog/criancas/desenhos-para-colorir/ respondeu 403
+  ✗ cat-colorir/mobile: rolagem horizontal de 205px
+  ✗ cat-colorir/mobile: 403 https://bookgo.com.br/blog/criancas/desenhos-para-colorir/
+  ✗ /blog/criancas/atividades-em-casa/ respondeu 403
+  ✗ cat-atividades/desktop: 403 https://bookgo.com.br/blog/criancas/atividades-em-casa/
+  ✗ /blog/criancas/desenhos-para-colorir/desenhos-para-colorir-e-imprimir/ respondeu 403
+  ✗ colorir-imprimir/desktop: 403 https://bookgo.com.br/blog/criancas/desenhos-para-colorir/desenhos-para-colorir-e-imprimir/
