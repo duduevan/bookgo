@@ -233,11 +233,11 @@ images:
     ratio: "4 / 3"
 
   - id: pagina-dos-personagens
-    src: pagina-dos-personagens.webp
-    alt: Página do material com oito personagens de contorno preto, cada um com o nome embaixo
-    caption: Uma das páginas, no tamanho em que ela sai da impressora.
+    src: pagina-dos-personagens.png
+    alt: Página do material impressa sobre a mesa, com os oito personagens em contorno preto, lápis de cor e um caderno ao lado
+    caption: Uma das páginas, impressa em casa, do jeito que ela sai da impressora.
     placement: after-materials
-    ratio: "1 / 1.41"
+    ratio: "4 / 3"
 
 # ── Para quem é ──────────────────────────────────────────────
 audience:
