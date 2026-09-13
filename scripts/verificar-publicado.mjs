@@ -57,6 +57,20 @@ const PAGINAS = [
   ['lista-compras', '/blog/casa/cozinha/lista-de-compras-a-partir-do-cardapio/', ['desktop', 'mobile']],
   ['jantar', '/blog/casa/cozinha/nao-sei-o-que-fazer-para-o-jantar/', ['desktop', 'mobile']],
   ['semana-muda', '/blog/casa/cozinha/planejar-refeicoes-quando-a-semana-muda/', ['desktop', 'mobile']],
+
+  /* Cluster do Mundo de Colorir. O pilar editorial e as duas subcategorias
+     entram junto com os artigos: uma categoria que existe no conteúdo e não
+     responde no servidor é uma página a menos e um link interno quebrado. */
+  ['pilar-criancas', '/blog/criancas/', ['desktop', 'mobile']],
+  ['cat-colorir', '/blog/criancas/desenhos-para-colorir/', ['desktop', 'mobile']],
+  ['cat-atividades', '/blog/criancas/atividades-em-casa/', ['desktop', 'mobile']],
+  ['colorir-imprimir', '/blog/criancas/desenhos-para-colorir/desenhos-para-colorir-e-imprimir/', ['desktop', 'tablet', 'mobile']],
+  ['colorir-animais', '/blog/criancas/desenhos-para-colorir/desenhos-de-animais-para-colorir/', ['desktop', 'mobile']],
+  ['colorir-dinossauros', '/blog/criancas/desenhos-para-colorir/desenhos-de-dinossauros-para-colorir/', ['desktop', 'mobile']],
+  ['colorir-espaco', '/blog/criancas/desenhos-para-colorir/desenhos-do-espaco-para-colorir/', ['desktop', 'mobile']],
+  ['colorir-mar', '/blog/criancas/desenhos-para-colorir/desenhos-fundo-do-mar-para-colorir/', ['desktop', 'mobile']],
+  ['sem-tela', '/blog/criancas/atividades-em-casa/atividades-sem-tela-para-criancas/', ['desktop', 'mobile']],
+  ['dia-de-chuva', '/blog/criancas/atividades-em-casa/o-que-fazer-com-criancas-em-dia-de-chuva/', ['desktop', 'mobile']],
 ];
 
 /**

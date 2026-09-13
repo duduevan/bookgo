@@ -343,3 +343,50 @@ images:
   # Artigo com uma imagem certa é melhor do que artigo com duas, sendo uma
   # delas de banco de imagens. Os slots ficam abertos: declarar a origem aqui
   # basta para o texto voltar a ter a segunda foto, sem tocar no MDX.
+
+  # Cluster do Mundo de Colorir.
+  #
+  # As imagens que mostram o material são derivadas das artes reais do
+  # produto e já vivem no repositório, cortadas de `capa.webp`,
+  # `colorindo-na-mesa.webp` e `pagina-dos-personagens.png`. Aqui ficam só
+  # as quatro fotos editoriais, que mostram a cena e não o produto.
+
+  - target: src/assets/blog/desenhos-para-colorir/desenhos-de-animais-para-colorir/criancas-desenhando.webp
+    provider: freepik
+    assetId: 18771322
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/adorable-little-girl-drawing-paper-home_18771322.htm
+    previewPath: /free-photo/adorable-little-girl-drawing-paper-home_23-2149106238.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/desenhos-para-colorir/desenhos-fundo-do-mar-para-colorir/colorindo-o-mar.webp
+    provider: freepik
+    assetId: 11163239
+    license: free
+    author: karlyukav
+    sourcePage: https://www.magnific.com/free-photo/high-angle-view-two-siblings-little-girl-elder-brother-sitting-together-dining-wooden-table-drawing-images-white-sheets-paper-using-colorful-pencils-childhood-creativity-concept_11163239.htm
+    previewPath: /free-photo/high-angle-view-two-siblings-little-girl-elder-brother-sitting-together-dining-wooden-table-drawing-images-white-sheets-paper-using-colorful-pencils-childhood-creativity-concept_343059-2756.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/atividades-em-casa/atividades-sem-tela-para-criancas/mesa-de-atividade.webp
+    provider: freepik
+    assetId: 15857667
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/high-angle-children-s-desk-with-paint-drawing_15857667.htm
+    previewPath: /free-photo/high-angle-children-s-desk-with-paint-drawing_23-2149025157.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/atividades-em-casa/o-que-fazer-com-criancas-em-dia-de-chuva/tarde-de-desenho.webp
+    provider: freepik
+    assetId: 5697622
+    license: free
+    author: freepic.diller
+    sourcePage: https://www.magnific.com/free-photo/little-children-look-out-window_5697622.htm
+    previewPath: /free-photo/little-children-look-out-window_8353-9334.jpg
+    ratio: "16:10"
+    width: 1400
