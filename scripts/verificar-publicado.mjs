@@ -148,7 +148,20 @@ for (const [nome, caminho, viewports, lp] of PAGINAS) {
       if (r.status() >= 400) respostasRuins.push(`${r.status()} ${r.url()}`);
     });
 
-    const res = await page.goto(BASE + caminho, { waitUntil: 'networkidle' });
+    /* `networkidle` sem prazo trava a conferência inteira quando o
+       servidor engasga: a navegação fica pendurada e o job só morre no
+       limite do runner, sem relatório nenhum. Com prazo, a página que não
+       carrega vira um problema anotado, e as outras continuam sendo
+       conferidas, que é o que torna o relatório útil. */
+    let res = null;
+    try {
+      res = await page.goto(BASE + caminho, { waitUntil: 'networkidle', timeout: 30000 });
+    } catch (erro) {
+      problemas.push(`${nome}/${vp}: ${caminho} não carregou em 30s (${erro.name})`);
+      registrar(`  ----  ${nome}/${vp}`.padEnd(28) + 'não carregou em 30s');
+      await ctx.close();
+      continue;
+    }
 
     /* O banner de consentimento é legítimo e cobre o rodapé; sai da tela
        para a captura mostrar a página, não o banner. */
