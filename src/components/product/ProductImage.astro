@@ -19,20 +19,63 @@ interface Props {
   caption?: string;
   /** Proporção do quadro. A da LP é mais larga que a de artigo. */
   ratio?: string;
+  /**
+   * Largura do quadro na página.
+   *
+   * · `wide` — a coluna inteira. É o certo para foto de cena deitada, que
+   *   é o formato que a régua editorial da LP assume por padrão;
+   *
+   * · `portrait` — largura limitada e centralizada. Existe porque foto em
+   *   pé ocupando a coluna inteira vira outdoor: numa tela de desktop,
+   *   uma 4/5 com 64rem de largura passa de mil pixels de altura e empurra
+   *   a seção seguinte para fora da tela. Limitar a largura preserva a
+   *   proporção original, que é o que evita cortar mão e desenho, e ainda
+   *   assim deixa a imagem com presença;
+   *
+   * · `column` — preenche a coluna da grade em que já vive. É o das fotos
+   *   que ficam ao lado de um bloco de cartões.
+   *
+   * `sizes` acompanha a escolha. Sem isso o navegador baixaria a variante
+   * de 1600px para um quadro de 420px, que é peso jogado fora numa página
+   * que recebe tráfego pago de celular.
+   */
+  frame?: 'wide' | 'portrait' | 'column';
 }
 
-const { slug, src, alt, caption, ratio = '16 / 9' } = Astro.props;
+const {
+  slug,
+  src,
+  alt,
+  caption,
+  ratio = '16 / 9',
+  frame = 'wide',
+} = Astro.props;
 const image = productImage(slug, src);
+
+const SIZES = {
+  wide: '(min-width: 72rem) 64rem, calc(100vw - 2 * var(--gutter))',
+  portrait: '(min-width: 48rem) 30rem, calc(100vw - 2 * var(--gutter))',
+  column: '(min-width: 62rem) 34rem, calc(100vw - 2 * var(--gutter))',
+} as const;
+
+const WIDTHS = {
+  wide: [640, 960, 1280, 1600],
+  portrait: [480, 720, 960],
+  column: [544, 816, 1088],
+} as const;
 ---
 
 {
   image && (
-    <figure class="product-figure" style={`--ratio:${ratio}`}>
+    <figure
+      class:list={['product-figure', `f-${frame}`]}
+      style={`--ratio:${ratio}`}
+    >
       <Image
         src={image}
         alt={alt}
-        widths={[640, 960, 1280, 1600]}
-        sizes="(min-width: 72rem) 64rem, calc(100vw - 2 * var(--gutter))"
+        widths={[...WIDTHS[frame]]}
+        sizes={SIZES[frame]}
         loading="lazy"
         decoding="async"
         quality={74}
@@ -45,6 +88,15 @@ const image = productImage(slug, src);
 <style>
   .product-figure {
     margin: 0;
+  }
+
+  /* Foto em pé não ocupa a coluna inteira: limitada e centralizada, ela
+     mantém a proporção original (nada de corte) sem virar outdoor entre
+     duas seções. No celular a limitação não morde, porque a tela já é mais
+     estreita do que o teto. */
+  .f-portrait {
+    max-width: 30rem;
+    margin-inline: auto;
   }
 
   .product-figure :global(img) {

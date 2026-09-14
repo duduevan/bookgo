@@ -97,6 +97,14 @@ const imagesAt = (placement: string) =>
 
 /* A foto que acompanha o mecanismo, quando declarada. Uma só: duas fotos ao
    lado do mesmo argumento competiriam entre si. */
+/* Foto em pé não ocupa a coluna inteira: o quadro limitado preserva a
+   proporção original em vez de cortar a cena para caber num 16/9. */
+const isPortrait = (ratio?: string) => {
+  if (!ratio) return false;
+  const [w, h] = ratio.split('/').map((n) => Number(n.trim()));
+  return Number.isFinite(w) && Number.isFinite(h) && h > w;
+};
+
 const [methodImage] = imagesAt('beside-method');
 const [benefitsImage] = imagesAt('beside-benefits');
 const [useCasesImage] = imagesAt('beside-use-cases');
@@ -180,6 +188,7 @@ const crumbs = [
           alt={img.alt}
           caption={img.caption}
           ratio={img.ratio}
+          frame={isPortrait(img.ratio) ? 'portrait' : 'wide'}
         />
       </div>
     ))
@@ -194,6 +203,7 @@ const crumbs = [
           alt={img.alt}
           caption={img.caption}
           ratio={img.ratio}
+          frame={isPortrait(img.ratio) ? 'portrait' : 'wide'}
         />
       </div>
     ))
@@ -224,6 +234,7 @@ const crumbs = [
               src={methodImage.src}
               alt={methodImage.alt}
               ratio="3 / 2"
+            frame="column"
             />
           </div>
           <CardGrid items={[...d.method.pillars]} cols={1} min="100%" />
@@ -244,6 +255,7 @@ const crumbs = [
           alt={img.alt}
           caption={img.caption}
           ratio={img.ratio}
+          frame={isPortrait(img.ratio) ? 'portrait' : 'wide'}
         />
       </div>
     ))
@@ -268,6 +280,7 @@ const crumbs = [
               alt={benefitsImage.alt}
               caption={benefitsImage.caption}
               ratio={benefitsImage.ratio ?? '3 / 4'}
+            frame="column"
             />
           </div>
         </div>
@@ -302,6 +315,7 @@ const crumbs = [
           alt={img.alt}
           caption={img.caption}
           ratio={img.ratio}
+          frame={isPortrait(img.ratio) ? 'portrait' : 'wide'}
         />
       </div>
     ))
@@ -367,6 +381,7 @@ const crumbs = [
           alt={img.alt}
           caption={img.caption}
           ratio={img.ratio}
+          frame={isPortrait(img.ratio) ? 'portrait' : 'wide'}
         />
       </div>
     ))
@@ -391,6 +406,7 @@ const crumbs = [
           alt={img.alt}
           caption={img.caption}
           ratio={img.ratio}
+          frame={isPortrait(img.ratio) ? 'portrait' : 'wide'}
         />
       </div>
     ))
@@ -430,7 +446,8 @@ const crumbs = [
                 alt={useCasesImage.alt}
                 caption={useCasesImage.caption}
                 ratio={useCasesImage.ratio ?? '3 / 4'}
-              />
+              frame="column"
+            />
             </div>
             <CardGrid items={[...d.useCases.items]} cols={2} min="13rem" />
           </div>
@@ -472,6 +489,7 @@ const crumbs = [
           alt={img.alt}
           caption={img.caption}
           ratio={img.ratio}
+          frame={isPortrait(img.ratio) ? 'portrait' : 'wide'}
         />
       </div>
     ))
@@ -493,6 +511,7 @@ const crumbs = [
           alt={img.alt}
           caption={img.caption}
           ratio={img.ratio}
+          frame={isPortrait(img.ratio) ? 'portrait' : 'wide'}
         />
       </div>
     ))

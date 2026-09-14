@@ -269,57 +269,57 @@ images:
   # fecha sozinha.
   - id: mesa-de-madeira
     src: atividade_de_colorir_na_mesa_de_madeira.png
-    alt: Várias páginas do material espalhadas sobre uma mesa de madeira, com lápis de cor ao redor e a mão de uma criança sobre uma delas
+    alt: Menina colorindo um desenho de gatinho na mesa de madeira, com outras folhas do material e lápis de cor espalhados ao redor
     caption: Oitenta desenhos, e a escolha é sempre da criança.
     placement: after-hero
-    ratio: "4 / 3"
+    ratio: "4 / 5"
 
   - id: tarde-chuvosa
     src: tarde_chuvosa_de_colorir_aconchegante.png
-    alt: Mesa com folhas para colorir e lápis espalhados, em uma tarde fechada dentro de casa
+    alt: Criança colorindo uma folha presa a uma prancheta, cercada de outras páginas já impressas e giz de cera sobre a mesa
     caption: A tarde que não passa passa mais rápido com uma folha na mesa.
     placement: after-problem
-    ratio: "16 / 9"
+    ratio: "4 / 5"
 
   - id: mesa-infantil
     src: mesa_de_colorir_infantil_aconchegante.png
-    alt: Cantinho de colorir montado na mesa de casa, com folhas impressas, lápis e giz de cera ao alcance da criança
+    alt: Folhas do material espalhadas em leque sobre a mesa, com a mão de uma criança sobre uma delas e lápis de cor ao redor
     placement: beside-benefits
-    ratio: "3 / 4"
+    ratio: "4 / 5"
 
   - id: impressora
     src: impressora_e_desenhos_para_colorir.png
-    alt: Computador com as páginas do material na tela e folhas já impressas sobre a mesa, ao lado dos lápis de cor
+    alt: Impressora doméstica soltando uma página com o desenho do gatinho, e outras cinco já impressas sobre a mesa ao lado do giz de cera
     caption: Baixe uma vez, escolha o tema e mande imprimir. É esse o trabalho todo.
     placement: after-how-it-works
-    ratio: "16 / 9"
+    ratio: "4 / 5"
 
   - id: mesa-colorida
     src: mesa_de_colorir_criativa_e_colorida.png
-    alt: Mesa cheia de páginas para colorir de temas diferentes, com lápis de cor de todas as cores ao redor
+    alt: Notebook aberto com os desenhos do arquivo na tela e seis páginas já impressas dispostas na mesa à frente
     caption: Oito temas na mesa ao mesmo tempo, que é o que uma coleção permite.
     placement: after-contents
-    ratio: "16 / 9"
+    ratio: "4 / 5"
 
   - id: momento-criativo
     src: momento_criativo_de_colorir.png
-    alt: Criança colorindo uma página impressa com giz de cera, concentrada na folha
+    alt: Menina colorindo com giz de cera numa tarde de chuva, com a janela molhada ao fundo e o gato dormindo ao lado
     placement: beside-use-cases
-    ratio: "3 / 4"
+    ratio: "4 / 5"
 
   - id: menina-colorindo
     src: menina_colorindo_em_mesa_aconchegante.png
-    alt: Menina sentada à mesa de casa colorindo uma das páginas do material, com outras folhas e lápis ao redor
+    alt: Seis páginas do material vistas de cima sobre a mesa, com lápis de cor, canetinhas e giz de cera ao redor
     caption: Uma folha, uma caixa de lápis, e a tela pode esperar.
     placement: before-reviews
-    ratio: "16 / 9"
+    ratio: "4 / 5"
 
   - id: colorir-em-familia
     src: momento_de_colorir_em_familia.png
-    alt: Mãe e filha colorindo juntas na mesa, com as páginas do material espalhadas e lápis de cor entre as duas
+    alt: Mãe e filha colorindo juntas na mesa de casa, a mãe mostrando a página do dinossauro enquanto a menina pinta a do gatinho
     caption: O material é da criança, mas o sábado à tarde costuma virar dos dois.
     placement: before-offer
-    ratio: "16 / 9"
+    ratio: "4 / 5"
 
 # ── Situações de uso ─────────────────────────────────────────
 # Benefício responde "o que isso me dá". Situação responde "quando eu vou
