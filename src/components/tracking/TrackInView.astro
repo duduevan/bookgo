@@ -1,0 +1,67 @@
+---
+/**
+ * Dispara um evento da BookGo quando um bloco entra na tela.
+ *
+ * **Para que serve.** `product_view` diz que a pessoa abriu a landing
+ * page. Não diz até onde ela desceu. Numa página de tráfego pago isso é a
+ * diferença entre "o anúncio traz gente" e "o anúncio traz gente que
+ * chega na oferta": sem medir as etapas, qualquer conclusão sobre onde a
+ * página perde a pessoa é chute.
+ *
+ * **O que ele não é.** Nenhum destes eventos é conversão. Eles não chegam
+ * à Meta: a ponte do Pixel é uma lista fechada de três nomes
+ * (`view_content`, `product_view`, `checkout_click`), e qualquer nome fora
+ * dela fica só no dataLayer e no GA4. Ver TrackingHead.astro. É de
+ * propósito: marcar rolagem como início de compra inventaria um momento
+ * de funil que não aconteceu, que é a mesma razão pela qual `Purchase`
+ * nunca sai do site.
+ *
+ * **Uma vez por carregamento.** O observer se desconecta no primeiro
+ * disparo. Sem isso, rolar para cima e para baixo multiplicaria o mesmo
+ * bloco e a contagem deixaria de significar "quantas pessoas chegaram
+ * aqui".
+ *
+ * **Entrar de verdade.** O limiar é 40% do bloco visível, e não um pixel:
+ * um bloco que apenas encosta na borda inferior da tela enquanto a pessoa
+ * rola rápido para o rodapé não foi visto, e contá-lo encheria o relatório
+ * de visualizações que não existiram.
+ *
+ * Com o tracking desligado não renderiza nada, como o resto da camada.
+ */
+import { isTrackingActive } from '../../lib/tracking';
+
+interface Props {
+  /** Nome do evento da BookGo. Nunca um nome de conversão. */
+  event: string;
+  params?: Record<string, string | number>;
+}
+
+const { event, params = {} } = Astro.props;
+const active = isTrackingActive();
+
+/* `IntersectionObserver` é suportado em tudo que abre o site hoje; a
+   guarda existe para o bloco não quebrar onde não houver, em vez de
+   derrubar o resto do script da página. */
+const source = `(function(){
+var s=document.currentScript;
+if(!s||!window.IntersectionObserver||!window.bookgo)return;
+/* O bloco medido é o elemento que contém esta âncora. A âncora tem altura
+   zero e nunca poderia ser medida por proporção: um elemento sem área dá
+   sempre razão 0, e o limiar jamais seria atingido. */
+var alvo=s.parentElement;
+if(!alvo)return;
+var o=new IntersectionObserver(function(en){
+for(var i=0;i<en.length;i++){if(en[i].isIntersecting){
+o.disconnect();window.bookgo.track(${JSON.stringify(event)},${JSON.stringify(
+  params
+)});return;}}
+},{threshold:0.4});
+o.observe(alvo);
+})();`;
+---
+
+{
+  active && (
+    <script is:inline set:html={source} />
+  )
+}

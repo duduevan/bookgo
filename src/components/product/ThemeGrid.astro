@@ -3,24 +3,24 @@
  * Vitrine dos temas do material.
  *
  * **Por que não é a lista numerada.** `ModuleList` foi feito para módulos
- * de curso, onde a ordem importa: o segundo depende do primeiro. Um tema
- * de coleção para colorir não tem ordem nenhuma. A criança abre no que
- * quiser, e a lista numerada dizia o contrário sobre o produto.
+ * de curso, onde a ordem é o produto: o 2 depende do 1. Uma coleção para
+ * colorir não tem ordem, e a grade é o que comunica variedade, que é o
+ * argumento desta seção.
  *
- * O que interessa aqui é **variedade**, e variedade se mostra em grade,
- * não em pilha: oito cartões visíveis de uma vez dizem "tem muita coisa"
- * antes de qualquer frase dizer. O número sai, o ícone entra, e o nome do
- * tema vira o elemento com mais peso do cartão.
+ * **Por que os dez desenhos não estão escritos.** A versão anterior
+ * listava os dez de cada tema em texto corrido. Oito parágrafos densos,
+ * um atrás do outro, que ninguém lê e que empurravam a oferta para muito
+ * longe. O cartão agora mostra o traço em duas miniaturas reais e resume
+ * o tema em uma linha: quem quer saber o que tem dentro olha o desenho,
+ * não a enumeração.
  *
- * Cada cartão traz uma linha curta (`blurb`) e, abaixo, os exemplos que
- * já viviam no YAML. Os exemplos continuam sendo o argumento de verdade:
- * "dez desenhos de espaço" é vago, "foguete decolando, astronauta
- * flutuando, a bandeira na lua" é o que faz a pessoa imaginar a página.
- *
- * A contagem de desenhos por tema não é escrita aqui. Ela vive no YAML do
- * produto, que é a fonte, e chega pronta por `countLabel`.
+ * **Miniatura só quando existe.** Tema sem foto de página continua
+ * inteiro, com o ícone no lugar das miniaturas. Desenhar uma amostra para
+ * preencher o cartão seria inventar o conteúdo do arquivo.
  */
+import { Image } from 'astro:assets';
 import Icon from '../ui/Icon.astro';
+import { productImage } from '../../lib/product-images';
 
 export interface ThemeItem {
   number: number;
@@ -28,32 +28,56 @@ export interface ThemeItem {
   objective: string;
   icon?: string;
   blurb?: string;
+  thumbs?: string[];
 }
 
 interface Props {
+  slug: string;
   items: ThemeItem[];
   /** Ex.: "10 desenhos". Vem do YAML, nunca calculado aqui. */
   countLabel?: string;
 }
 
-const { items, countLabel } = Astro.props;
+const { slug, items, countLabel } = Astro.props;
+
+const temas = items.map((t) => ({
+  ...t,
+  imagens: (t.thumbs ?? [])
+    .map((src) => productImage(slug, src))
+    .filter(Boolean)
+    .slice(0, 3),
+}));
 ---
 
 <ul class="themes">
   {
-    items.map((t) => (
+    temas.map((t) => (
       <li class="theme">
-        <span class="theme-badge" aria-hidden="true">
-          {t.icon ? <Icon name={t.icon} /> : <span class="theme-num">{t.number}</span>}
-        </span>
-        <div class="theme-body">
-          <h3 class="theme-title">
-            {t.title}
-            {countLabel && <span class="theme-count">{countLabel}</span>}
-          </h3>
-          {t.blurb && <p class="theme-blurb">{t.blurb}</p>}
-          <p class="theme-examples">{t.objective}</p>
+        <div class="theme-head">
+          <span class="theme-badge" aria-hidden="true">
+            {t.icon ? <Icon name={t.icon} /> : <span class="theme-num">{t.number}</span>}
+          </span>
+          <h3 class="theme-title">{t.title}</h3>
+          {countLabel && <span class="theme-count">{countLabel}</span>}
         </div>
+
+        {t.blurb && <p class="theme-blurb">{t.blurb}</p>}
+
+        {t.imagens.length > 0 && (
+          <div class="theme-thumbs" aria-hidden="true">
+            {t.imagens.map((img) => (
+              <Image
+                src={img!}
+                alt=""
+                widths={[160, 240]}
+                sizes="8rem"
+                loading="lazy"
+                decoding="async"
+                quality={72}
+              />
+            ))}
+          </div>
+        )}
       </li>
     ))
   }
@@ -66,31 +90,31 @@ const { items, countLabel } = Astro.props;
     padding: 0;
     display: grid;
     gap: var(--s-4);
-    grid-template-columns: repeat(auto-fill, minmax(min(18rem, 100%), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(15rem, 100%), 1fr));
     text-align: start;
   }
 
   .theme {
     display: flex;
-    gap: var(--s-4);
-    padding: var(--s-5);
+    flex-direction: column;
+    gap: var(--s-3);
+    padding: var(--s-4);
     border-radius: var(--radius-lg);
     background: var(--color-surface);
     border: 1px solid var(--color-border);
-    transition: border-color var(--motion-fast) var(--ease-out);
   }
 
-  .theme:hover {
-    border-color: color-mix(in srgb, var(--color-primary) 45%, transparent);
+  .theme-head {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--s-2);
   }
 
-  /* O selo é redondo e usa o fundo suave da paleta do produto: sem ele o
-     cartão vira parágrafo com título, e oito parágrafos iguais não
-     comunicam variedade nenhuma. */
   .theme-badge {
     flex: 0 0 auto;
-    width: 2.75rem;
-    height: 2.75rem;
+    width: 2rem;
+    height: 2rem;
     display: grid;
     place-items: center;
     border-radius: 50%;
@@ -99,52 +123,56 @@ const { items, countLabel } = Astro.props;
   }
 
   .theme-badge :global(.icon) {
-    --icon-size: 1.4rem;
+    --icon-size: 1.1rem;
   }
 
   .theme-num {
-    font-size: var(--t-0);
+    font-size: var(--t--1);
     font-weight: var(--w-bold);
-  }
-
-  .theme-body {
-    min-width: 0;
   }
 
   .theme-title {
     margin: 0;
-    font-size: var(--t-0);
+    font-size: var(--t--1);
     line-height: 1.25;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: var(--s-2);
+    flex: 1 1 auto;
   }
 
-  /* A contagem acompanha o nome em vez de virar linha própria: ela é
-     atributo do tema, e uma linha só para ela empurraria os exemplos para
-     fora da primeira dobra do cartão. */
   .theme-count {
-    font-size: var(--t--2);
+    font-size: var(--t--3, 0.7rem);
     font-weight: var(--w-semibold);
     letter-spacing: var(--tr-eyebrow);
     text-transform: uppercase;
     color: var(--color-primary-dark);
     background: var(--color-primary-soft);
-    padding: 0.15rem 0.5rem;
+    padding: 0.1rem 0.45rem;
     border-radius: 999px;
+    white-space: nowrap;
   }
 
   .theme-blurb {
-    margin: var(--s-2) 0 0;
-    font-size: var(--t--1);
-    color: var(--color-text);
+    margin: 0;
+    font-size: var(--t--2);
+    line-height: 1.5;
+    color: var(--color-muted);
   }
 
-  .theme-examples {
-    margin: var(--s-2) 0 0;
-    font-size: var(--t--2);
-    line-height: 1.55;
-    color: var(--color-muted);
+  /* As miniaturas ficam no pé do cartão e empurram a régua para baixo:
+     o cartão termina no desenho, que é o que a pessoa veio ver. */
+  .theme-thumbs {
+    margin-top: auto;
+    display: flex;
+    gap: var(--s-2);
+  }
+
+  .theme-thumbs :global(img) {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    background: var(--color-surface-raised);
   }
 </style>

@@ -74,6 +74,20 @@ const blocks: Group[] =
 
 <div class="offer">
   <div class="included">
+    {/* Composição do material no topo da coluna do conteúdo.
+
+        Existe porque a oferta era a única seção da página sem imagem:
+        depois de a pessoa percorrer galeria, temas e situações de uso, o
+        bloco do preço voltava a ser só texto, e o objeto que ela está
+        comprando sumia exatamente na hora de decidir. Slot, e não prop,
+        porque o compilador do Astro não aceita elemento dentro de
+        expressão de atributo. */}
+    {Astro.slots.has('mockup') && (
+      <div class="offer-mockup">
+        <slot name="mockup" />
+      </div>
+    )}
+
     <h3>{heading}</h3>
 
     {
@@ -422,5 +436,16 @@ const blocks: Group[] =
       grid-template-columns: minmax(0, 1fr) minmax(21rem, 23rem);
       gap: var(--s-6);
     }
+  }
+  /* A composição do material abre a coluna do conteúdo. Sem ela, a
+     oferta era a única seção da página sem imagem, e o objeto sumia
+     exatamente na hora de decidir. */
+  .offer-mockup {
+    margin-bottom: var(--s-5);
+  }
+
+  .offer-mockup :global(.stack) {
+    max-width: 22rem;
+    aspect-ratio: 4 / 3;
   }
 </style>

@@ -166,6 +166,8 @@ const productImageEntry = z.object({
        ilustra um argumento, em vez de ocupar largura sozinha entre duas
        seções. */
     'beside-method',
+    'beside-problem',
+    'beside-how-it-works',
     'after-hero',
     'after-problem',
     'after-method',
@@ -274,6 +276,19 @@ const products = defineCollection({
       eyebrow: z.string().optional(),
       /** Rótulo próprio do botão do hero. Sem ele, vale o `checkout.cta`. */
       ctaLabel: z.string().optional(),
+      /**
+       * Páginas reais que formam o leque atrás da capa, e a foto de cena
+       * pequena no canto. Juntas com `image`, montam a composição de
+       * produto do hero.
+       *
+       * Existe porque foto de cena sozinha vende a atividade e não o
+       * material: quem chega de anúncio precisa entender em dois segundos
+       * o que está comprando, e "coleção em PDF" é frase que só vira
+       * coisa com imagem. Vazio, o hero volta ao comportamento antigo.
+       */
+      pages: z.array(z.string()).default([]),
+      scene: z.string().optional(),
+      sceneAlt: z.string().optional(),
       headline: z.string(),
       subheadline: z.string(),
       /**
@@ -306,16 +321,33 @@ const products = defineCollection({
       close: z.string().optional(),
     }),
 
-    method: section.extend({
-      /** Nome do mecanismo, ex.: "O Método dos 15 Minutos". */
-      name: z.string(),
-      pillars: z.array(titledItem),
-      note: z.string().optional(),
-    }),
+    /**
+     * Mecanismo e benefícios, ambos opcionais desde o redesenho de
+     * conversão do Mundo de Colorir.
+     *
+     * Num material de imprimir, o que o mecanismo explicava (traço
+     * uniforme, área confortável, feito para impressora doméstica) a
+     * galeria de páginas reais mostra em dois segundos, e mostrar vence
+     * explicar. Os benefícios, por sua vez, viraram a barra de fatos no
+     * topo e as situações de uso mais abaixo. Manter os três blocos era
+     * dizer a mesma coisa três vezes numa página que precisa ficar mais
+     * curta. Curso continua precisando dos dois, e as outras LPs seguem
+     * iguais.
+     */
+    method: section
+      .extend({
+        /** Nome do mecanismo, ex.: "O Método dos 15 Minutos". */
+        name: z.string(),
+        pillars: z.array(titledItem),
+        note: z.string().optional(),
+      })
+      .optional(),
 
-    benefits: section.extend({
-      items: z.array(titledItem),
-    }),
+    benefits: section
+      .extend({
+        items: z.array(titledItem),
+      })
+      .optional(),
 
     howItWorks: section.extend({
       steps: z.array(titledItem),
@@ -342,6 +374,17 @@ const products = defineCollection({
           icon: iconName.optional(),
           /** Uma linha curta, para a vitrine. A lista longa continua em `objective`. */
           blurb: z.string().optional(),
+          /**
+           * Miniaturas de páginas reais daquele tema, relativas a
+           * `src/assets/products/<slug>/`.
+           *
+           * Vende variedade melhor do que qualquer lista: o cartão mostra
+           * o traço em vez de descrevê-lo. Opcional porque nem todo tema
+           * tem foto de página ainda, e inventar uma seria mentir sobre o
+           * que está dentro do arquivo. Sem miniatura, o cartão continua
+           * inteiro com o ícone.
+           */
+          thumbs: z.array(z.string()).default([]),
         })
       ),
     }),
@@ -354,6 +397,56 @@ const products = defineCollection({
        */
       items: z.array(titledItem.extend({ mockup: z.string().optional() })),
     }),
+
+    /**
+     * Prefixo dos eventos de etapa do funil desta LP.
+     *
+     * Com `mundo`, a página emite `mundo_gallery_view`,
+     * `mundo_themes_view`, `mundo_reviews_view` e `mundo_offer_view`
+     * quando cada bloco entra na tela. Sem o campo, nenhum evento de
+     * etapa é emitido, e é por isso que ele existe: sem essa trava, a
+     * instrumentação de uma LP vazaria para as outras e encheria o
+     * relatório delas com eventos de um produto que a pessoa nunca viu.
+     *
+     * Nenhum destes é conversão. A ponte do Pixel é uma lista fechada de
+     * três nomes, então qualquer nome daqui fica só no dataLayer e no
+     * GA4. Ver TrackingHead.astro e TrackInView.astro.
+     */
+    funnelEventPrefix: z.string().optional(),
+
+    /**
+     * Faixa curta de fatos logo abaixo do hero. Opcional.
+     *
+     * Existe porque os fatos que respondem "isto é para mim?" estavam
+     * espalhados por quatro seções, e quem chega de anúncio decide antes
+     * de chegar à quarta.
+     */
+    trustBar: z
+      .array(z.object({ text: z.string(), icon: iconName.optional() }))
+      .optional(),
+
+    /**
+     * Galeria de páginas reais do material.
+     *
+     * Contra pack barato, nenhum adjetivo vence a pergunta "como são os
+     * desenhos?". Esta seção deixa a pessoa conferir sozinha. Só entra
+     * página que existe de verdade no material: amostra genérica aqui
+     * seria propaganda enganosa com aparência de prova.
+     */
+    gallery: section
+      .extend({
+        items: z.array(
+          z.object({
+            src: z.string(),
+            alt: z.string(),
+            /** Rótulo do tema sob o quadro. */
+            label: z.string().optional(),
+            /** Ocupa duas colunas: para a página fotografada deitada. */
+            wide: z.boolean().default(false),
+          })
+        ),
+      })
+      .optional(),
 
     /**
      * Situações de uso: onde o material resolve alguma coisa na semana.
@@ -371,10 +464,20 @@ const products = defineCollection({
       })
       .optional(),
 
-    /** Cabeçalho comum aos dois blocos de público. */
-    audience: section,
-    forWho: section.extend({ items: z.array(z.string()) }),
-    notForWho: section.extend({ items: z.array(z.string()) }),
+    /**
+     * Cabeçalho comum aos dois blocos de público.
+     *
+     * Os três são opcionais desde o redesenho de conversão do Mundo de
+     * Colorir. Numa LP com galeria de páginas reais, vitrine de temas e
+     * situações de uso, o bloco "é para você que" repetia argumento que
+     * já apareceu três vezes, e as objeções que ele cobria (material
+     * físico, precisa de impressora, personagem conhecido) vivem melhor
+     * no FAQ, onde a pessoa vai procurá-las. As outras LPs seguem com os
+     * blocos e não mudam uma linha.
+     */
+    audience: section.optional(),
+    forWho: section.extend({ items: z.array(z.string()) }).optional(),
+    notForWho: section.extend({ items: z.array(z.string()) }).optional(),
 
     offer: section
       .extend({

@@ -1,0 +1,217 @@
+---
+/**
+ * Composição de produto do hero.
+ *
+ * **O problema que ela resolve.** O hero mostrava uma foto de cena: uma
+ * criança colorindo. Foto de cena vende a atividade, não o material.
+ * Quem chega de anúncio e não entende em dois segundos o que está
+ * comprando volta para o feed, e "coleção em PDF com 80 desenhos" é uma
+ * frase que precisa de imagem para virar coisa.
+ *
+ * O que ela monta, em camadas:
+ *
+ * · a capa da coleção, que é o objeto principal e o que a pessoa vai
+ *   reconhecer depois na área de membros;
+ * · três páginas reais em leque atrás dela, que provam o traço e a
+ *   variedade sem precisar de nenhuma palavra;
+ * · uma foto de cena pequena, no canto, que devolve o contexto de uso
+ *   sem disputar espaço com o produto.
+ *
+ * A hierarquia é essa e não outra: produto grande, prova média, cena
+ * pequena. Invertida, vira de novo um banner de banco de imagens.
+ *
+ * **Nada é obrigatório.** Faltando qualquer peça, a composição fecha com
+ * o que existe. É o mesmo princípio do resto do fluxo de imagem do
+ * projeto: o arquivo que não chegou não deixa buraco na página.
+ *
+ * A capa carrega com `eager` e prioridade alta: ela é o elemento de LCP
+ * desta página. As páginas do leque e a cena entram em `lazy`, porque
+ * disputar banda com o LCP é exatamente o que derruba a métrica.
+ */
+import { Image } from 'astro:assets';
+import { productImage } from '../../lib/product-images';
+
+interface Props {
+  slug: string;
+  cover?: string;
+  coverAlt: string;
+  /** Páginas reais do material, no leque atrás da capa. */
+  pages?: string[];
+  /** Foto de cena pequena, no canto. */
+  scene?: string;
+  sceneAlt?: string;
+}
+
+const { slug, cover, coverAlt, pages = [], scene, sceneAlt } = Astro.props;
+
+const capa = cover ? productImage(slug, cover) : null;
+const leque = pages
+  .map((p) => productImage(slug, p))
+  .filter(Boolean)
+  .slice(0, 3);
+const cena = scene ? productImage(slug, scene) : null;
+---
+
+<div class="stack">
+  {
+    leque.length > 0 && (
+      <div class="stack-fan" aria-hidden="true">
+        {leque.map((p, i) => (
+          <Image
+            class={`fan-${i}`}
+            src={p!}
+            alt=""
+            widths={[180, 270]}
+            sizes="9rem"
+            loading="lazy"
+            decoding="async"
+            quality={72}
+          />
+        ))}
+      </div>
+    )
+  }
+
+  {
+    capa && (
+      <div class="stack-cover">
+        <Image
+          src={capa}
+          alt={coverAlt}
+          widths={[420, 640, 860]}
+          sizes="(min-width: 62rem) 26rem, 80vw"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+          quality={80}
+        />
+      </div>
+    )
+  }
+
+  {
+    cena && (
+      <div class="stack-scene">
+        <Image
+          src={cena}
+          alt={sceneAlt ?? ''}
+          widths={[200, 300]}
+          sizes="9rem"
+          loading="lazy"
+          decoding="async"
+          quality={74}
+        />
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .stack {
+    position: relative;
+    width: 100%;
+    max-width: 30rem;
+    margin-inline: auto;
+    /* A altura vem do conteúdo, e a proporção reservada evita o salto de
+       layout enquanto a capa carrega. */
+    aspect-ratio: 4 / 3;
+    display: grid;
+    place-items: center;
+  }
+
+  .stack-cover {
+    position: relative;
+    z-index: 2;
+    width: 78%;
+  }
+
+  .stack-cover :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 12px 30px rgb(0 0 0 / 0.16);
+  }
+
+  /* O leque fica atrás e sai pelas laterais: é o que dá a sensação de
+     pilha, de coleção que continua além do que está à vista. */
+  .stack-fan {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .stack-fan :global(img) {
+    position: absolute;
+    width: 30%;
+    height: auto;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    background: #ffffff;
+    box-shadow: 0 6px 16px rgb(0 0 0 / 0.14);
+  }
+
+  .stack-fan :global(.fan-0) {
+    left: -2%;
+    top: 12%;
+    rotate: -11deg;
+  }
+
+  .stack-fan :global(.fan-1) {
+    right: -2%;
+    top: 6%;
+    rotate: 9deg;
+  }
+
+  .stack-fan :global(.fan-2) {
+    right: 6%;
+    bottom: -4%;
+    rotate: 4deg;
+  }
+
+  /* A cena é redonda e pequena de propósito: ela é contexto, não
+     argumento. Redonda, ela não compete com os retângulos do material. */
+  .stack-scene {
+    position: absolute;
+    z-index: 3;
+    left: 0;
+    bottom: -2%;
+    width: 30%;
+    max-width: 8.5rem;
+  }
+
+  .stack-scene :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid var(--color-bg);
+    box-shadow: 0 6px 18px rgb(0 0 0 / 0.16);
+  }
+
+  /* No celular a composição encolhe e o leque fecha um pouco: com a tela
+     estreita, as folhas saindo muito para fora encostavam na margem. */
+  @media (max-width: 47.99rem) {
+    .stack {
+      max-width: 22rem;
+      aspect-ratio: 1 / 1;
+    }
+
+    .stack-fan :global(.fan-0) {
+      left: 2%;
+    }
+
+    .stack-fan :global(.fan-1) {
+      right: 2%;
+    }
+
+    .stack-scene {
+      width: 26%;
+      left: 2%;
+    }
+  }
+</style>

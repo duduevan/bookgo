@@ -27,6 +27,9 @@
 slug: mundo-de-colorir
 name: Mundo de Colorir
 
+# Etapas do funil medidas nesta LP. Nenhuma é conversão.
+funnelEventPrefix: mundo
+
 # Terceira prateleira da home. Nasce com este material e cabe o que vier
 # depois: atividade, jogo, material de imprimir para criança.
 category:
@@ -84,158 +87,179 @@ hero:
   ctaLabel: Quero garantir o meu PDF
   headline: "80 desenhos prontos para a próxima vez que a pergunta for: o que a gente faz agora?"
   subheadline: >-
-    Um livro em PDF com arte original em 8 temas, para imprimir na impressora
-    de casa e colorir quantas vezes quiser. Baixa uma vez, fica com você para
-    sempre, e vira atividade de mesa sempre que a tela precisar de uma pausa.
-  # Fatos do produto, nunca prova social.
+    Arte original em 8 temas, num PDF em A4 para imprimir quantas vezes
+    quiser. Baixa uma vez e fica com você.
   highlights:
     - text: 80 páginas em 8 temas, dos 4 aos 8 anos
       icon: palette
-    - text: PDF em A4, para a impressora que você já tem
+    - text: PDF em A4, na impressora que você já tem
       icon: printer
     - text: Imprima de novo quantas vezes quiser
       icon: star
+  # A composição do quadro: capa na frente, três páginas reais no leque
+  # atrás e uma cena pequena no canto. Foto de cena sozinha vendia a
+  # atividade; isto vende o que a pessoa recebe.
   image: capa.webp
   imageAlt: Capa do Mundo de Colorir, com bichinhos coloridos ao redor do título e cinco páginas do material embaixo
+  pages:
+    - paginas/dinossauro.webp
+    - paginas/unicornio.webp
+    - paginas/foguete.webp
+  scene: mesa_de_colorir_infantil_aconchegante.png
+  sceneAlt: ""
+
+# ── Barra de fatos, logo abaixo do hero ──────────────────────
+trustBar:
+  - text: 80 desenhos
+    icon: palette
+  - text: 8 temas
+    icon: compass
+  - text: PDF em A4
+    icon: printer
+  - text: Imprima de novo quando quiser
+    icon: star
+
+# ── Galeria de páginas reais ─────────────────────────────────
+# Recortes das fotos do material impresso. Nenhuma amostra genérica:
+# contra pack barato, o que converte é a pessoa poder conferir o traço.
+gallery:
+  title: Veja algumas páginas antes de comprar
+  intro: Páginas reais da coleção, impressas em casa numa folha A4 comum.
+  items:
+    - src: paginas/gatinho.webp
+      alt: Página do gatinho com o novelo, impressa e apoiada na mesa, com parte já pintada de laranja
+      label: Animais fofos
+    - src: paginas/dinossauro.webp
+      alt: Página do dinossauro sorridente em contorno preto, sobre a mesa de madeira
+      label: Dinossauros
+    - src: paginas/peixinho.webp
+      alt: Página do peixinho entre bolhas e algas, impressa, com giz de cera ao lado
+      label: Fundo do mar
+    - src: paginas/foguete.webp
+      alt: Página do foguete sorridente entre estrelas, a lua e as nuvens
+      label: Espaço
+    - src: paginas/piquenique.webp
+      alt: Página do piquenique com cesta, sanduíche, maçã e uma formiguinha no canto
+      label: Comidinhas
+    - src: paginas/unicornio.webp
+      alt: Página do unicórnio com crina comprida, estrelas e uma nuvem ao lado
+      label: Fantasia
+    - src: paginas/personagens.webp
+      alt: Página de abertura com os oito personagens da coleção em contorno preto e o nome de cada um
+      label: Os personagens
+    - src: paginas/sereia.webp
+      alt: Página da sereia sendo pintada de rosa e verde-água por uma criança, com a estrela-do-mar já colorida
+      label: Em uso
+      wide: true
 
 # ── Problema: a tarde que não passa ──────────────────────────
 problem:
   title: A tarde não passa e a pergunta chega
   items:
-    - Está chovendo, o parque saiu dos planos e ainda faltam três horas para o jantar.
-    - A sala de espera do médico tem meia hora pela frente e nada para fazer.
-    - O tablet está sem bateria, e a criança já descobriu isso.
+    - Está chovendo, o parque saiu dos planos e faltam três horas para o jantar.
+    - O tablet já rendeu o que tinha para render, e você quer outra coisa na mesa.
+    - A sala de espera tem meia hora pela frente e nada para fazer.
     - Você precisa de quarenta minutos para terminar uma coisa, e precisa deles agora.
-    - A viagem de carro é longa e a janela já perdeu a graça.
-    - O convite da festa é hoje e falta um presente que ainda dê tempo.
-  close: "Em todas essas horas a pergunta é a mesma: o que a gente faz agora? Ter 80 desenhos guardados no computador é ter essa resposta pronta antes de ela ser feita."
-
-# ── Mecanismo: o que faz ser uma coleção ─────────────────────
-method:
-  title: Uma coleção de verdade, e não uma pasta de desenhos soltos
-  name: Um traço só, oito temas
-  intro: >-
-    Baixar desenho avulso na internet todo mundo já fez. O que cansa é o
-    resultado: um desenho de cada estilo, em qualidade diferente, sem ordem
-    nenhuma. Aqui são três decisões que mudam isso.
-  pillars:
-    - title: O mesmo traço nas 80 páginas
-      icon: pencil
-      text: "Contorno preto uniforme, formas cheias, nada de detalhe minúsculo. A criança reconhece que é o mesmo mundo em todas as páginas, e é isso que faz parecer uma coleção."
-    - title: Feito para a impressora de casa
-      icon: printer
-      text: "Fundo branco, sem área preta grande, sem sangria. Papel comum resolve, e papel um pouco mais grosso segura melhor a canetinha."
-    - title: Área confortável para colorir
-      icon: palette
-      text: "Nenhuma região fechada menor que uma moeda no tamanho impresso. É o limite da mão de uma criança de cinco anos, e ele foi respeitado nas oitenta páginas."
-  note: Tudo é arte original, desenhada para esta coleção. Não há personagem de desenho animado, franquia ou marca em nenhuma página.
-
-# ── Benefícios: o que muda na sua casa ───────────────────────
-benefits:
-  title: O que você leva junto com os desenhos
-  items:
-    - title: Uma atividade sempre à mão
-      icon: spark
-      text: 80 desenhos guardados resolvem a tarde de chuva e a espera do médico sem nenhum planejamento.
-    - title: Imprima quantas vezes quiser
-      icon: printer
-      text: O mesmo desenho serve para dois irmãos hoje e para a mesma criança de novo daqui a três meses.
-    - title: Oito temas, não um só
-      icon: palette
-      text: Quem só quer dinossauro encontra dez, e ainda tem setenta para descobrir depois.
-    - title: Dos 4 aos 8 anos
-      icon: check
-      text: Cada tema abre com páginas simples e termina com páginas mais cheias, então o material acompanha a criança.
-    - title: Tudo original
-      icon: star
-      text: Arte feita para esta coleção, sem personagem de franquia e sem desenho copiado.
-    - title: Chega na hora
-      icon: checklist
-      text: Acesso liberado após a aprovação do pagamento, e o arquivo é seu para baixar e guardar.
+  close: "A mãe não precisa de centenas de atividades. Precisa de uma boa ideia pronta na hora em que a criança pergunta o que fazer agora."
 
 # ── Como funciona: quatro passos ─────────────────────────────
 howItWorks:
   title: Do clique ao lápis na mão
-  intro: Não tem nada para montar, recortar antes ou combinar. São quatro passos, e o terceiro é o único que exige você.
+  intro: Quatro passos, e só o terceiro exige você.
   steps:
-    - title: Você compra
-      text: Pagamento único, sem mensalidade e sem renovação. O acesso é liberado após a aprovação do pagamento.
-    - title: Você baixa o arquivo
-      text: Um PDF só, com as 80 páginas. Guarde no computador ou no celular, porque ele é seu.
-    - title: Você escolhe e imprime
-      text: Abra o índice, escolha o tema, imprima a página em A4 na opção tamanho real. Papel comum funciona.
-    - title: A criança colore
-      text: Entregue os lápis e pronto. Quando a folha acabar, imprima de novo, sem custo nenhum.
+    - title: Compre
+      text: Pagamento único. O acesso é liberado após a aprovação do pagamento.
+    - title: Baixe
+      text: Um PDF só, com as 80 páginas. Guarde no computador ou no celular.
+    - title: Imprima
+      text: Escolha o tema pelo índice e imprima em A4, na opção tamanho real.
+    - title: Colora
+      text: Entregue os lápis. Quando a folha acabar, imprima de novo.
 
 # ── Conteúdo: os oito temas ──────────────────────────────────
 contents:
   title: Oito mundos para a criança escolher
-  intro: São dez desenhos por tema, do mais simples ao mais cheio. Em qualquer tema que ela escolher, existem páginas do tamanho dela, e ainda sobram setenta para descobrir depois.
+  intro: Dez desenhos por tema, do mais simples ao mais cheio.
   countLabel: 10 desenhos
   modules:
     - number: 1
       title: Animais fofos
       icon: spark
-      blurb: Os bichos que toda criança reconhece de longe, em traço redondo e cheio.
-      objective: "Gatinho com o novelo, coelho com a cenoura, ursinho e o pote de mel, pinguim de cachecol, panda, raposinha dormindo, preguiça no galho, elefantinho na poça e a família de patinhos."
+      blurb: Os bichos que toda criança reconhece de longe.
+      objective: "Gatinho com o novelo, coelho, ursinho, pinguim, panda, raposinha, preguiça, elefantinho e a família de patinhos."
+      thumbs:
+        - paginas/gatinho.webp
+        - paginas/personagens.webp
     - number: 2
       title: Dinossauros
       icon: star
-      blurb: Do filhote saindo do ovo ao vale com vulcão, sem dente assustador em nenhum.
-      objective: "Bebê saindo do ovo, tiranossauro sorridente, tricerátops, anquilossauro, estegossauro com borboletas nas placas, brontossauro alcançando as folhas altas, pterossauro planando e o vale com o vulcão ao fundo."
+      blurb: Do filhote saindo do ovo ao vale com vulcão ao fundo.
+      objective: "Bebê saindo do ovo, tiranossauro sorridente, tricerátops, anquilossauro, estegossauro, brontossauro, pterossauro e o vale."
+      thumbs:
+        - paginas/dinossauro.webp
     - number: 3
       title: Fundo do mar
       icon: palette
-      blurb: "O tema que mais rende cor: tudo curvo, tudo colorido, tudo conhecido."
-      objective: "Peixinho entre bolhas, estrela-do-mar, caranguejo, cavalo-marinho, tartaruga, polvo acenando, golfinho saltando, água-viva, baleia com o esguicho e o passeio pelo recife."
+      blurb: O tema que mais rende cor, e o que a criança pede de novo.
+      objective: "Peixinho, estrela-do-mar, caranguejo, cavalo-marinho, tartaruga, polvo, golfinho, água-viva, baleia e o recife."
+      thumbs:
+        - paginas/peixinho.webp
+        - paginas/sereia.webp
     - number: 4
       title: Espaço
       icon: spark
-      blurb: Aqui não existe cor certa, e é isso que deixa a criança livre para inventar.
-      objective: "Foguete decolando, lua sorridente, planeta com anéis, alienígena simpático, astronauta flutuando, nave com janelinha, a bandeira na lua, cometa, a criança no telescópio e o sistema solar."
+      blurb: Aqui não existe cor certa, e isso deixa a criança livre.
+      objective: "Foguete, lua sorridente, planeta com anéis, alienígena, astronauta, nave, bandeira na lua, cometa e o sistema solar."
+      thumbs:
+        - paginas/foguete.webp
     - number: 5
       title: Veículos e aventuras
       icon: compass
-      blurb: Rodas, asas e velas, com formas grandes e limpas para o giz de cera.
-      objective: "Carrinho de corrida, balão de ar quente, bicicleta com cestinha, barco a vela, caminhão de bombeiros, avião entre as nuvens, trator, ônibus escolar, escavadeira e o trem da ponte."
+      blurb: Rodas, asas e velas, em formas grandes para o giz de cera.
+      objective: "Carrinho de corrida, balão, bicicleta, barco a vela, caminhão de bombeiros, avião, trator, ônibus, escavadeira e o trem."
     - number: 6
       title: Jardim e natureza
       icon: home
-      blurb: Flor, bicho pequeno e horta, para a mão que gosta de detalhe delicado.
-      objective: "Girassol, joaninha na folha, cogumelos, regador, borboleta na flor, abelhinha e a colmeia, passarinho no ninho, árvore com balanço, arco-íris e a horta."
+      blurb: Flor e bicho pequeno, para a mão que gosta de detalhe.
+      objective: "Girassol, joaninha, cogumelos, regador, borboleta, abelhinha, passarinho no ninho, árvore com balanço, arco-íris e a horta."
     - number: 7
       title: Comidinhas divertidas
       icon: checklist
-      blurb: Pizza, sorvete e cupcake sorridentes, campeões de pedido aqui em casa.
-      objective: "Cupcake sorridente, sorvete de casquinha, rosquinha com cobertura, fatia de pizza, as frutinhas amigas, hambúrguer, chocolate quente, pipoca, bolo de aniversário e a mesa de piquenique."
+      blurb: Pizza, sorvete e cupcake sorridentes, campeões de pedido.
+      objective: "Cupcake, sorvete, rosquinha, fatia de pizza, frutinhas, hambúrguer, chocolate quente, pipoca, bolo e o piquenique."
+      thumbs:
+        - paginas/piquenique.webp
     - number: 8
       title: Fantasia e personagens mágicos
       icon: star
-      blurb: Unicórnio, fada, sereia e dragão, para quando a criança quer inventar história.
-      objective: "Fadinha, poção mágica, coruja da noite, gnomo do jardim, unicórnio, dragãozinho, sereia na pedra, aprendiz de mago, castelo e o baú do tesouro."
+      blurb: Unicórnio, fada e dragão, para quem gosta de inventar história.
+      objective: "Fadinha, poção mágica, coruja, gnomo, unicórnio, dragãozinho, sereia, aprendiz de mago, castelo e o baú do tesouro."
+      thumbs:
+        - paginas/unicornio.webp
+        - paginas/personagens.webp
 
 # ── O que vem no arquivo ─────────────────────────────────────
 # `mockup:` fica de fora enquanto as artes finais não existirem: não se
 # inventa página do material.
 materials:
-  title: O que vem dentro do arquivo
-  intro: Além das 80 páginas para colorir, o PDF traz o que transforma um monte de desenhos num material organizado.
+  title: Uma coleção pronta para imprimir e usar
+  intro: O arquivo não é uma pasta de desenhos soltos. Vem organizado, com começo, meio e índice.
   items:
     - title: 80 páginas para colorir
       icon: palette
-      text: Uma arte por página, em A4, com fundo branco e contorno bem definido. Dez desenhos em cada um dos oito temas.
+      text: Uma arte por página, com fundo branco e contorno bem definido.
     - title: Este livro pertence a
       icon: pencil
-      text: "A primeira página é da criança: o nome, um quadro para ela se desenhar e a data em que começou."
+      text: "A primeira página é da criança: o nome, um quadro para se desenhar e a data."
     - title: Índice por tema
       icon: list
-      text: Para achar em segundos aquele dos dinossauros, sem rolar o arquivo inteiro.
+      text: Para achar o dos dinossauros em segundos, sem rolar o arquivo inteiro.
     - title: Divisórias dos oito temas
       icon: star
-      text: Uma folha de abertura por tema, com o nome em letra vazada para a criança colorir o próprio título.
-    - title: Uma folha de instruções curta
+      text: Uma folha de abertura por tema, com o nome vazado para a criança colorir.
+    - title: Folha de instruções
       icon: printer
-      text: Para você, não para a criança. Como imprimir em tamanho real, que papel usar e como aproveitar melhor o material.
+      text: Para você. Como imprimir em tamanho real e que papel usar.
 
 # ── Imagens ──────────────────────────────────────────────────
 # Arquivos em src/assets/products/mundo-de-colorir/. Enquanto um deles não
@@ -246,77 +270,32 @@ materials:
 # quadro editorial padrão é 16/9. Sem declarar a proporção, a página
 # apareceria como uma tira do meio de um desenho inteiro.
 images:
-  # As duas primeiras são arte real do material, e continuam onde estavam.
-  - id: colorindo-na-mesa
-    src: colorindo-na-mesa.webp
-    alt: Criança colorindo uma página do material na mesa, com lápis de cor ao lado e a capa apoiada atrás
-    caption: A coleção impressa em casa, na mesa, com os lápis que já existem por aí.
-    placement: after-method
-    ratio: "4 / 3"
-
-  - id: pagina-dos-personagens
-    src: pagina-dos-personagens.png
-    alt: Página do material impressa sobre a mesa, com os oito personagens em contorno preto, lápis de cor e um caderno ao lado
-    caption: Uma das páginas, impressa em casa, do jeito que ela sai da impressora.
-    placement: after-materials
-    ratio: "4 / 3"
-
-  # As oito de cena. Cada uma responde a uma pergunta da seção em que
-  # cai, e por isso a âncora não é decorativa: a da impressora mora no
-  # "como funciona" porque é ali que a pessoa pergunta se dá trabalho, e a
-  # da família mora nas situações de uso porque é ali que ela imagina a
-  # cena. Enquanto o arquivo não existir, o slot não renderiza e a página
-  # fecha sozinha.
-  - id: mesa-de-madeira
-    src: atividade_de_colorir_na_mesa_de_madeira.png
-    alt: Menina colorindo um desenho de gatinho na mesa de madeira, com outras folhas do material e lápis de cor espalhados ao redor
-    caption: Oitenta desenhos, e a escolha é sempre da criança.
-    placement: after-hero
-    ratio: "4 / 5"
-
+  # Quatro fotos de cena, e só. Cada uma divide a composição com o texto
+  # do bloco onde vive, em vez de virar faixa entre duas seções. As
+  # outras quatro continuam no repositório e ficaram de fora: a página
+  # ganhou mais com a galeria de páginas reais do que ganharia com mais
+  # foto de mesa.
   - id: tarde-chuvosa
     src: tarde_chuvosa_de_colorir_aconchegante.png
-    alt: Criança colorindo uma folha presa a uma prancheta, cercada de outras páginas já impressas e giz de cera sobre a mesa
-    caption: A tarde que não passa passa mais rápido com uma folha na mesa.
-    placement: after-problem
-    ratio: "4 / 5"
-
-  - id: mesa-infantil
-    src: mesa_de_colorir_infantil_aconchegante.png
-    alt: Folhas do material espalhadas em leque sobre a mesa, com a mão de uma criança sobre uma delas e lápis de cor ao redor
-    placement: beside-benefits
+    alt: Criança colorindo uma folha presa a uma prancheta, cercada de outras páginas impressas e giz de cera
+    placement: beside-problem
     ratio: "4 / 5"
 
   - id: impressora
     src: impressora_e_desenhos_para_colorir.png
-    alt: Impressora doméstica soltando uma página com o desenho do gatinho, e outras cinco já impressas sobre a mesa ao lado do giz de cera
-    caption: Baixe uma vez, escolha o tema e mande imprimir. É esse o trabalho todo.
-    placement: after-how-it-works
-    ratio: "4 / 5"
-
-  - id: mesa-colorida
-    src: mesa_de_colorir_criativa_e_colorida.png
-    alt: Notebook aberto com os desenhos do arquivo na tela e seis páginas já impressas dispostas na mesa à frente
-    caption: Oito temas na mesa ao mesmo tempo, que é o que uma coleção permite.
-    placement: after-contents
+    alt: Impressora doméstica soltando a página do gatinho, com outras cinco já impressas sobre a mesa
+    placement: beside-how-it-works
     ratio: "4 / 5"
 
   - id: momento-criativo
     src: momento_criativo_de_colorir.png
-    alt: Menina colorindo com giz de cera numa tarde de chuva, com a janela molhada ao fundo e o gato dormindo ao lado
+    alt: Menina colorindo com giz de cera numa tarde de chuva, com a janela molhada ao fundo e o gato dormindo
     placement: beside-use-cases
-    ratio: "4 / 5"
-
-  - id: menina-colorindo
-    src: menina_colorindo_em_mesa_aconchegante.png
-    alt: Seis páginas do material vistas de cima sobre a mesa, com lápis de cor, canetinhas e giz de cera ao redor
-    caption: Uma folha, uma caixa de lápis, e a tela pode esperar.
-    placement: before-reviews
     ratio: "4 / 5"
 
   - id: colorir-em-familia
     src: momento_de_colorir_em_familia.png
-    alt: Mãe e filha colorindo juntas na mesa de casa, a mãe mostrando a página do dinossauro enquanto a menina pinta a do gatinho
+    alt: Mãe e filha colorindo juntas na mesa de casa, a mãe mostrando a página do dinossauro
     caption: O material é da criança, mas o sábado à tarde costuma virar dos dois.
     placement: before-offer
     ratio: "4 / 5"
@@ -328,59 +307,25 @@ images:
 # não é. Nenhum item promete resultado: todos descrevem um momento real.
 useCases:
   title: Os momentos em que ele resolve a sua tarde
-  intro: Não é material de ocasião especial. É o que fica guardado esperando a hora em que você precisa de uma atividade agora.
+  intro: "E principalmente aquele em que surge: o que a gente faz agora?"
   items:
     - title: Dia de chuva
       icon: home
-      text: O parque saiu dos planos e ainda faltam três horas para o jantar. Você imprime três folhas e a tarde muda de assunto.
-    - title: Sábado de manhã
+      text: O parque saiu dos planos e ainda faltam horas para o jantar.
+    - title: Fim de semana
       icon: calendar
-      text: Aquela hora em que a casa acorda devagar e a tela seria o caminho mais fácil. A mesa com lápis compete bem.
-    - title: Tempo em família
-      icon: spark
-      text: Duas folhas, uma caixa de lápis e a conversa acontece sozinha, do lado da criança em vez de na frente dela.
-    - title: Sala de espera
-      icon: checklist
-      text: Consulta, cartório, banco. Uma folha dobrada na bolsa resolve meia hora sem pedir tomada nem sinal.
-    - title: Viagem de carro
+      text: A casa acorda devagar e a tela seria o caminho mais fácil.
+    - title: Viagem ou espera
       icon: compass
-      text: A janela já perdeu a graça. Prancheta no colo, e o trecho passa mais rápido para todo mundo.
-    - title: Casa da avó
-      icon: home
-      text: Chegou e não tem brinquedo daquela idade por lá. Você já levou a atividade impressa de casa.
-    - title: Mais de uma criança
-      icon: check
-      text: Imprima o mesmo desenho duas vezes, ou um tema para cada uma. Ninguém precisa dividir a mesma folha.
-    - title: Aquela uma hora sua
-      icon: star
-      text: Você precisa terminar uma coisa e precisa agora. Esta é a atividade que não exige você do lado.
-
-# ── Para quem é ──────────────────────────────────────────────
-audience:
-  title: Para quem é este material
-  intro: Ele resolve muito bem um tipo de necessidade, e não resolve outros. Melhor dizer os dois.
-
-forWho:
-  title: É para você que
-  items:
-    - quer uma atividade pronta guardada, para quando precisar
-    - tem criança de aproximadamente 4 a 8 anos em casa
-    - prefere imprimir em casa a comprar livro novo toda vez
-    - tem mais de uma criança e quer o mesmo desenho para as duas
-    - trabalha com crianças e precisa de material que não acaba
-
-notForWho:
-  title: Talvez não seja para você que
-  items:
-    - procura material físico, impresso e entregue em casa
-    - espera desenhos de personagens conhecidos de desenho animado
-    - quer atividade de alfabetização, número ou caligrafia
-    - não tem como imprimir
+      text: Uma folha dobrada na bolsa resolve meia hora sem tomada nem sinal.
+    - title: Momento em família
+      icon: spark
+      text: Duas folhas, uma caixa de lápis, e a conversa acontece sozinha.
 
 # ── Oferta ───────────────────────────────────────────────────
 offer:
-  title: Tudo o que você recebe por R$ 14,90
-  intro: Pagamento único, uma vez só. Sem mensalidade, sem renovação e sem limite de impressão. Menos do que um livro de colorir da livraria, e este não acaba.
+  title: Tudo isso por R$ 14,90
+  intro: Pagamento único. Menos do que um livro de colorir da livraria, e este não acaba na última página.
   includesTitle: O que vem no arquivo
   priceTerms: pagamento único · sem mensalidade
   highlights:
@@ -511,33 +456,30 @@ guarantee:
 faq:
   title: Perguntas frequentes
   items:
-    - q: O que eu recebo exatamente?
-      a: Um arquivo em PDF com 80 páginas para colorir, organizadas em 8 temas, mais a capa, o índice, a página "este livro pertence a", as folhas de abertura de cada tema e uma folha curta de instruções.
     - q: É material físico? Chega em casa?
-      a: Não. É digital, para você baixar e imprimir em casa quantas vezes quiser. É isso que permite reimprimir o mesmo desenho sem custo novo.
+      a: Não. É digital, para baixar e imprimir em casa. É isso que permite reimprimir o mesmo desenho sem custo novo.
+    - q: Como eu recebo?
+      a: O acesso é liberado após a aprovação do pagamento, e o arquivo fica disponível na área de membros para baixar quando quiser.
     - q: Preciso de impressora especial?
-      a: Não. Foi feito para impressora doméstica comum, em papel A4, com fundo branco e sem área preta grande. Papel comum funciona bem, e papel um pouco mais grosso segura melhor a canetinha.
+      a: Não. Foi feito para impressora doméstica comum, em A4, com fundo branco e sem área preta grande.
     - q: Posso imprimir mais de uma vez?
       a: Pode, sem limite, para as crianças da sua casa ou da sua turma.
-    - q: Para que idade é?
-      a: Aproximadamente 4 a 8 anos. Cada tema tem páginas mais simples e páginas mais cheias, então a faixa é larga de propósito e o material acompanha a criança por um bom tempo.
+    - q: Que papel usar?
+      a: Papel comum resolve. Um pouco mais grosso segura melhor a canetinha, se a criança usar.
+    - q: Para qual idade foi pensado?
+      a: Aproximadamente 4 a 8 anos. Cada tema tem páginas simples e páginas mais cheias, então acompanha a criança por um bom tempo.
+    - q: Dá para usar no celular ou tablet?
+      a: Dá para abrir e ver o PDF em qualquer aparelho, mas o material foi feito para ser impresso e colorido no papel.
     - q: Tem personagem de desenho animado?
       a: Não. Toda a arte é original e foi desenhada para esta coleção.
-    - q: Como eu recebo o acesso?
-      a: O acesso é liberado após a aprovação do pagamento, e o arquivo fica disponível para baixar na área de membros. De lá você pode baixar de novo sempre que precisar.
-    - q: Posso usar na escola ou no meu espaço infantil?
-      a: Para imprimir e usar com as crianças que você atende, sim. Revender o arquivo, distribuí-lo ou publicá-lo, não.
 
 # ── Faixa de continuidade ────────────────────────────────────
 # Rola até a oferta, na própria página. Não é intenção de pagamento e não
 # dispara checkout_click.
 midCta:
-  - after: how-it-works
-    text: Quatro passos, e o único que exige você é apertar imprimir.
-    label: Quero ver o preço
   - after: materials
-    text: Oitenta desenhos, oito temas e um arquivo que fica com você para sempre.
-    label: Ver tudo o que está incluído
+    text: Oitenta desenhos, oito temas e um arquivo que fica com você.
+    label: Quero ver o preço
 
 # ── Fechamento ───────────────────────────────────────────────
 finalCta:
