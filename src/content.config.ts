@@ -86,6 +86,17 @@ const reviews = z
                 time: z.string().optional(),
                 /** Confirmação de leitura. Só faz sentido em `bookgo`. */
                 read: z.boolean().default(false),
+                /**
+                 * Reação em emoji recebida pela mensagem.
+                 *
+                 * Existe porque parte das mensagens recebeu reação da
+                 * equipe e não resposta escrita. Antes, o aparelho dessas
+                 * pessoas mostrava só a mensagem, e a reação real ficava
+                 * de fora por não haver onde colocá-la. Inventar um texto
+                 * de resposta continua fora de questão; mostrar o emoji
+                 * que de fato existiu, não.
+                 */
+                reaction: z.string().optional(),
               })
             )
             .min(1),
@@ -155,8 +166,15 @@ const productImageEntry = z.object({
        ilustra um argumento, em vez de ocupar largura sozinha entre duas
        seções. */
     'beside-method',
+    'after-hero',
+    'after-problem',
     'after-method',
+    'beside-benefits',
+    'after-how-it-works',
+    'after-contents',
     'after-materials',
+    'beside-use-cases',
+    'before-reviews',
     'before-offer',
   ]),
 });
@@ -254,6 +272,8 @@ const products = defineCollection({
     hero: z.object({
       /** Sobrelinha curta acima do título. Ex.: o nome do método. */
       eyebrow: z.string().optional(),
+      /** Rótulo próprio do botão do hero. Sem ele, vale o `checkout.cta`. */
+      ctaLabel: z.string().optional(),
       headline: z.string(),
       subheadline: z.string(),
       /**
@@ -302,11 +322,26 @@ const products = defineCollection({
     }),
 
     contents: section.extend({
+      /**
+       * Rótulo de contagem repetido em cada tema da vitrine. Ex.: "10
+       * desenhos". Vive aqui, e não no componente, porque é fato do
+       * produto: outro material pode ter outra contagem, ou nenhuma.
+       */
+      countLabel: z.string().optional(),
       modules: z.array(
         z.object({
           number: z.number().int().positive(),
           title: z.string(),
           objective: z.string(),
+          /**
+           * Ícone do tema, opcional. Existe para a vitrine de temas poder
+           * mostrar do que cada um trata antes de a pessoa ler a lista
+           * inteira. Sem ele, o cartão cai no número, que é o que a
+           * numeração já fazia.
+           */
+          icon: iconName.optional(),
+          /** Uma linha curta, para a vitrine. A lista longa continua em `objective`. */
+          blurb: z.string().optional(),
         })
       ),
     }),
@@ -319,6 +354,22 @@ const products = defineCollection({
        */
       items: z.array(titledItem.extend({ mockup: z.string().optional() })),
     }),
+
+    /**
+     * Situações de uso: onde o material resolve alguma coisa na semana.
+     *
+     * Benefício responde "o que isso me dá"; situação responde "quando eu
+     * vou usar". São perguntas diferentes, e quem compra material para
+     * criança costuma decidir na segunda: a pessoa reconhece a tarde de
+     * chuva e a sala de espera antes de reconhecer um benefício abstrato.
+     *
+     * Opcional: sem o bloco, a seção não existe e nenhuma LP muda.
+     */
+    useCases: section
+      .extend({
+        items: z.array(titledItem),
+      })
+      .optional(),
 
     /** Cabeçalho comum aos dois blocos de público. */
     audience: section,
@@ -367,6 +418,8 @@ const products = defineCollection({
           .default([]),
         includes: z.array(z.string()).default([]),
         priceNote: z.string().optional(),
+        /** Rótulo próprio do botão da oferta. Sem ele, vale o `checkout.cta`. */
+        ctaLabel: z.string().optional(),
         /**
          * Reasseguranças exibidas sob o botão. **Fatos do produto**, nunca
          * prova social, número de alunos ou escassez — ver as regras de
@@ -436,6 +489,16 @@ const products = defineCollection({
     finalCta: z.object({
       title: z.string(),
       text: z.string(),
+      /**
+       * Rótulo próprio do botão de fechamento. Opcional: sem ele, vale o
+       * `checkout.cta`.
+       *
+       * Existe porque o mesmo texto repetido em três botões ao longo da
+       * página lê como formulário, e não como convite. O destino e o
+       * evento continuam idênticos nos três: o que muda é só a frase, que
+       * acompanha o que a pessoa acabou de ler.
+       */
+      ctaLabel: z.string().optional(),
     }),
   }),
 });

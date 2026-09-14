@@ -31,6 +31,8 @@ export interface ConversationMessage {
   text: string;
   time?: string;
   read?: boolean;
+  /** Reação em emoji que a mensagem recebeu. */
+  reaction?: string;
 }
 
 interface Props {
@@ -101,6 +103,14 @@ const STEP = 0.09;
                       <path d="M8.5 6.5 11.5 9.5 17 3" />
                     </svg>
                   )}
+                </span>
+              )
+            }
+            {
+              m.reaction && (
+                <span class="rv-reaction">
+                  <span class="rv-sr">Reação da BookGo:</span>
+                  <span aria-hidden="true">{m.reaction}</span>
                 </span>
               )
             }

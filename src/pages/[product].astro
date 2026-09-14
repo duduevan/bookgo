@@ -15,6 +15,7 @@ import ReviewsSection from '../components/reviews/ReviewsSection.astro';
 import AdSlot from '../components/ads/AdSlot.astro';
 import ProductImage from '../components/product/ProductImage.astro';
 import MaterialGrid from '../components/product/MaterialGrid.astro';
+import ThemeGrid from '../components/product/ThemeGrid.astro';
 import { productImage, missingProductImages } from '../lib/product-images';
 import TrackPageEvent from '../components/tracking/TrackPageEvent.astro';
 import { eventAttrs } from '../lib/tracking';
@@ -97,6 +98,16 @@ const imagesAt = (placement: string) =>
 /* A foto que acompanha o mecanismo, quando declarada. Uma só: duas fotos ao
    lado do mesmo argumento competiriam entre si. */
 const [methodImage] = imagesAt('beside-method');
+const [benefitsImage] = imagesAt('beside-benefits');
+const [useCasesImage] = imagesAt('beside-use-cases');
+
+/* Rótulo do botão por posição.
+   O destino e o evento são os mesmos nos três botões de compra: o que
+   muda é a frase, que acompanha o que a pessoa acabou de ler. Repetir o
+   mesmo texto em três lugares lê como formulário, e não como convite. */
+const heroCta = d.hero.ctaLabel ?? d.checkout.cta;
+const offerCta = d.offer.ctaLabel ?? d.checkout.cta;
+const finalCtaLabel = d.finalCta.ctaLabel ?? d.checkout.cta;
 
 const crumbs = [
   { name: 'Início', path: '/' },
@@ -124,7 +135,7 @@ const crumbs = [
     headline={d.hero.headline}
     subheadline={d.hero.subheadline}
     highlights={[...d.hero.highlights]}
-    ctaLabel={d.checkout.cta}
+    ctaLabel={heroCta}
     ctaHref={checkoutHref}
     price={d.price.display}
     image={heroImage}
@@ -159,6 +170,34 @@ const crumbs = [
     <BulletList items={[...d.problem.items]} marker="dot" columns />
     {d.problem.close && <p class="close">{d.problem.close}</p>}
   </Section>
+
+  {
+    imagesAt('after-hero').map((img) => (
+      <div class="container figure-wrap figure-tight">
+        <ProductImage
+          slug={d.slug}
+          src={img.src}
+          alt={img.alt}
+          caption={img.caption}
+          ratio={img.ratio}
+        />
+      </div>
+    ))
+  }
+
+  {
+    imagesAt('after-problem').map((img) => (
+      <div class="container figure-wrap">
+        <ProductImage
+          slug={d.slug}
+          src={img.src}
+          alt={img.alt}
+          caption={img.caption}
+          ratio={img.ratio}
+        />
+      </div>
+    ))
+  }
 
   {/* Mecanismo */}
   {/* Cabeçalho central, como antes: o mecanismo do produto tem peso de
@@ -218,11 +257,28 @@ const crumbs = [
       múltiplo de três. Cinco benefícios fecham; seis, não, e o destaque
       sai sozinho para a grade não terminar num órfão. */}
   <Section title={d.benefits.title} intro={d.benefits.intro}>
-    <CardGrid
-      items={[...d.benefits.items]}
-      cols={3}
-      feature={(d.benefits.items.length + 1) % 3 === 0}
-    />
+    {
+      benefitsImage ? (
+        <div class="side-split side-split-reverse">
+          <CardGrid items={[...d.benefits.items]} cols={2} min="14rem" />
+          <div class="side-figure">
+            <ProductImage
+              slug={d.slug}
+              src={benefitsImage.src}
+              alt={benefitsImage.alt}
+              caption={benefitsImage.caption}
+              ratio={benefitsImage.ratio ?? '3 / 4'}
+            />
+          </div>
+        </div>
+      ) : (
+        <CardGrid
+          items={[...d.benefits.items]}
+          cols={3}
+          feature={(d.benefits.items.length + 1) % 3 === 0}
+        />
+      )
+    }
   </Section>
 
   {/* Como funciona */}
@@ -236,6 +292,20 @@ const crumbs = [
   >
     <StepList steps={[...d.howItWorks.steps]} />
   </Section>
+
+  {
+    imagesAt('after-how-it-works').map((img) => (
+      <div class="container figure-wrap">
+        <ProductImage
+          slug={d.slug}
+          src={img.src}
+          alt={img.alt}
+          caption={img.caption}
+          ratio={img.ratio}
+        />
+      </div>
+    ))
+  }
 
   {/* CTA de continuidade.
 
@@ -262,14 +332,45 @@ const crumbs = [
     ))
   }
 
-  {/* Conteúdo do produto */}
+  {/* Os temas do material.
+
+      Curso usa a lista numerada, porque ali a ordem é o produto: o módulo
+      2 depende do 1. Uma coleção para colorir não tem ordem nenhuma, e a
+      grade é o que mostra variedade, que é o argumento desta seção. A
+      escolha sai do próprio conteúdo: quem declara ícone nos temas quer a
+      vitrine; quem não declara continua na lista de módulos, e nenhuma LP
+      existente muda por este bloco existir. */}
   <Section
-    layout="split"
+    layout={d.contents.modules.some((m) => m.icon) ? undefined : 'split'}
+    align={d.contents.modules.some((m) => m.icon) ? 'center' : undefined}
     title={d.contents.title}
     intro={d.contents.intro}
   >
-    <ModuleList modules={[...d.contents.modules]} />
+    {
+      d.contents.modules.some((m) => m.icon) ? (
+        <ThemeGrid
+          items={d.contents.modules.map((m) => ({ ...m }))}
+          countLabel={d.contents.countLabel}
+        />
+      ) : (
+        <ModuleList modules={[...d.contents.modules]} />
+      )
+    }
   </Section>
+
+  {
+    imagesAt('after-contents').map((img) => (
+      <div class="container figure-wrap">
+        <ProductImage
+          slug={d.slug}
+          src={img.src}
+          alt={img.alt}
+          caption={img.caption}
+          ratio={img.ratio}
+        />
+      </div>
+    ))
+  }
 
   {/* Materiais incluídos */}
   <Section
@@ -304,6 +405,42 @@ const crumbs = [
     ))
   }
 
+  {/* Situações de uso.
+
+      Benefício responde "o que isso me dá"; situação responde "quando eu
+      vou usar". Quem compra material para criança costuma decidir na
+      segunda pergunta: a tarde de chuva e a sala de espera são
+      reconhecidas na hora, e um benefício abstrato não é.
+
+      Só existe quando o YAML traz o bloco. Sem ele, nenhuma LP muda. */}
+  {
+    d.useCases && (
+      <Section
+        tone="warm"
+        title={d.useCases.title}
+        intro={d.useCases.intro}
+        align={useCasesImage ? undefined : 'center'}
+      >
+        {useCasesImage ? (
+          <div class="side-split">
+            <div class="side-figure">
+              <ProductImage
+                slug={d.slug}
+                src={useCasesImage.src}
+                alt={useCasesImage.alt}
+                caption={useCasesImage.caption}
+                ratio={useCasesImage.ratio ?? '3 / 4'}
+              />
+            </div>
+            <CardGrid items={[...d.useCases.items]} cols={2} min="13rem" />
+          </div>
+        ) : (
+          <CardGrid items={[...d.useCases.items]} cols={4} min="13rem" />
+        )}
+      </Section>
+    )
+  }
+
   {/* Público */}
   <Section title={d.audience.title} intro={d.audience.intro} align="center">
     <div class="audience">
@@ -326,6 +463,20 @@ const crumbs = [
       Fica entre "para quem é" e a oferta: a pessoa acabou de se
       reconhecer no público, ainda não viu o preço, e é exatamente aí que
       pesa o que outra pessoa tem a dizer. */}
+  {
+    imagesAt('before-reviews').map((img) => (
+      <div class="container figure-wrap">
+        <ProductImage
+          slug={d.slug}
+          src={img.src}
+          alt={img.alt}
+          caption={img.caption}
+          ratio={img.ratio}
+        />
+      </div>
+    ))
+  }
+
   <ReviewsSection
     enabled={d.reviews.enabled}
     title={d.reviews.title}
@@ -367,7 +518,7 @@ const crumbs = [
       price={d.price.display}
       priceTerms={d.offer.priceTerms}
       priceNote={d.offer.priceNote}
-      ctaLabel={d.checkout.cta}
+      ctaLabel={offerCta}
       ctaHref={checkoutHref}
       reassurances={[...(d.offer.reassurances ?? [])]}
       guarantee={
@@ -407,7 +558,7 @@ const crumbs = [
       <p>{d.finalCta.text}</p>
       <Cta
         href={checkoutHref}
-        label={d.checkout.cta}
+        label={finalCtaLabel}
         variant="inverse"
         size="lg"
         track={checkoutEvent}
@@ -462,6 +613,43 @@ const crumbs = [
       gap: var(--s-8);
       align-items: center;
     }
+  }
+
+  /* Seção com foto ao lado do conteúdo.
+
+     A foto de cena ao lado do argumento vale mais do que a mesma foto
+     ocupando largura sozinha entre duas seções: ali ela é intervalo, aqui
+     ela é prova do que o texto está dizendo. No celular as duas voltam a
+     empilhar, na ordem em que se lê.
+
+     `reverse` inverte a ordem no desktop, para a foto cair do lado que
+     sobra depois do bloco de cartões. */
+  .side-split {
+    display: grid;
+    gap: var(--s-6);
+    text-align: start;
+  }
+
+  .side-figure :global(.product-figure) {
+    margin: 0;
+  }
+
+  @media (min-width: 62rem) {
+    .side-split {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
+      gap: var(--s-8);
+      align-items: center;
+    }
+
+    .side-split-reverse {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+    }
+  }
+
+  /* A figura logo abaixo do hero respira menos em cima: ela continua a
+     composição do topo em vez de abrir um bloco novo. */
+  .figure-tight {
+    padding-top: var(--s-4);
   }
 
   /* Faixa do CTA intermediário: uma linha e um botão, lado a lado no

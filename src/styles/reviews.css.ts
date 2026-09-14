@@ -166,6 +166,19 @@ background:var(--color-primary);color:var(--color-on-primary);flex:none}
 /* A cascata e a rolagem suave são desta peça, então somem por inteiro
    aqui: o conteúdo aparece pronto e o trilho salta direto para o destino,
    sem etapa intermediária. */
+/* Reação em emoji, pendurada na quina de baixo da bolha. Existe para as
+   conversas em que a equipe reagiu e não respondeu por escrito: antes
+   essas ficavam com a bolha solta, como se ninguém tivesse visto. A
+   reação é real; a resposta escrita que não existiu segue sem ser
+   inventada. */
+.rv-bubble{position:relative}
+.rv-reaction{position:absolute;inset-inline-end:var(--s-3);bottom:-.7rem;
+display:inline-flex;align-items:center;padding:.1rem .4rem;border-radius:999px;
+font-size:.8rem;line-height:1.3;background:var(--color-surface);
+border:1px solid var(--color-border);box-shadow:0 1px 3px rgb(0 0 0 / .08);
+white-space:nowrap}
+.rv-bubble:has(.rv-reaction){margin-bottom:var(--s-3)}
+
 @media (prefers-reduced-motion:reduce){
 .rv-bubble{animation:none}
 .rv-track{scroll-behavior:auto}

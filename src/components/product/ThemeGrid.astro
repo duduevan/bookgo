@@ -1,0 +1,150 @@
+---
+/**
+ * Vitrine dos temas do material.
+ *
+ * **Por que não é a lista numerada.** `ModuleList` foi feito para módulos
+ * de curso, onde a ordem importa: o segundo depende do primeiro. Um tema
+ * de coleção para colorir não tem ordem nenhuma. A criança abre no que
+ * quiser, e a lista numerada dizia o contrário sobre o produto.
+ *
+ * O que interessa aqui é **variedade**, e variedade se mostra em grade,
+ * não em pilha: oito cartões visíveis de uma vez dizem "tem muita coisa"
+ * antes de qualquer frase dizer. O número sai, o ícone entra, e o nome do
+ * tema vira o elemento com mais peso do cartão.
+ *
+ * Cada cartão traz uma linha curta (`blurb`) e, abaixo, os exemplos que
+ * já viviam no YAML. Os exemplos continuam sendo o argumento de verdade:
+ * "dez desenhos de espaço" é vago, "foguete decolando, astronauta
+ * flutuando, a bandeira na lua" é o que faz a pessoa imaginar a página.
+ *
+ * A contagem de desenhos por tema não é escrita aqui. Ela vive no YAML do
+ * produto, que é a fonte, e chega pronta por `countLabel`.
+ */
+import Icon from '../ui/Icon.astro';
+
+export interface ThemeItem {
+  number: number;
+  title: string;
+  objective: string;
+  icon?: string;
+  blurb?: string;
+}
+
+interface Props {
+  items: ThemeItem[];
+  /** Ex.: "10 desenhos". Vem do YAML, nunca calculado aqui. */
+  countLabel?: string;
+}
+
+const { items, countLabel } = Astro.props;
+---
+
+<ul class="themes">
+  {
+    items.map((t) => (
+      <li class="theme">
+        <span class="theme-badge" aria-hidden="true">
+          {t.icon ? <Icon name={t.icon} /> : <span class="theme-num">{t.number}</span>}
+        </span>
+        <div class="theme-body">
+          <h3 class="theme-title">
+            {t.title}
+            {countLabel && <span class="theme-count">{countLabel}</span>}
+          </h3>
+          {t.blurb && <p class="theme-blurb">{t.blurb}</p>}
+          <p class="theme-examples">{t.objective}</p>
+        </div>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .themes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-4);
+    grid-template-columns: repeat(auto-fill, minmax(min(18rem, 100%), 1fr));
+    text-align: start;
+  }
+
+  .theme {
+    display: flex;
+    gap: var(--s-4);
+    padding: var(--s-5);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    transition: border-color var(--motion-fast) var(--ease-out);
+  }
+
+  .theme:hover {
+    border-color: color-mix(in srgb, var(--color-primary) 45%, transparent);
+  }
+
+  /* O selo é redondo e usa o fundo suave da paleta do produto: sem ele o
+     cartão vira parágrafo com título, e oito parágrafos iguais não
+     comunicam variedade nenhuma. */
+  .theme-badge {
+    flex: 0 0 auto;
+    width: 2.75rem;
+    height: 2.75rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--color-primary-soft);
+    color: var(--color-primary-dark);
+  }
+
+  .theme-badge :global(.icon) {
+    --icon-size: 1.4rem;
+  }
+
+  .theme-num {
+    font-size: var(--t-0);
+    font-weight: var(--w-bold);
+  }
+
+  .theme-body {
+    min-width: 0;
+  }
+
+  .theme-title {
+    margin: 0;
+    font-size: var(--t-0);
+    line-height: 1.25;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--s-2);
+  }
+
+  /* A contagem acompanha o nome em vez de virar linha própria: ela é
+     atributo do tema, e uma linha só para ela empurraria os exemplos para
+     fora da primeira dobra do cartão. */
+  .theme-count {
+    font-size: var(--t--2);
+    font-weight: var(--w-semibold);
+    letter-spacing: var(--tr-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-primary-dark);
+    background: var(--color-primary-soft);
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+  }
+
+  .theme-blurb {
+    margin: var(--s-2) 0 0;
+    font-size: var(--t--1);
+    color: var(--color-text);
+  }
+
+  .theme-examples {
+    margin: var(--s-2) 0 0;
+    font-size: var(--t--2);
+    line-height: 1.55;
+    color: var(--color-muted);
+  }
+</style>

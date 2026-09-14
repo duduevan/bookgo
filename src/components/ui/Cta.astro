@@ -47,12 +47,38 @@ const {
 } = Astro.props;
 
 const classes = ['cta', `v-${variant}`, `s-${size}`, block ? 'block' : ''];
+
+/**
+ * O botão de compra abre o checkout em nova aba.
+ *
+ * O checkout é domínio de terceiro (a Kiwify), e a aba nova preserva a
+ * landing page inteira atrás dele: quem abre o pagamento, hesita e quer
+ * reler a garantia ou o que está incluído volta para a página no estado
+ * em que a deixou, em vez de depender do botão de voltar do navegador
+ * para reconstruí-la. Em campanha paga isso é a diferença entre recuperar
+ * a pessoa e perdê-la.
+ *
+ * `noopener` é obrigatório junto: sem ele, a página aberta ganha
+ * referência à nossa pelo `window.opener`.
+ *
+ * Só vale para `buy` e para link externo. O de continuidade rola a própria
+ * página, e abrir uma aba para ir a uma âncora interna seria absurdo.
+ */
+const externo = !!href && /^https?:\/\//.test(href);
+const novaAba = kind === 'buy' && externo;
 ---
 
 <div class:list={['wrap', { block }]}>
   {
     href ? (
-      <a class:list={classes} href={href} data-cta={kind} {...track}>
+      <a
+        class:list={classes}
+        href={href}
+        data-cta={kind}
+        target={novaAba ? '_blank' : undefined}
+        rel={novaAba ? 'noopener' : undefined}
+        {...track}
+      >
         {label}
       </a>
     ) : (
