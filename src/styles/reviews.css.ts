@@ -69,13 +69,19 @@ color:var(--color-on-primary);border-color:transparent}
 /* Ponta do trilho: o botão continua no lugar, sem a linha saltar. */
 .rv-arrow:disabled{opacity:.35;cursor:default}
 
-.rv-dots{display:flex;align-items:center;gap:.4rem;margin:0;padding:0;list-style:none}
-.rv-dot{width:.5rem;height:.5rem;padding:0;border:0;border-radius:50%;cursor:pointer;
+.rv-dots{display:flex;align-items:center;gap:0;margin:0;padding:0;list-style:none}
+/* O ponto continua com 8px de desenho, mas o botão tem 24x24 de área de
+   toque. Antes o alvo era o próprio ponto: 8px num dedo é erro garantido,
+   e fica abaixo do mínimo que o Google cobra em celular. A cor vai para o
+   ::before justamente para a área crescer sem a bolinha crescer junto. */
+.rv-dot{width:1.5rem;height:1.5rem;padding:0;border:0;background:none;cursor:pointer;
+display:grid;place-items:center;-webkit-tap-highlight-color:transparent}
+.rv-dot::before{content:'';width:.5rem;height:.5rem;border-radius:50%;
 background:color-mix(in srgb, var(--color-primary) 30%, transparent);
 transition:background-color .15s ease,transform .15s ease}
-.rv-dot:hover{background:color-mix(in srgb, var(--color-primary) 55%, transparent)}
-.rv-dot:focus-visible{outline:2px solid var(--color-primary);outline-offset:3px}
-.rv-dot[aria-current='true']{background:var(--color-primary);transform:scale(1.35)}
+.rv-dot:hover::before{background:color-mix(in srgb, var(--color-primary) 55%, transparent)}
+.rv-dot:focus-visible{outline:2px solid var(--color-primary);outline-offset:-2px;border-radius:50%}
+.rv-dot[aria-current='true']::before{background:var(--color-primary);transform:scale(1.35)}
 
 /* ─── O aparelho ──────────────────────────────────────────────────
    Um celular por avaliação. A moldura, a barra de status e o fundo são
@@ -182,8 +188,8 @@ white-space:nowrap}
 @media (prefers-reduced-motion:reduce){
 .rv-bubble{animation:none}
 .rv-track{scroll-behavior:auto}
-.rv-arrow,.rv-dot{transition:none}
-.rv-dot[aria-current='true']{transform:none;outline:2px solid var(--color-primary);
+.rv-arrow,.rv-dot::before{transition:none}
+.rv-dot[aria-current='true']::before{transform:none;outline:2px solid var(--color-primary);
 outline-offset:2px}
 }
 `;

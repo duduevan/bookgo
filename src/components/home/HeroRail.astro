@@ -99,6 +99,10 @@ const { items, label } = Astro.props;
     display: flex;
     gap: var(--s-4);
     overflow-x: auto;
+    /* Prende o arrasto ao trilho. Sem isto, o gesto que chega ao fim
+       continua na página e a leva de lado junto. */
+    overscroll-behavior-x: contain;
+    touch-action: pan-x pinch-zoom;
     scroll-snap-type: x mandatory;
     scrollbar-width: thin;
     scrollbar-color: color-mix(in srgb, #ffffff 40%, transparent) transparent;

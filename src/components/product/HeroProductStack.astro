@@ -24,9 +24,15 @@
  * o que existe. É o mesmo princípio do resto do fluxo de imagem do
  * projeto: o arquivo que não chegou não deixa buraco na página.
  *
- * A capa carrega com `eager` e prioridade alta: ela é o elemento de LCP
- * desta página. As páginas do leque e a cena entram em `lazy`, porque
- * disputar banda com o LCP é exatamente o que derruba a métrica.
+ * A capa carrega com `eager` e prioridade alta, e isso foi medido antes
+ * de ficar assim: no celular o elemento de LCP desta página é o H1, não
+ * a capa, porque a composição fica abaixo da dobra. Testei tirar a
+ * prioridade para a capa parar de disputar banda com a fonte em 4G, e o
+ * LCP não mudou. Como no desktop a capa **é** o elemento de LCP, a
+ * prioridade fica.
+ *
+ * As páginas do leque e a cena entram em `lazy`: disputar banda com o
+ * LCP é exatamente o que derruba a métrica.
  */
 import { Image } from 'astro:assets';
 import { productImage } from '../../lib/product-images';

@@ -94,6 +94,10 @@ const pages = items
     display: flex;
     gap: var(--s-4);
     overflow-x: auto;
+    /* Prende o arrasto à galeria. Era o que fazia a LP parecer rolar de
+       lado quando o dedo passava das oito páginas. */
+    overscroll-behavior-x: contain;
+    touch-action: pan-x pinch-zoom;
     scroll-snap-type: x mandatory;
     scrollbar-width: thin;
     /* Sangra até a borda da tela: quadro cortado na margem é o que diz
