@@ -1,0 +1,17 @@
+name: Desenhos para colorir
+pillar: criancas
+headline: Desenhos para imprimir e colorir em casa
+description: Como escolher, imprimir e aproveitar desenhos para colorir, por tema e por idade.
+intro:
+  - "Colorir é a atividade mais fácil de preparar que existe: uma folha, um lápis e pronto. O que costuma dar trabalho é achar desenho bom, no traço certo para a idade da criança, sem passar meia hora garimpando na internet."
+  - Os conteúdos daqui resolvem essa parte. Tem o guia geral de como escolher e imprimir, e tem as páginas por tema, para quando a criança já sabe o que quer.
+subtopics:
+  - title: Como escolher e imprimir
+    text: Traço, idade, papel e o ajuste que faz o desenho sair no tamanho certo.
+  - title: Desenhos por tema
+    text: Animais, dinossauros, espaço e fundo do mar, com o que muda em cada um.
+relatedProduct: mundo-de-colorir
+seo:
+  title: Desenhos para colorir e imprimir
+  description: Guias e ideias para escolher, imprimir e aproveitar desenhos para colorir com crianças de 4 a 8 anos.
+order: 10

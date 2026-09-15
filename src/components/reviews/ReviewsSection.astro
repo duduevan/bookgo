@@ -1,0 +1,79 @@
+---
+/**
+ * Seção de avaliações. Global, e de um produto só por vez.
+ *
+ * **Uma avaliação é um celular.** A seção não tem outro formato: não existe
+ * cartão de review, não existe comentário fora do aparelho, e não existe
+ * uma segunda seção de avaliações ao lado desta. O carrossel move
+ * celulares.
+ *
+ *   ReviewsSection → ReviewsCarousel → ReviewConversation (um por avaliação)
+ *
+ * O componente **não conhece produto nenhum**: não sabe nomes, textos,
+ * quantidade nem qual LP o está usando. Recebe uma lista e a renderiza. É
+ * isso que permite a mesma peça servir o Casa Organizada, o Cardápio da
+ * Semana e qualquer produto seguinte sem uma linha de código nova, e é
+ * também o que impede a avaliação de um produto aparecer em outro: cada LP
+ * passa o array do seu próprio YAML.
+ *
+ * Acrescentar uma avaliação é acrescentar um item no YAML do produto, e o
+ * carrossel ganha mais um celular sozinho. Não se edita componente, não se
+ * mexe em CSS, não se duplica HTML.
+ *
+ * Sem itens, nada é renderizado: nem título, nem espaço, nem um byte de
+ * CSS ou de JavaScript. O estilo e o script são emitidos **dentro** da
+ * guarda justamente por isso. Ver src/styles/reviews.css.ts.
+ */
+import Section from '../ui/Section.astro';
+import ReviewsCarousel from './ReviewsCarousel.astro';
+import ReviewConversation from './ReviewConversation.astro';
+import { REVIEWS_CSS } from '../../styles/reviews.css';
+
+interface Item {
+  id?: string;
+  name: string;
+  avatar?: string;
+  status?: string;
+  messages: Array<{
+    sender: 'person' | 'bookgo';
+    text: string;
+    time?: string;
+    read?: boolean;
+  }>;
+}
+
+interface Props {
+  enabled?: boolean;
+  title?: string;
+  subtitle?: string;
+  items: Item[];
+  tone?: 'default' | 'warm' | 'soft';
+}
+
+const { enabled = true, title, subtitle, items, tone = 'warm' } = Astro.props;
+
+const show = enabled && items.length > 0;
+
+/* Rótulo da região rolável. Sem ele, quem navega por teclado encontra uma
+   caixa focável sem nome. */
+const trackLabel = title ?? 'Avaliações';
+---
+
+{
+  show && (
+    <Section tone={tone} title={title} intro={subtitle} align="center">
+      <style is:inline set:html={REVIEWS_CSS} />
+
+      <ReviewsCarousel count={items.length} label={trackLabel}>
+        {items.map((item) => (
+          <ReviewConversation
+            name={item.name}
+            avatar={item.avatar}
+            status={item.status}
+            messages={item.messages}
+          />
+        ))}
+      </ReviewsCarousel>
+    </Section>
+  )
+}

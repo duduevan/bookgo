@@ -17,6 +17,19 @@ interface Props {
   size?: 'md' | 'lg';
   block?: boolean;
   /**
+   * O que o botão faz, e não como ele parece.
+   *
+   * `buy` leva ao checkout e é o único que carrega `checkout_click`.
+   * `continue` leva a outro ponto da própria página (a oferta), e por isso
+   * não dispara evento de compra: um clique que só rola a página não é
+   * intenção de pagamento, e contá-lo como tal misturaria dois momentos do
+   * funil no mesmo número.
+   *
+   * O valor sai no HTML como `data-cta`, para a conferência do site
+   * publicado poder afirmar a regra em vez de confiar na leitura do código.
+   */
+  kind?: 'buy' | 'continue';
+  /**
    * Atributos `data-*` do evento de clique. Vêm de `eventAttrs()`, que
    * devolve `{}` com o tracking desligado — então hoje nada é emitido.
    */
@@ -29,20 +42,52 @@ const {
   variant = 'primary',
   size = 'md',
   block = false,
+  kind = 'buy',
   track = {},
 } = Astro.props;
 
 const classes = ['cta', `v-${variant}`, `s-${size}`, block ? 'block' : ''];
+
+/**
+ * O botão de compra abre o checkout em nova aba.
+ *
+ * O checkout é domínio de terceiro (a Kiwify), e a aba nova preserva a
+ * landing page inteira atrás dele: quem abre o pagamento, hesita e quer
+ * reler a garantia ou o que está incluído volta para a página no estado
+ * em que a deixou, em vez de depender do botão de voltar do navegador
+ * para reconstruí-la. Em campanha paga isso é a diferença entre recuperar
+ * a pessoa e perdê-la.
+ *
+ * `noopener` é obrigatório junto: sem ele, a página aberta ganha
+ * referência à nossa pelo `window.opener`.
+ *
+ * Só vale para `buy` e para link externo. O de continuidade rola a própria
+ * página, e abrir uma aba para ir a uma âncora interna seria absurdo.
+ */
+const externo = !!href && /^https?:\/\//.test(href);
+const novaAba = kind === 'buy' && externo;
 ---
 
 <div class:list={['wrap', { block }]}>
   {
     href ? (
-      <a class:list={classes} href={href} {...track}>
+      <a
+        class:list={classes}
+        href={href}
+        data-cta={kind}
+        target={novaAba ? '_blank' : undefined}
+        rel={novaAba ? 'noopener' : undefined}
+        {...track}
+      >
         {label}
       </a>
     ) : (
-      <span class:list={[...classes, 'pending']} role="link" aria-disabled="true">
+      <span
+        class:list={[...classes, 'pending']}
+        role="link"
+        aria-disabled="true"
+        data-cta={kind}
+      >
         {label}
       </span>
     )

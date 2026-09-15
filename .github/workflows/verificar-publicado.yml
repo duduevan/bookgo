@@ -1,0 +1,80 @@
+name: Conferir o site publicado
+
+# Abre bookgo.com.br no Chromium, mede e guarda as telas em `_verificacao/`.
+#
+# Existe porque o ambiente onde o site é construído não alcança o domínio: o
+# gateway de saída nega o CONNECT. Conferir só o build local não prova nada
+# sobre o servidor, e é justamente o passo entre os dois que pode falhar.
+#
+# As telas são temporárias. Depois de olhadas, `_verificacao/` sai do
+# repositório junto com este workflow, se ele não for mais útil.
+
+on:
+  workflow_dispatch:
+    inputs:
+      origem:
+        description: 'Origem a conferir'
+        type: string
+        required: true
+        default: 'https://bookgo.com.br'
+
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - 'scripts/verificar-publicado.mjs'
+      - '.github/workflows/verificar-publicado.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: verificar-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  conferir:
+    name: Abrir o site no ar e registrar
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Conferir o site publicado
+        env:
+          # O runner já traz o Chrome instalado; não há browser a baixar.
+          CHROMIUM_PATH: /usr/bin/google-chrome
+        run: node scripts/verificar-publicado.mjs ${{ inputs.origem || 'https://bookgo.com.br' }}
+
+      - name: Commitar o relatório e as telas
+        run: |
+          set -eu
+
+          if [ -z "$(git status --porcelain _verificacao)" ]; then
+            echo "Nada mudou desde a última conferência."
+            exit 0
+          fi
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add _verificacao
+          git commit -m "Conferência do site publicado"
+
+          # A branch costuma andar enquanto a conferência roda, e o relatório
+          # não é motivo para reprovar uma conferência que passou. Rebase e
+          # uma segunda tentativa resolvem a corrida; se ainda assim não der,
+          # fica o aviso, e não um vermelho que não diz nada sobre o site.
+          git pull --rebase origin "${{ github.ref_name }}" || git rebase --abort || true
+          git push origin "HEAD:${{ github.ref_name }}" \
+            || echo "::warning::relatório não commitado: a branch andou durante a conferência"

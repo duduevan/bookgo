@@ -1,0 +1,290 @@
+---
+import SiteLayout from '../../../../layouts/SiteLayout.astro';
+import Breadcrumbs from '../../../../components/seo/Breadcrumbs.astro';
+import PostCard from '../../../../components/blog/PostCard.astro';
+import CategoryChips from '../../../../components/blog/CategoryChips.astro';
+import ProductCta from '../../../../components/blog/ProductCta.astro';
+import {
+  getCategories,
+  getPostsByCategory,
+  getProduct,
+  categoryUrl,
+  pillarUrl,
+  getPillars,
+  type Category,
+  type Pillar,
+  type Post,
+} from '../../../../lib/content';
+import * as schema from '../../../../lib/schema';
+
+export async function getStaticPaths() {
+  const categories = await getCategories();
+
+  return Promise.all(
+    categories.map(async (category) => ({
+      params: { pillar: category.data.pillar.id, category: category.id },
+      props: {
+        category,
+        pillar: (await getPillars()).find((p) => p.id === category.data.pillar.id)!,
+        /* Só as irmãs do mesmo pilar: as pílulas de navegação existem para
+           circular dentro do assunto, não para saltar de pilar. */
+        categories: categories.filter(
+          (c) => c.data.pillar.id === category.data.pillar.id
+        ),
+        posts: await getPostsByCategory(category.id),
+      },
+    }))
+  );
+}
+
+interface Props {
+  category: Category;
+  pillar: Pillar;
+  categories: Category[];
+  posts: Post[];
+}
+
+const { category, pillar, categories, posts } = Astro.props;
+const d = category.data;
+const path = categoryUrl(category.id);
+
+// Produto da categoria, quando houver — fecha o hub sem virar página de venda.
+const product = d.relatedProduct
+  ? await getProduct(d.relatedProduct.id)
+  : undefined;
+
+const crumbs = [
+  { name: 'Início', path: '/' },
+  { name: 'Blog', path: '/blog/' },
+  { name: pillar.data.name, path: pillarUrl(pillar.id) },
+  { name: d.name, path },
+];
+---
+
+<SiteLayout
+  title={d.seo.title ?? d.name}
+  description={d.seo.description ?? d.description}
+  schema={[
+    schema.organization(),
+    schema.website(),
+    schema.breadcrumbs(crumbs),
+  ]}
+>
+  <div class="container crumb-bar">
+    <Breadcrumbs items={crumbs} />
+  </div>
+
+  {/* Faixa própria: separa o hub do resto da página e dá ao título um
+      fundo, em vez de deixá-lo solto sobre o branco com meia tela vazia
+      à direita. A intro sobe para a mesma altura do título. */}
+  <div class="hero-band">
+    <header class="container page-head">
+      <div class="head-main">
+        <p class="eyebrow">Categoria</p>
+        <h1>{d.headline ?? d.name}</h1>
+      </div>
+
+      {d.intro.length > 0 ? (
+        <div class="intro">
+          {d.intro.map((paragraph) => <p>{paragraph}</p>)}
+        </div>
+      ) : (
+        <p class="lede">{d.description}</p>
+      )}
+    </header>
+
+    <div class="container chips-row">
+      <CategoryChips categories={categories} current={category.id} />
+    </div>
+  </div>
+
+  {
+    d.subtopics.length > 0 && (
+      <section class="container subtopics" aria-labelledby="o-que-voce-encontra">
+        <h2 id="o-que-voce-encontra">O que você encontra aqui</h2>
+        <ul>
+          {d.subtopics.map((topic) => (
+            <li>
+              <h3>{topic.title}</h3>
+              <p>{topic.text}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  <section class="container posts-wrap" aria-labelledby="artigos">
+    <h2 id="artigos">Artigos</h2>
+    {
+      posts.length > 0 ? (
+        <ul class="posts">
+          {posts.map((post) => (
+            <li>
+              <PostCard post={post} thumbnail />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="empty">Nenhum artigo publicado nesta categoria ainda.</p>
+      )
+    }
+  </section>
+
+  {
+    product && (
+      <div class="container product-wrap">
+        <ProductCta
+          product={product}
+          label={d.productCta?.label}
+          headline={d.productCta?.headline}
+          text={d.productCta?.text}
+          buttonLabel={d.productCta?.buttonLabel}
+          placement="end"
+        />
+      </div>
+    )
+  }
+</SiteLayout>
+
+<style>
+  .crumb-bar {
+    padding-block: var(--s-5) var(--s-2);
+  }
+
+  .hero-band {
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--s-9);
+  }
+
+  .page-head {
+    padding-block: var(--section-y-tight) var(--s-6);
+  }
+
+  .page-head h1 {
+    margin-top: var(--s-3);
+    font-size: var(--t-4);
+    max-width: 16ch;
+    text-wrap: balance;
+  }
+
+  .chips-row {
+    padding-bottom: var(--s-6);
+  }
+
+  .intro {
+    display: grid;
+    gap: var(--s-4);
+    max-width: var(--w-text);
+    margin-top: var(--s-5);
+    font-size: var(--t-0);
+    color: var(--color-muted);
+    line-height: 1.58;
+  }
+
+  .page-head .lede {
+    margin-bottom: var(--s-7);
+    max-width: 46ch;
+  }
+
+  .subtopics {
+    padding-bottom: var(--s-9);
+  }
+
+  .subtopics h2,
+  .posts-wrap h2 {
+    font-size: var(--t--1);
+    font-weight: var(--w-semibold);
+    letter-spacing: var(--tr-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-muted);
+    margin-bottom: var(--s-5);
+  }
+
+  /* Cartões em vez de parágrafos soltos: os recortes da categoria são uma
+     lista de opções, e como blocos isso fica explícito. */
+  .subtopics ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  .subtopics li {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--s-6);
+  }
+
+  .subtopics h3 {
+    font-size: var(--t-1);
+  }
+
+  .subtopics p {
+    margin-top: var(--s-2);
+    color: var(--color-muted);
+    font-size: var(--t-0);
+    max-width: 46ch;
+  }
+
+  .posts-wrap {
+    padding-bottom: var(--s-9);
+  }
+
+  /* Grade preparada para crescer: uma coluna no mobile, duas no tablet e
+     três no desktop. `auto-fill` em vez de `auto-fit` é a diferença que
+     importa aqui — com um artigo só, `auto-fit` colapsaria a linha e o
+     cartão ocuparia a largura inteira, que é exatamente o que não queremos.
+     Com `auto-fill` a trilha vazia permanece e o cartão fica do tamanho de
+     um cartão, sem que seja preciso inventar cartões falsos para completar
+     a linha. */
+  .posts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-5);
+    grid-template-columns: repeat(auto-fill, minmax(min(20rem, 100%), 1fr));
+  }
+
+  .empty {
+    color: var(--color-muted);
+  }
+
+  .product-wrap {
+    padding-bottom: var(--section-y);
+  }
+
+  @media (min-width: 60rem) {
+    /* Título e intro lado a lado: o hub abre com as duas informações na
+       mesma altura, em vez de uma coluna longa e um vazio ao lado. */
+    .page-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--s-9);
+      align-items: end;
+    }
+
+    .intro {
+      margin-top: 0;
+    }
+  }
+
+  @media (min-width: 52rem) {
+    .subtopics ul {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--s-5);
+    }
+  }
+
+  /* Teto de três colunas: acima disso o cartão fica largo demais para a
+     proporção 16:9 da foto. */
+  @media (min-width: 76rem) {
+    .posts {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

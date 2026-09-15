@@ -1,0 +1,135 @@
+---
+/**
+ * Grade dos materiais incluídos.
+ *
+ * Cada cartão aceita um mockup do material — e continua completo sem ele.
+ * É a diferença entre preparar a seção e reconstruí-la depois: quando os
+ * mockups reais existirem, basta declarar `mockup:` no YAML e os quadros
+ * aparecem no lugar certo, com proporção já reservada.
+ *
+ * **Cartão sem mockup não mostra moldura vazia.** Quatro quadros em branco
+ * ocupariam meia tela para não informar nada — pior do que a seção atual.
+ *
+ * Sem JavaScript.
+ */
+import { Image } from 'astro:assets';
+import Icon from '../ui/Icon.astro';
+import { productImage } from '../../lib/product-images';
+import type { IconName } from '../../lib/icons';
+
+interface Props {
+  slug: string;
+  items: Array<{
+    title: string;
+    text: string;
+    icon?: IconName;
+    /** Arquivo em `src/assets/products/<slug>/`. Opcional. */
+    mockup?: string;
+  }>;
+}
+
+const { slug, items } = Astro.props;
+
+const resolved = items.map((item) => ({
+  ...item,
+  image: productImage(slug, item.mockup),
+}));
+---
+
+<ul class="materials">
+  {
+    resolved.map((item) => (
+      <li>
+        {item.image && (
+          <div class="mockup">
+            <Image
+              src={item.image}
+              alt=""
+              widths={[320, 480, 640]}
+              sizes="(min-width: 52rem) 22rem, calc(100vw - 2 * var(--gutter))"
+              loading="lazy"
+              decoding="async"
+              quality={74}
+            />
+          </div>
+        )}
+        <div class="text">
+          {item.icon && <Icon name={item.icon} class="lead" />}
+          <h3>{item.title}</h3>
+          <p>{item.text}</p>
+        </div>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .materials {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--s-5);
+    text-align: left;
+  }
+
+  li {
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Quadro do mockup. Proporção fixa: quando a imagem chegar, nada se
+     desloca. */
+  .mockup {
+    aspect-ratio: 4 / 3;
+    background: color-mix(in srgb, var(--color-primary) 8%, var(--color-bg));
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .mockup :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .text {
+    padding: var(--s-6);
+  }
+
+  .text :global(.lead) {
+    --icon-size: 1.5rem;
+    display: block;
+    margin-bottom: var(--s-3);
+    color: var(--color-primary);
+  }
+
+  h3 {
+    font-size: var(--t-1);
+  }
+
+  p {
+    margin-top: var(--s-2);
+    color: var(--color-muted);
+    font-size: var(--t-0);
+  }
+
+  @media (min-width: 52rem) {
+    .materials {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--s-6);
+    }
+
+    /* Número ímpar de materiais: o último ocupa a faixa inteira em vez de
+       ficar sozinho ao lado de uma célula vazia. `:last-child:nth-child(odd)`
+       só é verdade quando o total é ímpar, então uma grade de quatro não
+       muda em nada. */
+    .materials > :last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

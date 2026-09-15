@@ -10,10 +10,17 @@
 import LegalPage from '../layouts/LegalPage.astro';
 import ConsentControl from '../components/tracking/ConsentControl.astro';
 import { TRACKING } from '../config/tracking';
-import { shouldLoadAdsense, needsConsentBanner } from '../lib/tracking';
+import {
+  shouldLoadAdsense,
+  shouldLoadMetaPixelDirectly,
+  needsConsentBanner,
+} from '../lib/tracking';
 
 const analyticsOn = Boolean(TRACKING.enabled && TRACKING.ga4.measurementId);
 const adsOn = shouldLoadAdsense();
+const metaOn = shouldLoadMetaPixelDirectly();
+/* O envio pelo servidor só existe com Pixel e retransmissor configurados. */
+const capiOn = metaOn && Boolean(TRACKING.meta.capiEndpoint);
 
 /* Calculado aqui, e não no template.
    Duas armadilhas do compilador de template custaram tempo e ficam
@@ -27,20 +34,20 @@ const gaSessionCookie = `_ga_${(TRACKING.ga4.measurementId ?? '').replace('G-', 
   <p>
     Esta página explica o que a BookGo grava no seu navegador, em quais
     categorias e como você aceita ou recusa. Ela descreve o estado atual do
-    site — não um modelo genérico.
+    site, não um modelo genérico.
   </p>
 
   <h2>1. Antes de tudo: o que existe hoje</h2>
   <p>
     <strong>O site da BookGo não grava nenhum cookie próprio.</strong> A única
     coisa guardada por padrão é a sua escolha sobre medição, e ela fica no
-    armazenamento local do navegador — não é cookie e não é enviada a lugar
+    armazenamento local do navegador. Não é cookie e não é enviada a lugar
     nenhum.
   </p>
   <p>
-    Cookies de terceiros existem apenas se você aceitar a medição de
-    audiência. Se você recusar, ou enquanto não decidir, nenhum arquivo do
-    Google é baixado.
+    Os demais cookies existem apenas nas categorias que você aceitar, uma a
+    uma. Enquanto você não decidir, e em tudo que você recusar, nenhum
+    arquivo do Google ou da Meta é baixado.
   </p>
 
   <h2>2. Cookie e armazenamento local: a diferença</h2>
@@ -61,7 +68,7 @@ const gaSessionCookie = `_ga_${(TRACKING.ga4.measurementId ?? '').replace('G-', 
   <h3>Necessários</h3>
   <p>
     O que o site precisa para funcionar e para respeitar a sua decisão. Não
-    dependem de consentimento — sem eles, o site não conseguiria nem lembrar
+    dependem de consentimento: sem eles, o site não conseguiria nem lembrar
     que você recusou.
   </p>
   <table>
@@ -136,18 +143,86 @@ const gaSessionCookie = `_ga_${(TRACKING.ga4.measurementId ?? '').replace('G-', 
     )
   }
 
-  <h3>Publicidade</h3>
+  <h3>Marketing e publicidade</h3>
   {
-    adsOn ? (
-      <p>
-        A publicidade está ativa e depende do seu aceite nesta categoria.
-      </p>
+    metaOn ? (
+      <>
+        <p>
+          <strong>O site não exibe anúncios.</strong> O que existe nesta
+          categoria é medição de campanha: o <strong>Meta Pixel</strong>, no
+          conjunto de dados <code>{TRACKING.meta.pixelId}</code>, registra
+          que uma página foi vista ou que um botão de compra foi clicado,
+          para que anúncios no Facebook e no Instagram possam ser avaliados e
+          direcionados.
+        </p>
+        <p>
+          <strong>Só carrega depois do seu aceite nesta categoria.</strong>
+          Aceitar apenas a medição de audiência não o libera: são categorias
+          separadas na barra de consentimento, e cada uma vale por si.
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Origem</th>
+              <th>Para quê</th>
+              <th>Validade</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>_fbp</code></td>
+              <td>Meta</td>
+              <td>Distingue navegadores entre visitas</td>
+              <td>3 meses (padrão da Meta)</td>
+            </tr>
+            <tr>
+              <td><code>_fbc</code></td>
+              <td>Meta</td>
+              <td>
+                Guarda o clique de anúncio que trouxe você até aqui. Só passa
+                a existir se você chegar por um anúncio da Meta.
+              </td>
+              <td>3 meses (padrão da Meta)</td>
+            </tr>
+          </tbody>
+        </table>
+        {capiOn && (
+          <p>
+            Os mesmos eventos também são enviados <strong>do nosso
+            servidor</strong> para a Meta, pela Conversions API. É o mesmo
+            acontecimento pelos dois caminhos, com um identificador
+            compartilhado que permite à Meta reconhecê-lo como um só. Esse
+            envio obedece à mesma escolha: sem aceite nesta categoria, ele
+            não acontece. Nele vão apenas o endereço da página, o seu
+            endereço IP, o identificador do seu navegador e os
+            identificadores gravados pelo próprio Pixel. Nenhum e-mail,
+            telefone, nome ou endereço, porque o site não coleta esses dados
+            em lugar nenhum.
+          </p>
+        )}
+        <p>
+          <strong>Compra não é registrada por este site.</strong> Clicar em
+          um botão de checkout é intenção, não compra, e nenhum evento de
+          venda é enviado à Meta a partir daqui.
+        </p>
+        {!adsOn && (
+          <p>
+            O Google AdSense continua preparado no código e desligado na
+            configuração. Enquanto estiver assim, o identificador de
+            publicidade nem chega ao HTML da página. Se for ativado, ficará
+            submetido a esta mesma categoria, e esta página e a
+            <a href="/privacidade/">Política de Privacidade</a> serão
+            atualizadas <strong>antes</strong>.
+          </p>
+        )}
+      </>
     ) : (
       <>
         <p>
           <strong>Desativada.</strong> O site não exibe anúncios e nenhum
-          script de publicidade é carregado — nem depois do aceite, porque não
-          há nada para carregar.
+          script desta categoria é carregado, nem depois do aceite, porque
+          não há nada para carregar.
         </p>
         <p>
           A integração com o Google AdSense está preparada no código e
@@ -159,9 +234,9 @@ const gaSessionCookie = `_ga_${(TRACKING.ga4.measurementId ?? '').replace('G-', 
           Se for ativada no futuro, ela ficará submetida a esta categoria:
           só carregará com aceite, e esta página e a
           <a href="/privacidade/">Política de Privacidade</a> serão
-          atualizadas <strong>antes</strong> — descrevendo os cookies e as
-          tecnologias do Google envolvidos e, quando aplicável, a
-          personalização de anúncios.
+          atualizadas <strong>antes</strong>, descrevendo os cookies e as
+          tecnologias envolvidos e, quando aplicável, a personalização de
+          anúncios.
         </p>
       </>
     )
@@ -175,6 +250,13 @@ const gaSessionCookie = `_ga_${(TRACKING.ga4.measurementId ?? '').replace('G-', 
     navegação.
   </p>
   <p>
+    <strong>Verificação de domínio da Meta.</strong> Mesma natureza: uma
+    etiqueta no código que prova a posse do domínio para quem administra a
+    conta de anúncios. Ela está em todas as páginas, inclusive nesta, e
+    existe mesmo para quem recusa tudo, porque não grava nada, não coleta
+    nada e não depende de consentimento.
+  </p>
+  <p>
     <strong>Fontes.</strong> A tipografia do site é servida pelo próprio
     domínio. Não há requisição ao Google Fonts nem a qualquer outro serviço
     externo para renderizar a página.
@@ -185,26 +267,28 @@ const gaSessionCookie = `_ga_${(TRACKING.ga4.measurementId ?? '').replace('G-', 
     needsConsentBanner() ? (
       <>
         <p>
-          Na primeira visita, uma barra aparece no rodapé com duas opções de
-          mesmo peso:
+          Na primeira visita, uma barra aparece no rodapé com as duas
+          categorias não essenciais em caixas separadas, nenhuma marcada, e
+          três ações de mesmo peso visual:
         </p>
         <ul>
           <li>
-            <strong>Aceitar</strong> — autoriza as categorias não
-            essenciais. Hoje isso significa, na prática, apenas a de
-            analytics, já que a de publicidade não carrega nada.
+            <strong>Recusar não essenciais</strong>: mantém apenas os itens
+            necessários. Nada é carregado, e o site funciona exatamente
+            igual.
           </li>
           <li>
-            <strong>Recusar não essenciais</strong> — mantém apenas os itens
-            necessários. Nada de medição é carregado, e o site funciona
-            exatamente igual.
+            <strong>Salvar escolha</strong>: vale o que estiver marcado. É
+            aqui que você aceita uma categoria e recusa a outra.
+          </li>
+          <li>
+            <strong>Aceitar tudo</strong>: autoriza as duas.
           </li>
         </ul>
         <p>
-          Para ser exato sobre o que o banner oferece: a escolha é
-          <strong>única e vale para as duas categorias não essenciais ao
-          mesmo tempo</strong>. Não existe hoje um seletor por categoria, e
-          não faríamos essa promessa antes de ela existir na tela.
+          As categorias são de fato independentes: aceitar a medição de
+          audiência não carrega nada de marketing, e aceitar marketing não
+          carrega nada de analytics.
         </p>
 
         <h2>6. Como mudar de ideia</h2>
@@ -222,15 +306,15 @@ const gaSessionCookie = `_ga_${(TRACKING.ga4.measurementId ?? '').replace('G-', 
     ) : (
       <p>
         Não há banner de consentimento no momento, porque não existe nenhuma
-        categoria não essencial ativa — não há o que consentir.
+        categoria não essencial ativa, e não há o que consentir.
       </p>
     )
   }
 
   <h2>7. Atualizações</h2>
   <p>
-    Esta página é atualizada sempre que o site passar a usar — ou deixar de
-    usar — alguma dessas tecnologias. As tabelas acima são geradas
+    Esta página é atualizada sempre que o site passar a usar (ou deixar de
+    usar) alguma dessas tecnologias. As tabelas acima são geradas
     diretamente da configuração do site, de modo que elas não podem descrever
     um estado diferente do que está no ar.
   </p>
@@ -244,6 +328,7 @@ const gaSessionCookie = `_ga_${(TRACKING.ga4.measurementId ?? '').replace('G-', 
     font-size: var(--t--1);
     display: block;
     overflow-x: auto;
+    overscroll-behavior-x: contain;
   }
 
   th,

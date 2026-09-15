@@ -1,0 +1,93 @@
+---
+/**
+ * Faixa curta de fatos, logo abaixo do hero.
+ *
+ * **O que ela resolve.** Quem chega de anúncio decide em segundos se a
+ * página é sobre ela. Os quatro fatos que respondem isso (quantos
+ * desenhos, quantos temas, que formato, se pode reimprimir) estavam
+ * espalhados por quatro seções diferentes, e a pessoa só juntava tudo
+ * depois de rolar metade da página.
+ *
+ * **Não é uma seção.** É uma linha. Sem manchete, sem intro, sem
+ * espaçamento de bloco: ela pertence ao hero, e transformá-la em seção
+ * própria só devolveria a altura que este redesenho está tirando.
+ *
+ * Só fato verificável do produto. Nada de prova social aqui, pela mesma
+ * razão de sempre.
+ */
+import Icon from '../ui/Icon.astro';
+
+export interface TrustItem {
+  text: string;
+  icon?: string;
+}
+
+interface Props {
+  items: TrustItem[];
+}
+
+const { items } = Astro.props;
+---
+
+{
+  items.length > 0 && (
+    <div class="trust">
+      <ul>
+        {items.map((i) => (
+          <li>
+            {i.icon && <Icon name={i.icon} />}
+            <span>{i.text}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+<style>
+  .trust {
+    border-block: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+
+  .trust ul {
+    list-style: none;
+    margin: 0 auto;
+    padding: var(--s-4) var(--gutter);
+    max-width: var(--container);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--s-3) var(--s-6);
+  }
+
+  .trust li {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    font-size: var(--t--1);
+    font-weight: var(--w-medium);
+    color: var(--color-text);
+  }
+
+  .trust :global(.icon) {
+    --icon-size: 1.1rem;
+    color: var(--color-primary);
+    flex: 0 0 auto;
+  }
+
+  /* No celular os quatro fatos viram duas colunas em vez de uma fila que
+     quebra em quatro linhas desalinhadas. */
+  @media (max-width: 47.99rem) {
+    .trust ul {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--s-3) var(--s-4);
+      justify-items: start;
+    }
+
+    .trust li {
+      font-size: var(--t--2);
+    }
+  }
+</style>

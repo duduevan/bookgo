@@ -71,6 +71,29 @@ Só CSS: marquee, hover e pequenas transformações. `prefers-reduced-motion` é
 tratado uma vez, globalmente, em `src/styles/global.css`, e o marquee vira uma
 lista estática rolável.
 
+### Carrossel, um só para o site inteiro
+
+`src/scripts/carousel.ts` emite o comportamento como string, com o prefixo
+das classes por parâmetro: `carouselScript('rv')` nas avaliações,
+`carouselScript('hr')` no trilho do hero. Duas peças, um comportamento, e
+nenhuma disputa de seletor quando as duas estão na mesma página.
+
+O que o navegador já faz não está no script: rolagem, arraste, trackpad,
+scroll-snap e teclado são nativos. Ele acrescenta as setas, os pontos e o
+estado deles, e some com a linha de controles quando tudo cabe na tela.
+**Nunca autoplay.**
+
+### O hero da home
+
+O H1, a linha de apoio e o botão ficam parados. Abaixo deles, um trilho com
+os últimos artigos e os materiais, intercalados: artigo, material, artigo.
+A miniatura é pequena de propósito, para não disputar o LCP com o título.
+
+**O hero não vira carrossel de slides.** Girar o título custaria o elemento
+de LCP, o texto de posicionamento e a leitura de quem chega. O que gira é a
+faixa de baixo, que antes rodava palavras soltas e agora leva conteúdo com
+destino.
+
 ---
 
 ### Ícones
@@ -96,56 +119,284 @@ ali o ícone seria decoração.
 Ícones decorativos ficam em `aria-hidden`. `label` só quando o ícone for a
 única fonte da informação, o que hoje não acontece em lugar nenhum do site.
 
-### Depoimentos
+### Avaliações
 
-**Desligados, e depoimento não se inventa.** Enquanto `testimonials.enabled`
-for `false` no YAML do produto, a seção não é renderizada — sem título, sem
-espaço vazio e sem um byte de CSS. Ligar com `items` vazio quebra o build de
-propósito.
+**Uma avaliação é uma conversa, e uma conversa é um celular.** Esse é o
+formato da BookGo para prova social, e não há outro: nada de cartão com
+texto solto, nada de nota em estrelas ao lado do nome, nada de comentário
+fora do aparelho. O comentário da pessoa mora nos balões, com o nome e o
+avatar no topo do celular, do jeito que ele chegou.
 
-Só entra aqui texto que uma pessoa real escreveu e autorizou a publicar. Sem
-foto, o avatar usa as iniciais do nome: derivar do que existe é honesto, gerar
-um rosto não seria.
+```
+ReviewsSection → ReviewsCarousel → ReviewConversation (um por avaliação)
+```
 
-Dois formatos, decididos item a item:
+**Um componente só, para todos os produtos.** `ReviewsSection.astro` não
+conhece produto nenhum: não sabe nomes, textos, quantidade nem em que LP
+está. Recebe uma lista e a renderiza. É isso que o faz servir o Casa
+Organizada, o Cardápio da Semana e qualquer produto seguinte sem uma linha
+de código nova, e é também o que impede a avaliação de um produto aparecer
+em outro: cada LP passa o array do seu próprio YAML, e não existe
+repositório comum de avaliações.
+
+**Acrescentar uma avaliação é acrescentar um item no YAML do produto.**
+Abrir `content/products/<slug>/index.yaml`, escrever o nome e as mensagens,
+rodar `npm run build`, publicar. O carrossel ganha mais um celular sozinho.
+Não se edita componente, não se mexe em CSS, não se duplica HTML e não se
+cria uma segunda seção.
 
 ```yaml
-testimonials:
-  enabled: false
-  title: O que diz quem já usou
+reviews:
+  enabled: true
+  title: O que estão dizendo sobre o método
+  subtitle: Frase curta de abertura.
   items:
-    - type: card          # texto corrido
-      name: ...
-      role: ...           # opcional
-      text: ...
-    - type: phone         # conversa de celular
-      name: ...
-      status: ...         # opcional, decorativo
+    - id: patricia              # referência de quem edita, opcional
+      name: Patrícia            # aparece no topo do aparelho
+      avatar: foto.webp         # opcional; sem ele, as iniciais do nome
+      status: Linha decorativa  # opcional
       messages:
-        - side: incoming  # a pessoa
+        - sender: person        # a pessoa
           text: ...
-          time: "09:12"   # opcional, decorativo
-        - side: outgoing  # a BookGo
+          time: "08:41"         # opcional
+        - sender: bookgo        # a resposta da BookGo
           text: ...
+          time: "08:43"
           read: true
 ```
 
-`PhoneTestimonial` é Astro + HTML + CSS, **sem JavaScript**: a entrada em
-cascata é `animation-delay` calculado no build, roda uma vez e não tem laço.
-`prefers-reduced-motion` desliga a cascata e o conteúdo aparece pronto. A
-moldura, a barra de status e a caixa de digitar são cenário em `aria-hidden` —
-nada ali é interativo, não existe input nem botão. A conversa em si é citação
-(`figure` + `blockquote`), e cada bolha diz de quem é.
+Mínimo por item: `name` e `messages`. Sem `avatar` entram as iniciais do
+nome: derivar do que existe é honesto, gerar um rosto não seria, e foto de
+banco de imagens apresentada como cliente seria pior ainda.
 
-O CSS das três peças vive em `src/styles/testimonials.css.ts` e é emitido
-dentro da guarda de renderização. Não é estilo por preferência: Astro empacota
-o CSS de todo componente **importado**, renderizado ou não, e a LP pagaria
-~16 KB por uma seção que não aparece. Mesma solução do banner de consentimento.
+**Avaliação não se inventa.** Só entra aqui texto que uma pessoa real
+escreveu e autorizou a publicar. Sem isso, `enabled: false` ou nenhum item.
+
+**Quando a mensagem afirma o que o material não entrega, corta-se a frase,
+nunca se reescreve.** Acontece: a pessoa elogia de verdade e, no meio,
+descreve o produto errado. A frase sai inteira, o resto fica literal, e o
+YAML registra em comentário o que saiu de cada uma e por quê. Reescrever a
+fala e publicá-la como se fosse o texto da pessoa é outra coisa, e essa não
+se faz. Inventar resposta da BookGo onde houve só uma reação de emoji,
+também não: o aparelho mostra só a mensagem.
+
+#### Quantos aparecem por vez
+
+Não existe número máximo, e a regra **não** depende do número absoluto de
+itens: quantos cabem sai da largura da tela limitada pela quantidade
+(`min(3, count)` no desktop, `min(2, count)` no tablet, 1 no celular), e os
+controles existem só quando sobra o que navegar.
+
+| Itens | Celular | Tablet | Desktop |
+|---|---|---|---|
+| 0 | nada renderizado, nem título, nem um byte de CSS ou de JS |||
+| 1 | um aparelho, sem controles | um aparelho, sem controles | um aparelho, sem controles |
+| 2 | um por vez, com controles | os dois, sem controles | os dois, sem controles |
+| 3 | um por vez, com controles | dois por vez, com controles | os três, sem controles |
+| 4+ | um por vez, com controles | dois por vez, com controles | três por vez, com controles |
+
+É o mesmo caminho de renderização em todos os casos: não há layout especial
+para uma ou duas.
+
+#### O carrossel
+
+Rolagem nativa com `scroll-snap`, sem biblioteca e sem framework. O arraste
+no celular, o trackpad e as setas do teclado sobre a região rolável já são
+do navegador; o script (~2,3 KB inline, **só na página que tem carrossel**)
+acrescenta as setas, os pontos e o estado deles. Sem JavaScript a seção
+continua navegável, com a barra de rolagem à mostra como pista de que há
+mais ao lado.
+
+**Sem autoplay.** Carrossel que anda sozinho tira o controle da leitura e
+obriga a inventar pausa no hover, no foco e no toque para devolver o que
+tirou.
+
+#### Altura dos aparelhos, e por que nada é cortado
+
+A altura vem do conteúdo, com um piso que mantém cara de celular na
+conversa mais curta, e o `align-items: stretch` do trilho iguala todos pelo
+mais alto. Nenhuma mensagem é escondida, nenhum aparelho fica com metade da
+altura do vizinho, e não existe reticência para igualar.
+
+A versão anterior fixava a proporção do aparelho e mandava o excedente para
+fora: uma conversa mais longa começava pela metade. Por isso o piso é
+`min-height` e nunca `min-height: 0` — zero autorizaria o flex a encolher a
+conversa abaixo do próprio conteúdo, que é exatamente o corte que se quer
+evitar.
+
+#### O que a seção não faz
+
+Nada de identidade de aplicativo de mensagem de ninguém: a moldura, a barra
+de status, o fundo e a caixa de digitar são desenhados neste projeto, e a
+caixa de digitar é cenário em `aria-hidden`, sem input e sem botão.
+
+`aggregateRating` e `Review` **não** são gerados por existir a seção. Ver "O
+que nunca vai a uma página".
+
+#### Conferir quantidades
+
+`npm run dev` e `/dev/avaliacoes/` mostram a mesma peça com 0, 1, 2, 3, 4, 6
+e 10 avaliações, com fixtures locais. Nenhum dado dali vem de produto
+nenhum, e a rota não existe no build de produção.
+
+### Composição da landing page
+
+Duas ferramentas resolvem o vício de "título à esquerda, metade da tela
+vazia à direita":
+
+- **`<Section layout="split">`** põe o cabeçalho numa coluna estreita e o
+  corpo na larga ao lado. Usado em problema, método, módulos, FAQ e
+  relacionados — seções de cabeçalho curto e corpo longo.
+- **`<CardGrid feature>`** faz o primeiro cartão ocupar duas colunas. Resolve
+  o órfão de cinco cartões numa grade de três, e a hierarquia melhora junto.
+
+Quando um grid ficar com lacuna na última linha, ajuste `min` antes de
+aceitar o buraco: `min` grande demais colapsa para uma coluna, pequeno
+demais cria o órfão.
+
+**A LP não linka para o blog.** Nenhum bloco de artigos, nenhum "Leia
+também", nenhuma chamada para conteúdo editorial. Cada saída custa conversão
+em campanha paga, e no fim da página ela custa a quem acabou de ver o preço.
+A relação entre artigo e produto continua existindo no conteúdo (`product:`
+no frontmatter) e continua valendo numa direção só: o artigo leva à LP, a LP
+leva ao checkout. Os links legais do rodapé são a única saída. `npm run
+qa:seo` não cobre isso; a conferência do site publicado cobre.
+
+### A oferta
+
+Uma seção, um bloco, duas colunas de peso parecido. À esquerda, o que está
+incluso: os números da entrega em chips e o conteúdo agrupado por natureza,
+em cartões. À direita, a coluna de compra: preço, botão, reasseguranças e a
+garantia.
+
+**A garantia mora dentro da oferta**, não numa faixa própria abaixo. Ela é
+parte da decisão, e uma seção nova no meio do momento de decidir quebra a
+leitura. No celular a ordem fica título, conteúdo incluído, preço, botão,
+reasseguranças e garantia, numa sequência só.
+
+As duas colunas só entram a partir de 72rem. No tablet a oferta fica
+empilhada de propósito: com a divisão antecipada, a lista alongava de um lado
+e o painel de compra deixava meia tela vazia do outro.
+
+```yaml
+offer:
+  title: Comece hoje
+  intro: Pagamento único. Sem mensalidade e sem renovação.
+  includesTitle: O que você recebe       # título da coluna do conteúdo
+  priceTerms: pagamento único · sem mensalidade   # linha sob o preço
+  highlights:                            # até 4 números, opcional
+    - value: "5"
+      label: módulos
+  groups:                                # agrupado por natureza
+    - title: Método
+      icon: compass
+      items:
+        - Item da entrega.
+  includes: []                           # alternativa: lista plana
+  priceNote: ...
+  reassurances:
+    - icon: shield
+      text: ...
+```
+
+`groups` ou `includes`: um dos dois precisa existir, e o schema cobra.
+`highlights` são contagens verificáveis do produto (módulos, materiais,
+duração da sessão), **nunca prova social**.
+
+### Os dois tipos de CTA
+
+A diferença não é de estilo, é de destino, e ela existe no HTML:
+
+| Tipo | `kind` | Vai para | Evento | Onde |
+|---|---|---|---|---|
+| Compra | `buy` (padrão) | checkout | `checkout_click` | hero, oferta, fechamento |
+| Continuidade | `continue` | `#oferta`, na própria página | nenhum | as faixas `midCta` |
+
+Um clique que só rola a página não é intenção de pagamento. Contá-lo como
+`checkout_click` misturaria dois momentos do funil no mesmo número, que é a
+mesma razão pela qual o clique do artigo para a LP é `product_click` e não
+`checkout_click`.
+
+O valor sai como `data-cta` no HTML, e `scripts/verificar-publicado.mjs`
+afirma a regra sobre a página publicada em vez de confiar na leitura do
+código.
+
+As faixas de continuidade vivem no YAML, com âncora declarada:
+
+```yaml
+midCta:
+  - after: how-it-works      # how-it-works | materials | reviews
+    text: Uma linha que fecha a seção anterior.
+    label: Ver o que está incluído
+```
+
+Sem o bloco, nenhuma faixa é renderizada. **Não ancore uma faixa logo antes
+da oferta**: um botão para rolar uma tela é ruído.
+
+### Hero do produto
+
+Duas colunas no desktop: copy à esquerda, quadro de imagem à direita com o
+cartão de reforços sobreposto no canto. Os reforços (`hero.highlights`) são
+fatos do produto, nunca prova social.
+
+**Sem a imagem, o quadro não vira buraco** — usa gradiente da paleta do
+produto e continua sendo superfície intencional. No mobile, porém, ele é
+escondido: ali seria uma tela inteira de rolagem sem entregar nada. Quando o
+arquivo chegar, entra sem mudar layout: a proporção já está reservada.
+
+### De onde vêm as imagens
+
+`content/image-sources.yaml` declara a origem de cada arquivo de imagem:
+destino, proporção, largura, URL e crédito. `npm run images:fetch` baixa,
+corta, converte para WebP e grava no destino — idempotente, e `--force`
+refaz.
+
+O mesmo script roda no workflow **Materializar imagens declaradas**, que
+commita os arquivos no repositório. É assim que a imagem entra no projeto:
+declarar a origem, rodar o workflow. Sem download manual, sem FTP imagem a
+imagem.
+
+Existe por um motivo concreto: o ambiente onde o conteúdo é editado tem
+bloqueio de egress para os CDNs do Magnific e do Freepik. Lá dá para
+escolher e declarar; os bytes são buscados onde a rede permite.
+
+Trocar de imagem é trocar `url` e `credit`. Alt, legenda e posição vivem no
+YAML do produto e no frontmatter do artigo — não se mexe neles para trocar
+uma foto.
+
+### Source of truth do produto
+
+`docs/casa-organizada-source-of-truth.md` é a referência do produto: preço,
+formato, módulos, materiais, entrega e garantia. Vale para LP, curso, PDFs,
+FAQ, checkout, artigos e anúncios.
+
+**Se não está lá, não se afirma em lugar nenhum.** Quando o produto mudar,
+muda ali primeiro e só depois na copy.
+
+Formulação que a auditoria corrigiu: **"acesso liberado após a aprovação do
+pagamento"**, nunca "acesso imediato" — quem aprova é a plataforma, e esse
+prazo não é nosso.
+
+### Imagens da landing page
+
+Mesma convenção do blog: metadados no YAML, arquivo em
+`src/assets/products/<slug>/`, e **nada renderiza enquanto o arquivo não
+existir** — o build lista o que falta, com proporção e função de cada uma.
+
+```yaml
+images:
+  - id: sessao-curta-cozinha
+    src: sessao-curta-cozinha.webp
+    alt: Descrição da cena
+    caption: Opcional
+    placement: after-method   # after-method | after-materials | before-offer
+```
 
 ### Vitrine de componentes
 
 `npm run dev` e `/dev/componentes/` mostram todos os ícones e os dois formatos
-de depoimento. A rota **só existe em desenvolvimento**: `getStaticPaths`
+de avaliação; `/dev/avaliacoes/` mostra a seção com 0, 1, 2, 3, 6 e 10 itens.
+As rotas **só existem em desenvolvimento**: `getStaticPaths`
 devolve lista vazia no build, então não há arquivo em `dist/`, nem URL, nem
 entrada no sitemap. O conteúdo ali é demonstração de layout e diz isso na
 própria página — não é depoimento de ninguém.
@@ -169,6 +420,91 @@ LP para cada produto encontrado.
 
 O schema que valida o YAML está em `src/content.config.ts`. Campo obrigatório
 faltando ou com tipo errado **quebra o build** — é proposital.
+
+**`draft: true` enquanto a copy não estiver fechada.** Igual ao `draft` do
+artigo: o produto continua sendo validado pelo schema a cada build, e é essa
+validação que prova que a estrutura está completa, mas não gera URL, não
+entra no sitemap, não entra no `llms.txt` e não aparece na home. É o que
+permite deixar a arquitetura de um produto novo pronta sem publicar uma
+página com texto de espera.
+
+Nenhum produto está nesse estado hoje. Os três publicados são o Casa
+Organizada em 15 Minutos por Dia, o Cardápio da Semana em 20 Minutos e o
+Mundo de Colorir, cada um com a sua source of truth em `docs/`.
+
+### Ambientação da landing page
+
+A régua estrutural é a mesma para todos os materiais: as mesmas seções, a
+mesma tipografia, o mesmo espaçamento. O que muda é o clima, porque o
+público muda.
+
+```yaml
+ambience: playful     # opcional; sem o campo, a LP usa a ambientação padrão
+```
+
+`playful` liga o `PlayfulBackdrop`: uma camada fixa atrás de tudo, com
+nuvem, estrelinha e rabisco em opacidade baixa, desenhada em SVG inline com
+a paleta do próprio produto. Ela é `position: fixed` de propósito, porque
+enfeite que rola junto compete com a leitura o tempo todo; parado, ele vira
+papel de parede. Nenhuma cor literal, nenhuma imagem baixada e nada sobre
+bloco de texto em densidade que atrapalhe contraste.
+
+**O hero aceita uma composição própria pelo slot `art`**, usada quando não
+existe arquivo de imagem. É o que permite uma LP nascer com o quadro cheio
+antes de a fotografia do material existir, sem quadro vazio e sem foto de
+banco de imagens fingindo ser o produto. O Mundo de Colorir usa isso com o
+`ColoringPagesArt`, que desenha três páginas empilhadas no traço da própria
+coleção. Quando a foto chegar, ela entra no mesmo lugar e a composição sai.
+
+### Materiais práticos: a nomenclatura pública
+
+**A área comercial da BookGo se chama "Materiais práticos".** É assim que ela
+aparece na home, e a mesma palavra vale para qualquer texto público: método,
+guia, planner, material. `produto` e `products/` continuam sendo os nomes
+internos, no código e no conteúdo, e não vazam para a página.
+
+**"Curso" não é o nome genérico da área.** Ele descreve um formato específico
+e, usado como rótulo da prateleira, promete aula, turma e plataforma de vídeo
+para algo que é texto e PDF. Quando o formato de um material for de fato um
+curso, o YAML daquele produto pode dizer isso na copy dele. A prateleira, não.
+
+### Categoria do material
+
+Cada produto declara a prateleira em que aparece na home:
+
+```yaml
+category:
+  id: cozinha-planejamento     # minúsculo, com hífens
+  label: Cozinha e planejamento
+```
+
+A categoria aparece **dentro do cartão**, como sobretítulo, e não como uma
+prateleira por linha: com poucos materiais, uma linha por categoria gastava
+a largura inteira da tela com um cartão só.
+
+`getShowcaseProducts()` devolve os materiais publicados na ordem de
+exibição, com o destaque abrindo a grade. Rascunho não entra.
+
+O cartão da home leva à **landing page**, nunca ao checkout, e dispara
+`product_click`. É a mesma regra do CTA do artigo, pela mesma razão: quem
+clica ali ainda não viu preço, conteúdo nem garantia.
+
+**A home não é catálogo.** Uma seção só de materiais, em grade de até três
+colunas, logo depois de "Por onde começar". O destaque do YAML (`featured`)
+abre a grade em vez de ganhar uma faixa própria: duas faixas comerciais
+dizendo a mesma coisa é o que a home tinha antes, e material novo não toma
+o primeiro lugar de ninguém em silêncio.
+
+**Bloco comercial de produto não entra em página legal.** Termos,
+privacidade, política de cookies, termos de compra e contato ficam fora, e
+uma LP não recomenda outro produto: cross-sell dentro de LP é decisão
+separada, e hoje não existe.
+
+**Dois produtos não podem parecer o mesmo produto.** O sistema é o mesmo
+(componentes, tokens, tipografia, régua), a identidade comercial não: a
+paleta do YAML é o que separa uma LP da outra, e trocar a cor principal vale
+mais do que ajustar a mesma. Ao escolher, confira o contraste de `text` sobre
+`background` e de `onPrimary` sobre `primary` — o mínimo é 4.5:1.
 
 ## Alterar preço
 
@@ -223,12 +559,45 @@ Ao escolher as cores, verifique o contraste de `text` sobre `background` e de
 `onPrimary` sobre `primary` — o mínimo é 4.5:1 para texto corrido.
 
 
+## Taxonomia editorial
+
+Três dimensões, e só a primeira vira URL.
+
+**Pilar.** O grande tema editorial. Hoje existe um: `Casa`. Mora em
+`content/pillars/<slug>.yaml` e gera `/blog/<pilar>/`.
+
+**Subcategoria.** Um recorte dentro do pilar: `Organização`, `Cozinha`. Mora
+em `content/categories/<slug>.yaml`, declara `pillar:` e gera
+`/blog/<pilar>/<categoria>/`. Um artigo vive em `/blog/<pilar>/<cat>/<slug>/`.
+
+**Tipo de conteúdo.** Formato e intenção do artigo: `informacional`, `guia`,
+`comparativo`, `review`. É o campo `type` no frontmatter e **não vira página,
+menu nem URL**.
+
+A separação é o ponto. Um comparativo de air fryer pertence a Casa › Cozinha,
+e "comparativo" descreve o formato, não o assunto. Criar uma categoria
+"Comparativos" ou "Reviews" porque existem artigos comerciais montaria uma
+segunda árvore concorrendo com a primeira, e o mesmo artigo passaria a ter
+dois lugares para morar. Monetização é outra dimensão ainda, e vive em
+`monetization`.
+
+**Categoria nasce de conteúdo, não de layout.** Nenhuma subcategoria é criada
+para preencher grade. Limpeza, Eletrodomésticos, Lavanderia e Decoração são
+recortes plausíveis de Casa para o futuro, e nada além disso enquanto não
+existir artigo real.
+
+Mudar um artigo de categoria muda a URL, então a antiga precisa de um 301 em
+`public/.htaccess`. Redirecionamento direto, nunca em cadeia: a regra do
+artigo vem antes da regra da categoria, senão a segunda captura o caminho do
+artigo e devolve a listagem no lugar da página pedida.
+
 ## Criar uma categoria
 
 Crie `content/categories/<slug>.yaml`:
 
 ```yaml
 name: Organização
+pillar: casa                       # obrigatório: define a URL
 description: Frase que aparece no topo da página da categoria.
 seo:
   title: Organização da casa      # opcional
@@ -236,7 +605,7 @@ seo:
 order: 10                          # menor aparece primeiro
 ```
 
-O nome do arquivo é o slug da URL: `/blog/<slug>/`.
+O nome do arquivo é o slug: a URL fica `/blog/<pilar>/<slug>/`.
 
 ## Criar um artigo
 
@@ -257,7 +626,7 @@ keywords:
 Texto do artigo em Markdown.
 ```
 
-URL resultante: `/blog/<categoria>/<slug>/`.
+URL resultante: `/blog/<pilar>/<categoria>/<slug>/`.
 
 Campos opcionais: `updated`, `author`, `draft: true` (exclui do site).
 
@@ -302,6 +671,29 @@ resposta → desenvolvimento.
 Aparecem sozinhos ao final do artigo, no máximo três. A seleção é
 determinística (`getRelatedPosts`): mesma categoria primeiro, depois mesmo
 produto. O próprio artigo nunca entra e não há sorteio.
+
+## Hub do blog
+
+`/blog/` tem três camadas, e nenhuma é escrita à mão.
+
+**Destaque.** `featured: true` no frontmatter do artigo. Havendo mais de um
+marcado, vence o mais recente; não havendo nenhum, o destaque cai no artigo
+público mais recente. A página nunca fica sem topo porque alguém esqueceu de
+marcar a caixa, e nenhum slug está escrito no componente. Rascunho nunca entra.
+
+A imagem do destaque é a **primeira imagem declarada** do artigo. É por isso
+que um artigo que precisa de capa própria declara a capa antes das demais, sem
+chamá-la no corpo: ela vale para as listagens, e o texto segue com as imagens
+que conversam com cada trecho.
+
+**Últimos artigos.** Os publicados, menos o destaque, em três, duas e uma
+coluna. A grade usa `auto-fill`, e não `auto-fit`, para que um artigo sozinho
+ocupe uma célula em vez de esticar pela faixa inteira.
+
+**Explore por tema.** Pilar numa coluna estreita, subcategorias na larga ao
+lado. A capa de cada uma sai de `src/assets/categories/<id>.webp`, resolvida
+pelo id: categoria nova ganha imagem colocando o arquivo ali, sem lista para
+atualizar. Sem arquivo, o cartão continua existindo com o fundo da paleta.
 
 ## Categoria como hub
 
@@ -405,10 +797,88 @@ animação agressiva, sem cor de alarme.
 **Nunca inventar característica do produto.** A copy só afirma o que o YAML
 do produto já sustenta.
 
+### Produto afiliado no artigo
+
+```yaml
+affiliates:
+  - id: philips-na130          # referência usada no corpo e na imagem
+    brand: Philips Walita
+    model: Airfryer Série 1000 XL NA130/00
+    url: https://link-de-afiliado   # é este que vira href
+    sourceUrl: https://pagina-oficial  # conferência editorial, não vira link
+    cta: Ver oferta atual
+```
+
+```mdx
+<AffiliateProduct id="philips-na130" />
+```
+
+A foto do produto usa o **mesmo id** no array `images`, então arquivo, alt e
+crédito ficam num lugar só. Sem arquivo, o bloco renderiza apenas o CTA.
+
+Três coisas o componente impõe, em vez de confiar na memória de quem escreve:
+
+- **preço não entra.** Ele muda, e um número copiado para dentro do artigo
+  transforma a página em mentira sozinho;
+- **`rel="sponsored nofollow noopener"` é obrigatório**, não opcional;
+- **a nota de transparência é automática** quando o artigo declara
+  `affiliates`. Aviso que depende de alguém lembrar não é transparência.
+
+### Para onde cada CTA leva
+
+O destino depende da intenção da página, não do componente.
+
+**Produto próprio (low ticket)**
+
+- Artigo informacional leva para a **landing page**, nunca direto ao
+  checkout. Quem está lendo ainda não viu preço, o que está incluso nem a
+  garantia: pular a LP economiza um clique e cobra a decisão antes de a
+  pessoa ter com o que decidir.
+- A **landing page** leva ao checkout. É lá que a oferta está inteira.
+- Quantidade e copy dos CTAs saem do conteúdo, não de um número fixo.
+
+A ordem é **artigo → landing page → checkout**, e cada página faz a sua
+parte. Os eventos acompanham: `product_click` no CTA do artigo,
+`checkout_click` só nos botões de compra da LP. Contar como intenção de
+compra um clique que apenas abre a página do produto misturaria dois
+momentos do funil no mesmo número.
+
+**Em que aba cada link abre**
+
+| Origem | Destino | Aba | `rel` | Evento |
+|---|---|---|---|---|
+| Artigo BookGo | LP do produto | mesma | nenhum | `product_click` |
+| LP do produto | checkout externo | mesma | nenhum | `checkout_click` |
+| Comparativo ou review | loja, por link de afiliado | **nova** | `sponsored nofollow noopener` | `affiliate_click` |
+
+O critério é a continuidade da decisão. Conteúdo próprio mantém a pessoa num
+fluxo só, e tirar a aba de volta atrapalharia quem quer recuar. O link de
+afiliado sai do site para o domínio de outro, e ali abrir nova aba preserva o
+artigo que a pessoa estava lendo.
+
+**Isso não se escreve artigo a artigo.** Aba, `rel` e evento vivem nos
+componentes: `Cta` e `ProductCta` para produto próprio, `AffiliateProduct`
+para afiliado. O frontmatter carrega só o dado (URL, marca, modelo). Um
+`target` ou um `rel` escrito dentro de um MDX é sinal de que a regra vazou
+para o lugar errado e precisa voltar para o componente.
+
+Vale igual para o que ainda não existe: outro comparativo, review individual,
+lista de melhores, novo curso, nova LP. Nenhum deles precisa redescobrir esta
+tabela.
+
+**Afiliados e comparativos**
+
+- O CTA leva ao anunciante pelo **link de afiliado**, com
+  `rel="sponsored nofollow noopener"` e evento `affiliate_click`.
+- A copy fala do produto comparado. CTA do curso próprio não entra aqui sem
+  contexto: um botão de outro assunto no meio de um comparativo é ruído.
+- Preço, desconto e parcelamento não são copiados para o artigo. Eles mudam,
+  e a página passa a mentir sozinha. O CTA diz "ver oferta atual".
+
 ### Três sistemas comerciais separados
 
-`ProductCta`, `AffiliateProduct` (ainda não implementado) e `AdSlot` são
-independentes e **nunca se empilham**. Entre dois blocos comerciais tem que
+`ProductCta`, `AffiliateProduct` e `AdSlot` são independentes e **nunca se
+empilham**. Entre dois blocos comerciais tem que
 haver conteúdo editorial.
 
 Isso é código, não recomendação: `src/lib/commercial-blocks.ts` resolve a
@@ -473,7 +943,7 @@ deck, resumo e índice.
 Quando ligar, o `reserve` do `AdSlot` guarda a altura antes da carga, para o
 anúncio não empurrar o conteúdo e gerar CLS.
 
-Afiliados serão um sistema separado (`<AffiliateProduct>`), sem relação com
+Afiliados são um sistema separado (`<AffiliateProduct>`), sem relação com
 este.
 
 ## Layout do artigo
@@ -503,10 +973,11 @@ com a ambientação em CSS. A imagem passa por `astro:assets` com `srcset`,
 
 ## Relacionar artigo a produto
 
-Adicione `product: <slug-do-produto>` ao frontmatter. Isso liga os dois lados:
+Adicione `product: <slug-do-produto>` ao frontmatter. A ligação existe, e ela
+tem uma direção só: **o artigo leva à LP, e a LP não volta para o artigo.**
 
-- o artigo passa a exibir o CTA contextual do produto ao final;
-- a LP do produto passa a listar o artigo em "Leia também".
+- o artigo passa a exibir o CTA contextual do produto;
+- a LP **não** ganha bloco de artigos. Ver "Composição da landing page".
 
 O slug precisa existir em `content/products/`, senão o build falha.
 
@@ -651,9 +1122,11 @@ Regras que valem para qualquer revisão desses textos:
 - **não afirmar que o site exibe anúncios** enquanto `ADS.enabled` for false;
 - **não apresentar o Search Console como cookie ou rastreamento** — é só uma
   etiqueta de verificação de propriedade do domínio;
-- **não descrever opção que o banner não oferece.** Hoje a escolha é única e
-  vale para as duas categorias não essenciais ao mesmo tempo; não existe
-  seletor por categoria;
+- **não descrever opção que o banner não oferece.** Hoje existem duas caixas,
+  uma por categoria, e três ações: recusar tudo, salvar a escolha marcada e
+  aceitar tudo. Analytics e marketing são independentes;
+- **não dizer que o site exibe anúncios por causa do Meta Pixel.** Ele mede
+  campanha veiculada fora daqui. O site não tem espaço publicitário;
 - **não inventar** prazo de retenção, encarregado, foro, telefone ou segundo
   e-mail;
 - **não reduzir direito do consumidor.** A garantia comercial de 7 dias é
@@ -670,6 +1143,32 @@ uma decisão a revogar.
 
 ## Regras de conteúdo (não negociáveis)
 
+### Nunca utilizar travessão
+
+O caractere `—` não aparece em texto do BookGo. Reescreva a frase com
+pontuação natural: ponto, vírgula, dois-pontos, ponto e vírgula, parênteses
+ou uma estrutura melhor. **Trocar por hífen não resolve** — a frase é que
+precisa mudar.
+
+```
+"a premissa é outra — a casa é usada"     →  "a premissa é outra: a casa é usada"
+"cadeira do quarto — os lugares que"      →  "Bancada, mesa da sala e cadeira do
+                                              quarto são os lugares que"
+```
+
+Vale para tudo que chega ao público: títulos, parágrafos, artigos, FAQ, CTAs,
+meta title e description, YAML de produto e categoria, frontmatter, páginas
+legais, texto de cartão e `aria-label` ou `alt`, que o leitor de tela anuncia
+igual a parágrafo.
+
+`npm run qa:seo` **quebra o build** se um travessão aparecer no HTML, no
+Markdown alternativo ou no `llms.txt` gerados. A verificação roda sobre
+`dist/`, e não sobre o código: comentário de implementação e dependência de
+terceiro ficam de fora, porque não chegam a leitor nenhum. Este guia e os
+comentários do código também estão fora do escopo.
+
+### O que nunca vai a uma página
+
 Não escreva, em nenhuma página:
 
 - depoimentos, avaliações ou número de alunos;
@@ -680,6 +1179,12 @@ Não escreva, em nenhuma página:
 
 A garantia é comercial e objetiva: "Você terá 7 dias de garantia para conhecer o
 conteúdo." Sem interpretação jurídica.
+
+**São 7 dias, sempre, em todo material da BookGo.** É o padrão configurado na
+Kiwify, e é por isso que o bloco `guarantee` existe nos três produtos com o
+mesmo texto. Ele continua sendo opcional no schema: um material cuja condição
+na plataforma um dia for outra omite o bloco em vez de afirmar um prazo que
+não está ligado lá.
 
 ## SEO
 
@@ -718,10 +1223,15 @@ cresceu fora do padrão. Não bloqueia: orçamento rígido escolhido cedo atrapa
 mais do que ajuda. Metas de campo — LCP ≤ 2,5s, INP ≤ 200ms, CLS ≤ 0,1 — são
 objetivos de engenharia, medidos em campo.
 
-Padrão do projeto: **zero JavaScript no cliente** — hoje com uma exceção
-declarada, o runtime de medição e consentimento (~4,8 KB inline por página).
-Fora isso, nenhum componente embarca JavaScript. `PhoneTestimonial`, o FAQ e o
-índice do artigo são HTML e CSS puros.
+Padrão do projeto: **zero JavaScript no cliente**, hoje com duas exceções
+declaradas:
+
+- o runtime de medição e consentimento, ~8,7 KB inline em toda página;
+- o carrossel de avaliações, ~2,3 KB inline **só nas páginas que têm
+  avaliações**. Sem nenhuma, nada é emitido.
+
+Fora isso, nenhum componente embarca JavaScript. A conversa de celular, o
+FAQ e o índice do artigo são HTML e CSS puros.
 
 ### Rascunhos
 
@@ -787,8 +1297,31 @@ O banner de consentimento só existe quando há algo a consentir. Com o GA4
 ligado, ele passou a existir. Desligar o tracking o faz desaparecer sozinho,
 junto com o JavaScript — pedir consentimento para nada seria ruído.
 
+**Meta Pixel `28163448079989110` está ligado**, na categoria `advertising`, e
+os mesmos eventos saem também pela Conversions API, de um retransmissor em
+PHP no próprio domínio (`/api/meta-capi.php`, gerado no build a partir de
+`src/server/meta-capi.php`). Cada evento leva um `event_id` compartilhado
+entre os dois caminhos, que é o que permite a Meta contá-lo uma vez só.
+
+**O token da Conversions API nunca entra no repositório.** Ele vive no GitHub
+Secret `META_CAPI_ACCESS_TOKEN`, é escrito no deploy em `api/credenciais.php`,
+o Apache recusa servir esse arquivo e o deploy falha se o valor aparecer em
+qualquer outro arquivo de `dist/`. Sem token, o endpoint responde 503 e o site
+segue igual.
+
+**Verificação de domínio da Meta** vive em `SITE.metaDomainVerification`, ao
+lado da do Search Console: é etiqueta de posse do domínio, não medição, então
+não depende de consentimento e não é descrita como rastreamento.
+
+Três eventos, e só três, chegam à Meta: `PageView`, `ViewContent` e
+`InitiateCheckout`. `product_click` e `affiliate_click` continuam existindo na
+camada interna e **não** viram evento da Meta: o primeiro é um clique de
+artigo para a LP, o segundo leva à loja de um terceiro, e tratar qualquer um
+deles como início de compra inventaria um momento de funil que não aconteceu.
+
 Como configurar cada fornecedor, como integrar a Kiwify e como evitar contar a
-mesma conversão duas vezes: **[docs/tracking.md](docs/tracking.md)**.
+mesma conversão duas vezes: **[docs/tracking.md](docs/tracking.md)**. A
+integração com a Meta inteira: **[docs/meta-capi.md](docs/meta-capi.md)**.
 
 A Política de Cookies documenta os cookies do GA4 e está publicada. A
 Política de Privacidade descreve tudo corretamente, mas segue em `noindex`

@@ -1,0 +1,292 @@
+---
+import { render } from 'astro:content';
+import SiteLayout from '../../../../layouts/SiteLayout.astro';
+import Breadcrumbs from '../../../../components/seo/Breadcrumbs.astro';
+import ArticleSummary from '../../../../components/blog/ArticleSummary.astro';
+import AffiliateDisclosure from '../../../../components/blog/AffiliateDisclosure.astro';
+import TableOfContents from '../../../../components/blog/TableOfContents.astro';
+import SourcesList from '../../../../components/blog/SourcesList.astro';
+import RelatedPosts from '../../../../components/blog/RelatedPosts.astro';
+import ProductCta from '../../../../components/blog/ProductCta.astro';
+import AdSlot from '../../../../components/ads/AdSlot.astro';
+import TrackPageEvent from '../../../../components/tracking/TrackPageEvent.astro';
+import {
+  getPosts,
+  getCategories,
+  getProduct,
+  getRelatedPosts,
+  countWords,
+  formatDate,
+  postUrl,
+  markdownUrl,
+  categoryUrl,
+  pillarUrl,
+  getPillars,
+  type Post,
+} from '../../../../lib/content';
+import * as schema from '../../../../lib/schema';
+import { ADS } from '../../../../config/site';
+import { resolveRhythm } from '../../../../lib/commercial-blocks';
+import { missingArticleImages } from '../../../../lib/article-images';
+import { hasAffiliates } from '../../../../lib/affiliates';
+
+export async function getStaticPaths() {
+  const [posts, categories, pillars] = await Promise.all([
+    getPosts(),
+    getCategories(),
+    getPillars(),
+  ]);
+
+  /* Imagem declarada cujo arquivo ainda não chegou. Não é erro: é assim que
+     a arquitetura do artigo fica pronta antes da fotografia existir. Mas
+     precisa aparecer no log, senão o slot vazio passa despercebido. */
+  const missing = await missingArticleImages();
+  if (missing.length > 0) {
+    console.warn(
+      `\n[imagens] ${missing.length} imagem(ns) declarada(s) sem arquivo — o slot não renderiza:`
+    );
+    for (const m of missing) {
+      console.warn(`  · ${m.expectedPath}`);
+      console.warn(`    alt: ${m.alt}`);
+    }
+    console.warn('');
+  }
+
+  return posts.map((post) => {
+    const category = categories.find((c) => c.id === post.data.category.id);
+    return {
+      params: {
+        pillar: category!.data.pillar.id,
+        category: post.data.category.id,
+        slug: post.data.slug,
+      },
+      props: {
+        post,
+        categoryName: category?.data.name ?? post.data.category.id,
+        pillarId: category!.data.pillar.id,
+        pillarName:
+          pillars.find((p) => p.id === category!.data.pillar.id)?.data.name ??
+          category!.data.pillar.id,
+      },
+    };
+  });
+}
+
+interface Props {
+  post: Post;
+  categoryName: string;
+  pillarId: string;
+  pillarName: string;
+}
+
+const { post, categoryName, pillarId, pillarName } = Astro.props;
+const d = post.data;
+const path = postUrl(post);
+const { Content, headings } = await render(post);
+
+// CTA contextual só existe quando o artigo aponta para um produto.
+const product = d.product ? await getProduct(d.product.id) : undefined;
+const related = await getRelatedPosts(post, 3);
+const wordCount = countWords(post.body);
+
+/* O corpo precisa marcar onde entra o CTA do meio do texto. Placement com
+   `inline` e nenhum marcador significa um CTA que a redação pediu e que
+   simplesmente não apareceria — erro de conteúdo, não detalhe a tolerar. */
+const cta = d.productCta;
+const wantsInline =
+  cta?.placement === 'inline' || cta?.placement === 'inline-and-end';
+const hasMarker = post.body?.includes('<ProductCtaHere') ?? false;
+
+if (wantsInline && !hasMarker) {
+  throw new Error(
+    `"${d.slug}": productCta.placement é "${cta!.placement}" mas o corpo não ` +
+      'traz <ProductCtaHere />. Marque o ponto editorial onde o CTA entra.'
+  );
+}
+if (!wantsInline && hasMarker) {
+  throw new Error(
+    `"${d.slug}": o corpo traz <ProductCtaHere /> mas productCta.placement é ` +
+      `"${cta?.placement ?? 'ausente'}". O marcador não renderiza nada assim.`
+  );
+}
+
+const showEndCta =
+  Boolean(product) &&
+  (cta?.placement === 'end' || cta?.placement === 'inline-and-end');
+
+/* Nenhum bloco comercial encosta em outro. Ver src/lib/commercial-blocks.ts:
+   sem fontes, um artigo pode não ter separador editorial suficiente para
+   hospedar anúncio e CTA de fechamento — aqui o anúncio cede. */
+const adOn = (placement: 'article-inline' | 'article-end') =>
+  ADS.enabled && ADS.placements[placement] && Boolean(ADS.adsenseClient);
+
+const rhythm = resolveRhythm([
+  { id: 'ad-inline', commercial: true, on: adOn('article-inline'), priority: 2 },
+  { id: 'sources', commercial: false, on: d.sources.length > 0 },
+  { id: 'product-cta-end', commercial: true, on: showEndCta, priority: 3 },
+  { id: 'related', commercial: false, on: related.length > 0 },
+  { id: 'ad-end', commercial: true, on: adOn('article-end'), priority: 1 },
+]);
+
+for (const drop of rhythm.dropped) {
+  console.warn(
+    `[ritmo] ${d.slug}: bloco "${drop.id}" removido — ${drop.because}.`
+  );
+}
+
+const crumbs = [
+  { name: 'Início', path: '/' },
+  { name: 'Blog', path: '/blog/' },
+  { name: pillarName, path: pillarUrl(pillarId) },
+  { name: categoryName, path: categoryUrl(d.category.id) },
+  { name: d.title, path },
+];
+---
+
+<SiteLayout
+  title={d.title}
+  description={d.description}
+  ogType="article"
+  ogImage={d.ogImage}
+  ogImageAlt={d.ogImageAlt ?? d.title}
+  schema={[
+    schema.organization(),
+    schema.website(),
+    schema.articleSchema(post, path, categoryName, { wordCount }),
+    schema.breadcrumbs(crumbs),
+  ]}
+>
+  {/* Versão Markdown do mesmo conteúdo, para leitura por máquinas. */}
+  <link
+    slot="head"
+    rel="alternate"
+    type="text/markdown"
+    href={markdownUrl(post)}
+    title={`${d.title} (Markdown)`}
+  />
+
+  <TrackPageEvent
+    event="view_content"
+    params={{
+      content_type: 'article',
+      content_slug: d.slug,
+      content_title: d.title,
+      category: categoryName,
+    }}
+  />
+
+  <div class="container crumb-bar">
+    <Breadcrumbs items={crumbs} />
+  </div>
+
+  {/* Coluna única, centralizada. Sem sidebar, sem coluna sticky, sem nada
+      disputando atenção com a leitura. */}
+  <article class="container article">
+    <header class="head">
+      <p class="meta">
+        <a href={categoryUrl(d.category.id)}>{categoryName}</a>
+        <time datetime={d.date.toISOString()}>{formatDate(d.date)}</time>
+        {d.updated && <span>Atualizado em {formatDate(d.updated)}</span>}
+      </p>
+      <h1>{d.title}</h1>
+      <p class="deck">{d.description}</p>
+    </header>
+
+    {/* A nota de afiliados vem antes do conteúdo, nunca depois: quem
+        precisa dessa informação precisa dela antes de ler a recomendação. */}
+    {hasAffiliates(post) && <AffiliateDisclosure />}
+
+    {d.summary && <ArticleSummary points={d.summary} />}
+
+    <TableOfContents headings={headings} />
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    {/* Posição in-page só depois de todo o corpo editorial: nunca entre
+        H1, deck, resumo, índice ou primeiro parágrafo. */}
+    {rhythm.visible.has('ad-inline') && <AdSlot placement="article-inline" />}
+
+    <SourcesList sources={d.sources} />
+
+    {
+      rhythm.visible.has('product-cta-end') && product && cta && (
+        <ProductCta
+          product={product}
+          label={cta.label}
+          headline={cta.headline}
+          text={cta.text}
+          buttonLabel={cta.buttonLabel}
+          placement="end"
+        />
+      )
+    }
+
+    <RelatedPosts posts={related} />
+
+    {/* Fim da página, depois dos relacionados e longe do CTA. */}
+    {rhythm.visible.has('ad-end') && <AdSlot placement="article-end" />}
+  </article>
+</SiteLayout>
+
+<style>
+  .crumb-bar {
+    padding-block: var(--s-5) var(--s-2);
+  }
+
+  .article {
+    padding-bottom: var(--section-y);
+    /* Largura confortável de leitura, centralizada na página. O token é
+       próprio do artigo: aumentar --w-text mexeria em home, hubs e páginas
+       institucionais, que não pediram nada. */
+    max-width: var(--w-article);
+  }
+
+  .article > :global(* + *) {
+    margin-top: var(--s-7);
+  }
+
+  /* Os blocos internos herdam a coluna: nada escapa para os lados. */
+  .article :global(.prose),
+  .article :global(.summary),
+  .article :global(.sources),
+  .article :global(.promo),
+  .article :global(.ad) {
+    max-width: none;
+  }
+
+  .head {
+    padding-block: var(--s-6) var(--s-7);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    font-size: var(--t--1);
+    color: var(--color-muted);
+    margin-bottom: var(--s-4);
+  }
+
+  .meta a {
+    font-weight: var(--w-semibold);
+  }
+
+  h1 {
+    font-size: var(--t-4);
+  }
+
+  .deck {
+    margin-top: var(--s-4);
+    font-size: var(--t-1);
+    color: var(--color-muted);
+  }
+
+  /* Âncoras do índice não podem parar embaixo do header fixo. */
+  .prose :global(h2),
+  .prose :global(h3) {
+    scroll-margin-top: 6rem;
+  }
+</style>

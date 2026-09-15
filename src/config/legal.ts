@@ -54,7 +54,7 @@ export interface LegalPage {
  */
 const FALTA = {
   retencao:
-    'Prazo de retenção dos dados. Duas partes: (a) a configuração de retenção da propriedade do Google Analytics — Admin › Coleta e modificação de dados › Retenção de dados, hoje no padrão do painel; (b) por quanto tempo os registros de acesso do servidor são mantidos pela hospedagem. É o único item que ainda impede publicar a Política de Privacidade: a LGPD exige informar a duração do tratamento, e um número aqui não pode ser estimado.',
+    'Prazo de retenção dos dados. Duas partes: (a) a configuração de retenção da propriedade do Google Analytics, em Admin › Coleta e modificação de dados › Retenção de dados, hoje no padrão do painel; (b) por quanto tempo os registros de acesso do servidor são mantidos pela hospedagem. É o único item que ainda impede publicar a Política de Privacidade: a LGPD exige informar a duração do tratamento, e um número aqui não pode ser estimado.',
   checkoutUrl: 'URL definitiva de checkout do produto.',
   entrega:
     'Formato definitivo do produto, método de entrega e prazo efetivo de liberação após o pagamento.',
@@ -141,7 +141,7 @@ export function legalPage(id: string): LegalPage {
   if (page.ready && page.pending.length > 0) {
     throw new Error(
       `"${id}" está com ready: true mas ainda tem ${page.pending.length} pendência(s). ` +
-        'Um documento legal não vai a público incompleto — resolva as pendências ' +
+        'Um documento legal não vai a público incompleto. Resolva as pendências ' +
         'e esvazie `pending`, ou volte `ready` para false.'
     );
   }

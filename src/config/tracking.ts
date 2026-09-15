@@ -42,13 +42,29 @@ export interface TrackingConfig {
   /**
    * Meta Pixel.
    *
-   * Eventos previstos: PageView, ViewContent, InitiateCheckout, Purchase.
-   * `Purchase` **não** é disparado pelo site: quem conhece a compra é a
-   * Kiwify. Ver docs/tracking.md.
+   * Eventos do navegador: PageView, ViewContent, InitiateCheckout.
+   * `Purchase` **não** é disparado pelo site: clique no checkout é intenção,
+   * e quem conhece a transação é a Kiwify. Ver docs/tracking.md.
+   *
+   * Categoria de consentimento: `advertising`. É tecnologia de marketing, e
+   * não de medição de audiência, então aceitar analytics não o libera.
    */
   meta: {
     /** Só dígitos. */
     pixelId: string | null;
+
+    /**
+     * Conversions API (server-side).
+     *
+     * **O token nunca mora aqui.** Este arquivo é lido pelo build e vira
+     * JavaScript público: qualquer segredo escrito nele chega ao navegador
+     * de todo visitante. O campo abaixo guarda apenas o endereço do
+     * retransmissor que fará as chamadas com o token do lado do servidor.
+     *
+     * Com `null`, nenhum evento server-side é enviado, e é o estado de hoje.
+     * Ver docs/meta-capi.md.
+     */
+    capiEndpoint: string | null;
   };
 
   /**
@@ -97,7 +113,23 @@ export const TRACKING: TrackingConfig = {
     loadDirectlyWithoutGtm: true,
   },
 
-  meta: { pixelId: null },
+  /**
+   * Pixel BookGo. Só carrega depois do aceite em `advertising`.
+   *
+   * `capiEndpoint` segue nulo: sem um retransmissor que guarde o token do
+   * lado do servidor, não existe envio server-side, e declarar a CAPI
+   * "pronta" sem ele seria descrever algo que não acontece.
+   */
+  meta: {
+    pixelId: '28163448079989110',
+    /**
+     * Retransmissor no próprio domínio, gerado pelo build a partir de
+     * `src/server/meta-capi.php`. Caminho relativo de propósito: a chamada é
+     * de mesma origem, o que dispensa CORS e mantém os cookies do Pixel
+     * (`_fbp`, `_fbc`) acompanhando a requisição.
+     */
+    capiEndpoint: '/api/meta-capi.php',
+  },
 
   googleAds: {
     id: null,

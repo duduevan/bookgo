@@ -1,0 +1,132 @@
+---
+/**
+ * Uma avaliação: a conversa de uma pessoa, dentro de um celular.
+ *
+ * **O aparelho é o cartão da avaliação.** Não existe versão em caixa de
+ * texto: o comentário mora nos balões, com o nome e o avatar no topo do
+ * aparelho, porque é assim que ele chegou.
+ *
+ * Só Astro + HTML + CSS: nenhum framework, nenhuma biblioteca de animação,
+ * zero JavaScript. A entrada em cascata é `animation-delay` calculado no
+ * build, um número por bolha.
+ *
+ * Sem `<style>` próprio de propósito, ver src/styles/reviews.css.ts.
+ *
+ * Acessibilidade e honestidade da leitura:
+ *  - a conversa é uma citação (`figure` + `blockquote`), não enfeite;
+ *  - a moldura, a barra de status e a caixa de digitar são `aria-hidden`:
+ *    são cenário, e nada ali é interativo, não há input, nem botão, nem
+ *    foco por teclado que leve a lugar nenhum;
+ *  - cada bolha diz de quem é, para o áudio não virar um bloco só.
+ *
+ * Nada aqui é identidade de aplicativo de mensagem de ninguém: a moldura,
+ * a barra e o fundo são desenhados neste projeto.
+ *
+ * O componente não conhece avaliação nem produto: tudo entra por props.
+ */
+import { initialsOf } from '../../lib/reviews';
+
+export interface ConversationMessage {
+  sender: 'person' | 'bookgo';
+  text: string;
+  time?: string;
+  read?: boolean;
+  /** Reação em emoji que a mensagem recebeu. */
+  reaction?: string;
+}
+
+interface Props {
+  name: string;
+  avatar?: string;
+  status?: string;
+  messages: ConversationMessage[];
+  /** Rótulo de quem responde, para o leitor de tela. */
+  replyName?: string;
+}
+
+const {
+  name,
+  avatar,
+  status,
+  messages,
+  replyName = 'BookGo',
+} = Astro.props;
+
+/* Cascata: cada bolha entra 90ms depois da anterior, e a última encerra.
+   Não existe laço — a animação roda uma vez e o estado final é o normal. */
+const STEP = 0.09;
+---
+
+<figure class="rv-phone">
+  <div class="rv-frame">
+    {/* Ilha/entalhe e barra de status: cenário puro. */}
+    <div class="rv-statusbar" aria-hidden="true">
+      <span class="rv-island"></span>
+      <span class="rv-signal">
+        <i style="--h:35%"></i><i style="--h:55%"></i><i style="--h:75%"></i><i style="--h:100%"></i>
+      </span>
+      <span class="rv-battery"><b></b></span>
+    </div>
+
+    <header class="rv-header">
+      {
+        avatar ? (
+          <img class="rv-avatar" src={avatar} alt="" width="36" height="36" loading="lazy" decoding="async" />
+        ) : (
+          <span class="rv-avatar rv-initials" aria-hidden="true">{initialsOf(name)}</span>
+        )
+      }
+      <span class="rv-who">
+        <span class="rv-name">{name}</span>
+        {status && <span class="rv-status">{status}</span>}
+      </span>
+    </header>
+
+    <blockquote class="rv-thread">
+      {
+        messages.map((m, i) => (
+          <p
+            class:list={['rv-bubble', m.sender === 'person' ? 'rv-in' : 'rv-out']}
+            style={`--delay:${(i * STEP).toFixed(2)}s`}
+          >
+            <span class="rv-sr">
+              {m.sender === 'person' ? `${name}:` : `${replyName}:`}
+            </span>
+            <span class="rv-text">{m.text}</span>
+            {
+              (m.time || (m.sender === 'bookgo' && m.read)) && (
+                <span class="rv-meta" aria-hidden="true">
+                  {m.time && <span>{m.time}</span>}
+                  {m.sender === 'bookgo' && m.read && (
+                    <svg class="rv-ticks" viewBox="0 0 20 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                      <path d="M2 6.5 5 9.5 10.5 3" />
+                      <path d="M8.5 6.5 11.5 9.5 17 3" />
+                    </svg>
+                  )}
+                </span>
+              )
+            }
+            {
+              m.reaction && (
+                <span class="rv-reaction">
+                  <span class="rv-sr">Reação da BookGo:</span>
+                  <span aria-hidden="true">{m.reaction}</span>
+                </span>
+              )
+            }
+          </p>
+        ))
+      }
+    </blockquote>
+
+    {/* Caixa de digitar: desenho, não campo. Sem input, sem botão, sem foco. */}
+    <div class="rv-composer" aria-hidden="true">
+      <span class="rv-field"></span>
+      <span class="rv-send">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+          <path d="M4 12h14" /><path d="M12.5 6.5 18 12l-5.5 5.5" />
+        </svg>
+      </span>
+    </div>
+  </div>
+</figure>

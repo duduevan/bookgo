@@ -25,29 +25,50 @@
  */
 import Cta from '../ui/Cta.astro';
 import Icon from '../ui/Icon.astro';
-import { hasCheckout, productUrl, type Product } from '../../lib/content';
+import { productUrl, type Product } from '../../lib/content';
 import { eventAttrs } from '../../lib/tracking';
 import { themeToStyle } from '../../lib/theme';
 
 interface Props {
   product: Product;
-  label: string;
-  headline: string;
-  text: string;
-  buttonLabel: string;
+  /**
+   * Copy contextual. Opcional de propósito: a página de categoria não tem
+   * artigo de onde tirar o texto, e um CTA sem headline renderizava uma
+   * caixa com nome e preço e mais nada. Sem copy, o componente cai no que o
+   * próprio produto já afirma — nunca num bloco vazio.
+   */
+  label?: string;
+  headline?: string;
+  text?: string;
+  buttonLabel?: string;
   /** Distingue o CTA do meio do texto do de fechamento na medição. */
   placement: 'inline' | 'end';
 }
 
-const { product, label, headline, text, buttonLabel, placement } = Astro.props;
-const { name, price, checkout } = product.data;
+const { product, placement } = Astro.props;
+const { name, price, tagline } = product.data;
+
+const label = Astro.props.label ?? 'Material relacionado';
+const headline = Astro.props.headline ?? name;
+const text = Astro.props.text ?? tagline;
+const buttonLabel = Astro.props.buttonLabel ?? 'Conhecer o material';
 const href = productUrl(product.data.slug);
 
-const checkoutEvent = eventAttrs('checkout_click', {
+/**
+ * O botão leva à landing page, nunca direto ao checkout.
+ *
+ * Quem está lendo um artigo ainda não viu a oferta: não conhece o preço, o
+ * que está incluso nem a garantia. Pular a LP economiza um clique e cobra
+ * a decisão antes de a pessoa ter com o que decidir. A ordem é artigo →
+ * landing page → checkout, e cada página faz a sua parte.
+ *
+ * Por isso o evento também não é `checkout_click`: contar como intenção de
+ * compra um clique que só abre a página do produto misturaria dois momentos
+ * diferentes do funil no mesmo número.
+ */
+const ctaEvent = eventAttrs('product_click', {
   product_slug: product.data.slug,
   product_name: name,
-  value: price.amount,
-  currency: price.currency,
   placement: `article_cta_${placement}`,
 });
 ---
@@ -67,12 +88,15 @@ const checkoutEvent = eventAttrs('checkout_click', {
   <p class="text">{text}</p>
 
   <div class="actions">
-    <Cta
-      href={hasCheckout(product) ? checkout.url : href}
-      label={buttonLabel}
-      track={checkoutEvent}
-    />
-    <a class="details" href={href}>{name} — {price.display}</a>
+    <Cta href={href} label={buttonLabel} track={ctaEvent} />
+    {/* Informação, não segunda ação. Como link, disputava o clique com o
+        botão ao lado e dividia a decisão em duas portas para o mesmo
+        lugar. Em texto, o nome e o preço continuam visíveis e o CTA volta
+        a ser único. */}
+    <p class="details">
+      <span class="details-name">{name}</span>
+      <span class="details-price">{price.display}</span>
+    </p>
   </div>
 </aside>
 
@@ -131,7 +155,17 @@ const checkoutEvent = eventAttrs('checkout_click', {
   }
 
   .details {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--s-1) var(--s-3);
     font-size: var(--t--1);
-    color: var(--color-primary-dark);
+    /* Sem cor de link e sem sublinhado: nada aqui deve parecer clicável. */
+    color: color-mix(in srgb, var(--color-muted) 55%, var(--color-text));
+  }
+
+  .details-price {
+    font-weight: var(--w-semibold);
+    color: var(--color-text);
   }
 </style>

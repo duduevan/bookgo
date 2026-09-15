@@ -3,27 +3,93 @@ import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
 export type Product = CollectionEntry<'products'>;
 export type Post = CollectionEntry<'blog'>;
 export type Category = CollectionEntry<'categories'>;
+export type Pillar = CollectionEntry<'pillars'>;
 
 /* ── URLs (única fonte de verdade das rotas) ─────────────────── */
 
+/**
+ * Mapa categoria → pilar, resolvido uma vez na carga do módulo.
+ *
+ * Existe para `categoryUrl` e `postUrl` continuarem síncronos. A alternativa
+ * era torná-los assíncronos, o que obrigaria a mudar todo componente que
+ * monta um link, inclusive os que só recebem um post pronto.
+ */
+const pillarByCategory = new Map(
+  (await getCollection('categories')).map((c) => [c.id, c.data.pillar.id])
+);
+
+const pillarOf = (categoryId: string): string => {
+  const pillar = pillarByCategory.get(categoryId);
+  if (!pillar) {
+    throw new Error(
+      `Categoria "${categoryId}" não declara pilar. Toda categoria vive dentro de um.`
+    );
+  }
+  return pillar;
+};
+
+/** Pilar a que uma categoria pertence. Categoria sem pilar quebra o build. */
+export const pillarOfCategory = pillarOf;
+
 export const productUrl = (slug: string) => `/${slug}/`;
-export const categoryUrl = (categoryId: string) => `/blog/${categoryId}/`;
+
+export const pillarUrl = (pillarId: string) => `/blog/${pillarId}/`;
+
+export const categoryUrl = (categoryId: string) =>
+  `/blog/${pillarOf(categoryId)}/${categoryId}/`;
+
 export const postUrl = (post: Post) =>
-  `/blog/${post.data.category.id}/${post.data.slug}/`;
+  `${categoryUrl(post.data.category.id)}${post.data.slug}/`;
 
 /** Versão Markdown do artigo, servida ao lado da HTML. */
 export const markdownUrl = (post: Post) => `${postUrl(post)}index.md`;
 
 /* ── Produtos ────────────────────────────────────────────────── */
 
-export const getProducts = () => getCollection('products');
+/**
+ * Produtos publicados. Rascunho não gera URL, como no blog: ver `draft`
+ * no schema do produto.
+ */
+export const getProducts = () =>
+  getCollection('products', ({ data }) => !data.draft);
 
 export const getProduct = (id: string) => getEntry('products', id);
+
+/**
+ * Materiais práticos para a vitrine da home, em ordem de exibição.
+ *
+ * O destaque abre a grade e o resto segue na ordem da coleção. É o que
+ * mantém a flag `featured` valendo alguma coisa sem devolver a ela uma
+ * faixa inteira da página: material novo entra na grade por existir, e
+ * não toma o primeiro lugar de ninguém em silêncio.
+ *
+ * Rascunho não entra, porque `getProducts` já o exclui. A categoria de
+ * cada material continua sendo dado do YAML, exibida no próprio cartão,
+ * em vez de virar uma prateleira por linha: com poucos materiais, uma
+ * linha por categoria gasta a largura inteira da tela com um cartão só.
+ */
+export async function getShowcaseProducts(): Promise<Product[]> {
+  const products = await getProducts();
+  const destaque = products.find((p) => p.data.featured);
+
+  return destaque
+    ? [destaque, ...products.filter((p) => p !== destaque)]
+    : products;
+}
 
 /** O CTA só vira link quando existe uma URL de checkout configurada. */
 export const hasCheckout = (product: Product): boolean =>
   typeof product.data.checkout.url === 'string' &&
   product.data.checkout.url.length > 0;
+
+/* ── Pilares ─────────────────────────────────────────────────── */
+
+export async function getPillars(): Promise<Pillar[]> {
+  const pillars = await getCollection('pillars');
+  return pillars.sort(
+    (a, b) => a.data.order - b.data.order || a.data.name.localeCompare(b.data.name)
+  );
+}
 
 /* ── Categorias ──────────────────────────────────────────────── */
 
@@ -32,6 +98,12 @@ export async function getCategories(): Promise<Category[]> {
   return categories.sort(
     (a, b) => a.data.order - b.data.order || a.data.name.localeCompare(b.data.name)
   );
+}
+
+/** Categorias de um pilar, já ordenadas. */
+export async function getCategoriesByPillar(pillarId: string): Promise<Category[]> {
+  const categories = await getCategories();
+  return categories.filter((c) => c.data.pillar.id === pillarId);
 }
 
 /* ── Artigos ─────────────────────────────────────────────────── */
@@ -48,6 +120,25 @@ export async function getPosts(): Promise<Post[]> {
 export async function getPostsByCategory(categoryId: string): Promise<Post[]> {
   const posts = await getPosts();
   return posts.filter((post) => post.data.category.id === categoryId);
+}
+
+/** Artigos de todas as categorias de um pilar. */
+export async function getPostsByPillar(pillarId: string): Promise<Post[]> {
+  const posts = await getPosts();
+  return posts.filter((post) => pillarOf(post.data.category.id) === pillarId);
+}
+
+/**
+ * Artigo do destaque do blog.
+ *
+ * Marcado com `featured: true` vence; havendo mais de um, o mais recente.
+ * Sem nenhum marcado, cai no mais recente publicado, para a página não
+ * depender de alguém lembrar de marcar. Rascunho nunca entra, porque
+ * `getPosts` já os exclui.
+ */
+export async function getFeaturedPost(): Promise<Post | undefined> {
+  const posts = await getPosts();
+  return posts.find((p) => p.data.featured) ?? posts[0];
 }
 
 export async function getPostsByProduct(productId: string): Promise<Post[]> {

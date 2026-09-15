@@ -6,6 +6,8 @@ import {
   getPosts,
   getProducts,
   categoryUrl,
+  pillarUrl,
+  getPillars,
   postUrl,
   markdownUrl,
   productUrl,
@@ -22,7 +24,8 @@ import {
  * ranqueamento e este arquivo não deve ser tratado como tal.
  */
 export const GET: APIRoute = async () => {
-  const [categories, posts, products] = await Promise.all([
+  const [pillars, categories, posts, products] = await Promise.all([
+    getPillars(),
     getCategories(),
     getPosts(),
     getProducts(),
@@ -37,6 +40,16 @@ export const GET: APIRoute = async () => {
     'Cada artigo também está disponível em Markdown, no endereço indicado abaixo dele.',
     '',
   ];
+
+  if (pillars.length > 0) {
+    lines.push('## Pilares', '');
+    for (const pillar of pillars) {
+      lines.push(
+        `- [${pillar.data.name}](${absoluteUrl(pillarUrl(pillar.id))}): ${pillar.data.description}`
+      );
+    }
+    lines.push('');
+  }
 
   if (categories.length > 0) {
     lines.push('## Categorias', '');

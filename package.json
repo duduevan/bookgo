@@ -13,7 +13,8 @@
     "qa:seo": "node scripts/seo-qa.mjs",
     "qa:perf": "node scripts/perf-report.mjs",
     "brand:assets": "node scripts/derive-brand-assets.mjs",
-    "brand:og": "node scripts/generate-og.mjs"
+    "brand:og": "node scripts/generate-og.mjs",
+    "images:fetch": "node scripts/fetch-images.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.14",

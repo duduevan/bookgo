@@ -1,4 +1,5 @@
 name: Organização
+pillar: casa
 description: Ideias práticas para organizar e manter a casa em ordem com o tempo que você realmente tem.
 
 headline: Organização que cabe na rotina
@@ -6,7 +7,7 @@ intro:
   - >-
     A maior parte do conteúdo sobre organização parte de um pressuposto que quase
     nunca se confirma: o de que existe um dia livre esperando por você. Aqui a
-    premissa é outra — a casa é usada todos os dias, o tempo é curto e picado, e o
+    premissa é outra: a casa é usada todos os dias, o tempo é curto e picado, e o
     método precisa sobreviver a isso.
   - >-
     Os textos desta seção tratam de manutenção, não de reforma. São rotinas curtas,
@@ -17,13 +18,25 @@ subtopics:
   - title: Rotina e manutenção
     text: Como sustentar a casa durante a semana em vez de acumular tudo para o fim de semana.
   - title: Pontos de acúmulo
-    text: Bancada, mesa da sala, cadeira do quarto — os lugares que definem se a casa parece organizada.
+    text: Bancada, mesa da sala e cadeira do quarto são os lugares que definem se a casa parece organizada.
   - title: Organização com pouco tempo
     text: O que dá para fazer em janelas de 15 minutos e o que realmente exige um bloco maior.
   - title: Casa habitada
     text: Métodos que continuam funcionando com crianças, trabalho e a casa em uso o dia inteiro.
 
 relatedProduct: casa-organizada-em-15-minutos
+
+# Copy do CTA neste hub. Conversa com o recorte da categoria, não repete a
+# tagline do produto. Sem este bloco, o CTA cai no nome e na tagline — nunca
+# renderiza caixa vazia.
+productCta:
+  label: Material da BookGo
+  headline: Um método para aplicar isso na casa inteira
+  text: >-
+    Os textos desta seção tratam de rotina e manutenção. O Casa Organizada em 15
+    Minutos por Dia reúne esse raciocínio em cinco módulos e quatro materiais
+    práticos, para usar ambiente por ambiente.
+  buttonLabel: Conhecer o método
 
 seo:
   title: Organização da casa

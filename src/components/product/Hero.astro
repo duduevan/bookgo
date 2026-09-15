@@ -1,22 +1,51 @@
 ---
+/**
+ * Hero da landing page.
+ *
+ * Composição em duas colunas no desktop. A versão anterior era uma coluna de
+ * texto alinhada à esquerda com metade da dobra vazia à direita — o bloco
+ * não tinha contrapeso e a página começava parecendo montada, não desenhada.
+ *
+ * A coluna da direita é um objeto composto, não um espaço reservado: o
+ * quadro da imagem e, sobre ele, um cartão com os reforços do produto. Os
+ * reforços saíram de baixo do CTA, onde flutuavam soltos — agora eles são o
+ * contrapeso visual e continuam sendo a mesma informação.
+ *
+ * **Sem a imagem o quadro não vira buraco.** Ele usa a ambientação em
+ * gradiente da própria paleta do produto e continua sendo uma superfície
+ * intencional. Quando o arquivo chegar, entra no mesmo lugar sem mudar o
+ * layout: o quadro já tem proporção fixa, então nada se desloca.
+ */
 import { Image } from 'astro:assets';
 import Cta from '../ui/Cta.astro';
+import Icon from '../ui/Icon.astro';
+import type { IconName } from '../../lib/icons';
+
+interface Highlight {
+  text: string;
+  icon?: IconName;
+}
 
 interface Props {
+  eyebrow?: string;
   headline: string;
   subheadline: string;
-  highlights: string[];
+  highlights: Highlight[];
   ctaLabel: string;
   ctaHref: string | null;
   price: string;
-  /** Imagem editorial opcional. Sem ela o hero fica em coluna única. */
   image?: ImageMetadata;
   imageAlt?: string;
-  /** Atributos de evento de clique, vindos de `eventAttrs()`. */
   track?: Record<string, string>;
 }
 
+/* A LP pode entregar a sua própria composição pelo slot `art`. Saber
+   disso aqui muda o tratamento do quadro: com arte dentro, o gradiente
+   recua e a trama diagonal sai, porque ela passaria por cima do desenho. */
+const hasArt = Astro.slots.has('art');
+
 const {
+  eyebrow,
   headline,
   subheadline,
   highlights,
@@ -27,52 +56,71 @@ const {
   imageAlt,
   track = {},
 } = Astro.props;
+
+/* Imagem deitada muda a composição do hero. Numa foto 4/5 o cartão de
+   reforços sobrepõe o canto e vira uma composição só; sobre uma capa
+   deitada ele cobriria justamente a parte de baixo da arte, que é onde a
+   capa mostra as páginas. Nesse caso ele desce para baixo do quadro. */
+const wideImage = !!image && image.width > image.height;
 ---
 
-<section class:list={['hero', { 'has-image': image }]}>
+<section class="hero">
   <div class="art" aria-hidden="true">
     <span class="blob b1"></span>
     <span class="blob b2"></span>
   </div>
 
   <div class="container grid">
-    <div class="inner">
+    <div class="copy">
+      {eyebrow && <p class="eyebrow">{eyebrow}</p>}
       <h1>{headline}</h1>
       <p class="sub">{subheadline}</p>
 
       <div class="action">
         <Cta href={ctaHref} label={ctaLabel} size="lg" track={track} />
-        <p class="price">{price} · pagamento único</p>
+        <p class="price">
+          <strong>{price}</strong>
+          <span>pagamento único</span>
+        </p>
+      </div>
+    </div>
+
+    <div class:list={['media', { wide: wideImage }]}>
+      <div class:list={['frame', { empty: !image, 'has-image': !!image, 'has-art': !image && hasArt }]}>
+        {
+          image && (
+            /* Elemento de LCP: carrega cedo, com prioridade e dimensões
+               reais já reservadas. */
+            <Image
+              src={image}
+              alt={imageAlt ?? ''}
+              widths={[520, 760, 1040]}
+              sizes="(min-width: 62rem) 42vw, 100vw"
+              loading="eager"
+              fetchpriority="high"
+              quality={78}
+            />
+          )
+        }
+        {/* Sem arquivo de imagem, a LP pode entregar a sua própria
+            composição pelo slot. O quadro continua tendo a mesma
+            proporção, então nada se desloca quando a foto chegar. */}
+        {!image && <slot name="art" />}
       </div>
 
       {
         highlights.length > 0 && (
-          <ul class="highlights">
+          <ul class="card">
             {highlights.map((item) => (
-              <li>{item}</li>
+              <li>
+                {item.icon && <Icon name={item.icon} />}
+                <span>{item.text}</span>
+              </li>
             ))}
           </ul>
         )
       }
     </div>
-
-    {
-      image && (
-        <div class="media">
-          {/* Elemento de LCP: carrega cedo e com prioridade, e já reserva
-              o espaço com width/height reais. */}
-          <Image
-            src={image}
-            alt={imageAlt ?? ''}
-            widths={[520, 760, 1040]}
-            sizes="(min-width: 62rem) 40vw, 100vw"
-            loading="eager"
-            fetchpriority="high"
-            quality={78}
-          />
-        </div>
-      )
-    }
   </div>
 </section>
 
@@ -81,13 +129,13 @@ const {
     position: relative;
     isolation: isolate;
     overflow: hidden;
-    padding-block: clamp(3.5rem, 2.2rem + 6vw, 7rem);
+    padding-block: clamp(3rem, 1.8rem + 5.5vw, 6rem);
     background: var(--color-bg);
     border-bottom: 1px solid var(--color-border);
   }
 
-  /* Ambientação abstrata com as cores do próprio produto — nenhuma cor
-     literal aqui, só os papéis do tema. */
+  /* Ambientação abstrata com a paleta do próprio produto. Nenhuma cor
+     literal — só os papéis do tema. */
   .art {
     position: absolute;
     inset: 0;
@@ -102,22 +150,22 @@ const {
 
   .b1 {
     width: min(44rem, 90vw);
-    right: -12%;
-    top: -34%;
+    right: -14%;
+    top: -38%;
     background: radial-gradient(
       circle,
-      color-mix(in srgb, var(--color-primary) 16%, transparent) 0%,
+      color-mix(in srgb, var(--color-primary) 15%, transparent) 0%,
       transparent 68%
     );
   }
 
   .b2 {
     width: min(26rem, 62vw);
-    right: 6%;
-    bottom: -32%;
+    left: -10%;
+    bottom: -30%;
     background: radial-gradient(
       circle,
-      color-mix(in srgb, var(--color-accent) 18%, transparent) 0%,
+      color-mix(in srgb, var(--color-accent) 15%, transparent) 0%,
       transparent 66%
     );
   }
@@ -128,15 +176,18 @@ const {
     align-items: center;
   }
 
-  .inner {
-    max-width: 46rem;
+  .eyebrow {
+    font-size: var(--t--1);
+    letter-spacing: var(--tr-eyebrow);
+    text-transform: uppercase;
+    font-weight: var(--w-semibold);
+    color: var(--color-primary-dark);
+    margin-bottom: var(--s-4);
   }
 
   h1 {
-    /* Menor que o display institucional: a headline do produto é longa e
-       precisa caber em poucas linhas sem dominar a dobra. */
     font-size: var(--t-4);
-    max-width: 22ch;
+    max-width: 20ch;
     text-wrap: balance;
   }
 
@@ -144,7 +195,7 @@ const {
     margin-top: var(--s-5);
     font-size: var(--t-1);
     color: var(--color-muted);
-    max-width: 52ch;
+    max-width: 46ch;
   }
 
   .action {
@@ -155,63 +206,236 @@ const {
     gap: var(--s-4) var(--s-5);
   }
 
+
+  /* O preço ganha peso próprio em vez de virar mais uma linha cinza ao
+     lado do botão. */
   .price {
-    font-size: var(--t-0);
-    color: var(--color-muted);
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
   }
 
-  .highlights {
-    margin-top: var(--s-7);
-    padding: 0;
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--s-3) var(--s-5);
+  .price strong {
+    font-size: var(--t-1);
+    font-weight: var(--w-semibold);
+    color: var(--color-text);
+    letter-spacing: -0.02em;
+  }
+
+  .price span {
     font-size: var(--t--1);
     color: var(--color-muted);
   }
 
-  .highlights li {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--s-2);
-  }
-
-  .highlights li::before {
-    content: '';
-    width: 0.375rem;
-    height: 0.375rem;
-    margin-top: 0.55em;
-    border-radius: 50%;
-    background: var(--color-primary);
-    flex: none;
-  }
+  /* ── Coluna visual ───────────────────────────────────────── */
 
   .media {
+    position: relative;
+  }
+
+  .frame {
     border-radius: var(--radius-xl);
     overflow: hidden;
+    aspect-ratio: 4 / 5;
+    border: 1px solid var(--color-border);
     background: var(--color-surface);
   }
 
-  .media :global(img) {
+  /* Com imagem, o quadro segue a proporção do arquivo em vez de recortar
+     em 4/5. As duas primeiras LPs já usam heroes 4/5, então nada muda
+     nelas; o que isto permite é um hero deitado, como a capa de um
+     material, aparecer inteiro em vez de virar uma tira do meio. */
+  .frame.has-image {
+    aspect-ratio: auto;
+  }
+
+  .frame.has-image :global(img) {
+    height: auto;
+  }
+
+  .frame :global(img) {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    aspect-ratio: 4 / 5;
+    display: block;
+  }
+
+  /* Sem imagem, o quadro é uma superfície tratada: gradiente da paleta do
+     produto e uma trama fina. Continua lendo como decisão de design, não
+     como espaço que sobrou. */
+  .frame.empty {
+    position: relative;
+    background:
+      radial-gradient(
+        110% 80% at 18% 6%,
+        color-mix(in srgb, var(--color-surface-raised) 45%, transparent) 0%,
+        transparent 60%
+      ),
+      linear-gradient(
+        155deg,
+        color-mix(in srgb, var(--color-primary) 34%, var(--color-surface-raised)) 0%,
+        color-mix(in srgb, var(--color-accent) 26%, var(--color-surface-raised)) 100%
+      );
+  }
+
+  /* Com a composição própria dentro, o quadro vira palco: gradiente
+     suave, sem trama, e a arte ocupa a altura toda. */
+  .frame.has-art {
+    display: grid;
+    place-items: center;
+    background: linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--color-primary) 14%, var(--color-surface)) 0%,
+      color-mix(in srgb, var(--color-accent) 12%, var(--color-surface)) 100%
+    );
+  }
+
+  .frame.empty::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      -45deg,
+      color-mix(in srgb, var(--color-text) 6%, transparent) 0 1px,
+      transparent 1px 13px
+    );
+  }
+
+  /* Depois da regra acima de propósito: a trama existe para o quadro
+     vazio, e passaria por cima do desenho quando há arte. */
+  .frame.has-art::after {
+    content: none;
+  }
+
+  .card {
+    list-style: none;
+    margin: 0;
+    padding: var(--s-5);
+    display: grid;
+    gap: var(--s-4);
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .card li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--s-3);
+    font-size: var(--t--1);
+    color: var(--color-text);
+    line-height: 1.45;
+  }
+
+  .card :global(.icon) {
+    --icon-size: 1.25rem;
+    color: var(--color-primary);
+    margin-top: 0.05em;
+  }
+
+  /* No mobile o cartão segue o fluxo, logo abaixo do quadro. */
+  .media .card {
+    margin-top: var(--s-5);
+  }
+
+  /* Sem imagem, o quadro some no mobile. No desktop ele é contrapeso de
+     composição; num celular vira uma tela inteira de rolagem que não
+     entrega nada — aí sim seria buraco. */
+  @media (max-width: 61.99rem) {
+    .frame.empty {
+      display: none;
+    }
+
+    .media .card {
+      margin-top: 0;
+    }
   }
 
   @media (min-width: 62rem) {
-    .has-image .grid {
-      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    .grid {
+      grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
       gap: var(--s-9);
     }
 
-    .has-image .inner {
-      max-width: 34rem;
+    h1 {
+      max-width: 16ch;
     }
 
-    .has-image h1 {
-      max-width: 18ch;
+    .sub {
+      max-width: 40ch;
+    }
+
+    /* O cartão sobrepõe o canto inferior do quadro: é o que transforma
+       duas caixas empilhadas numa composição só. */
+    .media .card {
+      position: absolute;
+      left: calc(var(--s-6) * -1);
+      right: var(--s-8);
+      bottom: calc(var(--s-6) * -1);
+      margin-top: 0;
+    }
+
+    /* Com imagem deitada, o cartão volta ao fluxo: sobrepor cobriria a
+       faixa de baixo da arte, que numa capa é onde ela mostra o material. */
+    .media.wide .card {
+      position: static;
+      margin-top: var(--s-5);
+    }
+
+    /* O cartão avança para fora do quadro; a coluna precisa desse respiro
+       embaixo para ele não encostar na borda da seção. */
+    .media {
+      margin-bottom: var(--s-8);
+    }
+
+    .media.wide {
+      margin-bottom: 0;
+    }
+  }
+  /* Celular estreito: a composição muda de propósito.
+   *
+   * Lado a lado, o preço cabia no simulador de 390px e quebrava em aparelho
+   * real menor, caindo embaixo do botão como sobra. Abaixo de 480px o
+   * arranjo passa a ser deliberado: o preço numa linha compacta em cima, o
+   * botão inteiro embaixo.
+   *
+   * `column-reverse` inverte só o visual, e isso é seguro aqui: o único
+   * elemento focável do bloco é o botão, então não existe ordem de foco a
+   * embaralhar. */
+  @media (max-width: 30rem) {
+    .action {
+      flex-direction: column-reverse;
+      align-items: stretch;
+      gap: var(--s-4);
+    }
+
+    /* Preço e "pagamento único" na mesma linha, com um ponto separando.
+       O separador é decoração e vive no CSS: no texto ele seria lido em voz
+       alta por um leitor de tela sem significar nada. */
+    .price {
+      flex-direction: row;
+      align-items: baseline;
+      justify-content: center;
+      flex-wrap: nowrap;
+      gap: var(--s-2);
+    }
+
+    .price span {
+      white-space: nowrap;
+    }
+
+    .price span::before {
+      content: '\2022';
+      margin-right: var(--s-2);
+      color: var(--color-border);
+    }
+
+    /* Botão ocupando a largura toda: num alvo de toque, meia largura é
+       desperdício de área clicável. */
+    .action :global(.cta) {
+      width: 100%;
+      justify-content: center;
     }
   }
 </style>

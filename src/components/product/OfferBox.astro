@@ -1,90 +1,451 @@
 ---
+/**
+ * Bloco de oferta.
+ *
+ * Duas colunas de peso parecido. À esquerda, o que está incluso deixa de
+ * ser uma lista de apoio ao lado do preço e passa a ser a metade
+ * argumentativa da oferta: os números da entrega em chips, e o conteúdo
+ * agrupado por natureza (método, materiais, acesso) em cartões próprios.
+ * À direita, a coluna de compra concentra preço, botão, reasseguranças e
+ * a garantia.
+ *
+ * A garantia mora aqui, e não numa faixa solta abaixo, porque ela é parte
+ * da oferta: no celular a ordem de leitura fica título, conteúdo, preço,
+ * botão, reasseguranças e garantia, sem uma seção nova no meio da decisão.
+ *
+ * Nada de escassez: sem contador, sem "vagas", sem preço riscado que nunca
+ * existiu. Chips e reasseguranças são fatos do produto.
+ *
+ * Nenhuma copy vive neste arquivo. Tudo vem do YAML do produto, e é por
+ * isso que o mesmo componente serve qualquer LP da BookGo.
+ */
 import Cta from '../ui/Cta.astro';
-import BulletList from './BulletList.astro';
+import Icon from '../ui/Icon.astro';
+import type { IconName } from '../../lib/icons';
+
+interface Reassurance {
+  icon: IconName;
+  text: string;
+}
+
+interface Group {
+  title: string;
+  icon?: IconName;
+  items: string[];
+}
 
 interface Props {
-  includes: string[];
+  heading: string;
+  /** Números curtos da entrega. Fatos do produto, nunca prova social. */
+  highlights?: { value: string; label: string }[];
+  /** Conteúdo agrupado. Quando vazio, `includes` é usado como lista plana. */
+  groups?: Group[];
+  includes?: string[];
   price: string;
+  priceTerms: string;
   priceNote?: string;
   ctaLabel: string;
   ctaHref: string | null;
-  /** Atributos de evento de clique, vindos de `eventAttrs()`. */
+  reassurances?: Reassurance[];
+  guarantee?: { title: string; text: string; icon?: IconName };
   track?: Record<string, string>;
 }
 
-const { includes, price, priceNote, ctaLabel, ctaHref, track = {} } =
-  Astro.props;
+const {
+  heading,
+  highlights = [],
+  groups = [],
+  includes = [],
+  price,
+  priceTerms,
+  priceNote,
+  ctaLabel,
+  ctaHref,
+  reassurances = [],
+  guarantee,
+  track = {},
+} = Astro.props;
+
+/* Uma lista plana vira um grupo sem título, para o componente ter um
+   caminho de renderização só. */
+const blocks: Group[] =
+  groups.length > 0 ? groups : includes.length > 0 ? [{ title: '', items: includes }] : [];
 ---
 
-<div class="box">
-  <div class="items">
-    <h3>O que está incluso</h3>
-    <BulletList items={includes} marker="check" />
+<div class="offer">
+  <div class="included">
+    {/* Composição do material no topo da coluna do conteúdo.
+
+        Existe porque a oferta era a única seção da página sem imagem:
+        depois de a pessoa percorrer galeria, temas e situações de uso, o
+        bloco do preço voltava a ser só texto, e o objeto que ela está
+        comprando sumia exatamente na hora de decidir. Slot, e não prop,
+        porque o compilador do Astro não aceita elemento dentro de
+        expressão de atributo. */}
+    {Astro.slots.has('mockup') && (
+      <div class="offer-mockup">
+        <slot name="mockup" />
+      </div>
+    )}
+
+    <h3>{heading}</h3>
+
+    {
+      highlights.length > 0 && (
+        <ul class="figures">
+          {highlights.map((h) => (
+            <li>
+              <span class="value">{h.value}</span>
+              <span class="label">{h.label}</span>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    <div class="groups">
+      {
+        blocks.map((group) => (
+          <div class="group">
+            {group.title && (
+              <p class="group-title">
+                {group.icon && <Icon name={group.icon} />}
+                <span>{group.title}</span>
+              </p>
+            )}
+            <ul class="lines">
+              {group.items.map((item) => (
+                <li>
+                  <Icon name="check" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
   </div>
 
   <div class="buy">
-    <p class="amount">{price}</p>
-    <p class="terms">pagamento único</p>
+    <div class="price">
+      <p class="amount">{price}</p>
+      <p class="terms">{priceTerms}</p>
+    </div>
+
     <Cta href={ctaHref} label={ctaLabel} size="lg" block track={track} />
+
+    {
+      reassurances.length > 0 && (
+        <ul class="reassure">
+          {reassurances.map((item) => (
+            <li>
+              <Icon name={item.icon} />
+              <span>{item.text}</span>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    {
+      guarantee && (
+        <div class="guarantee">
+          {guarantee.icon && <Icon name={guarantee.icon} class="seal" />}
+          <div>
+            <p class="g-title">{guarantee.title}</p>
+            <p class="g-text">{guarantee.text}</p>
+          </div>
+        </div>
+      )
+    }
+
     {priceNote && <p class="note">{priceNote}</p>}
   </div>
 </div>
 
 <style>
-  .box {
+  .offer {
     display: grid;
-    gap: var(--s-6);
+    gap: var(--s-5);
+    text-align: left;
+  }
+
+  /* ── Coluna do conteúdo ─────────────────────────────────── */
+
+  .included {
     background: var(--color-surface-raised);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
     padding: var(--s-6);
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-sm);
   }
 
   h3 {
     font-size: var(--t-1);
-    margin-bottom: var(--s-5);
   }
 
+  /* Os números da entrega. Divididos por filete em vez de cartões: três
+     caixas aqui competiriam com os cartões dos grupos logo abaixo. */
+  .figures {
+    list-style: none;
+    margin: var(--s-5) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-4);
+  }
+
+  .figures li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding-left: var(--s-4);
+    border-left: 2px solid
+      color-mix(in srgb, var(--color-primary) 35%, transparent);
+  }
+
+  .figures li:first-child {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .value {
+    font-size: var(--t-3);
+    font-weight: 680;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--color-primary-dark);
+  }
+
+  .label {
+    font-size: var(--t--1);
+    line-height: 1.3;
+    color: var(--color-muted);
+  }
+
+  .groups {
+    display: grid;
+    gap: var(--s-4);
+    margin-top: var(--s-6);
+  }
+
+  .group {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-primary-soft);
+    padding: var(--s-5);
+  }
+
+  .group-title {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    margin-bottom: var(--s-4);
+    font-size: var(--t--1);
+    font-weight: 650;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-primary-dark);
+  }
+
+  .group-title :global(.icon) {
+    --icon-size: 1.1rem;
+  }
+
+  .lines {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .lines li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--s-3);
+    line-height: 1.45;
+  }
+
+  .lines :global(.icon) {
+    --icon-size: 1.05rem;
+    flex: none;
+    margin-top: 0.28em;
+    color: var(--color-primary-dark);
+  }
+
+  /* ── Coluna de compra ───────────────────────────────────── */
+
   .buy {
-    border-top: 1px solid var(--color-border);
-    padding-top: var(--s-6);
+    background: color-mix(in srgb, var(--color-primary) 20%, #ffffff);
+    border: 1px solid color-mix(in srgb, var(--color-primary) 34%, transparent);
+    border-radius: var(--radius-xl);
+    padding: var(--s-6);
+    box-shadow: var(--shadow-lg);
     text-align: center;
   }
 
-  .amount {
-    font-size: var(--t-4);
-    font-weight: 680;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
-  }
-
-  .terms {
-    margin-top: var(--s-1);
-    font-size: var(--t--1);
-    color: var(--color-muted);
+  .price {
     margin-bottom: var(--s-5);
   }
 
-  .note {
-    margin-top: var(--s-4);
-    font-size: var(--t--1);
-    color: var(--color-muted);
+  .buy :global(.pending-note) {
+    justify-content: center;
   }
 
-  @media (min-width: 52rem) {
-    .box {
-      grid-template-columns: 1fr minmax(16rem, 20rem);
-      gap: var(--s-8);
-      padding: var(--s-8);
+  .amount {
+    font-size: clamp(2.75rem, 2rem + 3vw, 3.5rem);
+    font-weight: 680;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    color: var(--color-text);
+  }
+
+  .terms {
+    margin-top: var(--s-2);
+    font-size: var(--t--1);
+    color: color-mix(in srgb, var(--color-muted) 55%, var(--color-text));
+  }
+
+  .reassure {
+    list-style: none;
+    margin: var(--s-5) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-3);
+    text-align: left;
+  }
+
+  .reassure li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--s-3);
+    font-size: var(--t--1);
+    /* O `muted` do produto foi calibrado para o fundo creme da página; neste
+       painel ele perde contraste, então a mistura puxa em direção ao texto. */
+    color: color-mix(in srgb, var(--color-muted) 45%, var(--color-text));
+    line-height: 1.45;
+  }
+
+  .reassure :global(.icon) {
+    --icon-size: 1.125rem;
+    color: var(--color-primary-dark);
+    margin-top: 0.1em;
+  }
+
+  /* A garantia fecha a coluna de compra: mesmo bloco, mesma decisão. */
+  .guarantee {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--s-4);
+    margin-top: var(--s-5);
+    padding-top: var(--s-5);
+    border-top: 1px solid
+      color-mix(in srgb, var(--color-primary) 22%, transparent);
+    text-align: left;
+  }
+
+  .guarantee :global(.seal) {
+    --icon-size: 1.35rem;
+    color: var(--color-primary-dark);
+    flex: none;
+    box-sizing: content-box;
+    padding: var(--s-3);
+    border-radius: 50%;
+    background: var(--color-surface-raised);
+  }
+
+  .g-title {
+    font-weight: 650;
+    color: var(--color-text);
+  }
+
+  .g-text {
+    margin-top: var(--s-2);
+    font-size: var(--t--1);
+    line-height: 1.45;
+    color: color-mix(in srgb, var(--color-muted) 45%, var(--color-text));
+  }
+
+  .note {
+    margin-top: var(--s-5);
+    padding-top: var(--s-4);
+    border-top: 1px solid
+      color-mix(in srgb, var(--color-primary) 18%, transparent);
+    font-size: 0.8125rem;
+    color: color-mix(in srgb, var(--color-muted) 60%, var(--color-text));
+    text-align: left;
+  }
+
+  /* Abaixo de 24rem os três números não cabem lado a lado sem quebrar o
+     rótulo em cinco linhas. Empilham em duas colunas. */
+  @media (max-width: 24rem) {
+    .figures {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--s-3) var(--s-4);
+    }
+
+    .figures li:nth-child(odd) {
+      padding-left: 0;
+      border-left: 0;
+    }
+  }
+
+  /* Dois grupos por linha assim que a coluna aguenta, com o primeiro (o
+     método, de linhas mais longas) ocupando a faixa inteira. Vale tanto
+     empilhado quanto ao lado do painel de compra: sem isso a lista vira
+     uma torre estreita e alta, e é a altura dela que abre buraco ao lado. */
+  @media (min-width: 34rem) {
+    .groups {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .group:first-child {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* As duas colunas da oferta só entram quando sobra largura para as duas
+     terem peso parecido. No tablet elas ficam empilhadas de propósito: com
+     a divisão antecipada, a lista alongava de um lado e o painel de compra
+     deixava meia tela vazia do outro. */
+  @media (min-width: 72rem) {
+    .offer {
+      grid-template-columns: minmax(0, 1fr) minmax(20rem, 22rem);
+      gap: var(--s-5);
       align-items: start;
     }
 
-    .buy {
-      border-top: 0;
-      border-left: 1px solid var(--color-border);
-      padding-top: 0;
-      padding-left: var(--s-8);
+    .included {
+      padding: var(--s-7);
     }
+
+    .buy {
+      padding: var(--s-7) var(--s-6);
+      /* A coluna de compra acompanha a rolagem enquanto a lista ao lado
+         passa. O deslocamento do topo deixa respiro sob a navbar que a LP
+         não tem, e serve ao mesmo tempo de folga visual. */
+      position: sticky;
+      top: var(--s-6);
+    }
+  }
+
+  @media (min-width: 82rem) {
+    .offer {
+      grid-template-columns: minmax(0, 1fr) minmax(21rem, 23rem);
+      gap: var(--s-6);
+    }
+  }
+  /* A composição do material abre a coluna do conteúdo. Sem ela, a
+     oferta era a única seção da página sem imagem, e o objeto sumia
+     exatamente na hora de decidir. */
+  .offer-mockup {
+    margin-bottom: var(--s-5);
+  }
+
+  .offer-mockup :global(.stack) {
+    max-width: 22rem;
+    aspect-ratio: 4 / 3;
   }
 </style>

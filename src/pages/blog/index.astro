@@ -1,15 +1,86 @@
 ---
+/**
+ * Hub do blog.
+ *
+ * Três camadas, nesta ordem: um destaque editorial, a lista do que saiu
+ * recentemente e a árvore de temas. Nada aqui é escrito à mão: destaque,
+ * lista e temas saem do conteúdo, então o dia em que existirem vinte
+ * artigos e quatro pilares a página continua correta sem ninguém tocar
+ * neste arquivo.
+ *
+ * Os chips de categoria saíram do topo. Com a árvore em dois níveis eles
+ * mostravam subcategorias soltas, como se Organização e Cozinha fossem
+ * temas independentes, e gastavam a faixa mais valiosa da página com
+ * navegação que "Explore por tema" faz melhor, mais abaixo e com imagem.
+ */
+import { Image } from 'astro:assets';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Breadcrumbs from '../../components/seo/Breadcrumbs.astro';
 import PostCard from '../../components/blog/PostCard.astro';
-import CategoryChips from '../../components/blog/CategoryChips.astro';
-import { getPosts, getCategories } from '../../lib/content';
+import Icon from '../../components/ui/Icon.astro';
+import {
+  getPosts,
+  getCategories,
+  getPillars,
+  getCategoriesByPillar,
+  getFeaturedPost,
+  categoryUrl,
+  pillarUrl,
+  pillarOfCategory,
+  postUrl,
+  formatDate,
+} from '../../lib/content';
+import { resolveArticleImages } from '../../lib/article-images';
+import { categoryCover } from '../../lib/category-images';
 import * as schema from '../../lib/schema';
 
 const posts = await getPosts();
 const categories = await getCategories();
-const categoryName = (id: string) =>
-  categories.find((c) => c.id === id)?.data.name;
+const pillars = await getPillars();
+
+const categoryNameById = new Map(categories.map((c) => [c.id, c.data.name]));
+const pillarNameById = new Map(pillars.map((p) => [p.id, p.data.name]));
+
+/* Destaque: `featured: true` no artigo, com queda para o mais recente. */
+const featured = await getFeaturedPost();
+
+/* A primeira imagem declarada do artigo abre o destaque. Sem arquivo, o
+   destaque continua existindo em texto: é o mesmo contrato das imagens de
+   artigo, que nunca deixam moldura vazia no ar. */
+const featuredImage = featured
+  ? resolveArticleImages(featured).find((i) => i.image)?.image
+  : undefined;
+
+const featuredCategory = featured?.data.category.id;
+const featuredPillar = featuredCategory
+  ? pillarOfCategory(featuredCategory)
+  : undefined;
+
+/* Os recentes excluem o destaque: o mesmo artigo duas vezes na mesma tela
+   não é hierarquia, é repetição. */
+const latest = posts.filter((p) => p.id !== featured?.id);
+
+/**
+ * Árvore de temas: pilar com as categorias dentro dele.
+ *
+ * Pilar sem categoria não vira bloco vazio. A capa é resolvida pelo id do
+ * arquivo, então uma categoria nova ganha imagem colocando o arquivo em
+ * `src/assets/categories/` e nada mais.
+ */
+const themes = (
+  await Promise.all(
+    pillars.map(async (pillar) => ({
+      pillar,
+      subs: (await getCategoriesByPillar(pillar.id)).map((category) => ({
+        id: category.id,
+        name: category.data.name,
+        description: category.data.description,
+        href: categoryUrl(category.id),
+        cover: categoryCover(category.id),
+      })),
+    }))
+  )
+).filter((t) => t.subs.length > 0);
 
 const crumbs = [
   { name: 'Início', path: '/' },
@@ -19,40 +90,170 @@ const crumbs = [
 
 <SiteLayout
   title="Blog"
-  description="Artigos práticos sobre organização e rotina, para aplicar com o tempo que você realmente tem."
-  schema={[schema.organization(), schema.breadcrumbs(crumbs)]}
+  description="Artigos práticos, comparativos e guias sobre organização e rotina, para aplicar com o tempo que você realmente tem."
+  schema={[schema.organization(), schema.website(), schema.breadcrumbs(crumbs)]}
 >
   <div class="container crumb-bar">
     <Breadcrumbs items={crumbs} />
   </div>
 
-  <header class="container page-head">
-    <h1>Blog</h1>
-    <p class="lede">
-      Artigos práticos para aplicar na rotina real — sem teoria desnecessária.
-    </p>
-    <CategoryChips categories={categories} />
-  </header>
+  {/* ── Topo editorial ───────────────────────────────────── */}
+  <div class="hero-band">
+    <div class="container hero">
+      <header class="hero-intro">
+        <p class="eyebrow">Blog BookGo</p>
+        <h1>Conteúdo para aplicar, não para arquivar.</h1>
+        <p class="lede">
+          Artigos práticos, comparativos e guias sobre a rotina de casa.
+          Escritos para resolver um problema por vez, com o tempo que o dia
+          realmente deixa sobrar.
+        </p>
+      </header>
 
-  <div class="container posts-wrap">
-    {
-      posts.length > 0 ? (
+      {
+        featured && (
+          <article
+            class:list={['feature', { 'has-image': featuredImage }]}
+            data-card
+          >
+            {featuredImage && (
+              <div class="feature-thumb">
+                <Image
+                  src={featuredImage}
+                  alt=""
+                  widths={[480, 720, 1024, 1400]}
+                  sizes="(min-width: 64rem) 38rem, calc(100vw - 2 * var(--gutter))"
+                  loading="eager"
+                  fetchpriority="high"
+                  decoding="async"
+                  quality={72}
+                />
+              </div>
+            )}
+
+            <div class="feature-body">
+              <p class="feature-meta">
+                <span class="tag">Em destaque</span>
+                {featuredPillar && (
+                  <a class="crumb" href={pillarUrl(featuredPillar)}>
+                    {pillarNameById.get(featuredPillar)}
+                  </a>
+                )}
+                {featuredCategory && (
+                  <a class="crumb" href={categoryUrl(featuredCategory)}>
+                    {categoryNameById.get(featuredCategory)}
+                  </a>
+                )}
+              </p>
+
+              <h2>
+                <a href={postUrl(featured)}>
+                  <span class="overlay" />
+                  {featured.data.title}
+                </a>
+              </h2>
+
+              <p class="feature-desc">{featured.data.description}</p>
+
+              <p class="feature-foot">
+                <span class="go" aria-hidden="true">
+                  Ler artigo
+                  <Icon name="arrow-right" class="u-arrow" />
+                </span>
+                <time datetime={featured.data.date.toISOString()}>
+                  {formatDate(featured.data.date)}
+                </time>
+              </p>
+            </div>
+          </article>
+        )
+      }
+    </div>
+  </div>
+
+  {/* ── Últimos artigos ──────────────────────────────────── */}
+  {
+    latest.length > 0 && (
+      <section class="container block" aria-labelledby="ultimos">
+        <h2 id="ultimos" class="block-head">
+          Últimos artigos
+        </h2>
         <ul class="posts">
-          {posts.map((post, index) => (
-            <li class:list={{ wide: index === 0 }}>
+          {latest.map((post) => (
+            <li>
               <PostCard
                 post={post}
-                categoryName={categoryName(post.data.category.id)}
-                featured={index === 0}
+                categoryName={categoryNameById.get(post.data.category.id)}
+                thumbnail
               />
             </li>
           ))}
         </ul>
-      ) : (
+      </section>
+    )
+  }
+
+  {/* ── Explore por tema ─────────────────────────────────── */}
+  {
+    themes.length > 0 && (
+      <section class="container block" aria-labelledby="temas">
+        <h2 id="temas" class="block-head">
+          Explore por tema
+        </h2>
+
+        {themes.map(({ pillar, subs }) => (
+          <div class="theme">
+            <header class="theme-head">
+              <h3>
+                <a href={pillarUrl(pillar.id)}>{pillar.data.name}</a>
+              </h3>
+              <p>{pillar.data.description}</p>
+            </header>
+
+            <ul class="subs">
+              {subs.map((sub) => (
+                <li class:list={['sub', { 'has-cover': sub.cover }]} data-card>
+                  {sub.cover && (
+                    <Image
+                      class="sub-cover"
+                      src={sub.cover}
+                      alt=""
+                      widths={[480, 720, 1024]}
+                      sizes="(min-width: 64rem) 30rem, calc(100vw - 2 * var(--gutter))"
+                      loading="lazy"
+                      decoding="async"
+                      quality={68}
+                    />
+                  )}
+                  <div class="sub-body">
+                    <h4>
+                      <a href={sub.href}>
+                        <span class="overlay" />
+                        {sub.name}
+                      </a>
+                    </h4>
+                    <p>{sub.description}</p>
+                    <span class="go" aria-hidden="true">
+                      Ver conteúdos
+                      <Icon name="arrow-right" class="u-arrow" />
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </section>
+    )
+  }
+
+  {
+    posts.length === 0 && (
+      <div class="container block">
         <p class="empty">Nenhum artigo publicado ainda.</p>
-      )
-    }
-  </div>
+      </div>
+    )
+  }
 </SiteLayout>
 
 <style>
@@ -60,43 +261,332 @@ const crumbs = [
     padding-block: var(--s-5) var(--s-2);
   }
 
-  .page-head {
-    padding-block: var(--section-y-tight) var(--s-8);
+  /* ── Topo ──────────────────────────────────────────────── */
+
+  .hero-band {
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
   }
 
-  .page-head h1 {
+  .hero {
+    padding-block: var(--section-y-tight) var(--section-y-tight);
+    display: grid;
+    gap: var(--s-8);
+    align-items: center;
+  }
+
+  .hero-intro h1 {
+    margin-top: var(--s-3);
     font-size: var(--t-4);
+    max-width: 16ch;
+    text-wrap: balance;
   }
 
-  .page-head .lede {
-    margin-block: var(--s-4) var(--s-7);
-    max-width: 44ch;
+  .hero-intro .lede {
+    margin-top: var(--s-5);
+    max-width: 40ch;
+    color: var(--color-muted);
+    line-height: 1.58;
   }
 
-  .posts-wrap {
+  /* ── Destaque ──────────────────────────────────────────── */
+
+  .feature {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-raised);
+  }
+
+  .feature-thumb {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--color-surface);
+  }
+
+  .feature-thumb :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .feature-body {
+    padding: clamp(1.25rem, 0.9rem + 1.4vw, 2rem);
+  }
+
+  .feature-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-2) var(--s-3);
+    font-size: var(--t--1);
+  }
+
+  .tag {
+    padding: 0.2em 0.7em;
+    border-radius: var(--radius-pill);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    font-weight: var(--w-semibold);
+  }
+
+  /* Pilar e subcategoria ficam acima do link do card inteiro, para
+     continuarem clicáveis por conta própria. */
+  .crumb {
+    position: relative;
+    z-index: 1;
+    color: var(--color-muted);
+    text-decoration: none;
+  }
+
+  .crumb + .crumb::before {
+    content: '›';
+    margin-right: var(--s-3);
+    color: var(--color-border-strong, var(--color-muted));
+  }
+
+  .crumb:hover {
+    color: var(--color-primary);
+  }
+
+  .feature h2 {
+    margin-top: var(--s-4);
+    font-size: var(--t-3);
+    text-wrap: balance;
+  }
+
+  .feature h2 a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  .feature-desc {
+    margin-top: var(--s-3);
+    color: var(--color-muted);
+    max-width: 56ch;
+  }
+
+  .feature-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
+    margin-top: var(--s-6);
+    padding-top: var(--s-5);
+    border-top: 1px solid var(--color-border);
+    font-size: var(--t--1);
+    color: var(--color-muted);
+  }
+
+  .go {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    font-size: var(--t--1);
+    font-weight: var(--w-semibold);
+    color: var(--color-primary);
+  }
+
+  .go :global(.icon) {
+    --icon-size: 1rem;
+  }
+
+  /* ── Blocos ────────────────────────────────────────────── */
+
+  .block {
+    padding-block: var(--s-9) 0;
+  }
+
+  /* O último bloco fecha a página; os do meio só se separam entre si. */
+  .block:last-child {
     padding-bottom: var(--section-y);
   }
 
-  .posts {
+  .block-head {
+    font-size: var(--t--1);
+    font-weight: var(--w-semibold);
+    letter-spacing: var(--tr-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-muted);
+    margin-bottom: var(--s-5);
+  }
+
+  .posts,
+  .subs {
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
-    gap: var(--s-4);
+    gap: var(--s-5);
+    /* `auto-fill`, não `auto-fit`: com um artigo só, `auto-fit` colapsaria
+       a linha e o cartão esticaria pela faixa inteira. */
+    grid-template-columns: repeat(auto-fill, minmax(min(20rem, 100%), 1fr));
   }
 
   .empty {
     color: var(--color-muted);
   }
 
-  @media (min-width: 52rem) {
-    .posts {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* ── Tema ──────────────────────────────────────────────── */
+
+  .theme + .theme {
+    margin-top: var(--s-8);
+  }
+
+  .theme-head {
+    margin-bottom: var(--s-5);
+  }
+
+  /* O cabeçalho do pilar numa coluna estreita e as subcategorias na larga
+     ao lado. É o que faz Organização e Cozinha lerem como partes de Casa,
+     e não como temas soltos, e é também o que evita a metade direita vazia
+     de um título sozinho em cima de uma faixa de cartões. */
+
+  .theme-head h3 {
+    font-size: var(--t-2);
+  }
+
+  .theme-head h3 a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .theme-head h3 a:hover {
+    color: var(--color-primary);
+  }
+
+  .theme-head p {
+    margin-top: var(--s-2);
+    color: var(--color-muted);
+    max-width: 52ch;
+  }
+
+  .subs {
+    grid-template-columns: repeat(auto-fill, minmax(min(22rem, 100%), 1fr));
+  }
+
+  @media (min-width: 64rem) {
+    .theme {
+      display: grid;
+      grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+      gap: var(--s-8);
+      align-items: start;
     }
 
-    /* O artigo mais recente ocupa a linha inteira. */
-    .posts .wide {
-      grid-column: 1 / -1;
+    .theme-head {
+      margin-bottom: 0;
+    }
+  }
+
+  .sub {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    min-height: 18rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-raised);
+  }
+
+  /* Com foto, o cartão vira superfície escura e o texto passa a branco. O
+     degradê não é enfeite: é o que garante contraste de leitura sobre uma
+     fotografia que muda de claro para escuro ao longo do quadro. Mesma
+     solução dos cartões de pilar da home. */
+  .sub.has-cover {
+    border-color: transparent;
+  }
+
+  .sub-cover {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .sub.has-cover::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+      to top,
+      color-mix(in srgb, #101210 92%, transparent) 0%,
+      color-mix(in srgb, #101210 58%, transparent) 46%,
+      color-mix(in srgb, #101210 12%, transparent) 100%
+    );
+  }
+
+  .sub-body {
+    padding: var(--s-6);
+  }
+
+  .sub h4 {
+    font-size: var(--t-2);
+  }
+
+  .sub h4 a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .sub p {
+    margin-top: var(--s-2);
+    color: var(--color-muted);
+    max-width: 40ch;
+  }
+
+  .sub .go {
+    margin-top: var(--s-5);
+  }
+
+  .sub.has-cover {
+    color: #ffffff;
+  }
+
+  .sub.has-cover p {
+    color: color-mix(in srgb, #ffffff 82%, transparent);
+  }
+
+  .sub.has-cover .go {
+    color: #ffffff;
+  }
+
+  /* ── Desktop ───────────────────────────────────────────── */
+
+  @media (min-width: 64rem) {
+    .hero {
+      grid-template-columns: minmax(0, 21rem) minmax(0, 1fr);
+      gap: var(--s-9);
+      padding-block: var(--section-y-tight) var(--section-y-tight);
+    }
+
+    .feature h2 {
+      font-size: var(--t-4);
+    }
+  }
+
+  @media (min-width: 76rem) {
+    .hero {
+      grid-template-columns: minmax(0, 24rem) minmax(0, 1fr);
+    }
+
+    .posts {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 </style>

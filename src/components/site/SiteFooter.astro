@@ -9,7 +9,7 @@ const year = new Date().getFullYear();
 <footer class="site-footer">
   <div class="container inner">
     <div class="brand-col">
-      <a href="/" aria-label="BookGo — página inicial">
+      <a href="/" aria-label="BookGo, página inicial">
         <Logo variant="blue" height={28} loading="lazy" />
       </a>
       <p class="note">{FOOTER.note}</p>
@@ -72,7 +72,13 @@ const year = new Date().getFullYear();
     gap: var(--s-3);
   }
 
+  /* Mesma razão do rodapé da LP: o alvo de toque tem 24px de altura, e
+     não a altura da linha de texto. */
   nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.5rem;
+    padding-block: var(--s-1);
     font-size: var(--t-0);
     color: var(--color-muted);
     text-decoration: none;

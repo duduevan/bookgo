@@ -1,9 +1,7 @@
 ---
 import ProductLayout from '../layouts/ProductLayout.astro';
-import Breadcrumbs from '../components/seo/Breadcrumbs.astro';
 import Section from '../components/ui/Section.astro';
 import Cta from '../components/ui/Cta.astro';
-import Icon from '../components/ui/Icon.astro';
 import Hero from '../components/product/Hero.astro';
 import BulletList from '../components/product/BulletList.astro';
 import CardGrid from '../components/product/CardGrid.astro';
@@ -11,15 +9,22 @@ import StepList from '../components/product/StepList.astro';
 import ModuleList from '../components/product/ModuleList.astro';
 import OfferBox from '../components/product/OfferBox.astro';
 import Faq from '../components/product/Faq.astro';
-import TestimonialsSection from '../components/testimonials/TestimonialsSection.astro';
-import PostCard from '../components/blog/PostCard.astro';
+import PlayfulBackdrop from '../components/product/PlayfulBackdrop.astro';
+import ColoringPagesArt from '../components/product/ColoringPagesArt.astro';
+import ReviewsSection from '../components/reviews/ReviewsSection.astro';
 import AdSlot from '../components/ads/AdSlot.astro';
-import { productImage } from '../lib/product-images';
+import ProductImage from '../components/product/ProductImage.astro';
+import MaterialGrid from '../components/product/MaterialGrid.astro';
+import ThemeGrid from '../components/product/ThemeGrid.astro';
+import PageGallery from '../components/product/PageGallery.astro';
+import TrustBar from '../components/product/TrustBar.astro';
+import HeroProductStack from '../components/product/HeroProductStack.astro';
+import TrackInView from '../components/tracking/TrackInView.astro';
+import { productImage, missingProductImages } from '../lib/product-images';
 import TrackPageEvent from '../components/tracking/TrackPageEvent.astro';
 import { eventAttrs } from '../lib/tracking';
 import {
   getProducts,
-  getPostsByProduct,
   hasCheckout,
   productUrl,
   type Product,
@@ -27,6 +32,22 @@ import {
 import * as schema from '../lib/schema';
 
 export async function getStaticPaths() {
+  /* Imagem declarada cujo arquivo ainda não chegou. Não é erro — é o que
+     permite desenhar a página antes de a fotografia existir. Mas precisa
+     aparecer no log, senão o slot silencioso passa despercebido. */
+  const missing = await missingProductImages();
+  if (missing.length > 0) {
+    console.warn(
+      `\n[imagens] ${missing.length} imagem(ns) de produto declarada(s) sem arquivo:`
+    );
+    for (const m of missing) {
+      console.warn(`  · ${m.expectedPath}`);
+      console.warn(`    ${m.role}`);
+      console.warn(`    alt: ${m.alt}`);
+    }
+    console.warn('');
+  }
+
   const products = await getProducts();
 
   return products.map((product) => {
@@ -50,7 +71,6 @@ const { product } = Astro.props;
 const d = product.data;
 const path = productUrl(d.slug);
 const checkoutHref = hasCheckout(product) ? d.checkout.url : null;
-const relatedPosts = await getPostsByProduct(product.id);
 const heroImage = productImage(d.slug, d.hero.image);
 
 /**
@@ -63,6 +83,54 @@ const checkoutEvent = eventAttrs('checkout_click', {
   value: d.price.amount,
   currency: d.price.currency,
 });
+
+/* Chamadas intermediárias, pelas âncoras declaradas no YAML. Levam à
+   oferta, nunca ao checkout: ver o comentário na primeira delas. */
+const midCtaAt = (after: string) => d.midCta.filter((c) => c.after === after);
+
+/* Imagens editoriais, distribuídas pelas âncoras declaradas no YAML.
+   Arquivo inexistente não renderiza nada — ver ProductImage.astro. */
+/* Só entram as que têm arquivo. O componente já não renderiza a figura sem
+   ele, mas o invólucro da seção continuava ocupando altura: uma faixa de
+   ar entre duas seções, sem nada dentro. Filtrar aqui é o que faz a página
+   fechar sozinha enquanto a fotografia não chega. */
+const imagesAt = (placement: string) =>
+  d.images.filter(
+    (i) => i.placement === placement && productImage(d.slug, i.src)
+  );
+
+/* A foto que acompanha o mecanismo, quando declarada. Uma só: duas fotos ao
+   lado do mesmo argumento competiriam entre si. */
+/* Foto em pé não ocupa a coluna inteira: o quadro limitado preserva a
+   proporção original em vez de cortar a cena para caber num 16/9. */
+const isPortrait = (ratio?: string) => {
+  if (!ratio) return false;
+  const [w, h] = ratio.split('/').map((n) => Number(n.trim()));
+  return Number.isFinite(w) && Number.isFinite(h) && h > w;
+};
+
+const [methodImage] = imagesAt('beside-method');
+const [benefitsImage] = imagesAt('beside-benefits');
+const [problemImage] = imagesAt('beside-problem');
+const [howImage] = imagesAt('beside-how-it-works');
+const [useCasesImage] = imagesAt('beside-use-cases');
+
+/* Rótulo do botão por posição.
+   O destino e o evento são os mesmos nos três botões de compra: o que
+   muda é a frase, que acompanha o que a pessoa acabou de ler. Repetir o
+   mesmo texto em três lugares lê como formulário, e não como convite. */
+/* Composição de produto no quadro do hero: capa, páginas reais no leque
+   e uma cena pequena. Só quando o produto declara as páginas. */
+const temComposicao = d.hero.pages.length > 0 && !!heroImage;
+
+/* Eventos de etapa do funil, só para a LP que os declara. Sem o prefixo
+   não sai nenhum: instrumentação de um produto no relatório de outro é
+   pior do que não medir. */
+const funil = d.funnelEventPrefix;
+
+const heroCta = d.hero.ctaLabel ?? d.checkout.cta;
+const offerCta = d.offer.ctaLabel ?? d.checkout.cta;
+const finalCtaLabel = d.finalCta.ctaLabel ?? d.checkout.cta;
 
 const crumbs = [
   { name: 'Início', path: '/' },
@@ -81,17 +149,46 @@ const crumbs = [
     schema.breadcrumbs(crumbs),
   ]}
 >
+  {/* Ambientação lúdica, só onde o YAML pede. Nenhuma LP existente muda
+      por este bloco existir. */}
+  {d.ambience === 'playful' && <PlayfulBackdrop />}
+
   <Hero
+    eyebrow={d.hero.eyebrow}
     headline={d.hero.headline}
     subheadline={d.hero.subheadline}
     highlights={[...d.hero.highlights]}
-    ctaLabel={d.checkout.cta}
+    ctaLabel={heroCta}
     ctaHref={checkoutHref}
     price={d.price.display}
-    image={heroImage}
+    image={temComposicao ? undefined : heroImage}
     imageAlt={d.hero.imageAlt}
     track={checkoutEvent}
-  />
+  >
+    {/* Foto de cena sozinha vende a atividade; a composição vende o que a
+        pessoa recebe, que é o que o hero de uma LP precisa fazer. Sem as
+        páginas declaradas, nada muda em LP nenhuma. */}
+    {temComposicao && (
+      <HeroProductStack
+        slot="art"
+        slug={d.slug}
+        cover={d.hero.image}
+        coverAlt={d.hero.imageAlt}
+        pages={[...d.hero.pages]}
+        scene={d.hero.scene}
+        sceneAlt={d.hero.sceneAlt}
+      />
+    )}
+    {/* Enquanto a foto do material não existir, a LP lúdica desenha a
+        própria composição em vez de deixar o quadro vazio. */}
+    {d.ambience === 'playful' && !heroImage && !temComposicao && (
+      <ColoringPagesArt slot="art" />
+    )}
+  </Hero>
+
+  {/* Barra de fatos. Uma linha, e não uma seção: ela pertence ao hero, e
+      transformá-la em seção devolveria a altura que este redesenho tira. */}
+  {d.trustBar && d.trustBar.length > 0 && <TrustBar items={[...d.trustBar]} />}
 
   <TrackPageEvent
     event="product_view"
@@ -103,70 +200,455 @@ const crumbs = [
     }}
   />
 
-  <div class="crumb-bar container">
-    <Breadcrumbs items={crumbs} />
-  </div>
+
+  {/* Galeria de páginas reais.
+
+      Vem antes de qualquer argumento escrito, e é de propósito: a
+      primeira pergunta de quem compara com um pack barato não é "por que
+      custa isso", é "como são os desenhos". Deixar a pessoa conferir
+      antes de argumentar é o que tira a comparação do terreno do preço.
+
+      São recortes das fotos do material impresso. Amostra genérica aqui
+      seria propaganda com aparência de prova. */}
+  {
+    d.gallery && (
+      <Section
+        tone="warm"
+        align="center"
+        title={d.gallery.title}
+        intro={d.gallery.intro}
+      >
+        <PageGallery slug={d.slug} items={d.gallery.items.map((i) => ({ ...i }))} />
+        {funil && <TrackInView event={`${funil}_gallery_view`} params={{ product_slug: d.slug }} />}
+      </Section>
+    )
+  }
 
   {/* Problema */}
-  <Section title={d.problem.title} intro={d.problem.intro} narrow>
-    <BulletList items={[...d.problem.items]} marker="dot" />
-    {d.problem.close && <p class="close">{d.problem.close}</p>}
-  </Section>
-
-  {/* Mecanismo */}
+  {/* Cabeçalho largo: a manchete da dor é longa e, na coluna estreita
+      padrão, quebrava em sete linhas curtas que esticavam o lado esquerdo
+      muito além dos bullets ao lado. */}
   <Section
-    tone="warm"
-    eyebrow={d.method.name}
-    title={d.method.title}
-    intro={d.method.intro}
+    layout={problemImage ? undefined : 'split'}
+    headWidth={problemImage ? undefined : '27rem'}
+    title={d.problem.title}
+    intro={d.problem.intro}
   >
-    <CardGrid items={[...d.method.pillars]} variant="plain" min="18rem" />
-    {d.method.note && <p class="note">{d.method.note}</p>}
+    {
+      problemImage ? (
+        <div class="side-split side-split-reverse">
+          <div>
+            <BulletList items={[...d.problem.items]} marker="dot" />
+            {d.problem.close && <p class="close">{d.problem.close}</p>}
+          </div>
+          <div class="side-figure">
+            <ProductImage
+              slug={d.slug}
+              src={problemImage.src}
+              alt={problemImage.alt}
+              ratio={problemImage.ratio ?? '3 / 4'}
+              frame="column"
+            />
+          </div>
+        </div>
+      ) : (
+        <Fragment>
+          <BulletList items={[...d.problem.items]} marker="dot" columns />
+          {d.problem.close && <p class="close">{d.problem.close}</p>}
+        </Fragment>
+      )
+    }
   </Section>
 
-  {/* Benefícios */}
-  <Section title={d.benefits.title} intro={d.benefits.intro}>
-    <CardGrid items={[...d.benefits.items]} />
-  </Section>
+  {
+    imagesAt('after-hero').map((img) => (
+      <div class="container figure-wrap figure-tight">
+        <ProductImage
+          slug={d.slug}
+          src={img.src}
+          alt={img.alt}
+          caption={img.caption}
+          ratio={img.ratio}
+          frame={isPortrait(img.ratio) ? 'portrait' : 'wide'}
+        />
+      </div>
+    ))
+  }
+
+  {
+    imagesAt('after-problem').map((img) => (
+      <div class="container figure-wrap">
+        <ProductImage
+          slug={d.slug}
+          src={img.src}
+          alt={img.alt}
+          caption={img.caption}
+          ratio={img.ratio}
+          frame={isPortrait(img.ratio) ? 'portrait' : 'wide'}
+        />
+      </div>
+    ))
+  }
+
+  {/* Mecanismo, benefícios e público são opcionais.
+
+      Saíram da LP do Mundo de Colorir no redesenho de conversão: a
+      galeria de páginas reais mostra em dois segundos o que o mecanismo
+      explicava, e os benefícios viraram a barra de fatos do topo e as
+      situações de uso. As objeções do bloco de público (material físico,
+      precisa de impressora, personagem conhecido) foram para o FAQ, onde
+      a pessoa vai procurá-las. As outras LPs declaram os três e não
+      mudam uma linha. */}
+  {
+    d.method && (
+      <>
+    {/* Mecanismo */}
+    {/* Cabeçalho central, como antes: o mecanismo do produto tem peso de
+        manifesto e não de mais uma lista.
+
+        O corpo muda quando existe a foto da âncora `beside-method`: ela vai a
+        uma coluna e os pilares à outra, em vez de a foto ocupar largura
+        sozinha entre duas seções. Uma imagem que ilustra o argumento ao lado
+        dele vale mais do que a mesma imagem com uma legenda embaixo. Sem o
+        arquivo, a seção volta sozinha à grade de dois pilares. */}
+    <Section
+      tone="warm"
+      align="center"
+      eyebrow={d.method.name}
+      title={d.method.title}
+      intro={d.method.intro}
+    >
+      {
+        methodImage ? (
+          <div class="method-split">
+            <div class="method-figure">
+              <ProductImage
+                slug={d.slug}
+                src={methodImage.src}
+                alt={methodImage.alt}
+                ratio="3 / 2"
+              frame="column"
+              />
+            </div>
+            <CardGrid items={[...d.method.pillars]} cols={1} min="100%" />
+          </div>
+        ) : (
+          <CardGrid items={[...d.method.pillars]} min="16rem" />
+        )
+      }
+      {d.method.note && <p class="note note-center">{d.method.note}</p>}
+    </Section>
+
+    {
+      imagesAt('after-method').map((img) => (
+        <div class="container figure-wrap">
+          <ProductImage
+            slug={d.slug}
+            src={img.src}
+            alt={img.alt}
+            caption={img.caption}
+            ratio={img.ratio}
+            frame={isPortrait(img.ratio) ? 'portrait' : 'wide'}
+          />
+        </div>
+      ))
+    }
+      </>
+    )
+  }
+
+  {
+    d.benefits && (
+      <>
+    {/* Benefícios.
+
+        O primeiro cartão só ocupa duas colunas quando isso fecha a grade.
+        Com `feature`, a contagem efetiva de células é `itens + 1`, e a
+        última linha só fica cheia numa grade de três quando esse total é
+        múltiplo de três. Cinco benefícios fecham; seis, não, e o destaque
+        sai sozinho para a grade não terminar num órfão. */}
+    <Section title={d.benefits.title} intro={d.benefits.intro}>
+      {
+        benefitsImage ? (
+          <div class="side-split side-split-reverse">
+            <CardGrid items={[...d.benefits.items]} cols={2} min="14rem" />
+            <div class="side-figure">
+              <ProductImage
+                slug={d.slug}
+                src={benefitsImage.src}
+                alt={benefitsImage.alt}
+                caption={benefitsImage.caption}
+                ratio={benefitsImage.ratio ?? '3 / 4'}
+              frame="column"
+              />
+            </div>
+          </div>
+        ) : (
+          <CardGrid
+            items={[...d.benefits.items]}
+            cols={3}
+            feature={(d.benefits.items.length + 1) % 3 === 0}
+          />
+        )
+      }
+    </Section>
+      </>
+    )
+  }
 
   {/* Como funciona */}
-  <Section tone="warm" title={d.howItWorks.title} intro={d.howItWorks.intro}>
-    <StepList steps={[...d.howItWorks.steps]} />
+  {/* Jornada horizontal no desktop, empilhada no mobile. Os números deixam
+      de ser marcador e passam a ser a estrutura da composição. */}
+  <Section
+    tone="warm"
+    align={howImage ? undefined : 'center'}
+    title={d.howItWorks.title}
+    intro={d.howItWorks.intro}
+  >
+    {
+      howImage ? (
+        <div class="side-split side-split-reverse">
+          <StepList steps={[...d.howItWorks.steps]} stacked />
+          <div class="side-figure">
+            <ProductImage
+              slug={d.slug}
+              src={howImage.src}
+              alt={howImage.alt}
+              ratio={howImage.ratio ?? '3 / 4'}
+              frame="column"
+            />
+          </div>
+        </div>
+      ) : (
+        <StepList steps={[...d.howItWorks.steps]} />
+      )
+    }
   </Section>
 
-  {/* Conteúdo do produto */}
-  <Section title={d.contents.title} intro={d.contents.intro}>
-    <ModuleList modules={[...d.contents.modules]} />
+  {
+    imagesAt('after-how-it-works').map((img) => (
+      <div class="container figure-wrap">
+        <ProductImage
+          slug={d.slug}
+          src={img.src}
+          alt={img.alt}
+          caption={img.caption}
+          ratio={img.ratio}
+          frame={isPortrait(img.ratio) ? 'portrait' : 'wide'}
+        />
+      </div>
+    ))
+  }
+
+  {/* CTA de continuidade.
+
+      A LP tem dois tipos de botão, e a diferença não é de estilo:
+
+      · de compra  — leva ao checkout e carrega `checkout_click`. São o do
+                     hero, o da oferta e o do fechamento, todos ao lado do
+                     preço ou depois dele;
+      · de continuidade — leva à oferta, na própria página. Não carrega
+                     evento de compra, porque rolar a página não é intenção
+                     de pagamento e contá-la como tal misturaria dois
+                     momentos do funil no mesmo número.
+
+      Quem chega aqui ainda não viu preço nem o que está incluído, e mandar
+      direto ao pagamento cobraria a decisão antes de a pessoa ter com o que
+      decidir. É a mesma regra que vale do artigo para a LP, aplicada dentro
+      da página. */}
+  {
+    midCtaAt('how-it-works').map((c) => (
+      <div class="container midcta">
+        <p>{c.text}</p>
+        <Cta href="#oferta" label={c.label ?? d.checkout.cta} kind="continue" />
+      </div>
+    ))
+  }
+
+  {/* Os temas do material.
+
+      Curso usa a lista numerada, porque ali a ordem é o produto: o módulo
+      2 depende do 1. Uma coleção para colorir não tem ordem nenhuma, e a
+      grade é o que mostra variedade, que é o argumento desta seção. A
+      escolha sai do próprio conteúdo: quem declara ícone nos temas quer a
+      vitrine; quem não declara continua na lista de módulos, e nenhuma LP
+      existente muda por este bloco existir. */}
+  <Section
+    layout={d.contents.modules.some((m) => m.icon) ? undefined : 'split'}
+    align={d.contents.modules.some((m) => m.icon) ? 'center' : undefined}
+    title={d.contents.title}
+    intro={d.contents.intro}
+  >
+    {
+      d.contents.modules.some((m) => m.icon) ? (
+        <ThemeGrid
+          slug={d.slug}
+          items={d.contents.modules.map((m) => ({ ...m, thumbs: [...m.thumbs] }))}
+          countLabel={d.contents.countLabel}
+        />
+      ) : (
+        <ModuleList modules={[...d.contents.modules]} />
+      )
+    }
+    {funil && <TrackInView event={`${funil}_themes_view`} params={{ product_slug: d.slug }} />}
   </Section>
+
+  {
+    imagesAt('after-contents').map((img) => (
+      <div class="container figure-wrap">
+        <ProductImage
+          slug={d.slug}
+          src={img.src}
+          alt={img.alt}
+          caption={img.caption}
+          ratio={img.ratio}
+          frame={isPortrait(img.ratio) ? 'portrait' : 'wide'}
+        />
+      </div>
+    ))
+  }
 
   {/* Materiais incluídos */}
-  <Section tone="warm" title={d.materials.title} intro={d.materials.intro}>
-    <CardGrid items={[...d.materials.items]} min="24rem" />
+  <Section
+    tone="warm"
+    align="center"
+    title={d.materials.title}
+    intro={d.materials.intro}
+  >
+    <MaterialGrid slug={d.slug} items={[...d.materials.items]} />
   </Section>
 
-  {/* Público */}
-  <Section>
-    <div class="audience">
-      <div>
-        <h2>{d.forWho.title}</h2>
-        <BulletList items={[...d.forWho.items]} marker="check" />
+  {
+    imagesAt('after-materials').map((img) => (
+      <div class="container figure-wrap">
+        <ProductImage
+          slug={d.slug}
+          src={img.src}
+          alt={img.alt}
+          caption={img.caption}
+          ratio={img.ratio}
+          frame={isPortrait(img.ratio) ? 'portrait' : 'wide'}
+        />
       </div>
-      <div>
-        <h2>{d.notForWho.title}</h2>
-        <BulletList items={[...d.notForWho.items]} marker="minus" />
-      </div>
-    </div>
-  </Section>
+    ))
+  }
 
-  {/* Depoimentos — não renderiza nada enquanto `enabled` for false.
+  {
+    midCtaAt('materials').map((c) => (
+      <div class="container midcta">
+        <p>{c.text}</p>
+        <Cta href="#oferta" label={c.label ?? d.checkout.cta} kind="continue" />
+      </div>
+    ))
+  }
+
+  {/* Situações de uso.
+
+      Benefício responde "o que isso me dá"; situação responde "quando eu
+      vou usar". Quem compra material para criança costuma decidir na
+      segunda pergunta: a tarde de chuva e a sala de espera são
+      reconhecidas na hora, e um benefício abstrato não é.
+
+      Só existe quando o YAML traz o bloco. Sem ele, nenhuma LP muda. */}
+  {
+    d.useCases && (
+      <Section
+        tone="warm"
+        title={d.useCases.title}
+        intro={d.useCases.intro}
+        align={useCasesImage ? undefined : 'center'}
+      >
+        {useCasesImage ? (
+          <div class="side-split">
+            <div class="side-figure">
+              <ProductImage
+                slug={d.slug}
+                src={useCasesImage.src}
+                alt={useCasesImage.alt}
+                caption={useCasesImage.caption}
+                ratio={useCasesImage.ratio ?? '3 / 4'}
+              frame="column"
+            />
+            </div>
+            <CardGrid items={[...d.useCases.items]} cols={2} min="13rem" />
+          </div>
+        ) : (
+          <CardGrid items={[...d.useCases.items]} cols={4} min="13rem" />
+        )}
+      </Section>
+    )
+  }
+
+  {
+    d.audience && d.forWho && d.notForWho && (
+      <>
+    {/* Público */}
+    <Section title={d.audience.title} intro={d.audience.intro} align="center">
+      <div class="audience">
+        <div class="aud yes">
+          <h3>{d.forWho.title}</h3>
+          <BulletList items={[...d.forWho.items]} marker="check" badge />
+        </div>
+        <div class="aud no">
+          <h3>{d.notForWho.title}</h3>
+          <BulletList items={[...d.notForWho.items]} marker="x" badge />
+        </div>
+      </div>
+    </Section>
+      </>
+    )
+  }
+
+  {/* Avaliações. Cada uma é uma conversa dentro de um celular, e o
+      carrossel move os aparelhos. Não renderiza nada sem itens, e quantos
+      cabem por vez sai da largura da tela limitada pela quantidade: a LP
+      não escolhe nem conhece esse número.
+
       Fica entre "para quem é" e a oferta: a pessoa acabou de se
-      reconhecer no público e ainda não viu o preço. */}
-  <TestimonialsSection
-    enabled={d.testimonials.enabled}
-    title={d.testimonials.title}
-    intro={d.testimonials.intro}
-    items={[...d.testimonials.items]}
-  />
+      reconhecer no público, ainda não viu o preço, e é exatamente aí que
+      pesa o que outra pessoa tem a dizer. */}
+  {
+    imagesAt('before-reviews').map((img) => (
+      <div class="container figure-wrap">
+        <ProductImage
+          slug={d.slug}
+          src={img.src}
+          alt={img.alt}
+          caption={img.caption}
+          ratio={img.ratio}
+          frame={isPortrait(img.ratio) ? 'portrait' : 'wide'}
+        />
+      </div>
+    ))
+  }
+
+  {/* O invólucro existe só para o observer ter um bloco a medir. */}
+  <div class="rev-wrap">
+    <ReviewsSection
+      enabled={d.reviews.enabled}
+      title={d.reviews.title}
+      subtitle={d.reviews.subtitle}
+      items={d.reviews.items.map((i) => ({ ...i, messages: [...i.messages] }))}
+    />
+    {funil && d.reviews.enabled && d.reviews.items.length > 0 && (
+      <TrackInView event={`${funil}_reviews_view`} params={{ product_slug: d.slug }} />
+    )}
+  </div>
+
+  {
+    imagesAt('before-offer').map((img) => (
+      <div class="container figure-wrap">
+        <ProductImage
+          slug={d.slug}
+          src={img.src}
+          alt={img.alt}
+          caption={img.caption}
+          ratio={img.ratio}
+          frame={isPortrait(img.ratio) ? 'portrait' : 'wide'}
+        />
+      </div>
+    ))
+  }
 
   {/* Oferta */}
   <Section
@@ -176,42 +658,61 @@ const crumbs = [
     intro={d.offer.intro}
     align="center"
   >
+    {/* A garantia entra aqui dentro, e não numa faixa própria logo
+        abaixo: ela é parte da oferta. No celular a leitura fica título,
+        conteúdo incluído, preço, botão, reasseguranças e garantia, numa
+        sequência só, sem uma seção nova cortando a decisão no meio. */}
     <OfferBox
+      heading={d.offer.includesTitle}
+      highlights={[...d.offer.highlights]}
+      groups={d.offer.groups.map((g) => ({ ...g, items: [...g.items] }))}
       includes={[...d.offer.includes]}
       price={d.price.display}
+      priceTerms={d.offer.priceTerms}
       priceNote={d.offer.priceNote}
-      ctaLabel={d.checkout.cta}
+      ctaLabel={offerCta}
       ctaHref={checkoutHref}
+      reassurances={[...(d.offer.reassurances ?? [])]}
+      guarantee={
+        d.guarantee && {
+          title: d.guarantee.title,
+          text: d.guarantee.text,
+          icon: d.guarantee.icon,
+        }
+      }
       track={checkoutEvent}
-    />
-  </Section>
-
-  {/* Garantia */}
-  <Section narrow>
-    <div class="guarantee">
-      {d.guarantee.icon && <Icon name={d.guarantee.icon} class="seal" />}
-      <div>
-        <h2>{d.guarantee.title}</h2>
-        <p>{d.guarantee.text}</p>
-      </div>
-    </div>
+    >
+      {temComposicao && (
+        <HeroProductStack
+          slot="mockup"
+          slug={d.slug}
+          cover={d.hero.image}
+          coverAlt=""
+          pages={[...d.hero.pages]}
+        />
+      )}
+    </OfferBox>
+    {funil && <TrackInView event={`${funil}_offer_view`} params={{ product_slug: d.slug }} />}
   </Section>
 
   {/* FAQ */}
-  <Section tone="warm" title={d.faq.title}>
+  <Section
+    tone="warm"
+    layout="split"
+    title={d.faq.title}
+    intro={d.faq.intro}
+  >
     <Faq items={[...d.faq.items]} />
   </Section>
 
-  {/* Artigos relacionados */}
-  {
-    relatedPosts.length > 0 && (
-      <Section title="Leia também" narrow>
-        {relatedPosts.map((post) => (
-          <PostCard post={post} />
-        ))}
-      </Section>
-    )
-  }
+  {/* Nenhum bloco de artigos aqui.
+
+      A LP é uma página comercial: cada link para fora dela custa conversão
+      em campanha paga, e "Leia também" no fim da página oferecia
+      exatamente isso a quem acabou de ver o preço. A relação entre artigo e
+      produto continua existindo no conteúdo (`product:` no frontmatter) e
+      continua valendo numa direção só: o artigo leva à LP, a LP leva ao
+      checkout. Os únicos links que restam são os legais, no rodapé. */}
 
   {/* CTA final */}
   <Section tone="accent" align="center" narrow>
@@ -220,12 +721,12 @@ const crumbs = [
       <p>{d.finalCta.text}</p>
       <Cta
         href={checkoutHref}
-        label={d.checkout.cta}
+        label={finalCtaLabel}
         variant="inverse"
         size="lg"
         track={checkoutEvent}
       />
-      <p class="final-price">{d.price.display} · pagamento único</p>
+      <p class="final-price">{d.price.display} · {d.offer.priceTerms}</p>
     </div>
   </Section>
 
@@ -250,6 +751,89 @@ const crumbs = [
     padding-bottom: var(--section-y);
   }
 
+  /* Mecanismo com foto: uma coluna para a imagem, outra para os pilares.
+     No mobile a foto vai para cima e os pilares descem, na ordem em que se
+     lê.
+
+     A proporção é 3/2 porque é a que o arquivo sustenta: o original tem
+     626x352, e um recorte retrato ao lado de uma coluna alta de cartões
+     precisaria ampliar a foto quase duas vezes para preencher. Foto
+     ampliada não fica maior, fica borrada. Centralizada na coluna, a
+     diferença de altura lê como pareamento editorial, e não como buraco. */
+  .method-split {
+    display: grid;
+    gap: var(--s-6);
+    text-align: start;
+  }
+
+  .method-figure :global(.product-figure) {
+    margin: 0;
+  }
+
+  @media (min-width: 60rem) {
+    .method-split {
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
+      gap: var(--s-8);
+      align-items: center;
+    }
+  }
+
+  /* Seção com foto ao lado do conteúdo.
+
+     A foto de cena ao lado do argumento vale mais do que a mesma foto
+     ocupando largura sozinha entre duas seções: ali ela é intervalo, aqui
+     ela é prova do que o texto está dizendo. No celular as duas voltam a
+     empilhar, na ordem em que se lê.
+
+     `reverse` inverte a ordem no desktop, para a foto cair do lado que
+     sobra depois do bloco de cartões. */
+  .side-split {
+    display: grid;
+    gap: var(--s-6);
+    text-align: start;
+  }
+
+  .side-figure :global(.product-figure) {
+    margin: 0;
+  }
+
+  @media (min-width: 62rem) {
+    .side-split {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
+      gap: var(--s-8);
+      align-items: center;
+    }
+
+    .side-split-reverse {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+    }
+  }
+
+  /* A figura logo abaixo do hero respira menos em cima: ela continua a
+     composição do topo em vez de abrir um bloco novo. */
+  .figure-tight {
+    padding-top: var(--s-4);
+  }
+
+  /* Faixa do CTA intermediário: uma linha e um botão, lado a lado no
+     desktop e empilhados no celular. Sem manchete e sem fundo próprio, para
+     não competir com a oferta que vem depois. */
+  .midcta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--s-4) var(--s-6);
+    padding-block: var(--s-8);
+    text-align: center;
+  }
+
+  .midcta p {
+    margin: 0;
+    max-width: 46ch;
+    color: var(--color-muted);
+  }
+
   .close {
     margin-top: var(--s-6);
     font-size: var(--t-1);
@@ -265,47 +849,67 @@ const crumbs = [
     max-width: 68ch;
   }
 
-  .audience {
-    display: grid;
-    gap: var(--s-8);
+  /* Duas colunas de texto solto viravam duas manchas cinzas lado a lado,
+     sem dizer que são um par em oposição. Como cartões, a comparação fica
+     explícita — e o lado que interessa ao leitor certo recebe a cor. */
+  /* As figuras editoriais herdam a mesma coluna das seções e mantêm o
+     ritmo vertical entre blocos. */
+  .figure-wrap {
+    padding-block: var(--s-8);
   }
 
-  .audience h2 {
+  .note-center {
+    margin-inline: auto;
+    text-align: center;
+    max-width: 60ch;
+  }
+
+  /* A nota de checkout pendente segue o alinhamento do bloco em que vive.
+     Centralizada aqui, ela para de parecer solta à esquerda da faixa. */
+  .final :global(.pending-note) {
+    justify-content: center;
+  }
+
+  .audience {
+    display: grid;
+    gap: var(--s-5);
+  }
+
+  .aud {
+    border-radius: var(--radius-lg);
+    padding: var(--s-6);
+    border: 1px solid var(--color-border);
+  }
+
+  .aud.yes {
+    background: var(--color-primary-soft);
+    border-color: color-mix(in srgb, var(--color-primary) 22%, transparent);
+  }
+
+  .aud.no {
+    background: var(--color-surface-raised);
+  }
+
+  .audience h3 {
     font-size: var(--t-2);
     margin-bottom: var(--s-5);
   }
 
-  .guarantee {
-    background: var(--color-surface-raised);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    padding: var(--s-6);
-    display: flex;
-    align-items: flex-start;
-    gap: var(--s-5);
+  /* O lado da exclusão não é um alerta: recebe o acento da paleta numa
+     borda fina, o suficiente para separar os dois lados de relance. */
+  .aud.no {
+    border-color: color-mix(in srgb, var(--color-accent) 26%, var(--color-border));
   }
 
-  .guarantee :global(.seal) {
-    --icon-size: 2rem;
-    color: var(--color-primary);
-    /* Alinha o escudo à altura da primeira linha do título. */
-    margin-top: 0.1em;
-  }
-
-  @media (max-width: 32rem) {
-    .guarantee {
-      flex-direction: column;
-      gap: var(--s-4);
+  @media (min-width: 56rem) {
+    .audience {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--s-6);
     }
-  }
 
-  .guarantee h2 {
-    font-size: var(--t-2);
-  }
-
-  .guarantee p {
-    margin-top: var(--s-3);
-    color: var(--color-muted);
+    .aud {
+      padding: var(--s-7);
+    }
   }
 
   .final {
@@ -326,10 +930,4 @@ const crumbs = [
     font-size: var(--t--1);
   }
 
-  @media (min-width: 46rem) {
-    .audience {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: var(--s-9);
-    }
-  }
 </style>

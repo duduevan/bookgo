@@ -1,0 +1,438 @@
+# ─────────────────────────────────────────────────────────────
+#  Cardápio da Semana em 20 Minutos
+#  Toda a copy da landing page vive neste arquivo.
+#  Para alterar preço, checkout ou headline, edite apenas aqui.
+#
+#  FONTE: docs/cardapio-da-semana-source-of-truth.md.
+#  Se não está lá, não se afirma aqui.
+#
+#  TRÊS COISAS QUE ESTA PÁGINA NUNCA PODE DIZER:
+#
+#  1. que os 20 minutos são de cozinha. São da sessão de planejamento,
+#     uma vez por semana. A página repete isso na subheadline, na nota
+#     do método, na oferta e no FAQ, porque é a leitura errada mais
+#     provável;
+#  2. que isto é dieta, plano alimentar, emagrecimento, alimentação
+#     saudável, livro de receitas ou curso de culinária;
+#  3. economia garantida, percentual de desperdício evitado ou fim do
+#     delivery.
+#
+#  O jantar é a dor de entrada. O produto NÃO se limita a ele: o
+#  Planner contempla almoço e jantar.
+# ─────────────────────────────────────────────────────────────
+
+slug: cardapio-da-semana-em-20-minutos
+name: Cardápio da Semana em 20 Minutos
+# Categoria do material na home. Agrupa sozinho: produto novo com uma
+# categoria nova cria a prateleira dela, e categoria sem produto não
+# aparece.
+category:
+  id: cozinha-planejamento
+  label: Cozinha e planejamento
+
+
+tagline: Um jeito de resolver as principais refeições da semana de uma vez, numa sessão de cerca de 20 minutos.
+promise: Reduzir a necessidade de decidir todo dia o que preparar, concentrando o planejamento das principais refeições da semana numa sessão simples de cerca de 20 minutos, que termina em lista de compras.
+
+# ── Identidade visual ────────────────────────────────────────
+# Identidade própria, e não uma variação da LP do Casa Organizada: o
+# sálvia daquele produto sai de cena. Entra o páprica de cozinha real,
+# com um âmbar de caderno e mercado como acento. Verde fica fora como
+# cor principal de propósito: aqui ele puxaria para alimentação
+# saudável, que é exatamente o que este produto não vende.
+#
+# Contrastes conferidos: texto sobre fundo 14,9:1, branco sobre primary
+# 6,5:1, branco sobre primaryDark 10,5:1, muted sobre fundo 5,8:1.
+theme:
+  primary: "#9C4221"       # páprica, CTAs e destaques
+  primaryDark: "#6B2C14"   # páprica profundo, hover e contraste
+  accent: "#8A6516"        # âmbar, acento pontual
+  background: "#FDF8F3"    # creme quente, fundo da página
+  surface: "#FFFFFF"       # branco, cartões
+  text: "#2A211C"
+  muted: "#6E5F56"
+  border: "#EADFD3"
+
+# ── Comercial ────────────────────────────────────────────────
+price:
+  amount: 27
+  currency: BRL
+  display: R$ 27,00
+
+checkout:
+  provider: kiwify
+  url: https://pay.kiwify.com.br/6VGDS8V
+  cta: Quero planejar minha semana
+
+# ── SEO ──────────────────────────────────────────────────────
+seo:
+  title: Cardápio da Semana em 20 Minutos
+  description: Pare de decidir todos os dias o que fazer para comer. Numa sessão de cerca de 20 minutos por semana, você organiza as principais refeições da casa e transforma isso em lista de compras. Cinco módulos e cinco materiais em PDF por R$ 27,00.
+  ogImage: /images/og-cardapio-da-semana-em-20-minutos.png
+
+# ── Hero ─────────────────────────────────────────────────────
+hero:
+  eyebrow: O Método dos 20 Minutos
+  headline: Pare de decidir todos os dias o que fazer para comer.
+  subheadline: "Numa sessão de cerca de 20 minutos, uma vez por semana, você organiza as principais refeições da casa e transforma esse plano numa lista de compras. Os 20 minutos são de planejamento, não de cozinha."
+  # Fatos do produto, nunca prova social.
+  highlights:
+    - text: 5 módulos em texto direto, feitos para ler rápido
+      icon: list
+    - text: 5 materiais práticos em PDF
+      icon: checklist
+    - text: Acesso liberado após a aprovação do pagamento
+      icon: spark
+  image: hero-planejando-a-semana.webp
+  imageAlt: Mulher sentada à mesa da cozinha anotando a lista de compras num caderno
+
+# ── Problema: a cena do fim do dia ───────────────────────────
+problem:
+  title: São seis da tarde e a pergunta volta
+  items:
+    - Você abre a geladeira, olha, fecha. Um minuto depois abre de novo, como se alguma coisa tivesse mudado.
+    - Tem comida ali. Só que falta um ingrediente para virar refeição, e o que resolveria está congelado.
+    - Ontem já foi aquilo, e hoje ninguém quer repetir.
+    - A fome aumenta enquanto a decisão não sai. O delivery começa a parecer a opção mais fácil.
+    - No mercado você comprou o que lembrou, não o que ia preparar, e metade não conversa com a outra metade.
+    - Amanhã, no mesmo horário, a mesma pergunta volta.
+  close: "O problema não é falta de capacidade na cozinha. É tentar tomar várias decisões seguidas justamente quando a energia para decidir já acabou."
+
+# ── Mecanismo: o Método dos 20 Minutos ───────────────────────
+method:
+  title: A decisão sai do fim do dia e vira um bloco só na semana
+  name: O Método dos 20 Minutos
+  intro: >-
+    Em vez de decidir a refeição todo dia, você decide uma vez por semana, num
+    horário em que ainda dá para pensar. São três blocos curtos, nesta ordem.
+  pillars:
+    - title: Olhar, de 0 a 5 minutos
+      icon: compass
+      text: "Uma conferida rápida na geladeira, no freezer e na despensa. É o inventário que impede de comprar o que já está em casa e de esquecer o que precisa sair antes."
+    - title: Decidir, de 5 a 12 minutos
+      icon: calendar
+      text: "Você olha a agenda, marca os dias corridos e escolhe as refeições principais a partir do que a semana realmente comporta. Não é montar uma semana perfeita."
+    - title: Listar, de 12 a 20 minutos
+      icon: checklist
+      text: "O cardápio vira lista de compras, e a lista traz só o que está faltando de verdade, porque o inventário já disse o que você tem."
+  note: Vinte minutos é o tempo do planejamento, uma vez por semana. O preparo de cada refeição continua levando o tempo que ela normalmente leva.
+
+# ── Benefícios: o que muda na rotina ─────────────────────────
+benefits:
+  title: O que muda na rotina
+  items:
+    - title: Menos decisões no fim do dia
+      icon: spark
+      text: A pergunta deixa de aparecer todo dia às seis da tarde, porque já foi respondida uma vez, num momento mais tranquilo da semana.
+    - title: A lista nasce do cardápio
+      icon: checklist
+      text: Você para de comprar pelo que lembra no corredor do mercado e passa a comprar pelo que pretende preparar.
+    - title: Você sabe o que tem em casa
+      icon: home
+      text: O inventário rápido mostra o que já existe antes de a compra ser montada, e o que estava no fundo do freezer volta a ser usado.
+    - title: Os dias corridos entram na conta antes
+      icon: calendar
+      text: A semana é planejada já sabendo quais dias vão ser difíceis, em vez de você descobrir isso às sete da noite.
+    - title: Trocar deixa de ser problema
+      icon: list
+      text: Como o cardápio é um conjunto de refeições e não uma agenda fixa, mudar um dia de lugar não derruba a semana.
+    - title: Menos improviso e uma saída para o imprevisto
+      icon: roadmap
+      text: Sobras passam a ter destino, e a refeição de segurança cobre o dia em que o plano muda.
+
+# ── Como funciona: planejar não é prever ─────────────────────
+howItWorks:
+  title: Planejar não é prever a semana perfeita
+  intro: Se você já tentou montar cardápio e abandonou, provavelmente o problema foi o formato, e não você. Este método não depende de sete dias perfeitos nem de seguir cada refeição à risca.
+  steps:
+    - title: Escolha um dia e um horário
+      text: Um bloco fixo por semana, antes da compra. Domingo à tarde, segunda de manhã, o que couber na sua rotina. O ponto é não decidir com fome, no fim do dia.
+    - title: Marque os dias corridos primeiro
+      text: Dia corrido é aquele que você já sabe de antemão que vai ser difícil. Ele entra no plano como é, e pode inclusive ser o dia do delivery, decidido com antecedência em vez de no impulso.
+    - title: Use refeições que a casa já conhece
+      text: Refeição base é o que a sua casa já gosta e você já sabe preparar. Repetir de propósito porque facilita a rotina é planejamento, não falta de ideia.
+    - title: Deixe uma refeição de segurança
+      text: Algo simples e sempre disponível para quando a semana mudar. É ela que evita que um imprevisto derrube o cardápio inteiro.
+    - title: Troque à vontade
+      text: O cardápio diz o que existe para a semana, e você escolhe a ordem conforme os dias acontecem. Semana real diferente da semana planejada é o esperado, não uma falha.
+
+# ── Conteúdo do produto ──────────────────────────────────────
+contents:
+  title: O que você vai aprender
+  intro: Curso digital em texto. Cinco módulos objetivos, para ler e aplicar na mesma semana.
+  modules:
+    - number: 1
+      title: Pare de decidir o jantar todos os dias
+      objective: "O custo de decidir a refeição todo fim de dia, por que a compra sem destino e o cardápio rígido falham, e o que significa levar essas decisões do dia para a semana."
+    - number: 2
+      title: O Método dos 20 Minutos
+      objective: "Os três blocos da sessão semanal na prática: o inventário rápido, a leitura da agenda com os dias corridos, a escolha das refeições no Planner e a lista que nasce daí. É aqui que você aplica o método pela primeira vez."
+    - number: 3
+      title: Monte seu cardápio sem complicar
+      objective: "Montar a semana com o que a casa já gosta: banco de refeições, repetição planejada, ingredientes que se repetem entre pratos, preparações aproveitadas em outro momento, refeição de segurança e um jeito de testar novidade sem virar experimento."
+    - number: 4
+      title: Do cardápio para a lista de compras
+      objective: "Fazer a lista nascer do cardápio: o que o inventário já cobre, o que precisa ser reposto, o que pode esperar, como organizar por categoria, o que fazer com promoção e como decidir entre uma compra só ou compras divididas."
+    - number: 5
+      title: Faça funcionar na vida real
+      objective: "Quando a semana muda: trocar refeições, cobrir o dia em que falta um ingrediente ou alguém não come em casa, usar sobras, delivery e visitas sem derrubar o plano, e retomar depois de uma semana caótica."
+
+# ── Materiais incluídos ──────────────────────────────────────
+# `mockup:` fica de fora enquanto os PDFs finais não existirem: não se
+# inventa tela de material. Quando existirem, basta declarar o arquivo
+# em src/assets/products/<slug>/ e o quadro aparece sem mudar layout.
+materials:
+  title: Os materiais fazem parte do método
+  intro: Cinco peças em PDF para usar no celular, no tablet, no computador ou impressas. Elas são onde o método acontece, e não um anexo do curso.
+  items:
+    - title: Planner de Cardápio Semanal
+      icon: calendar-week
+      text: A semana em uma página, com almoço e jantar, para marcar os dias corridos antes de escolher as refeições.
+    - title: Lista de Compras Inteligente
+      icon: checklist
+      text: O planejamento virando lista organizada, sem comprar de novo o que já está em casa.
+    - title: Inventário Rápido de Geladeira, Freezer e Despensa
+      icon: home
+      text: O que já existe em casa, olhado antes de montar o cardápio e a compra.
+    - title: Banco de Refeições da Casa
+      icon: list
+      text: As refeições que já funcionam na sua rotina, registradas para você não procurar ideia nova toda semana.
+    - title: Plano de 7 Dias para Começar
+      icon: roadmap
+      text: Um roteiro para colocar o método em prática pela primeira vez, sem precisar acertar tudo de uma vez.
+
+# ── Imagens editoriais ───────────────────────────────────────
+# Arquivos em src/assets/products/cardapio-da-semana-em-20-minutos/,
+# materializados pelo workflow a partir de content/image-sources.yaml.
+# Sem o arquivo, o slot não renderiza e o build lista o que falta.
+images:
+  - id: compras-na-bancada
+    src: compras-na-bancada.webp
+    alt: Compras recém-chegadas sobre a bancada da cozinha, com pão e frutas
+    caption: A compra que nasce do cardápio traz o que falta, e não o que se lembra no corredor.
+    placement: after-method
+
+# ── Público ──────────────────────────────────────────────────
+audience:
+  title: Este método faz sentido para a sua rotina?
+  intro: Veja se a proposta combina com o jeito que as refeições são decididas na sua casa.
+
+forWho:
+  title: Para quem é
+  items:
+    - Quem se pega decidindo o jantar todos os dias, sempre no fim da tarde.
+    - Quem compra alimentos e depois não sabe exatamente onde usar cada coisa.
+    - Quem tem uma rotina diferente a cada dia da semana.
+    - Quem quer planejar sem seguir um cardápio rígido.
+    - Quem prefere usar refeições que já fazem parte da própria rotina.
+    - Quem precisa contar com dias corridos, e não fingir que eles não existem.
+    - Quem quer uma lista de compras conectada ao que pretende preparar.
+    - Quem mora sozinho, em casal ou com filhos e é quem decide o que vai para a mesa.
+
+notForWho:
+  title: Para quem não é
+  items:
+    - Quem procura uma dieta ou um plano alimentar.
+    - Quem quer acompanhamento nutricional.
+    - Quem está atrás de um livro de receitas ou de um curso de culinária.
+    - Quem busca um programa de emagrecimento.
+    - Quem espera preparar todas as refeições em 20 minutos. O tempo é de planejamento.
+    - Quem quer um sistema de meal prep obrigatório, com a semana inteira cozinhada de uma vez.
+
+# ── Oferta ───────────────────────────────────────────────────
+offer:
+  title: Comece pela próxima semana
+  intro: Uma sessão de planejamento por semana. Pagamento único, sem mensalidade e sem renovação.
+  includesTitle: O que você recebe
+  priceTerms: pagamento único · sem mensalidade
+  # Contagens verificáveis da entrega, conferíveis na lista abaixo.
+  highlights:
+    - value: "5"
+      label: módulos
+    - value: "5"
+      label: materiais em PDF
+    - value: "20"
+      label: minutos de planejamento
+  groups:
+    - title: Método
+      icon: compass
+      items:
+        - Os 5 módulos do Método dos 20 Minutos, escritos para ler e aplicar na mesma semana
+        - "Os três blocos da sessão semanal: olhar, decidir e listar"
+        - O que fazer quando a semana muda, sem replanejar tudo
+    - title: Materiais práticos
+      icon: checklist
+      items:
+        - Planner de Cardápio Semanal, com almoço e jantar
+        - Lista de Compras Inteligente
+        - Inventário Rápido de Geladeira, Freezer e Despensa
+        - Banco de Refeições da Casa
+        - Plano de 7 Dias para Começar
+    - title: Acesso
+      icon: spark
+      items:
+        - Área de membros da Kiwify, liberada após a aprovação do pagamento
+        - Materiais digitais em PDF para ler no celular, no tablet ou no computador
+        - Peças pensadas para também funcionarem impressas
+  priceNote: Produto digital. Pagamento processado pela Kiwify.
+  reassurances:
+    - icon: shield
+      text: 7 dias de garantia para conhecer o conteúdo
+    - icon: spark
+      text: Acesso liberado após a aprovação do pagamento
+    - icon: checklist
+      text: 5 materiais em PDF para usar no celular ou impressos
+    - icon: list
+      text: Pagamento único, sem mensalidade e sem renovação
+
+# ── Garantia ─────────────────────────────────────────────────
+# OMITIDA ENQUANTO A CONFIGURAÇÃO REAL NA KIWIFY NÃO FOR CONFIRMADA.
+# Garantia é condição da plataforma, não decisão de copy: afirmar um
+# prazo aqui sem ele estar ligado lá seria prometer em nome de
+# terceiro. Confirmada a configuração, acrescente o bloco `guarantee`
+# (title, text, icon) e ele aparece dentro da oferta.
+
+# ── Avaliações ───────────────────────────────────────────────
+# Uma avaliação é uma conversa, e uma conversa é um celular. Acrescentar
+# outra é acrescentar um item em `items`: o carrossel ganha mais um
+# aparelho sozinho, sem tocar em componente nem em CSS.
+#
+# O QUE ESTÁ AQUI É LITERAL. O texto da Patrícia é o que ela escreveu, e
+# a resposta é a que a BookGo deu. Nada foi reescrito, encurtado ou
+# "melhorado": avaliação editada e publicada como se fosse a fala da
+# pessoa deixa de ser avaliação.
+#
+# PENDENTES, e por um motivo de conteúdo, não de código: Mariana
+# Sampaio, Camila Duarte, Fernanda Costa e Beatriz Meireles enviaram
+# avaliações em que parte da redação fala de receitas, de prato pronto
+# ou de cozinhar em 20 minutos. Nada disso corresponde a este material,
+# cujos 20 minutos são de planejamento. Enquanto não houver texto final
+# revisado e autorizado por cada uma, elas não entram: nem editadas por
+# nós, nem em versão parcial.
+#
+# Os personagens e os "Exemplos de rotina" dos módulos são didáticos e
+# NÃO viram depoimento.
+#
+# NOTA EM ESTRELAS: as clientes deram 5 estrelas, e a peça não exibe
+# estrela nenhuma hoje. Não foi esquecimento: o formato da BookGo é a
+# conversa no aparelho, e recriar cartão com estrelas só por causa disso
+# desfaria a decisão da rodada anterior.
+reviews:
+  enabled: true
+  title: O que estão dizendo sobre o método
+  subtitle: Mensagens de quem já está usando o método.
+  # ─────────────────────────────────────────────────────────
+  #  AS CINCO MENSAGENS SÃO REAIS, E ESTÃO PUBLICADAS POR CORTE.
+  #
+  #  Quatro delas traziam frases que afirmam o que este material
+  #  NÃO entrega: receita pronta, prato específico, escolha de
+  #  ingrediente e preparo em 20 minutos. Essas frases saíram
+  #  inteiras. Nada foi reescrito, nada foi acrescentado, e nenhuma
+  #  frase publicada aqui é diferente do que a pessoa escreveu.
+  #
+  #  O que foi cortado, por pessoa:
+  #
+  #  Mariana  "As receitas são super fáceis e realmente rápidas de
+  #           fazer, cronometrei ontem e deu certinho os 20
+  #           minutinhos." Os 20 minutos são da sessão de
+  #           planejamento, e a página afirma isso em quatro lugares.
+  #  Camila   "O frango cremoso virou o favorito aqui em casa, meus
+  #           filhos adoraram!" Não existe receita no material.
+  #  Fernanda "Não usa ingredientes caros ou difíceis de achar, é
+  #           comida de verdade pro dia a dia." O material não
+  #           escolhe ingrediente nem prato.
+  #  Beatriz  "O método de preparar tudo rápido funciona de verdade.
+  #           Super prático e muito saboroso!" Não há método de
+  #           preparo, e sabor não é coisa que este produto entregue.
+  #
+  #  Camila e Fernanda receberam reação da equipe (emoji), e não
+  #  resposta escrita. O aparelho delas mostra só a mensagem: uma
+  #  resposta que não existiu não é inventada aqui.
+  # ─────────────────────────────────────────────────────────
+  items:
+    - id: mariana-sampaio
+      name: Mariana Sampaio
+      messages:
+        - sender: person
+          text: "Gente, sério... salvou minha rotina! Trabalho fora o dia todo e chegava em casa sem ânimo nenhum pra cozinhar, acabava pedindo delivery direto. Super recomendo! 😍🍲✨"
+        - sender: bookgo
+          text: "Que felicidade ler isso, Mari! Nosso objetivo é exatamente devolver esse tempo e leveza pro seu dia. Bom apetite a semana toda! 🥰❤️"
+          read: true
+
+    - id: camila-duarte
+      name: Camila Duarte
+      messages:
+        - sender: person
+          text: "Melhor compra que fiz esse mês! A lista de compras e a organização semanal ajudaram até a economizar no mercado, porque não estrago mais nada na geladeira. 👏👩‍👧‍👦😋"
+
+    - id: patricia-lima
+      name: Patrícia Lima
+      messages:
+        - sender: person
+          text: "Prático, direto ao ponto e sem frescura! Eu sou meio perdida na cozinha, mas o passo a passo é muito bem explicado. Consegui planejar a semana inteira no domingo e agora não fico mais com aquela dúvida clássica do 'o que vou fazer pro jantar hoje?'. Maravilhoso! 🥗⏰💖"
+        - sender: bookgo
+          text: "O fim do 'o que fazer pro jantar' é uma verdadeira vitória, né Pati? Haha! Muito bom saber que está curtindo! 🥳🍳"
+          read: true
+
+    - id: fernanda-costa
+      name: Fernanda Costa
+      messages:
+        - sender: person
+          text: "Comprei achando que seria mais do mesmo, mas me surpreendi demais. Já indiquei até pro grupo das amigas do trabalho! Vale cada centavo. 🥦✨🤩"
+
+    - id: beatriz-meireles
+      name: Beatriz Meireles
+      messages:
+        - sender: person
+          text: "Eu detesto passar horas na frente do fogão lavando panela depois, então esse guia caiu como uma luva. 🥘👏❤️"
+        - sender: bookgo
+          text: "Menos louça e mais tempo livre pra descansar! Obrigada pelo carinho, Bia! 💛✨"
+          read: true
+
+# ── Garantia ─────────────────────────────────────────────────
+# Sete dias, o padrão da BookGo, configurado na Kiwify. Texto comercial e
+# objetivo, sem interpretação jurídica: a garantia é oferecida
+# voluntariamente e não substitui o direito de arrependimento do CDC.
+guarantee:
+  icon: shield
+  title: Garantia de 7 dias
+  text: Você terá 7 dias de garantia para conhecer o conteúdo. Se não for para você, basta pedir o reembolso dentro desse prazo.
+
+# ── FAQ ──────────────────────────────────────────────────────
+faq:
+  title: Perguntas frequentes
+  items:
+    - q: Os 20 minutos são para cozinhar?
+      a: "Não. Os 20 minutos são a sessão de planejamento da semana: olhar o que já tem em casa, escolher as refeições principais e montar a lista de compras. O preparo de cada refeição continua levando o tempo que leva."
+    - q: Preciso planejar almoço e jantar todos os dias?
+      a: Não necessariamente. O Planner permite organizar almoço e jantar, e você decide o quanto quer preencher. Em muitas semanas faz mais sentido planejar só os jantares, ou só alguns dias, e deixar o resto em aberto.
+    - q: Minha semana muda muito. Ainda funciona?
+      a: O cardápio é um conjunto de refeições para a semana, e não uma agenda com dia marcado. Trocar uma pela outra não derruba o plano, os dias corridos já entram marcados e a refeição de segurança existe para o dia que sai do previsto.
+    - q: Eu quase não cozinho. Serve para mim?
+      a: Serve se o que te incomoda é decidir o que comer, porque essa decisão existe mesmo em casas que cozinham pouco. Se você quase nunca prepara nada e não pretende mudar isso, o método vai ajudar menos, e é honesto dizer.
+    - q: Já tentei montar cardápio antes e abandonei.
+      a: Cardápio rígido de sete dias costuma ser abandonado porque assume uma semana que não acontece. Aqui você escolhe as refeições principais, marca antes os dias difíceis e pode trocar, repetir ou deixar dias em aberto sem que isso signifique ter falhado.
+    - q: Posso repetir refeições?
+      a: Pode, e o método chama isso de repetição planejada. Repetir porque facilita a rotina é diferente de repetir porque faltou ideia na hora.
+    - q: E se eu pedir delivery?
+      a: O delivery não invalida o planejamento. Ele pode inclusive entrar como a escolha de um dia corrido, decidida com antecedência em vez de no impulso do fim do dia.
+    - q: Preciso seguir exatamente o que coloquei em cada dia?
+      a: Não. O planejamento é referência, não obrigação. Ele existe para você não precisar decidir do zero, e não para cobrar disciplina.
+    - q: É uma dieta?
+      a: Não. Não existe restrição, contagem, cardápio prescrito nem orientação nutricional. O produto trata da decisão do que preparar, não do que você deve comer.
+    - q: Tem receitas?
+      a: Não é um livro de receitas. O método trabalha com as refeições que já fazem parte da sua rotina, e o Banco de Refeições da Casa existe justamente para reunir o que a sua casa já faz.
+    - q: Como recebo os materiais?
+      a: Após a aprovação do pagamento, o acesso é liberado na área de membros da Kiwify, plataforma responsável pelo checkout.
+
+# ── CTA de continuidade ──────────────────────────────────────
+# Leva à oferta, na própria página, e não dispara `checkout_click`.
+midCta:
+  - after: how-it-works
+    text: O método está explicado. Se ele conversa com a sua semana, dá para começar pela próxima.
+    label: Quero organizar minha semana
+
+# ── CTA final ────────────────────────────────────────────────
+finalCta:
+  title: Vinte minutos no domingo custam menos que sete decisões às seis da tarde
+  text: Se a pergunta "o que vamos comer hoje?" aparece todo dia na sua casa, o problema provavelmente não é falta de ideia. É o horário em que a decisão está sendo tomada.

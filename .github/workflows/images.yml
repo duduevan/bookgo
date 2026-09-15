@@ -1,0 +1,101 @@
+name: Materializar imagens declaradas
+
+# Baixa as imagens de content/image-sources.yaml, otimiza e commita.
+#
+# Existe porque o ambiente onde o conteúdo é editado tem bloqueio de egress
+# para os CDNs do Magnific e do Freepik: lá dá para escolher a imagem e
+# declarar a origem, mas não para buscar os bytes. O runner do GitHub tem
+# saída de rede sem restrição, então a materialização acontece aqui.
+#
+# Fluxo pretendido: declarar a origem no manifesto → rodar este workflow →
+# os arquivos chegam ao repositório → o build do site os encontra sozinho.
+# Nenhum download manual, nenhum upload por FTP imagem a imagem.
+
+on:
+  # Disparo manual, depois que o arquivo existir na branch padrão.
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Rebaixar mesmo o que já existe'
+        type: boolean
+        required: true
+        default: false
+
+  # Nas branches de trabalho, roda sozinho quando o manifesto muda. É o que
+  # permite materializar uma imagem sem esperar o workflow chegar à main.
+  #
+  # Não entra em laço: o commit do bot toca apenas `src/assets/**`, que não
+  # está entre os caminhos observados abaixo.
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - 'content/image-sources.yaml'
+      - 'scripts/fetch-images.mjs'
+      - '.github/workflows/images.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: imagens-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    name: Baixar, otimizar e commitar
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Materializar imagens
+        run: npm run images:fetch ${{ inputs.force && '-- --force' || '' }}
+
+      # Sem alterações, o job termina em silêncio: é o caso normal quando
+      # todas as imagens declaradas já estão no repositório.
+      # `always()` porque sucesso parcial continua sendo sucesso para as
+      # imagens que chegaram: uma origem que falhou não deve levar junto as
+      # que foram baixadas na mesma execução.
+      - name: Commitar o que mudou
+        if: always()
+        run: |
+          set -eu
+
+          if [ -z "$(git status --porcelain src/assets)" ]; then
+            echo "Nenhuma imagem nova. Nada a commitar."
+            exit 0
+          fi
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add src/assets
+          git commit -m "Materializa imagens declaradas em content/image-sources.yaml"
+
+          # A branch pode ter andado enquanto as imagens eram baixadas: os
+          # workflows de conferência também commitam nela. Sem o rebase, o
+          # push é recusado e todo o download é jogado fora, que foi o que
+          # aconteceu. O commit só toca em src/assets, então não há conflito
+          # possível com o que chegou por fora.
+          for tentativa in 1 2 3; do
+            git pull --rebase origin "${{ github.ref_name }}" && \
+              git push origin HEAD:${{ github.ref_name }} && exit 0
+            echo "::warning::Push recusado na tentativa $tentativa. A branch andou; tentando de novo."
+            sleep $((tentativa * 5))
+          done
+          echo "::error::Não foi possível publicar as imagens depois de três tentativas."
+          exit 1
+
+      - name: Conferir que o site ainda constrói
+        run: npm run build

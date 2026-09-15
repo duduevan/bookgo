@@ -6,6 +6,17 @@
 
 slug: casa-organizada-em-15-minutos
 name: Casa Organizada em 15 Minutos por Dia
+
+# Material em destaque na home. Declarado aqui, e não deduzido da ordem
+# alfabética dos slugs, que mudaria a home sozinha a cada produto novo.
+featured: true
+# Categoria do material na home. Agrupa sozinho: produto novo com uma
+# categoria nova cria a prateleira dela, e categoria sem produto não
+# aparece.
+category:
+  id: casa-rotina
+  label: Casa e rotina
+
 tagline: Um método simples para manter a casa organizada em sessões curtas, sem mutirão de fim de semana.
 promise: Ensinar uma rotina simples para manter a casa mais organizada usando pequenos ciclos de 15 minutos, sem depender de grandes períodos de organização.
 
@@ -25,6 +36,23 @@ theme:
   muted: "#697068"
   border: "#E8E2D8"
 
+# ─────────────────────────────────────────────────────────────
+#  FONTE DOS DADOS
+#
+#  Toda a copy deste arquivo segue docs/casa-organizada-source-of-truth.md.
+#  Se não está lá, não se afirma aqui.
+#
+#  A auditoria anterior apontava três afirmações sem lastro — "em PDF",
+#  "em texto direto" e "acesso imediato". As duas primeiras foram
+#  confirmadas; a terceira estava errada e foi corrigida:
+#
+#    "acesso imediato após a confirmação do pagamento"
+#      → "Acesso liberado após a aprovação do pagamento."
+#
+#  Quem aprova o pagamento é a plataforma, e esse prazo não é nosso.
+#  "Após a aprovação" é verdadeiro em qualquer cenário; "imediato" não.
+# ─────────────────────────────────────────────────────────────
+
 # ── Comercial ────────────────────────────────────────────────
 price:
   amount: 37
@@ -33,10 +61,8 @@ price:
 
 checkout:
   provider: kiwify
-  # PENDENTE: substituir por null pela URL de checkout da Kiwify.
-  # Enquanto for null, o CTA é renderizado sem link (não aponta para URL inválida).
-  url: null
-  cta: QUERO COMEÇAR AGORA
+  url: https://pay.kiwify.com.br/UJyyPuL
+  cta: Quero começar hoje
 
 # ── SEO ──────────────────────────────────────────────────────
 seo:
@@ -46,19 +72,29 @@ seo:
 
 # ── Hero ─────────────────────────────────────────────────────
 hero:
+  eyebrow: O Método dos 15 Minutos
   headline: Sua casa não precisa de horas de organização. Precisa de 15 minutos de cada vez.
   subheadline: Aprenda um método simples para manter sua casa mais organizada mesmo com uma rotina corrida, sem transformar seu fim de semana em uma maratona de arrumação.
+  # Viram o cartão flutuante do hero. São fatos sobre o produto — nunca
+  # prova social, nunca número inventado.
   highlights:
-    - 5 módulos em texto direto, feitos para ler rápido
-    - 4 materiais práticos em PDF
-    - Acesso imediato após a confirmação do pagamento
+    - text: 5 módulos em texto direto, feitos para ler rápido
+      icon: list
+    - text: 4 materiais práticos em PDF
+      icon: checklist
+    - text: Acesso liberado após a aprovação do pagamento
+      icon: spark
+  # Imagem do hero. Arquivo ainda não fornecido: sem ele o quadro usa a
+  # ambientação em CSS, sem parecer buraco.
+  image: hero-cozinha-manha.webp
+  imageAlt: Mulher lavando um prato na bancada da cozinha, em luz natural
 
 # ── Problema ─────────────────────────────────────────────────
 problem:
   title: Você organiza, e pouco tempo depois parece que ninguém organizou nada
   items:
     - Você arruma a cozinha à noite e, no dia seguinte, ela já está do mesmo jeito.
-    - A organização vira assunto de sábado — e o fim de semana desaparece.
+    - A organização vira assunto de sábado, e o fim de semana desaparece.
     - Você olha para a bagunça, não sabe por onde começar e acaba adiando.
     - Quando um ambiente finalmente fica pronto, outro já desandou.
     - Os métodos que você encontra pedem dias inteiros, caixas novas e uma casa vazia.
@@ -71,16 +107,20 @@ method:
   name: O Método dos 15 Minutos
   intro: >-
     Em vez de esperar por um dia livre que dificilmente chega, você organiza em sessões
-    curtas de 15 minutos distribuídas na sua rotina. Uma sessão não organiza a casa inteira —
+    curtas de 15 minutos distribuídas na sua rotina. Uma sessão não organiza a casa inteira,
     e não precisa organizar. O que mantém a casa em ordem é a repetição dessas janelas curtas.
   pillars:
     - title: Um ponto de cada vez
-      text: Você escolhe um alvo específico para a sessão — a bancada, uma gaveta, o sofá — em vez de encarar o cômodo inteiro.
+      icon: compass
+      text: Você escolhe um alvo específico para a sessão (a bancada, uma gaveta, o sofá) em vez de encarar o cômodo inteiro.
     - title: Prioridade antes de perfeição
+      icon: list
       text: Primeiro o que mais atrapalha o dia a dia. O detalhe fica para quando houver tempo extra.
     - title: Manutenção no lugar de mutirão
+      icon: calendar
       text: Pequenas sessões frequentes evitam o acúmulo que transforma organização em um projeto de fim de semana.
     - title: Encaixe na rotina real
+      icon: home
       text: Os 15 minutos entram em brechas que já existem no seu dia, sem exigir que você reorganize a agenda.
   note: O método não promete uma casa de revista nem resolve tudo em uma única sessão. Ele propõe uma forma de organização que cabe em dias corridos.
 
@@ -90,7 +130,7 @@ benefits:
   items:
     - title: Começar deixa de ser o problema
       icon: spark
-      text: Quinze minutos é um compromisso pequeno o suficiente para caber em quase qualquer dia — e isso reduz a paralisia de não saber por onde começar.
+      text: Quinze minutos é um compromisso pequeno o suficiente para caber em quase qualquer dia, e isso reduz a paralisia de não saber por onde começar.
     - title: O fim de semana volta a ser seu
       icon: calendar
       text: Quando a manutenção acontece durante a semana, o sábado deixa de ser o dia de correr atrás do prejuízo.
@@ -109,7 +149,7 @@ howItWorks:
   title: Como funciona no seu dia
   steps:
     - title: Escolha a sua janela
-      text: Defina onde os 15 minutos cabem — antes do banho, depois do jantar, enquanto o café passa.
+      text: Defina onde os 15 minutos cabem. Pode ser antes do banho, depois do jantar ou enquanto o café passa.
     - title: Siga o checklist do dia
       text: O Checklist Diário indica o alvo da sessão, para você não gastar a janela decidindo o que fazer.
     - title: Pare quando o tempo acabar
@@ -120,7 +160,7 @@ howItWorks:
 # ── Conteúdo do produto ──────────────────────────────────────
 contents:
   title: O que você vai aprender
-  intro: Cinco módulos objetivos, em texto direto, para ler e aplicar no mesmo dia.
+  intro: Curso digital em texto. Cinco módulos objetivos, para ler e aplicar no mesmo dia.
   modules:
     - number: 1
       title: Pare de tentar organizar tudo
@@ -157,6 +197,10 @@ materials:
       text: Listas separadas por cômodo para usar quando sobrar um tempo extra.
 
 # ── Público ──────────────────────────────────────────────────
+audience:
+  title: Este método faz sentido para a sua rotina?
+  intro: Veja se a proposta combina com o que você procura para a organização da casa.
+
 forWho:
   title: Para quem é
   items:
@@ -179,34 +223,156 @@ notForWho:
 offer:
   title: Comece hoje
   intro: Pagamento único. Sem mensalidade e sem renovação.
-  includes:
-    - Os 5 módulos com o Método dos 15 Minutos
-    - Checklist Diário de 15 Minutos
-    - Planner Semanal da Casa
-    - Plano Casa Organizada em 7 Dias
-    - Checklist por Ambiente
-    - Acesso imediato após a confirmação do pagamento
+  includesTitle: O que você recebe
+  priceTerms: pagamento único · sem mensalidade
+  # Contagens verificáveis da entrega, não prova social. Cada uma pode ser
+  # conferida na lista logo abaixo.
+  highlights:
+    - value: "5"
+      label: módulos
+    - value: "4"
+      label: materiais em PDF
+    - value: "15"
+      label: minutos por sessão
+  # Agrupado por natureza. É o que separa "o método" de "os materiais" e do
+  # "acesso", em vez de seis linhas seguidas em que tudo pesa igual.
+  groups:
+    - title: Método
+      icon: compass
+      items:
+        - Os 5 módulos com o Método dos 15 Minutos, escritos para ler e aplicar no mesmo dia
+        - A aplicação ambiente por ambiente, da cozinha à área de serviço
+        - A rotina semanal e o que fazer para a bagunça não voltar
+    - title: Materiais práticos
+      icon: checklist
+      items:
+        - Checklist Diário de 15 Minutos
+        - Planner Semanal da Casa
+        - Plano Casa Organizada em 7 Dias
+        - Checklist por Ambiente
+    - title: Acesso
+      icon: spark
+      items:
+        - Área de membros da Kiwify, liberada após a aprovação do pagamento
+        - Materiais em PDF para usar no celular, no computador ou impressos
   priceNote: Materiais digitais em PDF. Pagamento processado pela Kiwify.
+  # Reasseguranças sob o botão. São fatos do produto — nunca prova social,
+  # número de alunos ou escassez.
+  reassurances:
+    - icon: shield
+      text: 7 dias de garantia para conhecer o conteúdo
+    - icon: spark
+      text: Acesso liberado após a aprovação do pagamento
+    - icon: checklist
+      text: Materiais em PDF para usar no celular ou impressos
+
+# ── Avaliações ───────────────────────────────────────────────
+#
+# UMA AVALIAÇÃO É UMA CONVERSA, E UMA CONVERSA É UM CELULAR.
+# A LP renderiza cada item abaixo como um aparelho próprio no carrossel.
+# Não existe formato de cartão de texto, e não existe segunda seção.
+#
+# ACRESCENTAR UMA AVALIAÇÃO É ACRESCENTAR UM ITEM EM `items`.
+# Nada além disso: não se edita componente, não se mexe em CSS, não se
+# duplica HTML. A quantidade é livre e o carrossel se ajusta sozinho.
+# Ver "Avaliações" no CLAUDE.md.
+#
+# Campos por item: `name` e `messages` são o mínimo; `id`, `avatar` e
+# `status` são opcionais. Sem avatar entram as iniciais do nome.
+# Em cada mensagem, `sender` é `person` (a pessoa) ou `bookgo` (a resposta).
+reviews:
+  enabled: true
+  title: O que estão dizendo sobre o método
+  subtitle: >-
+    Conversas de quem chegou com dúvida antes de começar, do jeito que elas
+    aconteceram no chat.
+  items:
+    - id: patricia
+      name: Patrícia
+      messages:
+        - sender: person
+          text: 15 min por dia resolve mesmo? 😅
+          time: "08:41"
+        - sender: person
+          text: parece pouco pra bagunça daqui
+          time: "08:41"
+        - sender: bookgo
+          text: sozinho não 💚 o que resolve é a frequência
+          time: "08:43"
+          read: true
+        - sender: bookgo
+          text: todo dia impede o acúmulo. o mutirão só limpa o que já se formou
+          time: "08:44"
+          read: true
+        - sender: person
+          text: ahh faz sentido... é o acúmulo que cansa
+          time: "08:46"
+
+    - id: fernanda
+      name: Fernanda
+      messages:
+        - sender: person
+          text: sempre começo animada e largo na segunda semana kkk
+          time: "19:05"
+        - sender: bookgo
+          text: isso é tamanho de meta, não falta de disciplina 💚
+          time: "19:08"
+          read: true
+        - sender: bookgo
+          text: o alvo do dia já vem pronto, a janela não é gasta decidindo
+          time: "19:09"
+          read: true
+        - sender: person
+          text: e se eu pular um dia?
+          time: "19:11"
+        - sender: bookgo
+          text: pula numa boa 🙂 o plano é semanal por isso mesmo
+          time: "19:12"
+          read: true
+
+    - id: gabriela
+      name: Gabriela
+      messages:
+        - sender: person
+          text: preciso imprimir os materiais?
+          time: "21:18"
+        - sender: bookgo
+          text: não precisa! são PDFs, funcionam no celular
+          time: "21:20"
+          read: true
+        - sender: bookgo
+          text: quem gosta de papel imprime, mas é gosto 🙂
+          time: "21:21"
+          read: true
+        - sender: person
+          text: ah que bom
+          time: "21:24"
+        - sender: person
+          text: era só isso que faltava saber 😄
+          time: "21:24"
 
 # ── Garantia ─────────────────────────────────────────────────
-# Prova social — desligada.
-#
-# Não existe depoimento real autorizado até aqui, e depoimento não se
-# inventa. Com `enabled: false` a seção não é renderizada: a LP não ganha
-# título, espaço vazio nem CSS por causa deste bloco.
-#
-# Para ligar: colete aqui só texto que uma pessoa real escreveu e autorizou
-# a publicar, e vire `enabled` para true. Formatos disponíveis por item:
-# `type: card` (texto corrido) e `type: phone` (conversa).
-testimonials:
-  enabled: false
-  title: O que diz quem já usou
-  items: []
-
 guarantee:
   icon: shield
   title: Garantia de 7 dias
   text: Você terá 7 dias de garantia para conhecer o conteúdo. Se não for para você, basta pedir o reembolso dentro desse prazo.
+
+# ── Imagens editoriais ───────────────────────────────────────
+# Arquivos em src/assets/products/casa-organizada-em-15-minutos/.
+# Nenhum foi fornecido ainda: sem o arquivo, o slot não renderiza e o
+# build lista o que falta. Quando chegarem, entram sem mudar código.
+images:
+  # Ao lado dos pilares do método, e não sozinha entre duas seções: a foto
+  # mostra exatamente o que o texto ao lado afirma, uma sessão curta com
+  # alvo definido. A legenda sai, porque o argumento agora está ao lado.
+  - id: sessao-curta-cozinha
+    src: sessao-curta-cozinha.webp
+    alt: Mulher limpando a bancada da cozinha em uma sessão curta de arrumação
+    placement: beside-method
+  - id: materiais-impressos-mesa
+    src: materiais-impressos-mesa.webp
+    alt: Checklist impresso sobre a mesa da cozinha, ao lado de uma caneca
+    placement: after-materials
 
 # ── FAQ ──────────────────────────────────────────────────────
 faq:
@@ -223,13 +389,30 @@ faq:
     - q: Preciso assistir a aulas?
       a: Não. O conteúdo é em texto e em materiais práticos em PDF, feitos para leitura rápida e aplicação direta.
     - q: É mais um planner que eu vou abandonar?
-      a: O Planner Semanal é uma peça de apoio, não o centro do método. Ele é simples e pode ser usado impresso ou no celular — e, se você parar de usá-lo, o método continua funcionando.
+      a: O Planner Semanal é uma peça de apoio, não o centro do método. Ele é simples e pode ser usado impresso ou no celular. Se você parar de usá-lo, o método continua funcionando.
     - q: Preciso comprar caixas ou organizadores?
       a: Não. O método trabalha com o que você já tem em casa.
     - q: Como recebo os materiais?
-      a: Após a confirmação do pagamento, o acesso é liberado pela Kiwify, plataforma responsável pelo checkout.
+      a: Após a aprovação do pagamento, o acesso é liberado na área de membros da Kiwify, plataforma responsável pelo checkout.
+
+# ── CTA intermediário ────────────────────────────────────────
+# Entra depois de "Como funciona no seu dia", quando o método já foi
+# explicado inteiro. Uma linha e um botão: quem já decidiu não precisa
+# rolar até o fim, e quem ainda não decidiu continua lendo sem tropeçar
+# num bloco grande.
+midCta:
+  - after: how-it-works
+    text: O método está explicado. Se ele conversa com a sua rotina, dá para começar hoje mesmo.
+    label: Ver o que está incluído
+  # Depois dos materiais, e não depois das conversas: as conversas são a
+  # última seção antes da oferta, e um botão para rolar uma tela seria
+  # ruído. Aqui a pessoa acabou de ver a entrega inteira e ainda não viu o
+  # preço, que é exatamente o que o botão oferece.
+  - after: materials
+    text: Você já viu o método e o que vem junto. Falta a parte do preço.
+    label: Ver a oferta
 
 # ── CTA final ────────────────────────────────────────────────
 finalCta:
   title: Quinze minutos hoje custam menos que um sábado inteiro depois
-  text: Se a sua casa parece voltar à estaca zero toda semana, provavelmente o problema não é falta de esforço — é o formato. Comece por uma janela curta e veja como a sua rotina responde.
+  text: Se a sua casa parece voltar à estaca zero toda semana, provavelmente o problema não é falta de esforço. É o formato. Comece por uma janela curta e veja como a sua rotina responde.

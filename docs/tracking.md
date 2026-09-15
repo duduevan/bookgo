@@ -125,21 +125,29 @@ Configuração no GTM:
 
 ## Meta Pixel
 
-Eventos previstos:
+**Ligado**, pixel `28163448079989110`, na categoria de consentimento
+`advertising`. Detalhes da integração inteira, incluindo a Conversions API e o
+tratamento do token: **[docs/meta-capi.md](meta-capi.md)**.
 
-| Evento | Onde dispara |
-|---|---|
-| `PageView` | site BookGo |
-| `ViewContent` | site BookGo (artigo e LP) |
-| `InitiateCheckout` | **Kiwify** |
-| `Purchase` | **Kiwify** |
+| Evento BookGo | Meta | Onde |
+|---|---|---|
+| `page_view` | `PageView` | toda página |
+| `view_content` | `ViewContent` | artigos e comparativos |
+| `product_view` | `ViewContent` | landing page |
+| `checkout_click` | `InitiateCheckout` | clique no CTA de compra |
+| `product_click` | nada | clique de artigo para a LP |
+| `affiliate_click` | nada | clique em loja de afiliado |
 
-**O site BookGo não dispara `Purchase`.** Clique no checkout é intenção, não
-compra: quem conhece a transação é a plataforma de pagamento. Disparar
-`Purchase` no clique inflaria a conversão e estragaria a otimização da campanha.
+**O site BookGo não dispara `Purchase`**, nem pelo navegador nem pelo
+servidor. Clique no checkout é intenção, não compra: quem conhece a transação
+é a plataforma de pagamento. Disparar `Purchase` no clique inflaria a
+conversão e estragaria a otimização da campanha.
 
-Preferência: instalar o Pixel **pelo GTM**. Se `gtm.id` estiver vazio e
-`meta.pixelId` preenchido, o projeto carrega o Pixel direto, como fallback.
+Cada evento leva um `event_id` compartilhado entre navegador e servidor, que é
+o que permite a Meta deduplicar os dois caminhos.
+
+Preferência de longo prazo: instalar o Pixel **pelo GTM**. Enquanto `gtm.id`
+estiver vazio, o projeto carrega o Pixel direto, pela mesma camada central.
 
 ## Google Ads
 
@@ -172,13 +180,17 @@ tudo — é o comportamento padrão do GTM e não exige configuração extra aqu
 
 ## Consentimento
 
-Banner discreto no rodapé, sem popup nem bloqueio de conteúdo. Duas ações com
-o **mesmo peso visual e o mesmo tamanho de alvo**: `Aceitar` e
-`Recusar não essenciais`. Nada vem pré-selecionado e recusar não exige passos
-extras — sem dark pattern.
+Banner discreto no rodapé, sem popup nem bloqueio de conteúdo. Duas caixas,
+uma por categoria, nenhuma marcada, e três ações com o **mesmo peso visual e o
+mesmo tamanho de alvo**: `Recusar não essenciais`, `Salvar escolha` e
+`Aceitar tudo`. Recusar tudo é um clique, como aceitar tudo. Sem dark pattern.
 
-Categorias: `analytics` e `advertising`. A preferência fica no `localStorage`,
-sob a chave `bookgo-consent`:
+Categorias: `analytics` e `advertising`, **independentes**. Aceitar medição de
+audiência não carrega nada de marketing, e vice-versa: são tecnologias
+diferentes, de empresas diferentes, com finalidades diferentes, e um botão só
+valendo para as duas não seria consentimento específico.
+
+A preferência fica no `localStorage`, sob a chave `bookgo-consent`:
 
 ```json
 { "analytics": true, "advertising": true, "ts": "2026-09-11T21:00:00.000Z" }
@@ -227,7 +239,7 @@ Tudo entra no `dataLayer` como `{ event: '<nome>', ...params }`.
 | `view_content` | artigo | `content_type`, `content_slug`, `content_title`, `category` |
 | `product_view` | landing page | `product_slug`, `product_name`, `value`, `currency` |
 | `checkout_click` | clique no CTA de checkout | `product_slug`, `product_name`, `value`, `currency`, `placement` |
-| `affiliate_click` | reservado para o futuro sistema de afiliados | a definir |
+| `affiliate_click` | clique em loja de afiliado | `affiliate_id`, `brand`, `model` |
 | `consent_update` | decisão de consentimento | `consent_analytics`, `consent_advertising` |
 
 Em HTML, um clique vira evento com dois atributos, gerados por `eventAttrs()`:
@@ -239,8 +251,9 @@ Em HTML, um clique vira evento com dois atributos, gerados por `eventAttrs()`:
 Com o tracking desligado, `eventAttrs()` devolve `{}` e **nenhum atributo é
 emitido** — o HTML de hoje sai idêntico ao que já estava em produção.
 
-`affiliate_click` ainda não tem emissor: o catálogo de afiliados é outro
-sistema e virá depois.
+Todo evento carrega também um `event_id`, gerado no runtime e usado pela Meta
+para deduplicar navegador e servidor. Ele fica no `dataLayer` e **não** é
+repassado ao GA4.
 
 ---
 

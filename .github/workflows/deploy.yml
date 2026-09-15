@@ -90,6 +90,59 @@ jobs:
           test -f dist/.htaccess || echo "::warning::dist/.htaccess ausente."
           echo "Arquivos a enviar: $(find dist -type f | wc -l)"
 
+      # Credencial da Meta Conversions API.
+      #
+      # Escrita depois do build e só aqui: o token vive no GitHub Secret,
+      # nunca no repositório e nunca no JavaScript da página. O arquivo sai
+      # junto com o dist/ e o Apache recusa servi-lo (regra <Files> em
+      # public/.htaccess). Quem o lê é o retransmissor em api/meta-capi.php.
+      #
+      # Sem o segredo configurado, nenhum arquivo é escrito: o endpoint
+      # responde 503 e nenhum evento server-side sai. É o modo de falhar
+      # correto — a medição para, a página continua.
+      #
+      # Nenhum comando abaixo imprime o valor. O `printf` escreve direto no
+      # arquivo, e o `set -u` não expande segredo em log.
+      - name: Gravar credencial da Conversions API
+        if: ${{ !inputs.dry_run }}
+        env:
+          META_CAPI_ACCESS_TOKEN: ${{ secrets.META_CAPI_ACCESS_TOKEN }}
+        run: |
+          set -u
+          if [ -z "${META_CAPI_ACCESS_TOKEN:-}" ]; then
+            echo "::warning::META_CAPI_ACCESS_TOKEN não está definido. A Conversions API fica desligada e o endpoint responderá 503."
+            exit 0
+          fi
+          mkdir -p dist/api
+          # O token entra em base64 para que nenhum caractere dele possa
+          # escapar da string PHP: o alfabeto base64 não tem aspa, cifrão
+          # nem barra invertida. Não é cifra, é só quoting seguro.
+          codificado="$(printf '%s' "$META_CAPI_ACCESS_TOKEN" | base64 -w0)"
+          printf '<?php return ["meta_capi_access_token" => base64_decode("%s")];\n' \
+            "$codificado" > dist/api/credenciais.php
+          chmod 600 dist/api/credenciais.php
+          echo "Credencial da Conversions API gravada ($(wc -c < dist/api/credenciais.php) bytes)."
+
+      # Rede de segurança: o token não pode ter vazado para nenhum arquivo
+      # que o navegador baixa. Se vazou, o deploy para antes do envio.
+      #
+      # A busca não imprime o valor; em caso de achado sai só o caminho.
+      - name: Conferir que o token não chegou ao conteúdo público
+        if: ${{ !inputs.dry_run }}
+        env:
+          META_CAPI_ACCESS_TOKEN: ${{ secrets.META_CAPI_ACCESS_TOKEN }}
+        run: |
+          set -u
+          [ -z "${META_CAPI_ACCESS_TOKEN:-}" ] && exit 0
+          achados=$(grep -rlF -e "$META_CAPI_ACCESS_TOKEN" dist \
+            --exclude=credenciais.php 2>/dev/null || true)
+          if [ -n "$achados" ]; then
+            echo "::error::O token da Conversions API apareceu em arquivo publicável:"
+            echo "$achados"
+            exit 1
+          fi
+          echo "Token ausente de todo o conteúdo público."
+
       - name: Enviar via FTPS
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:

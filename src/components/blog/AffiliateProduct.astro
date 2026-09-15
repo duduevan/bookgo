@@ -1,0 +1,157 @@
+---
+/**
+ * Bloco comercial de um produto afiliado dentro do artigo.
+ *
+ * Usado no corpo do MDX com um atributo só:
+ *
+ *     <AffiliateProduct id="philips-na130" />
+ *
+ * Marca, modelo e link vêm do frontmatter. O corpo marca **onde** o bloco
+ * entra, que é decisão editorial.
+ *
+ * A foto do produto **não** sai daqui: ela é um `<ArticleImage>` no corpo do
+ * texto, como qualquer outra imagem editorial, e quem decide onde ela entra
+ * é quem escreve. Renderizar a imagem aqui também duplicava a foto sempre
+ * que o artigo já a tinha posicionado, que é o caso normal.
+ *
+ * Três coisas que este bloco nunca faz:
+ *
+ *  - **não mostra preço.** Preço muda, e um número copiado para dentro do
+ *    artigo transforma a página em mentira sozinha. O CTA diz "ver oferta
+ *    atual" e quem informa o preço é o anunciante, na hora do clique;
+ *  - **não finge teste.** A BookGo não testou estes aparelhos, então nada
+ *    aqui afirma desempenho observado;
+ *  - **não empilha.** `data-commercial` marca o bloco para a checagem de
+ *    vizinhança do `qa:seo`: dois blocos comerciais não podem encostar.
+ *
+ * `rel="sponsored nofollow noopener"` é obrigatório e não opcional:
+ * `sponsored` declara a relação comercial ao buscador, `noopener` fecha o
+ * acesso da aba aberta à janela de origem.
+ */
+import Icon from '../ui/Icon.astro';
+import { affiliateById } from '../../lib/affiliates';
+import { postFromPathname } from '../../lib/article-images';
+import { eventAttrs } from '../../lib/tracking';
+
+interface Props {
+  id: string;
+}
+
+const { id } = Astro.props;
+
+const post = await postFromPathname(Astro.url.pathname);
+if (!post) {
+  throw new Error(
+    `<AffiliateProduct id="${id}" /> usado fora de uma página de artigo (${Astro.url.pathname}).`
+  );
+}
+
+const produto = affiliateById(post, id);
+if (!produto) {
+  throw new Error(
+    `<AffiliateProduct id="${id}" /> não encontrado em affiliates do artigo "${post.data.slug}".`
+  );
+}
+
+/* A foto do produto usa o mesmo `id` no array `images` do artigo: uma
+   fonte só para arquivo, alt, legenda e crédito. Sem arquivo, o bloco
+   renderiza só o CTA, sem moldura vazia. */
+const temImagem = post.data.images.some((i) => i.id === produto.id);
+
+const track = eventAttrs('affiliate_click', {
+  affiliate_id: produto.id,
+  brand: produto.brand,
+  model: produto.model,
+  article_slug: post.data.slug,
+});
+---
+
+<aside class="aff" data-commercial="affiliate">
+  <div class="aff-row">
+    <p class="aff-what">
+      <span class="aff-brand">{produto.brand}</span>
+      <span class="aff-model">{produto.model}</span>
+    </p>
+
+    <a
+      class="aff-cta"
+      href={produto.url}
+      rel="sponsored nofollow noopener"
+      target="_blank"
+      {...track}
+    >
+      {produto.cta}
+      <Icon name="arrow-up-right" class="u-arrow" />
+    </a>
+  </div>
+</aside>
+
+<style>
+  .aff {
+    margin-block: var(--s-8);
+  }
+
+  .aff-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4) var(--s-5);
+    padding: var(--s-5);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+  }
+
+  .aff-what {
+    display: grid;
+    gap: 0.1rem;
+    min-width: 0;
+  }
+
+  .aff-brand {
+    font-size: var(--t--1);
+    letter-spacing: var(--tr-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .aff-model {
+    font-weight: var(--w-semibold);
+    color: var(--color-text);
+  }
+
+  /* Botão discreto: o artigo é comparativo, não catálogo. */
+  .aff-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    padding: 0.7rem var(--s-5);
+    border-radius: var(--radius-pill);
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+    font-size: var(--t--1);
+    font-weight: var(--w-semibold);
+    text-decoration: none;
+    transition: background-color var(--dur) var(--ease);
+  }
+
+  .aff-cta:hover {
+    background: var(--color-primary-dark);
+  }
+
+  .aff-cta :global(.icon) {
+    --icon-size: 1rem;
+    transition: transform var(--dur) var(--ease);
+  }
+
+  .aff-cta:hover :global(.icon) {
+    transform: translate(2px, -2px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aff-cta:hover :global(.icon) {
+      transform: none;
+    }
+  }
+</style>

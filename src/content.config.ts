@@ -29,73 +29,82 @@ const section = z.object({
 
 
 /* ------------------------------------------------------------------ */
-/*  Depoimentos                                                        */
+/*  Avaliações                                                         */
 /* ------------------------------------------------------------------ */
 
 /**
- * Prova social.
+ * Avaliações de um produto.
  *
- * Regra do projeto, sem exceção: **nenhum depoimento é inventado**. Só entra
- * aqui texto que uma pessoa real escreveu e autorizou a publicar. Enquanto
- * isso não existir, `enabled` fica false e a seção não é renderizada — a LP
- * sai byte por byte igual à de hoje.
+ * **Uma avaliação é uma conversa, e uma conversa é um celular.** Não existe
+ * outro formato: nada de cartão com texto solto, nada de nota em estrelas
+ * ao lado do nome. O comentário da pessoa mora dentro do aparelho, em
+ * balões, do jeito que ela escreveu.
  *
- * O refinamento abaixo impede o pior dos casos: ligar a seção sem ter o que
- * mostrar. `enabled: true` com `items` vazio quebra o build.
+ * **Quantidade livre.** Não existe número máximo nem número esperado.
+ * Acrescentar uma avaliação é acrescentar um item aqui, e nada além disso:
+ * o carrossel ganha mais um celular sozinho.
+ *
+ * **Cada produto tem o seu array**, dentro do seu próprio YAML. Não existe
+ * repositório comum de avaliações, e é por isso que a avaliação de um
+ * produto não tem como aparecer na LP de outro.
  */
-const testimonialBase = {
-  /** Nome como a pessoa autorizou publicar. */
-  name: z.string(),
-  /**
-   * Arquivo em `src/assets/testimonials/`. Sem avatar, o componente usa as
-   * iniciais do nome — derivar é honesto, gerar um rosto não seria.
-   */
-  avatar: z.string().optional(),
-};
-
-const testimonialCard = z.object({
-  type: z.literal('card'),
-  ...testimonialBase,
-  /** Contexto curto da pessoa, quando ela autorizou. */
-  role: z.string().optional(),
-  text: z.string(),
-});
-
-const testimonialPhone = z.object({
-  type: z.literal('phone'),
-  ...testimonialBase,
-  /** Linha sob o nome no cabeçalho da conversa. Decorativa. */
-  status: z.string().optional(),
-  messages: z
-    .array(
-      z.object({
-        /** `incoming` = a pessoa; `outgoing` = a BookGo. */
-        side: z.enum(['incoming', 'outgoing']),
-        text: z.string(),
-        /** Horário exibido na bolha. Decorativo. */
-        time: z.string().optional(),
-        /** Confirmação de leitura. Só faz sentido em `outgoing`. */
-        read: z.boolean().default(false),
-      })
-    )
-    .min(1),
-});
-
-const testimonials = z
+const reviews = z
   .object({
-    /** Chave mestra da seção. Sem depoimento real, fica false. */
-    enabled: z.boolean().default(false),
+    /** Chave mestra da seção. Com `false`, nada é renderizado. */
+    enabled: z.boolean().default(true),
+
+    /** Título e subtítulo da seção. Vivem aqui para cada produto ter a sua voz. */
     title: z.string().optional(),
-    intro: z.string().optional(),
+    subtitle: z.string().optional(),
+
     items: z
-      .array(z.discriminatedUnion('type', [testimonialCard, testimonialPhone]))
+      .array(
+        z.object({
+          /** Referência de quem edita. Não vira nada na página. */
+          id: z
+            .string()
+            .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'id deve ser minúsculo, com hífens')
+            .optional(),
+          /** Nome como a pessoa autorizou publicar. Aparece no topo do aparelho. */
+          name: z.string().min(1),
+          /**
+           * Arquivo em `src/assets/reviews/`, ou caminho servido. Sem
+           * avatar, o componente usa as iniciais do nome: derivar do que
+           * existe é honesto, gerar um rosto não seria, e foto de banco de
+           * imagens apresentada como cliente seria pior ainda.
+           */
+          avatar: z.string().optional(),
+          /** Linha sob o nome no cabeçalho da conversa. Decorativa. */
+          status: z.string().optional(),
+          messages: z
+            .array(
+              z.object({
+                /** Quem mandou a mensagem. */
+                sender: z.enum(['person', 'bookgo']),
+                text: z.string().min(1),
+                /** Horário exibido na bolha. Decorativo. */
+                time: z.string().optional(),
+                /** Confirmação de leitura. Só faz sentido em `bookgo`. */
+                read: z.boolean().default(false),
+                /**
+                 * Reação em emoji recebida pela mensagem.
+                 *
+                 * Existe porque parte das mensagens recebeu reação da
+                 * equipe e não resposta escrita. Antes, o aparelho dessas
+                 * pessoas mostrava só a mensagem, e a reação real ficava
+                 * de fora por não haver onde colocá-la. Inventar um texto
+                 * de resposta continua fora de questão; mostrar o emoji
+                 * que de fato existiu, não.
+                 */
+                reaction: z.string().optional(),
+              })
+            )
+            .min(1),
+        })
+      )
       .default([]),
   })
-  .default({ enabled: false, items: [] })
-  .refine((t) => !t.enabled || t.items.length > 0, {
-    message:
-      'testimonials.enabled é true mas items está vazio. Depoimento não se inventa: preencha com texto real e autorizado, ou volte enabled para false.',
-  });
+  .default({ enabled: true, items: [] });
 
 /* ------------------------------------------------------------------ */
 /*  Produtos — content/products/<slug>/index.yaml                      */
@@ -124,6 +133,54 @@ const theme = z.object({
   onPrimary: z.string().optional(),
 });
 
+/**
+ * Imagem editorial da landing page.
+ *
+ * Mesma convenção das imagens de artigo: metadados no YAML, arquivo em
+ * `src/assets/products/<slug>/`. `placement` diz em qual âncora da página ela
+ * entra — a LP é gerada, então a posição precisa ser dado, não markup.
+ *
+ * Arquivo ainda inexistente não quebra o build e não deixa buraco: o slot
+ * não renderiza e o build lista o que falta.
+ */
+const productImageEntry = z.object({
+  id: z
+    .string()
+    .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'id deve ser minúsculo, com hífens'),
+  src: z.string().regex(/\.(webp|avif|jpe?g|png)$/i),
+  alt: z.string().min(15).max(180),
+  caption: z.string().optional(),
+  /**
+   * Proporção do quadro, quando a padrão não serve.
+   *
+   * O padrão editorial da LP é 16/9, que é o formato de uma foto de cena.
+   * Uma página do material é A4 em pé, e recortá-la em 16/9 mostraria a
+   * faixa do meio de um desenho inteiro. Declarar a proporção aqui é o
+   * que permite a mesma seção receber cena e amostra sem cortar nenhuma
+   * das duas.
+   */
+  ratio: z.string().optional(),
+  /** Âncoras conhecidas pela página do produto. */
+  placement: z.enum([
+    /* Ao lado do mecanismo, em duas colunas. É a âncora para a foto que
+       ilustra um argumento, em vez de ocupar largura sozinha entre duas
+       seções. */
+    'beside-method',
+    'beside-problem',
+    'beside-how-it-works',
+    'after-hero',
+    'after-problem',
+    'after-method',
+    'beside-benefits',
+    'after-how-it-works',
+    'after-contents',
+    'after-materials',
+    'beside-use-cases',
+    'before-reviews',
+    'before-offer',
+  ]),
+});
+
 const products = defineCollection({
   loader: glob({
     pattern: '*/index.yaml',
@@ -137,7 +194,60 @@ const products = defineCollection({
     /** Frase curta usada em cards e no CTA contextual do blog. */
     tagline: z.string(),
 
+    /**
+     * Categoria do material, usada para agrupar na home.
+     *
+     * Vive no dado, e não numa lista dentro da página: é isso que faz um
+     * produto novo aparecer agrupado sozinho, sem ninguém editar a home.
+     * Categoria sem produto publicado não é renderizada, então não existe
+     * prateleira vazia.
+     *
+     * `id` é a chave de agrupamento, `label` é o que o público lê.
+     */
+    category: z.object({
+      id: z
+        .string()
+        .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'id deve ser minúsculo, com hífens'),
+      label: z.string().min(2).max(40),
+    }),
+
+    /**
+     * Produto em destaque na home.
+     *
+     * A home mostra um material só, e com dois produtos no ar "o primeiro
+     * que o `getCollection` devolver" passa a depender da ordem alfabética
+     * do slug. Isso é o tipo de coisa que muda a home sem ninguém decidir,
+     * então o destaque é declarado. Sem nenhum marcado, cai no primeiro
+     * publicado, e a home nunca fica sem material.
+     */
+    featured: z.boolean().default(false),
+
+    /**
+     * Rascunho. Igual ao `draft` do artigo: o produto continua sendo
+     * validado por este schema a cada build — é essa validação que prova
+     * que o esqueleto está completo —, mas não gera URL, não entra no
+     * sitemap, não entra no `llms.txt` e não aparece na home.
+     *
+     * É o que permite deixar um produto novo pronto para receber copy sem
+     * publicar uma página com texto de espera.
+     */
+    draft: z.boolean().default(false),
+
     theme,
+
+    /**
+     * Ambientação visual da landing page.
+     *
+     * A régua estrutural é a mesma para todos os materiais: as mesmas
+     * seções, a mesma tipografia, o mesmo espaçamento. O que muda é o
+     * clima, e ele muda porque o público muda: a página de um material
+     * infantil pode ter nuvem, estrelinha e rabisco de baixa opacidade ao
+     * fundo, e a de um método de rotina não pode.
+     *
+     * Sem o campo, a LP usa a ambientação padrão, que é a que as duas
+     * primeiras já usam. Nenhuma página existente muda por isto existir.
+     */
+    ambience: z.enum(['playful']).optional(),
 
     /** Promessa central — base da descrição do schema Product. */
     promise: z.string(),
@@ -162,10 +272,32 @@ const products = defineCollection({
     }),
 
     hero: z.object({
+      /** Sobrelinha curta acima do título. Ex.: o nome do método. */
+      eyebrow: z.string().optional(),
+      /** Rótulo próprio do botão do hero. Sem ele, vale o `checkout.cta`. */
+      ctaLabel: z.string().optional(),
+      /**
+       * Páginas reais que formam o leque atrás da capa, e a foto de cena
+       * pequena no canto. Juntas com `image`, montam a composição de
+       * produto do hero.
+       *
+       * Existe porque foto de cena sozinha vende a atividade e não o
+       * material: quem chega de anúncio precisa entender em dois segundos
+       * o que está comprando, e "coleção em PDF" é frase que só vira
+       * coisa com imagem. Vazio, o hero volta ao comportamento antigo.
+       */
+      pages: z.array(z.string()).default([]),
+      scene: z.string().optional(),
+      sceneAlt: z.string().optional(),
       headline: z.string(),
       subheadline: z.string(),
-      /** Reforços curtos abaixo do CTA (fatos sobre o produto, não provas sociais). */
-      highlights: z.array(z.string()).default([]),
+      /**
+       * Reforços curtos — fatos sobre o produto, nunca prova social.
+       * Viram o cartão flutuante da composição do hero.
+       */
+      highlights: z
+        .array(z.object({ text: z.string(), icon: iconName.optional() }))
+        .default([]),
       /**
        * Imagem editorial do hero. Nome do arquivo dentro de
        * `src/assets/products/<slug>/`. Sem ela, o hero usa só a
@@ -189,58 +321,287 @@ const products = defineCollection({
       close: z.string().optional(),
     }),
 
-    method: section.extend({
-      /** Nome do mecanismo, ex.: "O Método dos 15 Minutos". */
-      name: z.string(),
-      pillars: z.array(titledItem),
-      note: z.string().optional(),
-    }),
+    /**
+     * Mecanismo e benefícios, ambos opcionais desde o redesenho de
+     * conversão do Mundo de Colorir.
+     *
+     * Num material de imprimir, o que o mecanismo explicava (traço
+     * uniforme, área confortável, feito para impressora doméstica) a
+     * galeria de páginas reais mostra em dois segundos, e mostrar vence
+     * explicar. Os benefícios, por sua vez, viraram a barra de fatos no
+     * topo e as situações de uso mais abaixo. Manter os três blocos era
+     * dizer a mesma coisa três vezes numa página que precisa ficar mais
+     * curta. Curso continua precisando dos dois, e as outras LPs seguem
+     * iguais.
+     */
+    method: section
+      .extend({
+        /** Nome do mecanismo, ex.: "O Método dos 15 Minutos". */
+        name: z.string(),
+        pillars: z.array(titledItem),
+        note: z.string().optional(),
+      })
+      .optional(),
 
-    benefits: section.extend({
-      items: z.array(titledItem),
-    }),
+    benefits: section
+      .extend({
+        items: z.array(titledItem),
+      })
+      .optional(),
 
     howItWorks: section.extend({
       steps: z.array(titledItem),
     }),
 
     contents: section.extend({
+      /**
+       * Rótulo de contagem repetido em cada tema da vitrine. Ex.: "10
+       * desenhos". Vive aqui, e não no componente, porque é fato do
+       * produto: outro material pode ter outra contagem, ou nenhuma.
+       */
+      countLabel: z.string().optional(),
       modules: z.array(
         z.object({
           number: z.number().int().positive(),
           title: z.string(),
           objective: z.string(),
+          /**
+           * Ícone do tema, opcional. Existe para a vitrine de temas poder
+           * mostrar do que cada um trata antes de a pessoa ler a lista
+           * inteira. Sem ele, o cartão cai no número, que é o que a
+           * numeração já fazia.
+           */
+          icon: iconName.optional(),
+          /** Uma linha curta, para a vitrine. A lista longa continua em `objective`. */
+          blurb: z.string().optional(),
+          /**
+           * Miniaturas de páginas reais daquele tema, relativas a
+           * `src/assets/products/<slug>/`.
+           *
+           * Vende variedade melhor do que qualquer lista: o cartão mostra
+           * o traço em vez de descrevê-lo. Opcional porque nem todo tema
+           * tem foto de página ainda, e inventar uma seria mentir sobre o
+           * que está dentro do arquivo. Sem miniatura, o cartão continua
+           * inteiro com o ícone.
+           */
+          thumbs: z.array(z.string()).default([]),
         })
       ),
     }),
 
     materials: section.extend({
-      items: z.array(titledItem),
+      /**
+       * `mockup` é opcional: o cartão fica completo sem ele. Quando o
+       * arquivo existir em `src/assets/products/<slug>/`, o quadro aparece
+       * com a proporção já reservada — sem reconstruir a seção.
+       */
+      items: z.array(titledItem.extend({ mockup: z.string().optional() })),
     }),
 
-    forWho: section.extend({ items: z.array(z.string()) }),
-    notForWho: section.extend({ items: z.array(z.string()) }),
+    /**
+     * Prefixo dos eventos de etapa do funil desta LP.
+     *
+     * Com `mundo`, a página emite `mundo_gallery_view`,
+     * `mundo_themes_view`, `mundo_reviews_view` e `mundo_offer_view`
+     * quando cada bloco entra na tela. Sem o campo, nenhum evento de
+     * etapa é emitido, e é por isso que ele existe: sem essa trava, a
+     * instrumentação de uma LP vazaria para as outras e encheria o
+     * relatório delas com eventos de um produto que a pessoa nunca viu.
+     *
+     * Nenhum destes é conversão. A ponte do Pixel é uma lista fechada de
+     * três nomes, então qualquer nome daqui fica só no dataLayer e no
+     * GA4. Ver TrackingHead.astro e TrackInView.astro.
+     */
+    funnelEventPrefix: z.string().optional(),
 
-    offer: section.extend({
-      includes: z.array(z.string()),
-      priceNote: z.string().optional(),
-    }),
+    /**
+     * Faixa curta de fatos logo abaixo do hero. Opcional.
+     *
+     * Existe porque os fatos que respondem "isto é para mim?" estavam
+     * espalhados por quatro seções, e quem chega de anúncio decide antes
+     * de chegar à quarta.
+     */
+    trustBar: z
+      .array(z.object({ text: z.string(), icon: iconName.optional() }))
+      .optional(),
 
-    guarantee: section.extend({
-      text: z.string(),
-      icon: iconName.optional(),
-    }),
+    /**
+     * Galeria de páginas reais do material.
+     *
+     * Contra pack barato, nenhum adjetivo vence a pergunta "como são os
+     * desenhos?". Esta seção deixa a pessoa conferir sozinha. Só entra
+     * página que existe de verdade no material: amostra genérica aqui
+     * seria propaganda enganosa com aparência de prova.
+     */
+    gallery: section
+      .extend({
+        items: z.array(
+          z.object({
+            src: z.string(),
+            alt: z.string(),
+            /** Rótulo do tema sob o quadro. */
+            label: z.string().optional(),
+            /** Ocupa duas colunas: para a página fotografada deitada. */
+            wide: z.boolean().default(false),
+          })
+        ),
+      })
+      .optional(),
 
-    /** Desligado por padrão; ver o bloco `testimonials` acima. */
-    testimonials,
+    /**
+     * Situações de uso: onde o material resolve alguma coisa na semana.
+     *
+     * Benefício responde "o que isso me dá"; situação responde "quando eu
+     * vou usar". São perguntas diferentes, e quem compra material para
+     * criança costuma decidir na segunda: a pessoa reconhece a tarde de
+     * chuva e a sala de espera antes de reconhecer um benefício abstrato.
+     *
+     * Opcional: sem o bloco, a seção não existe e nenhuma LP muda.
+     */
+    useCases: section
+      .extend({
+        items: z.array(titledItem),
+      })
+      .optional(),
+
+    /**
+     * Cabeçalho comum aos dois blocos de público.
+     *
+     * Os três são opcionais desde o redesenho de conversão do Mundo de
+     * Colorir. Numa LP com galeria de páginas reais, vitrine de temas e
+     * situações de uso, o bloco "é para você que" repetia argumento que
+     * já apareceu três vezes, e as objeções que ele cobria (material
+     * físico, precisa de impressora, personagem conhecido) vivem melhor
+     * no FAQ, onde a pessoa vai procurá-las. As outras LPs seguem com os
+     * blocos e não mudam uma linha.
+     */
+    audience: section.optional(),
+    forWho: section.extend({ items: z.array(z.string()) }).optional(),
+    notForWho: section.extend({ items: z.array(z.string()) }).optional(),
+
+    offer: section
+      .extend({
+        /**
+         * Título da coluna do conteúdo e a linha sob o preço. Vivem no YAML
+         * e não no componente porque cada produto tem a sua voz: um curso
+         * "inclui", um material "vem com".
+         */
+        includesTitle: z.string().min(3).max(48),
+        priceTerms: z.string().min(3).max(60),
+        /**
+         * Números curtos do que a oferta entrega, em chips acima da lista.
+         * São contagens verificáveis do produto (módulos, materiais,
+         * duração da sessão), nunca prova social nem resultado prometido.
+         */
+        highlights: z
+          .array(
+            z.object({
+              value: z.string().min(1).max(6),
+              label: z.string().min(2).max(34),
+            })
+          )
+          .max(4)
+          .default([]),
+        /**
+         * O que está incluso, agrupado por natureza: método, materiais,
+         * acesso. Agrupar é o que transforma a lista de entrega em parte
+         * da oferta, em vez de um bloco de texto ao lado do preço.
+         *
+         * `includes` continua aceito como lista plana, para um produto que
+         * não precise de grupos. Um dos dois precisa existir.
+         */
+        groups: z
+          .array(
+            z.object({
+              title: z.string().min(2).max(40),
+              icon: iconName.optional(),
+              items: z.array(z.string()).min(1),
+            })
+          )
+          .default([]),
+        includes: z.array(z.string()).default([]),
+        priceNote: z.string().optional(),
+        /** Rótulo próprio do botão da oferta. Sem ele, vale o `checkout.cta`. */
+        ctaLabel: z.string().optional(),
+        /**
+         * Reasseguranças exibidas sob o botão. **Fatos do produto**, nunca
+         * prova social, número de alunos ou escassez — ver as regras de
+         * conteúdo do CLAUDE.md.
+         */
+        reassurances: z
+          .array(z.object({ icon: iconName, text: z.string() }))
+          .default([]),
+      })
+      .refine((o) => o.groups.length > 0 || o.includes.length > 0, {
+        message: 'offer precisa de `groups` ou de `includes`.',
+      }),
+
+    /**
+     * Garantia comercial, quando existir.
+     *
+     * **Opcional de propósito.** A garantia é uma condição configurada na
+     * plataforma de pagamento, não uma decisão de copy: afirmá-la na página
+     * sem ela estar ligada lá seria prometer em nome de terceiro. Um produto
+     * cuja garantia ainda não foi conferida omite o bloco, e a oferta é
+     * renderizada sem ele em vez de trazer um prazo inventado.
+     */
+    guarantee: section
+      .extend({
+        text: z.string(),
+        icon: iconName.optional(),
+      })
+      .optional(),
+
+    /**
+     * Avaliações deste produto. Desligadas por padrão; ver o bloco
+     * `reviews` acima. A quantidade é livre e a seção se adapta sozinha.
+     */
+    reviews,
+
+    /** Imagens editoriais distribuídas pela página. */
+    images: z.array(productImageEntry).default([]),
 
     faq: section.extend({
       items: z.array(z.object({ q: z.string(), a: z.string() })),
     }),
 
+    /**
+     * Chamada intermediária, depois de o método estar explicado.
+     *
+     * Uma linha e um botão, não uma seção com manchete: é presença
+     * comercial no meio da página para quem já se convenceu, sem transformar
+     * a leitura numa sequência de botões. Opcional: sem o bloco no YAML,
+     * nada é renderizado.
+     */
+    midCta: z
+      .array(
+        z.object({
+          /**
+           * Onde a faixa entra. São âncoras da página, não posições
+           * livres: um CTA solto no meio de uma seção quebraria a leitura
+           * do bloco em que caiu.
+           */
+          after: z.enum(['how-it-works', 'materials', 'reviews']),
+          text: z.string().min(20),
+          /** Rótulo próprio, para não repetir o do checkout logo acima. */
+          label: z.string().min(3).max(40).optional(),
+        })
+      )
+      .default([]),
+
     finalCta: z.object({
       title: z.string(),
       text: z.string(),
+      /**
+       * Rótulo próprio do botão de fechamento. Opcional: sem ele, vale o
+       * `checkout.cta`.
+       *
+       * Existe porque o mesmo texto repetido em três botões ao longo da
+       * página lê como formulário, e não como convite. O destino e o
+       * evento continuam idênticos nos três: o que muda é só a frase, que
+       * acompanha o que a pessoa acabou de ler.
+       */
+      ctaLabel: z.string().optional(),
     }),
   }),
 });
@@ -249,11 +610,40 @@ const products = defineCollection({
 /*  Categorias — content/categories/<slug>.yaml                        */
 /* ------------------------------------------------------------------ */
 
+/* ------------------------------------------------------------------ */
+/*  Pilares — content/pillars/<slug>.yaml                              */
+/*                                                                     */
+/*  O pilar é o grande tema editorial; a categoria é um recorte dentro  */
+/*  dele. Formato e intenção (comparativo, review, guia, afiliado) são  */
+/*  outra dimensão e não viram categoria: ver `type` no artigo.         */
+/* ------------------------------------------------------------------ */
+
+const pillars = defineCollection({
+  loader: glob({ pattern: '*.yaml', base: './content/pillars' }),
+  schema: z.object({
+    name: z.string(),
+    description: z.string(),
+    /** Título editorial da página do pilar. Sem ele, usa `name`. */
+    headline: z.string().optional(),
+    intro: z.array(z.string()).default([]),
+    seo: z
+      .object({
+        title: z.string().optional(),
+        description: z.string().optional(),
+      })
+      .default({}),
+    order: z.number().default(100),
+  }),
+});
+
 const categories = defineCollection({
   loader: glob({ pattern: '*.yaml', base: './content/categories' }),
   schema: z.object({
     name: z.string(),
     description: z.string(),
+
+    /** Pilar a que a categoria pertence. Define a URL: /blog/<pilar>/<cat>/ */
+    pillar: reference('pillars'),
 
     /** Título editorial do hub. Sem ele, usa `name`. */
     headline: z.string().optional(),
@@ -265,6 +655,18 @@ const categories = defineCollection({
       .default([]),
     /** Produto da categoria, quando houver. */
     relatedProduct: reference('products').optional(),
+    /**
+     * Copy do CTA do produto neste hub. Sem ela, o CTA usa o nome e a
+     * tagline do próprio produto — nunca fica vazio.
+     */
+    productCta: z
+      .object({
+        label: z.string().optional(),
+        headline: z.string(),
+        text: z.string(),
+        buttonLabel: z.string(),
+      })
+      .optional(),
 
     seo: z
       .object({
@@ -334,6 +736,32 @@ const productCta = z.object({
 });
 
 /**
+ * Produto afiliado citado por um artigo.
+ *
+ * Mora no frontmatter, como tudo que é conteúdo: o componente não conhece
+ * marca, modelo nem link. O corpo do MDX carrega só a posição, pelo `id`.
+ *
+ * `url` é **sempre** o link de afiliado, e é ele que vai para o HTML. A
+ * página oficial do produto entra em `sourceUrl` e serve para conferência
+ * editorial: é de lá que as especificações precisam sair, não do título do
+ * anúncio.
+ *
+ * Preço não existe aqui de propósito. Ele muda, e um número copiado para
+ * dentro do artigo transforma a página em mentira sozinha, sem ninguém
+ * mexer em nada.
+ */
+const affiliateProduct = z.object({
+  id: z.string(),
+  brand: z.string(),
+  model: z.string(),
+  /** Link de afiliado. Vai para o href com `sponsored nofollow noopener`. */
+  url: z.string().url(),
+  /** Página oficial ou anúncio, para conferência. Não vira link na página. */
+  sourceUrl: z.string().url().optional(),
+  cta: z.string().default('Ver oferta atual'),
+});
+
+/**
  * Metadados internos de monetização.
  *
  * Orientam a redação e o planejamento editorial. **Não viram tag, meta,
@@ -367,9 +795,33 @@ const blog = defineCollection({
     category: reference('categories'),
     /** Quando definido, o artigo exibe CTA contextual do produto. */
     product: reference('products').optional(),
+
+    /**
+     * Formato e intenção editorial do artigo.
+     *
+     * Dimensão separada da taxonomia temática de propósito: um comparativo
+     * de air fryer pertence a Casa › Cozinha, e "comparativo" descreve o
+     * formato, não o assunto. Transformar formato em categoria criaria uma
+     * segunda árvore concorrendo com a primeira, e o mesmo artigo passaria
+     * a ter dois lugares para morar.
+     *
+     * **Não vira página, menu nem URL.** É metadado editorial.
+     */
+    type: z
+      .enum(['informacional', 'guia', 'comparativo', 'review'])
+      .default('informacional'),
     keywords: z.array(z.string()).default([]),
     author: z.string().default('BookGo'),
     draft: z.boolean().default(false),
+
+    /**
+     * Artigo do destaque do blog.
+     *
+     * Com mais de um marcado, vence o mais recente. Sem nenhum, o destaque
+     * cai no artigo público mais recente: a página nunca fica sem topo por
+     * falta de alguém ter marcado uma caixa.
+     */
+    featured: z.boolean().default(false),
 
     /**
      * `date`   = datePublished
@@ -417,6 +869,15 @@ const blog = defineCollection({
     /** CTA contextual do produto. Exige `product` definido. */
     productCta: productCta.optional(),
 
+    /**
+     * Produtos afiliados do artigo.
+     *
+     * Com a lista preenchida, o artigo passa a exibir a nota de
+     * transparência: um texto que depende de alguém lembrar de escrevê-lo
+     * não é transparência, é sorte.
+     */
+    affiliates: z.array(affiliateProduct).default([]),
+
     /** Interno. Nunca sai no HTML. */
     monetization: monetization.optional(),
   })
@@ -462,4 +923,4 @@ const blog = defineCollection({
   }),
 });
 
-export const collections = { products, categories, blog };
+export const collections = { products, pillars, categories, blog };

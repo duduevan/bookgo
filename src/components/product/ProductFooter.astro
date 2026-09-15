@@ -17,7 +17,7 @@ const year = new Date().getFullYear();
 
 <footer class="lp-footer">
   <div class="container inner">
-    <a class="signature" href="/" aria-label="BookGo — página inicial">
+    <a class="signature" href="/" aria-label="BookGo, página inicial">
       <span>Um produto</span>
       <Logo variant="blue" height={18} loading="lazy" />
     </a>
@@ -67,7 +67,16 @@ const year = new Date().getFullYear();
     padding: 0;
   }
 
+  /* O alvo de toque tem 24px de altura, e não os 16px da linha de texto.
+     Quatro links legais lado a lado num rodapé de celular, com 16px de
+     altura cada, é erro de dedo garantido, e fica abaixo do mínimo que o
+     Google cobra em celular. O `padding` cresce a área sem mexer no
+     tamanho da letra nem na discrição do rodapé. */
   nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.5rem;
+    padding-block: var(--s-1);
     font-size: var(--t--1);
     color: var(--color-muted);
     text-decoration: none;

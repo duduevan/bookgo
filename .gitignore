@@ -144,3 +144,13 @@ vite.config.ts.timestamp-*
 
 # Astro
 .astro/
+
+# Pacote de preview para cPanel, gerado sob demanda a partir de dist/.
+bookgo-visual-preview.zip
+
+# Credencial da Meta Conversions API.
+#
+# Escrita apenas no runner, durante o deploy, a partir do GitHub Secret
+# META_CAPI_ACCESS_TOKEN, e enviada com o dist/. Nunca é versionada, e o
+# Apache recusa servi-la (ver public/.htaccess).
+credenciais.php

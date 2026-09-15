@@ -1,0 +1,392 @@
+# ─────────────────────────────────────────────────────────────
+#  Origem das imagens do site
+#
+#  Guarda a **identidade durável** de cada imagem: provedor, id do asset,
+#  licença, autor e página de origem. `npm run images:fetch` resolve isso em
+#  bytes, corta, converte para WebP e grava no destino. O mesmo script roda
+#  no workflow "Materializar imagens declaradas".
+#
+#  URL ASSINADA NÃO ENTRA AQUI. Os links de download do Freepik e do
+#  Magnific carregam token com expiração — persistir um deles seria guardar
+#  credencial temporária num arquivo versionado, e o manifesto quebraria
+#  sozinho quando o token vencesse.
+#
+#  Como o script resolve os bytes, nesta ordem:
+#    1. variável de ambiente `IMAGE_URL_<assetId>`, se existir — a URL
+#       assinada de download, que chega ao runner sem ser versionada;
+#    2. `previewPath`, o caminho público do CDN, sem token e estável.
+#
+#  LIMITE MEDIDO: o caminho público devolve ~626px. Pedir largura a ele
+#  (`?w=1480`) devolve 1400px **com marca d'água ladrilhada** sobre a foto
+#  inteira — foi testado e descartado. Alta resolução sem marca d'água só
+#  pela URL assinada, que precisa chegar por `workflow_dispatch` ou por uma
+#  chave de API guardada em secret do repositório.
+#
+#  Por que este arquivo existe: o ambiente onde o conteúdo é editado tem
+#  bloqueio de egress para os CDNs do Magnific e do Freepik. Escolher e
+#  declarar acontecem lá; buscar os bytes acontece onde a rede permite.
+# ─────────────────────────────────────────────────────────────
+
+images:
+  # ── Artigo: como manter a casa organizada ───────────────────
+  - target: src/assets/blog/organizacao/como-manter-a-casa-organizada/bancada-cozinha-em-uso.webp
+    provider: freepik
+    assetId: 19100536
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/interiors-homely-kitchen_19100536.htm
+    previewPath: /free-photo/interiors-homely-kitchen_53876-146777.jpg
+    ratio: "16:10"
+    width: 1400
+    note: >-
+      Cozinha de verdade junto à janela: escorredor cheio, canecas, bule,
+      pano na torneira. Diz "acabou de ser usada, falta uma pequena
+      arrumação". Substitui a escolha anterior (23591471), que comunicava
+      louça suja, e vem depois de nove candidatas vistas uma a uma.
+
+  - target: src/assets/blog/organizacao/como-manter-a-casa-organizada/cadeira-do-quarto-com-roupas.webp
+    provider: freepik
+    assetId: 24996542
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/high-angle-messy-bedroom-with-clothes-chair_24996542.htm
+    previewPath: /free-photo/high-angle-messy-bedroom-with-clothes-chair_23-2149363750.jpg
+    ratio: "16:10"
+    width: 1400
+    note: >-
+      Quarto habitado: cama desfeita em primeiro plano e cadeira com roupas
+      acumuladas ao lado. Mostra o cômodo, não só a cadeira — e não
+      caricatura a bagunça.
+
+  # ── Landing page: Casa Organizada em 15 Minutos por Dia ─────
+  - target: src/assets/products/casa-organizada-em-15-minutos/hero-cozinha-manha.webp
+    provider: freepik
+    assetId: 12975762
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/medium-shot-woman-cleaning_12975762.htm
+    previewPath: /free-photo/medium-shot-woman-cleaning_23-2148883394.jpg
+    ratio: "4:5"
+    width: 1040
+    note: >-
+      Elemento de LCP da LP. Mulher lavando um prato na bancada, luz natural,
+      cozinha habitada com planta e azulejo bege. Escolhida entre cinco
+      candidatas vistas lado a lado: as outras posavam para a câmera ou
+      usavam luvas, virando cena de faxina.
+
+  - target: src/assets/products/casa-organizada-em-15-minutos/sessao-curta-cozinha.webp
+    provider: freepik
+    assetId: 24747629
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/medium-shot-woman-cleaning-kitchen_24747629.htm
+    previewPath: /free-photo/medium-shot-woman-cleaning-kitchen_23-2149358488.jpg
+    ratio: "16:9"
+    width: 1600
+    note: >-
+      Sessão curta de organização. Cozinha real — tijolo aparente, prateleira
+      aberta com copos, escorredor, cafeteira — e a pessoa concentrada na
+      tarefa, sem posar. É "cabe na minha rotina", não "faxina pesada".
+
+  # ── Home: capa de categoria ─────────────────────────────────
+  #  O arquivo é nomeado pelo id da categoria. A home resolve a capa por
+  #  esse nome, então uma categoria nova só precisa de um arquivo aqui.
+  - target: src/assets/categories/casa.webp
+    provider: freepik
+    assetId: 19468982
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/creative-fengshui-practice-living-room-arrangement_19468982.htm
+    previewPath: /free-photo/creative-fengshui-practice-living-room-arrangement_23-2149135759.jpg
+    ratio: "16:10"
+    width: 1400
+    note: >-
+      Sala habitada com prateleiras, cestos e cadeira de madeira. Fica sob um
+      degradê escuro no card da home, então precisa ter madeira e profundidade
+      para não virar chapado branco. Escolhida entre quatro candidatas vistas
+      lado a lado.
+
+# ── Comparativo de air fryers ───────────────────────────────
+#  Foto de produto, não fotografia de banco. O comparativo precisa do
+#  aparelho exato, então a origem é a página oficial do fabricante: o
+#  script lê o `og:image` dela, que é a imagem que o próprio fabricante
+#  declara como representação daquele produto.
+#
+#  `fit: contain` em vez de corte: cortar o quadro cortaria o aparelho, e
+#  um comparativo que mostra meia air fryer não compara nada. O fundo é o
+#  mesmo nos três, para as fotos ficarem comparáveis entre si.
+
+  - target: src/assets/blog/cozinha/comparativo-air-fryer-philips-electrolux-britania/philips-na130.webp
+    provider: philips-walita
+    model: NA130/00
+    pageUrl: https://www.walita.com.br/fritadeira-airfryer-serie-1000-xl-philips-walita-preta-1700w-na130-na130_00/p
+    origem: og:image da página oficial do fabricante
+    ratio: "4:3"
+    width: 1000
+    fit: contain
+    background: "#FFFFFF"
+
+  - target: src/assets/blog/cozinha/comparativo-air-fryer-philips-electrolux-britania/electrolux-eaf40.webp
+    provider: electrolux
+    model: EAF40
+    pageUrl: https://loja.electrolux.com.br/air-fryer-electrolux-por-rita-lobo-5-6-l-cinza-efficient-timer-e-conveccao-1400w-eaf40/p
+    origem: og:image da página oficial do fabricante
+    ratio: "4:3"
+    width: 1000
+    fit: contain
+    background: "#FFFFFF"
+
+  - target: src/assets/blog/cozinha/comparativo-air-fryer-philips-electrolux-britania/britania-baf65a.webp
+    provider: britania
+    model: BAF65A
+    pageUrl: https://www.britania.com.br/air-fryer-6-5l-1700w-baf65a/p
+    origem: og:image da página oficial do fabricante
+    ratio: "4:3"
+    width: 1000
+    fit: contain
+    background: "#FFFFFF"
+
+  # ── Artigos novos de Casa > Organização ─────────────────────
+  # Mesma regra das entradas acima: caminho público do CDN, sem token.
+
+  - target: src/assets/blog/organizacao/organizar-a-cozinha-em-15-minutos/bancada-depois-do-jantar.webp
+    provider: freepik
+    assetId: 22120753
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/close-up-dirty-plates-left-around-home_22120753.htm
+    previewPath: /free-photo/close-up-dirty-plates-left-around-home_23-2149248527.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/organizacao/organizar-a-cozinha-em-15-minutos/cozinha-pia-organizada.webp
+    provider: freepik
+    assetId: 12339105
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/white-kitchen-cabinets_12339105.htm
+    previewPath: /free-photo/white-kitchen-cabinets-with-metal-handles-doors-near-washbasin-with-bouquet-flowers-plate-vegetables_169016-9607.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/organizacao/casa-desarruma-no-dia-seguinte/sala-vivida-fim-de-tarde.webp
+    provider: freepik
+    assetId: 2977309
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/closeup-pair-legs-sofa_2977309.htm
+    previewPath: /free-photo/closeup-pair-legs-sofa_53876-30667.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/organizacao/casa-desarruma-no-dia-seguinte/rotina-curta-quarto.webp
+    provider: freepik
+    assetId: 21934435
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/woman-making-her-bed_21934435.htm
+    previewPath: /free-photo/woman-making-her-bed-after-sleep-morning_1303-30235.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/organizacao/o-minimo-para-manter-a-casa-em-ordem/entrada-da-casa-fim-do-dia.webp
+    provider: freepik
+    assetId: 83062064
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/still-life-shoe-rack-indoors_83062064.htm
+    previewPath: /free-photo/still-life-shoe-rack-indoors_23-2150960685.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/organizacao/o-minimo-para-manter-a-casa-em-ordem/cozinha-minimo-do-dia.webp
+    provider: freepik
+    assetId: 28004558
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/bright-kitchen-interior_28004558.htm
+    previewPath: /free-photo/bright-kitchen-interior-scandinavian-style-provence-furniture_1182-2669.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/organizacao/pontos-de-acumulo-da-casa/cadeira-quarto-acumulo.webp
+    provider: freepik
+    assetId: 24996551
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/dirty-home-concept-with-clothes-chair_24996551.htm
+    previewPath: /free-photo/dirty-home-concept-with-clothes-chair_23-2149363743.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/organizacao/pontos-de-acumulo-da-casa/gaveta-desorganizada.webp
+    provider: freepik
+    assetId: 24996499
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/high-angle-messy-drawer-with-clothes_24996499.htm
+    previewPath: /free-photo/high-angle-messy-drawer-with-clothes_23-2149363752.jpg
+    ratio: "16:10"
+    width: 1400
+
+  # ── LP: Cardápio da Semana em 20 Minutos ────────────────────
+  - target: src/assets/products/cardapio-da-semana-em-20-minutos/hero-planejando-a-semana.webp
+    provider: freepik
+    assetId: 80257304
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/portrait-woman-writing-down-list-groceries-making-notes-recipe-sitting-kitchen-near_80257304.htm
+    previewPath: /free-photo/portrait-woman-writing-down-list-groceries-making-notes-recipe-sitting-kitchen-near_1258-194985.jpg
+    ratio: "4:5"
+    width: 1040
+    note: >-
+      Elemento de LCP da LP. Alguém sentada na cozinha anotando a lista de
+      compras: é literalmente a sessão de planejamento que o produto vende,
+      e não comida pronta nem prato montado. Cozinha comum, sem estética de
+      dieta e sem prato de restaurante.
+
+  # Terceira escolha, e as duas anteriores explicam a régua.
+  #
+  # 34002375 ("side view woman checking the fridge") era lanche noturno com
+  # pés na mesa e migalhas espalhadas, não alguém conferindo o que tem em
+  # casa. 425655786 era do mesmo ensaio da escolhida, porém mais fechada,
+  # sem a bancada e sem a sacola sendo aberta. Título de banco de imagem
+  # não descreve a foto: as três só foram decididas depois de vistas.
+  - target: src/assets/products/cardapio-da-semana-em-20-minutos/compras-na-bancada.webp
+    provider: freepik
+    assetId: 420145745
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/woman-sorting-groceries-top-view-fruits-wine-bread-simple-kitchen-life_420145745.htm
+    previewPath: /free-photo/woman-sorting-groceries-top-view-fruits-wine-bread-simple-kitchen-life_169016-68825.jpg
+    ratio: "16:9"
+    width: 1400
+    note: >-
+      Compra chegando na bancada, com pão, fruta e comida comum. É o fim
+      do bloco "listar" e o começo da semana planejada.
+
+
+  # ── Artigos: Casa › Cozinha, planejamento de refeições ──────
+  #
+  # Oito imagens declaradas sem confirmação visual prévia: o ambiente de
+  # edição não alcança o CDN, então a conferência acontece depois da
+  # materialização, sobre os arquivos commitados. O critério de escolha
+  # aqui foi título inequívoco e cena de casa comum, sem estética de
+  # dieta, sem prato de restaurante e sem corpo.
+  - target: src/assets/blog/cozinha/cardapio-semanal-simples/caderno-na-mesa-da-cozinha.webp
+    provider: freepik
+    assetId: 5535808
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/taking-notes-breakfast_5535808.htm
+    previewPath: /free-photo/taking-notes-breakfast_1098-16973.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/cozinha/lista-de-compras-a-partir-do-cardapio/lista-escrita-antes-da-compra.webp
+    provider: freepik
+    assetId: 81440711
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/portrait-woman-writing-grocery-list-shopping-standing-kitchen-making-notes_81440711.htm
+    previewPath: /free-photo/portrait-woman-writing-grocery-list-shopping-standing-kitchen-making-notes_1258-198117.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/cozinha/lista-de-compras-a-partir-do-cardapio/mantimentos-guardados.webp
+    provider: freepik
+    assetId: 13559809
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/food-containers-shelves-assortment_13559809.htm
+    previewPath: /free-photo/food-containers-shelves-assortment_23-2148927381.jpg
+    ratio: "16:10"
+    width: 1400
+    note: >-
+      Substitui a despensa de potes rotulados (29006471), descartada depois de
+      vista: rótulos em inglês e prateleira perfeita de catálogo, duas coisas
+      que a direção visual do projeto recusa.
+
+  - target: src/assets/blog/cozinha/nao-sei-o-que-fazer-para-o-jantar/geladeira-aberta-fim-do-dia.webp
+    provider: freepik
+    assetId: 18040161
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/woman-checking-interior-her-fridge-home_18040161.htm
+    previewPath: /free-photo/woman-checking-interior-her-fridge-home_23-2149087122.jpg
+    ratio: "16:10"
+    width: 1400
+    note: >-
+      Conferir a geladeira em casa, de dia. A série de lanche noturno foi
+      evitada de propósito: o artigo é sobre decidir o jantar, não sobre
+      beliscar de madrugada.
+
+  - target: src/assets/blog/cozinha/planejar-refeicoes-quando-a-semana-muda/potes-com-sobras-na-geladeira.webp
+    provider: freepik
+    assetId: 7389459
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/open-fridge-with-plastic-food-containers-vegetables_7389459.htm
+    previewPath: /free-photo/open-fridge-with-plastic-food-containers-vegetables_23-2148487830.jpg
+    ratio: "16:10"
+    width: 1400
+
+  # Três slots seguem sem imagem, e é de propósito.
+  #
+  # Segunda rodada de descarte nos mesmos lugares, agora por direção visual e
+  # não por texto embutido: a segunda foto do cardápio semanal era retrato
+  # posado sorrindo para a câmera com o celular na mão; a da mesa de casa era
+  # um almoço social servindo vinho, e o trecho fala da refeição simples de
+  # uma quarta-feira; a da semana que muda era cozinha branca de catálogo com
+  # alguém no celular, sem cozinhar.
+  #
+  # Artigo com uma imagem certa é melhor do que artigo com duas, sendo uma
+  # delas de banco de imagens. Os slots ficam abertos: declarar a origem aqui
+  # basta para o texto voltar a ter a segunda foto, sem tocar no MDX.
+
+  # Cluster do Mundo de Colorir.
+  #
+  # As imagens que mostram o material são derivadas das artes reais do
+  # produto e já vivem no repositório, cortadas de `capa.webp`,
+  # `colorindo-na-mesa.webp` e `pagina-dos-personagens.png`. Aqui ficam só
+  # as quatro fotos editoriais, que mostram a cena e não o produto.
+
+  - target: src/assets/blog/desenhos-para-colorir/desenhos-de-animais-para-colorir/criancas-desenhando.webp
+    provider: freepik
+    assetId: 18771322
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/adorable-little-girl-drawing-paper-home_18771322.htm
+    previewPath: /free-photo/adorable-little-girl-drawing-paper-home_23-2149106238.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/desenhos-para-colorir/desenhos-fundo-do-mar-para-colorir/colorindo-o-mar.webp
+    provider: freepik
+    assetId: 11163239
+    license: free
+    author: karlyukav
+    sourcePage: https://www.magnific.com/free-photo/high-angle-view-two-siblings-little-girl-elder-brother-sitting-together-dining-wooden-table-drawing-images-white-sheets-paper-using-colorful-pencils-childhood-creativity-concept_11163239.htm
+    previewPath: /free-photo/high-angle-view-two-siblings-little-girl-elder-brother-sitting-together-dining-wooden-table-drawing-images-white-sheets-paper-using-colorful-pencils-childhood-creativity-concept_343059-2756.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/atividades-em-casa/atividades-sem-tela-para-criancas/mesa-de-atividade.webp
+    provider: freepik
+    assetId: 15857667
+    license: free
+    author: magnific
+    sourcePage: https://www.magnific.com/free-photo/high-angle-children-s-desk-with-paint-drawing_15857667.htm
+    previewPath: /free-photo/high-angle-children-s-desk-with-paint-drawing_23-2149025157.jpg
+    ratio: "16:10"
+    width: 1400
+
+  - target: src/assets/blog/atividades-em-casa/o-que-fazer-com-criancas-em-dia-de-chuva/tarde-de-desenho.webp
+    provider: freepik
+    assetId: 5697622
+    license: free
+    author: freepic.diller
+    sourcePage: https://www.magnific.com/free-photo/little-children-look-out-window_5697622.htm
+    previewPath: /free-photo/little-children-look-out-window_8353-9334.jpg
+    ratio: "16:10"
+    width: 1400

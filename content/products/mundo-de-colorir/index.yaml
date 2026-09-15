@@ -1,0 +1,488 @@
+# ─────────────────────────────────────────────────────────────
+#  Mundo de Colorir
+#  Toda a copy da landing page vive neste arquivo.
+#  Para alterar preço, checkout ou headline, edite apenas aqui.
+#
+#  FONTE: docs/mundo-de-colorir-source-of-truth.md e os três documentos
+#  irmãos (producao, paginas, comercial). Se não está lá, não se afirma
+#  aqui.
+#
+#  QUATRO COISAS QUE ESTA PÁGINA NUNCA PODE DIZER:
+#
+#  1. que colorir desenvolve coordenação motora, concentração, calma ou
+#     qualquer outra coisa. É verdade conhecida sobre a atividade e vira
+#     promessa do produto quando escrita numa página de venda. A BookGo
+#     não vende desenvolvimento infantil;
+#  2. que existe personagem conhecido, franquia ou desenho animado. Toda
+#     a arte é original;
+#  3. que chega alguma coisa em casa. É arquivo digital, e a reimpressão
+#     sem custo depende justamente disso;
+#  4. que chega alguma coisa em casa, de novo: material digital, e nada
+#     é enviado pelo correio.
+#
+#  As cinco avaliações são reais e estão publicadas por corte. Ver o bloco
+#  `reviews`, que registra o que saiu e por quê.
+# ─────────────────────────────────────────────────────────────
+
+slug: mundo-de-colorir
+name: Mundo de Colorir
+
+# Etapas do funil medidas nesta LP. Nenhuma é conversão.
+funnelEventPrefix: mundo
+
+# Terceira prateleira da home. Nasce com este material e cabe o que vier
+# depois: atividade, jogo, material de imprimir para criança.
+category:
+  id: criancas-e-brincadeiras
+  label: Crianças e brincadeiras
+
+tagline: Uma coleção com 80 desenhos originais para imprimir e colorir, em 8 temas.
+promise: Ter uma atividade pronta guardada para qualquer hora, com 80 desenhos originais em 8 temas, prontos para imprimir em casa quantas vezes quiser.
+
+# ── Ambientação ──────────────────────────────────────────────
+# Nuvem, estrelinha e rabisco de baixa opacidade ao fundo. O público desta
+# página é pai e mãe escolhendo material para criança, e a régua estrutural
+# continua a mesma das outras LPs.
+ambience: playful
+
+# ── Identidade visual ────────────────────────────────────────
+# Nem o azul institucional, nem o sálvia do Casa Organizada, nem a páprica
+# do Cardápio. Entra um azul-caneta alegre com acento manga, que é a dupla
+# de lápis de cor mais reconhecível de um estojo infantil, sobre creme bem
+# claro. Colorido sem virar festa: as cores fortes ficam no botão e nos
+# destaques, e o corpo do texto segue em cinza-grafite.
+#
+# Contrastes conferidos: texto sobre fundo 14,2:1, branco sobre primary
+# 5,1:1, branco sobre primaryDark 8,7:1, muted sobre fundo 5,4:1.
+theme:
+  primary: "#2E6BD6"       # azul-caneta, CTAs e destaques
+  primaryDark: "#1E4AA0"   # azul profundo, hover e contraste
+  accent: "#E0821F"        # manga, acento pontual
+  background: "#FFFBF4"    # creme muito claro, fundo da página
+  surface: "#FFFFFF"       # branco, cartões
+  text: "#25292F"
+  muted: "#5E6773"
+  border: "#E8E2D6"
+
+# ── Comercial ────────────────────────────────────────────────
+price:
+  amount: 14.9
+  currency: BRL
+  display: R$ 14,90
+
+checkout:
+  provider: kiwify
+  url: https://pay.kiwify.com.br/Q2uHeTE
+  cta: Quero meu acesso
+
+# ── SEO ──────────────────────────────────────────────────────
+seo:
+  title: "Mundo de Colorir: 80 desenhos para imprimir e colorir"
+  description: Coleção com 80 desenhos originais para imprimir e colorir, em 8 temas. Material digital em PDF, em A4, pronto para imprimir em casa quantas vezes quiser. R$ 14,90.
+  ogImage: /images/og-mundo-de-colorir.png
+
+# ── Hero ─────────────────────────────────────────────────────
+hero:
+  eyebrow: Livro digital para imprimir em casa
+  ctaLabel: Quero garantir o meu PDF
+  headline: "80 desenhos prontos para a próxima vez que a pergunta for: o que a gente faz agora?"
+  subheadline: >-
+    Arte original em 8 temas, num PDF em A4 para imprimir quantas vezes
+    quiser. Baixa uma vez e fica com você.
+  highlights:
+    - text: 80 páginas em 8 temas, dos 4 aos 8 anos
+      icon: palette
+    - text: PDF em A4, na impressora que você já tem
+      icon: printer
+    - text: Imprima de novo quantas vezes quiser
+      icon: star
+  # A composição do quadro: capa na frente, três páginas reais no leque
+  # atrás e uma cena pequena no canto. Foto de cena sozinha vendia a
+  # atividade; isto vende o que a pessoa recebe.
+  image: capa.webp
+  imageAlt: Capa do Mundo de Colorir, com bichinhos coloridos ao redor do título e cinco páginas do material embaixo
+  pages:
+    - paginas/dinossauro.webp
+    - paginas/unicornio.webp
+    - paginas/foguete.webp
+  scene: mesa_de_colorir_infantil_aconchegante.png
+  sceneAlt: ""
+
+# ── Barra de fatos, logo abaixo do hero ──────────────────────
+trustBar:
+  - text: 80 desenhos
+    icon: palette
+  - text: 8 temas
+    icon: compass
+  - text: PDF em A4
+    icon: printer
+  - text: Imprima de novo quando quiser
+    icon: star
+
+# ── Galeria de páginas reais ─────────────────────────────────
+# Recortes das fotos do material impresso. Nenhuma amostra genérica:
+# contra pack barato, o que converte é a pessoa poder conferir o traço.
+gallery:
+  title: Veja algumas páginas antes de comprar
+  intro: Páginas reais da coleção, impressas em casa numa folha A4 comum.
+  items:
+    - src: paginas/gatinho.webp
+      alt: Página do gatinho com o novelo, impressa e apoiada na mesa, com parte já pintada de laranja
+      label: Animais fofos
+    - src: paginas/dinossauro.webp
+      alt: Página do dinossauro sorridente em contorno preto, sobre a mesa de madeira
+      label: Dinossauros
+    - src: paginas/peixinho.webp
+      alt: Página do peixinho entre bolhas e algas, impressa, com giz de cera ao lado
+      label: Fundo do mar
+    - src: paginas/foguete.webp
+      alt: Página do foguete sorridente entre estrelas, a lua e as nuvens
+      label: Espaço
+    - src: paginas/piquenique.webp
+      alt: Página do piquenique com cesta, sanduíche, maçã e uma formiguinha no canto
+      label: Comidinhas
+    - src: paginas/unicornio.webp
+      alt: Página do unicórnio com crina comprida, estrelas e uma nuvem ao lado
+      label: Fantasia
+    - src: paginas/personagens.webp
+      alt: Página de abertura com os oito personagens da coleção em contorno preto e o nome de cada um
+      label: Os personagens
+    - src: paginas/sereia.webp
+      alt: Página da sereia sendo pintada de rosa e verde-água por uma criança, com a estrela-do-mar já colorida
+      label: Em uso
+      wide: true
+
+# ── Problema: a tarde que não passa ──────────────────────────
+problem:
+  title: A tarde não passa e a pergunta chega
+  items:
+    - Está chovendo, o parque saiu dos planos e faltam três horas para o jantar.
+    - O tablet já rendeu o que tinha para render, e você quer outra coisa na mesa.
+    - A sala de espera tem meia hora pela frente e nada para fazer.
+    - Você precisa de quarenta minutos para terminar uma coisa, e precisa deles agora.
+  close: "A mãe não precisa de centenas de atividades. Precisa de uma boa ideia pronta na hora em que a criança pergunta o que fazer agora."
+
+# ── Como funciona: quatro passos ─────────────────────────────
+howItWorks:
+  title: Do clique ao lápis na mão
+  intro: Quatro passos, e só o terceiro exige você.
+  steps:
+    - title: Compre
+      text: Pagamento único. O acesso é liberado após a aprovação do pagamento.
+    - title: Baixe
+      text: Um PDF só, com as 80 páginas. Guarde no computador ou no celular.
+    - title: Imprima
+      text: Escolha o tema pelo índice e imprima em A4, na opção tamanho real.
+    - title: Colora
+      text: Entregue os lápis. Quando a folha acabar, imprima de novo.
+
+# ── Conteúdo: os oito temas ──────────────────────────────────
+contents:
+  title: Oito mundos para a criança escolher
+  intro: Dez desenhos por tema, do mais simples ao mais cheio.
+  countLabel: 10 desenhos
+  modules:
+    - number: 1
+      title: Animais fofos
+      icon: spark
+      blurb: Os bichos que toda criança reconhece de longe.
+      objective: "Gatinho com o novelo, coelho, ursinho, pinguim, panda, raposinha, preguiça, elefantinho e a família de patinhos."
+      thumbs:
+        - paginas/gatinho.webp
+        - paginas/personagens.webp
+    - number: 2
+      title: Dinossauros
+      icon: star
+      blurb: Do filhote saindo do ovo ao vale com vulcão ao fundo.
+      objective: "Bebê saindo do ovo, tiranossauro sorridente, tricerátops, anquilossauro, estegossauro, brontossauro, pterossauro e o vale."
+      thumbs:
+        - paginas/dinossauro.webp
+    - number: 3
+      title: Fundo do mar
+      icon: palette
+      blurb: O tema que mais rende cor, e o que a criança pede de novo.
+      objective: "Peixinho, estrela-do-mar, caranguejo, cavalo-marinho, tartaruga, polvo, golfinho, água-viva, baleia e o recife."
+      thumbs:
+        - paginas/peixinho.webp
+        - paginas/sereia.webp
+    - number: 4
+      title: Espaço
+      icon: spark
+      blurb: Aqui não existe cor certa, e isso deixa a criança livre.
+      objective: "Foguete, lua sorridente, planeta com anéis, alienígena, astronauta, nave, bandeira na lua, cometa e o sistema solar."
+      thumbs:
+        - paginas/foguete.webp
+    - number: 5
+      title: Veículos e aventuras
+      icon: compass
+      blurb: Rodas, asas e velas, em formas grandes para o giz de cera.
+      objective: "Carrinho de corrida, balão, bicicleta, barco a vela, caminhão de bombeiros, avião, trator, ônibus, escavadeira e o trem."
+    - number: 6
+      title: Jardim e natureza
+      icon: home
+      blurb: Flor e bicho pequeno, para a mão que gosta de detalhe.
+      objective: "Girassol, joaninha, cogumelos, regador, borboleta, abelhinha, passarinho no ninho, árvore com balanço, arco-íris e a horta."
+    - number: 7
+      title: Comidinhas divertidas
+      icon: checklist
+      blurb: Pizza, sorvete e cupcake sorridentes, campeões de pedido.
+      objective: "Cupcake, sorvete, rosquinha, fatia de pizza, frutinhas, hambúrguer, chocolate quente, pipoca, bolo e o piquenique."
+      thumbs:
+        - paginas/piquenique.webp
+    - number: 8
+      title: Fantasia e personagens mágicos
+      icon: star
+      blurb: Unicórnio, fada e dragão, para quem gosta de inventar história.
+      objective: "Fadinha, poção mágica, coruja, gnomo, unicórnio, dragãozinho, sereia, aprendiz de mago, castelo e o baú do tesouro."
+      thumbs:
+        - paginas/unicornio.webp
+        - paginas/personagens.webp
+
+# ── O que vem no arquivo ─────────────────────────────────────
+# `mockup:` fica de fora enquanto as artes finais não existirem: não se
+# inventa página do material.
+materials:
+  title: Uma coleção pronta para imprimir e usar
+  intro: O arquivo não é uma pasta de desenhos soltos. Vem organizado, com começo, meio e índice.
+  items:
+    - title: 80 páginas para colorir
+      icon: palette
+      text: Uma arte por página, com fundo branco e contorno bem definido.
+    - title: Este livro pertence a
+      icon: pencil
+      text: "A primeira página é da criança: o nome, um quadro para se desenhar e a data."
+    - title: Índice por tema
+      icon: list
+      text: Para achar o dos dinossauros em segundos, sem rolar o arquivo inteiro.
+    - title: Divisórias dos oito temas
+      icon: star
+      text: Uma folha de abertura por tema, com o nome vazado para a criança colorir.
+    - title: Folha de instruções
+      icon: printer
+      text: Para você. Como imprimir em tamanho real e que papel usar.
+
+# ── Imagens ──────────────────────────────────────────────────
+# Arquivos em src/assets/products/mundo-de-colorir/. Enquanto um deles não
+# existir, o slot não renderiza e o build lista o que falta: a página fica
+# inteira, sem moldura vazia, e a foto entra depois sem tocar em layout.
+#
+# `ratio` existe por causa da amostra: ela é uma página A4 em pé, e o
+# quadro editorial padrão é 16/9. Sem declarar a proporção, a página
+# apareceria como uma tira do meio de um desenho inteiro.
+images:
+  # Quatro fotos de cena, e só. Cada uma divide a composição com o texto
+  # do bloco onde vive, em vez de virar faixa entre duas seções. As
+  # outras quatro continuam no repositório e ficaram de fora: a página
+  # ganhou mais com a galeria de páginas reais do que ganharia com mais
+  # foto de mesa.
+  - id: tarde-chuvosa
+    src: tarde_chuvosa_de_colorir_aconchegante.png
+    alt: Criança colorindo uma folha presa a uma prancheta, cercada de outras páginas impressas e giz de cera
+    placement: beside-problem
+    ratio: "4 / 5"
+
+  - id: impressora
+    src: impressora_e_desenhos_para_colorir.png
+    alt: Impressora doméstica soltando a página do gatinho, com outras cinco já impressas sobre a mesa
+    placement: beside-how-it-works
+    ratio: "4 / 5"
+
+  - id: momento-criativo
+    src: momento_criativo_de_colorir.png
+    alt: Menina colorindo com giz de cera numa tarde de chuva, com a janela molhada ao fundo e o gato dormindo
+    placement: beside-use-cases
+    ratio: "4 / 5"
+
+  - id: colorir-em-familia
+    src: momento_de_colorir_em_familia.png
+    alt: Mãe e filha colorindo juntas na mesa de casa, a mãe mostrando a página do dinossauro
+    caption: O material é da criança, mas o sábado à tarde costuma virar dos dois.
+    placement: before-offer
+    ratio: "4 / 5"
+
+# ── Situações de uso ─────────────────────────────────────────
+# Benefício responde "o que isso me dá". Situação responde "quando eu vou
+# usar". Quem compra material para criança decide na segunda: a tarde de
+# chuva e a sala de espera são reconhecidas na hora, e benefício abstrato
+# não é. Nenhum item promete resultado: todos descrevem um momento real.
+useCases:
+  title: Os momentos em que ele resolve a sua tarde
+  intro: "E principalmente aquele em que surge: o que a gente faz agora?"
+  items:
+    - title: Dia de chuva
+      icon: home
+      text: O parque saiu dos planos e ainda faltam horas para o jantar.
+    - title: Fim de semana
+      icon: calendar
+      text: A casa acorda devagar e a tela seria o caminho mais fácil.
+    - title: Viagem ou espera
+      icon: compass
+      text: Uma folha dobrada na bolsa resolve meia hora sem tomada nem sinal.
+    - title: Momento em família
+      icon: spark
+      text: Duas folhas, uma caixa de lápis, e a conversa acontece sozinha.
+
+# ── Oferta ───────────────────────────────────────────────────
+offer:
+  title: Tudo isso por R$ 14,90
+  intro: Pagamento único. Menos do que um livro de colorir da livraria, e este não acaba na última página.
+  includesTitle: O que vem no arquivo
+  priceTerms: pagamento único · sem mensalidade
+  highlights:
+    - value: "80"
+      label: páginas para colorir
+    - value: "8"
+      label: temas
+    - value: "10"
+      label: desenhos por tema
+    - value: A4
+      label: pronto para imprimir
+  groups:
+    - title: A coleção
+      icon: palette
+      items:
+        - 80 páginas para colorir, com arte original
+        - 8 temas, com 10 desenhos cada
+        - Do desenho mais simples ao mais cheio, dentro de cada tema
+    - title: A organização
+      icon: list
+      items:
+        - Página "este livro pertence a", para a criança escrever o nome
+        - Índice por tema
+        - Uma folha de abertura para cada um dos oito temas
+        - Folha de instruções curta, para você
+    - title: O acesso
+      icon: printer
+      items:
+        - Arquivo em PDF, para baixar e guardar
+        - Impressão sem limite, para as crianças da sua casa
+        - Acesso liberado após a aprovação do pagamento
+  ctaLabel: Quero começar agora
+  priceNote: Material digital. Nada é enviado pelo correio, e é justamente isso que permite reimprimir sem custo novo.
+  reassurances:
+    - icon: shield
+      text: 7 dias de garantia para conhecer o material
+    - icon: printer
+      text: Feito para impressora doméstica comum, em papel A4
+    - icon: star
+      text: Arte original, sem personagem de franquia
+    - icon: check
+      text: Indicado para crianças de aproximadamente 4 a 8 anos
+
+# ── Avaliações ───────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────
+#  AS CINCO MENSAGENS SÃO REAIS. UMA FRASE FOI CORTADA.
+#
+#  Renata  "Comprei na hora do almoço e recebi o acesso no e-mail no
+#          mesmo minuto." Quem libera o acesso é a plataforma, e esse
+#          prazo não é nosso: a página inteira diz "acesso liberado após
+#          a aprovação do pagamento", e publicar "no mesmo minuto" seria
+#          prometer em nome de terceiro. O resto da mensagem dela está
+#          literal.
+#
+#  As outras quatro entraram inteiras: tudo o que elas afirmam sobre o
+#  material é verdade, do traço grosso com áreas grandes ao fundo branco
+#  que rende tinta, das divisórias por tema à pizza e ao sorvete
+#  sorridentes, que são mesmo dois dos dez desenhos de comidinhas.
+#
+#  Juliana e Carolina receberam reação da equipe (emoji), e não resposta
+#  escrita. O aparelho delas mostra só a mensagem: resposta que não
+#  existiu não se inventa.
+#
+#  O que veio como "⭐⭐⭐⭐⭐" não entra: o formato da BookGo não tem
+#  estrela, e nenhum aggregateRating é gerado por existir esta seção.
+# ─────────────────────────────────────────────────────────────
+reviews:
+  enabled: true
+  title: O que estão dizendo sobre o material
+  subtitle: Mensagens de quem já está imprimindo em casa.
+  items:
+    - id: larissa-moreira
+      name: Larissa Moreira
+      status: Mãe do Theo, 4 anos
+      messages:
+        - sender: person
+          text: "Gente, que alívio foi achar esse material! Meu filho de 4 anos estava passando tempo demais no tablet e eu já não sabia mais o que inventar em dia de chuva. O traço dos desenhos é bem grosso e com áreas grandes, então ele consegue pintar com giz de cera sem ficar frustrado saindo toda hora da linha. Imprimi só 5 folhas no primeiro dia e ele passou a tarde inteira entretido. Valeu cada centavo! 🖍️🌧️🧸❤️"
+        - sender: bookgo
+          text: "Ver o Theo se divertindo longe das telas é exatamente o que nos motiva, Larissa! Que essas tardes sejam sempre cheias de cor por aí. Muito carinho para vocês! 🥰✨"
+          read: true
+
+    - id: juliana-paiva
+      name: Juliana Paiva
+      status: Mãe da Alice, 6 anos, e do Davi, 8 anos
+      messages:
+        - sender: person
+          text: "A melhor parte para mim é poder imprimir mais de uma vez! Tenho dois filhos com idades diferentes e se comprasse livro físico na livraria seria briga na certa ou teria que gastar o dobro. Aqui cada um escolheu o tema que mais gostou (a Alice foi direto no de fantasia e o Davi nos dinossauros). A qualidade do traço na folha A4 comum fica perfeita e a tinta da impressora rende super bem porque o fundo é branquinho. Recomendo demais! 👏📄🦖🧚‍♀️"
+          reaction: "❤️ 🙌"
+
+    - id: renata-albuquerque
+      name: Renata Albuquerque
+      status: Mãe da Maitê, 5 anos
+      messages:
+        - sender: person
+          text: "Baixei, mandei imprimir umas folhinhas do fundo do mar e do tema de comidinhas... a Maitê simplesmente amou a pizza e o sorvete sorridentes, achei as artes muito fofas e delicadas! É muito prático ter isso guardado no computador pra puxar sempre que precisa de uma atividade rápida. Parabéns pelo capricho, BookGo! 🍦🐙💖"
+        - sender: bookgo
+          text: "Que alegria saber disso, Renata! A seção de comidinhas é mesmo super divertida de pintar. Um beijo enorme pra pequena Maitê! 🎨🍕💛"
+          read: true
+
+    - id: carolina-mendonca
+      name: Carolina Mendonça
+      status: Mãe do Lucas, 5 anos
+      messages:
+        - sender: person
+          text: "O que eu mais gostei foi a simplicidade bonita dos desenhos. Na internet a gente até acha imagem solta, mas ou vem cheia de detalhes minúsculos que irritam a criança, ou vem com fundo cinza borrado que detona o cartucho preto. Esse PDF é limpo, organizado e as divisões por tema deixam tudo muito fácil de achar. Uma verdadeira mão na roda pra nossa rotina! 🖨️🚀👏✨"
+          reaction: "😍 🙏"
+
+    - id: amanda-vieira
+      name: Amanda Vieira
+      status: Mãe da Sofia, 7 anos
+      messages:
+        - sender: person
+          text: "Virou nosso ritual de sábado à tarde. A gente senta na mesa com a caixa de lápis de cor e vai pintando juntas enquanto conversa. Os desenhos do espaço e dos bichinhos são encantadores, até eu entro na brincadeira e pinto também haha! Uma delícia de compra, super recomendo para quem quer um tempo de qualidade de verdade com os filhos. 👩‍👧🪐🖍️🥰"
+        - sender: bookgo
+          text: "Isso não tem preço, Amanda! Momentos simples assim ficam guardados para sempre na memória deles. Adoramos saber que você também entrou na brincadeira! 💛✨"
+          read: true
+
+# ── Garantia ─────────────────────────────────────────────────
+# Sete dias, o padrão da BookGo, configurado na Kiwify. Texto comercial e
+# objetivo, sem interpretação jurídica: a garantia é oferecida
+# voluntariamente e não substitui o direito de arrependimento do CDC.
+guarantee:
+  icon: shield
+  title: Garantia de 7 dias
+  text: Você terá 7 dias de garantia para conhecer o conteúdo. Se não for para você, basta pedir o reembolso dentro desse prazo.
+
+# ── FAQ ──────────────────────────────────────────────────────
+faq:
+  title: Perguntas frequentes
+  items:
+    - q: É material físico? Chega em casa?
+      a: Não. É digital, para baixar e imprimir em casa. É isso que permite reimprimir o mesmo desenho sem custo novo.
+    - q: Como eu recebo?
+      a: O acesso é liberado após a aprovação do pagamento, e o arquivo fica disponível na área de membros para baixar quando quiser.
+    - q: Preciso de impressora especial?
+      a: Não. Foi feito para impressora doméstica comum, em A4, com fundo branco e sem área preta grande.
+    - q: Posso imprimir mais de uma vez?
+      a: Pode, sem limite, para as crianças da sua casa ou da sua turma.
+    - q: Que papel usar?
+      a: Papel comum resolve. Um pouco mais grosso segura melhor a canetinha, se a criança usar.
+    - q: Para qual idade foi pensado?
+      a: Aproximadamente 4 a 8 anos. Cada tema tem páginas simples e páginas mais cheias, então acompanha a criança por um bom tempo.
+    - q: Dá para usar no celular ou tablet?
+      a: Dá para abrir e ver o PDF em qualquer aparelho, mas o material foi feito para ser impresso e colorido no papel.
+    - q: Tem personagem de desenho animado?
+      a: Não. Toda a arte é original e foi desenhada para esta coleção.
+
+# ── Faixa de continuidade ────────────────────────────────────
+# Rola até a oferta, na própria página. Não é intenção de pagamento e não
+# dispara checkout_click.
+midCta:
+  - after: materials
+    text: Oitenta desenhos, oito temas e um arquivo que fica com você.
+    label: Quero ver o preço
+
+# ── Fechamento ───────────────────────────────────────────────
+finalCta:
+  title: A próxima tarde de chuva já tem resposta
+  text: Baixe uma vez, imprima sempre que precisar e deixe a criança escolher o mundo dela.
+  ctaLabel: Quero essa atividade para o meu filho

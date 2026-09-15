@@ -1,23 +1,31 @@
 ---
+import { Image } from 'astro:assets';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import PillButton from '../components/ui/PillButton.astro';
 import Marquee from '../components/ui/Marquee.astro';
+import HeroRail, { type RailItem } from '../components/home/HeroRail.astro';
+import Icon from '../components/ui/Icon.astro';
+import PostCard from '../components/blog/PostCard.astro';
+import ProductCard from '../components/product/ProductCard.astro';
 import { SITE, NAV_CTA } from '../config/site';
-import { getCategories, categoryUrl } from '../lib/content';
+import {
+  getCategories,
+  getPosts,
+  getPillars,
+  getPostsByPillar,
+  getShowcaseProducts,
+  pillarUrl,
+  postUrl,
+  productUrl,
+} from '../lib/content';
+import { resolveArticleImages } from '../lib/article-images';
+import { categoryCover } from '../lib/category-images';
+import { productImage } from '../lib/product-images';
+import { themeToStyle } from '../lib/theme';
 import * as schema from '../lib/schema';
 
-const HERO_TOPICS = [
-  'Organização',
-  'Tecnologia',
-  'Família',
-  '50+',
-  'Dinheiro',
-  'Carreira',
-  'Empreendedorismo',
-] as const;
-
 const FORMATS = [
-  'Cursos rápidos',
+  'Métodos práticos',
   'Guias práticos',
   'Checklists',
   'Planners',
@@ -25,30 +33,101 @@ const FORMATS = [
   'Materiais digitais',
 ] as const;
 
-const PILLARS = [
+/**
+ * Princípios da BookGo.
+ *
+ * Descrevem como o material é feito, não a história da empresa. Nenhum
+ * número, nenhum tempo de mercado, nenhuma contagem de clientes: não há
+ * dado real por trás de nada disso, e uma seção "sobre" é exatamente onde
+ * esse tipo de invenção costuma entrar.
+ */
+const PRINCIPLES = [
   {
-    title: 'Aprenda rápido',
-    text: 'Conteúdo direto ao ponto, sem horas de teoria desnecessária.',
+    icon: 'spark' as const,
+    title: 'Objetivo antes de extenso',
+    text: 'O material termina quando o problema está resolvido, não quando alcança uma quantidade de páginas.',
   },
   {
-    title: 'Coloque em prática',
-    text: 'Guias, checklists e materiais para acompanhar o aprendizado.',
+    icon: 'checklist' as const,
+    title: 'Feito para aplicar',
+    text: 'Cada material vem com checklist, planner ou template. Ler é o meio, usar é o ponto.',
   },
   {
-    title: 'No seu ritmo',
-    text: 'Acesse quando quiser e avance de acordo com sua rotina.',
+    icon: 'shield' as const,
+    title: 'Sem promessa que não se sustenta',
+    text: 'Nada de resultado garantido, contagem regressiva ou vaga limitada. O que a página afirma é o que o material entrega.',
   },
 ];
 
-/** Vitrine de categorias. Hoje só organização existe; o componente já
- *  aceita as próximas sem mudança de código. */
+/**
+ * Vitrine de pilares, montada a partir dos pilares reais.
+ *
+ * Pilar, não categoria: Organização e Cozinha vivem dentro de Casa, e
+ * mostrá-las lado a lado na home as apresentaria como temas independentes,
+ * contradizendo a árvore que a própria navegação usa.
+ *
+ * Nenhum pilar é inventado para fechar a linha da grade: com um só, aparece
+ * um só. A capa é resolvida pelo id, então um pilar novo entra aqui sem
+ * tocar neste arquivo.
+ *
+ * A contagem de artigos é calculada, nunca escrita à mão. Mesmo assim só
+ * aparece a partir de três: "1 artigo" não informa nada que o próprio card
+ * já não diga, e anunciar escassez de conteúdo não ajuda ninguém.
+ */
 const categories = await getCategories();
-const featured = categories.slice(0, 1).map((category) => ({
-  name: 'Casa e organização',
-  text: 'Métodos simples e materiais práticos para deixar a rotina mais leve.',
-  cta: 'Explorar organização',
-  href: categoryUrl(category.id),
+const pillars = await getPillars();
+const categoryCards = await Promise.all(
+  pillars.map(async (pillar) => {
+    const posts = await getPostsByPillar(pillar.id);
+    return {
+      id: pillar.id,
+      name: pillar.data.name,
+      text: pillar.data.description,
+      href: pillarUrl(pillar.id),
+      cover: categoryCover(pillar.id),
+      count: posts.length >= 3 ? posts.length : null,
+    };
+  })
+);
+
+/** Últimos artigos publicados. `getPosts` já ordena e exclui rascunhos. */
+const latestPosts = (await getPosts()).slice(0, 3);
+const categoryNameById = new Map(categories.map((c) => [c.id, c.data.name]));
+
+/** Materiais práticos publicados, com o destaque abrindo a grade. */
+const products = await getShowcaseProducts();
+
+/**
+ * Trilho do hero: o que a BookGo publicou, artigo e material intercalados.
+ *
+ * Intercalar não é enfeite. Em blocos, quem arrasta pouco veria só uma
+ * das duas coisas, e o trilho existe justamente para dizer que o site tem
+ * as duas. A ordem é determinística: artigo mais recente, material do
+ * destaque, e assim por diante.
+ *
+ * A miniatura é a mesma imagem que a peça já usa nas listagens. Sem
+ * arquivo, o cartão continua existindo com o quadro da paleta, como em
+ * todo o resto do projeto.
+ */
+const railPosts: RailItem[] = latestPosts.map((post) => ({
+  href: postUrl(post),
+  kicker: categoryNameById.get(post.data.category.id) ?? 'Artigo',
+  title: post.data.title,
+  thumb: resolveArticleImages(post).find((i) => i.image)?.image,
 }));
+
+const railProducts: RailItem[] = products.map((product) => ({
+  href: productUrl(product.data.slug),
+  kicker: 'Material',
+  title: product.data.name,
+  thumb: productImage(product.data.slug, product.data.hero.image),
+}));
+
+const railItems: RailItem[] = [];
+for (let i = 0; i < Math.max(railPosts.length, railProducts.length); i++) {
+  if (railPosts[i]) railItems.push(railPosts[i]);
+  if (railProducts[i]) railItems.push(railProducts[i]);
+}
 ---
 
 <SiteLayout
@@ -72,8 +151,8 @@ const featured = categories.slice(0, 1).map((category) => ({
             <span>Coloque em prática.</span>
           </h1>
           <p class="hero-sub">
-            Cursos rápidos, guias e materiais práticos para resolver problemas
-            reais do dia a dia, no seu ritmo.
+            Métodos, guias e materiais práticos para resolver problemas reais
+            do dia a dia, no seu ritmo.
           </p>
           <PillButton
             href={NAV_CTA.href}
@@ -84,30 +163,41 @@ const featured = categories.slice(0, 1).map((category) => ({
           />
         </div>
 
-        <div class="hero-marquee">
-          <Marquee items={HERO_TOPICS} variant="hero" duration="38s" />
+        <div class="hero-rail">
+          <HeroRail items={railItems} label="Últimos artigos e materiais" />
         </div>
       </div>
     </div>
   </section>
 
-  {/* ── Proposta ─────────────────────────────────────────── */}
-  <section class="section" id="sobre">
-    <div class="container">
-      <header class="head">
-        <h2>Conhecimento para a vida real.</h2>
-        <p class="lede">
-          A BookGo transforma assuntos importantes em conteúdos objetivos,
-          organizados e fáceis de colocar em prática.
-        </p>
+  {/* ── Sobre a BookGo ───────────────────────────────────── */}
+  <section class="section about" id="sobre">
+    <div class="container about-grid">
+      <header class="about-head">
+        <p class="eyebrow">Sobre a BookGo</p>
+        <h2>Material prático para resolver um problema de cada vez.</h2>
       </header>
 
-      <ul class="pillars">
+      <div class="about-text">
+        <p>
+          A BookGo publica métodos, guias e materiais digitais sobre assuntos
+          do dia a dia. Cada material nasce de um problema concreto e entrega
+          um jeito de resolvê-lo.
+        </p>
+        <p>
+          O formato é sempre o mesmo: texto direto para entender, checklist
+          ou planner para aplicar. Você usa enquanto aprende, no seu ritmo,
+          sem depender de aula longa nem de um fim de semana livre.
+        </p>
+      </div>
+
+      <ul class="principles">
         {
-          PILLARS.map((pillar) => (
+          PRINCIPLES.map((principle) => (
             <li>
-              <h3>{pillar.title}</h3>
-              <p>{pillar.text}</p>
+              <Icon name={principle.icon} class="lead" />
+              <h3>{principle.title}</h3>
+              <p>{principle.text}</p>
             </li>
           ))
         }
@@ -120,30 +210,46 @@ const featured = categories.slice(0, 1).map((category) => ({
     <Marquee items={FORMATS} variant="band" duration="52s" />
   </section>
 
-  {/* ── Explorar ─────────────────────────────────────────── */}
+  {/* ── Explorar categorias ──────────────────────────────── */}
   <section class="section" id="explorar">
     <div class="container">
       <header class="head">
         <p class="eyebrow">Explore a BookGo</p>
-        <h2>Encontre algo para você.</h2>
+        <h2>Por onde começar.</h2>
         <p class="lede">
-          Conteúdos criados para diferentes momentos, objetivos e rotinas.
+          Cada categoria reúne os conteúdos e os materiais de um assunto.
         </p>
       </header>
 
       <ul class="categories">
         {
-          featured.map((category) => (
-            <li class="category">
+          categoryCards.map((category) => (
+            <li class:list={['category', { 'has-cover': category.cover }]} data-card>
+              {category.cover && (
+                <Image
+                  class="category-cover"
+                  src={category.cover}
+                  alt=""
+                  widths={[480, 720, 1024]}
+                  sizes="(min-width: 60rem) 34rem, calc(100vw - 2 * var(--gutter))"
+                  loading="lazy"
+                  decoding="async"
+                  quality={68}
+                />
+              )}
               <div class="category-body">
-                <h3>{category.name}</h3>
+                <h3>
+                  <a href={category.href}>
+                    <span class="overlay" />
+                    {category.name}
+                  </a>
+                </h3>
                 <p>{category.text}</p>
-                <PillButton href={category.href} label={category.cta} arrow />
-              </div>
-              <div class="category-art" aria-hidden="true">
-                <span class="sheet s1"></span>
-                <span class="sheet s2"></span>
-                <span class="sheet s3"></span>
+                {category.count && <p class="count">{category.count} artigos</p>}
+                <span class="go" aria-hidden="true">
+                  Explorar
+                  <Icon name="arrow-right" class="u-arrow" />
+                </span>
               </div>
             </li>
           ))
@@ -151,9 +257,112 @@ const featured = categories.slice(0, 1).map((category) => ({
       </ul>
     </div>
   </section>
+
+  {/* ── Materiais práticos ───────────────────────────────────
+      A vitrine dos produtos próprios, em grade, logo depois das
+      categorias: quem chegou em "Explorar" quer ver o que existe, e o
+      que existe são os materiais e os artigos.
+
+      Uma grade só, e não uma prateleira por categoria. Com poucos
+      materiais, a prateleira gastava a largura inteira da tela com um
+      cartão esticado, e o destaque gastava outra faixa repetindo o
+      mesmo produto. A categoria de cada material continua aparecendo,
+      dentro do cartão, que é onde ela informa sem custar uma linha.
+
+      Nenhum cartão é escrito aqui: material novo entra por existir, e o
+      destaque do YAML apenas abre a grade. Os cartões levam à landing
+      page, nunca ao checkout. */}
+  {
+    products.length > 0 && (
+      <section class="section tone-warm" id="materiais">
+        <div class="container">
+          <header class="head row">
+            <div>
+              <p class="eyebrow">Materiais práticos</p>
+              <h2>Para colocar em prática no seu ritmo.</h2>
+              <p class="lede">
+                Método em texto direto e materiais para usar enquanto aprende.
+                Pagamento único, sem mensalidade.
+              </p>
+            </div>
+          </header>
+
+          <ul class="products">
+            {products.map((product) => (
+              <li>
+                <ProductCard product={product} showCategory />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  {/* ── Últimos artigos ──────────────────────────────────── */}
+  {
+    latestPosts.length > 0 && (
+      <section class="section">
+        <div class="container">
+          <header class="head row">
+            <div>
+              <p class="eyebrow">Do blog</p>
+              <h2>Últimos artigos.</h2>
+            </div>
+            <PillButton href="/blog/" label="Ver todos" arrow />
+          </header>
+
+          <ul class="posts">
+            {latestPosts.map((post) => (
+              <li>
+                <PostCard
+                  post={post}
+                  categoryName={categoryNameById.get(post.data.category.id)}
+                  thumbnail
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
 </SiteLayout>
 
 <style>
+  /* Materiais práticos: uma grade só, no máximo três por linha.
+
+     Os cartões são limitados a um terço da faixa, alinhados à esquerda
+     junto do título da seção: dois materiais aparecem do mesmo tamanho
+     que apareceriam três, e não como duas metades esticadas. Material
+     novo entra na terceira coluna e depois quebra a linha sozinho. */
+  .products {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-5);
+  }
+
+  .products > li {
+    flex: 1 1 min(20rem, 100%);
+    max-width: 100%;
+    display: flex;
+  }
+
+  .products > li > :global(*) {
+    width: 100%;
+  }
+
+  @media (min-width: 60rem) {
+    .products > li {
+      flex-basis: calc((100% - 2 * var(--s-5)) / 3);
+      max-width: calc((100% - 2 * var(--s-5)) / 3);
+    }
+  }
+
   /* ── Hero ─────────────────────────────────────────────────── */
   .hero {
     padding-block: var(--s-2) var(--s-6);
@@ -236,8 +445,11 @@ const featured = categories.slice(0, 1).map((category) => ({
     max-width: 32rem;
   }
 
-  .hero-marquee {
-    margin-inline: calc(-1 * clamp(1.75rem, 1.2rem + 2.4vw, 3.5rem));
+  /* O trilho respeita o padding do card, ao contrário da faixa de
+     palavras que sangrava até a borda: aqui os cartões são clicáveis, e
+     um alvo cortado pela borda do card é um alvo pela metade. */
+  .hero-rail {
+    margin-top: var(--s-2);
   }
 
   /* ── Seções ───────────────────────────────────────────────── */
@@ -254,8 +466,51 @@ const featured = categories.slice(0, 1).map((category) => ({
     margin-top: var(--s-4);
   }
 
-  /* ── Pilares: um card alto e dois empilhados ──────────────── */
-  .pillars {
+  .head.row {
+    max-width: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--s-5);
+  }
+
+  .head.row > div > * + * {
+    margin-top: var(--s-4);
+  }
+
+  /* Faixa alternada: separa a sequência de seções sem exigir uma borda. */
+  .tone-soft {
+    background: var(--color-surface);
+    border-block: 1px solid var(--color-border);
+  }
+
+  /* ── Sobre ────────────────────────────────────────────────── */
+  .about-grid {
+    display: grid;
+    gap: var(--s-6);
+  }
+
+  .about-head h2 {
+    margin-top: var(--s-3);
+    font-size: var(--t-4);
+    max-width: 18ch;
+    text-wrap: balance;
+  }
+
+  .about-text {
+    display: grid;
+    gap: var(--s-4);
+    max-width: var(--w-text);
+    color: var(--color-muted);
+    font-size: var(--t-0);
+    line-height: 1.6;
+  }
+
+  /* Três princípios em linha: a seção explica o que a BookGo faz com uma
+     manchete e dois parágrafos, e os princípios dizem como. Em bloco de
+     texto corrido, a diferença entre as duas coisas se perderia. */
+  .principles {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -263,40 +518,36 @@ const featured = categories.slice(0, 1).map((category) => ({
     gap: var(--s-4);
   }
 
-  .pillars li {
-    padding: clamp(1.5rem, 1.1rem + 1.6vw, 2.5rem);
-    border-radius: var(--radius-lg);
-    background: var(--color-surface);
+  .principles li {
+    padding: var(--s-6);
     border: 1px solid var(--color-border);
-    transition: border-color var(--dur) var(--ease);
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    min-height: 13rem;
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-raised);
   }
 
-  .pillars li:first-child {
-    background: var(--bookgo-blue-light);
-    border-color: color-mix(in srgb, var(--bookgo-blue) 14%, transparent);
-    /* Centraliza no card alto: o vazio se divide em cima e embaixo em vez
-       de acumular no topo e parecer falha de renderização. */
-    justify-content: center;
+  .principles :global(.lead) {
+    --icon-size: 1.5rem;
+    display: block;
+    margin-bottom: var(--s-4);
+    color: var(--color-primary);
   }
 
-  .pillars h3 {
-    font-size: var(--t-3);
+  .principles h3 {
+    font-size: var(--t-1);
   }
 
-  .pillars p {
-    margin-top: var(--s-3);
+  .principles p {
+    margin-top: var(--s-2);
     color: var(--color-muted);
-    max-width: 32ch;
+    font-size: var(--t--1);
+    line-height: 1.55;
   }
 
-  /* ── Faixa institucional ──────────────────────────────────── */
+  /* ── Faixa de formatos ────────────────────────────────────── */
   .band {
     padding-block: var(--s-6);
     border-block: 1px solid var(--color-border);
+    background: var(--color-surface);
   }
 
   /* ── Categorias ───────────────────────────────────────────── */
@@ -306,81 +557,142 @@ const featured = categories.slice(0, 1).map((category) => ({
     padding: 0;
     display: grid;
     gap: var(--s-5);
+    /* `auto-fill`, não `auto-fit`: com uma categoria só, `auto-fit`
+       colapsaria a linha e o card ocuparia a faixa inteira. */
+    grid-template-columns: repeat(auto-fill, minmax(min(26rem, 100%), 1fr));
   }
 
   .category {
     position: relative;
+    isolation: isolate;
     overflow: hidden;
-    display: grid;
-    gap: var(--s-8);
-    padding: clamp(1.75rem, 1.2rem + 2.4vw, 3.5rem);
-    border-radius: var(--radius-xl);
-    background: var(--color-surface);
+    border-radius: var(--radius-lg);
     border: 1px solid var(--color-border);
-  }
-
-  .category-body {
-    max-width: 30rem;
-    align-self: center;
-  }
-
-  .category h3 {
-    font-size: var(--t-4);
-    letter-spacing: var(--tr-heading);
-  }
-
-  .category-body p {
-    margin-block: var(--s-4) var(--s-7);
-    color: var(--color-muted);
-    font-size: var(--t-1);
-  }
-
-  /* Folhas empilhadas: sugerem material sem recorrer a ícone. */
-  .category-art {
-    position: relative;
-    min-height: 11rem;
-  }
-
-  .sheet {
-    position: absolute;
-    border-radius: var(--radius);
     background: var(--color-surface-raised);
-    border: 1px solid var(--color-border);
+    min-height: 22rem;
+    display: flex;
+    align-items: flex-end;
   }
 
-  .s1 {
-    inset: 18% 30% 6% 4%;
-    rotate: -5deg;
-  }
-
-  .s2 {
-    inset: 10% 16% 14% 18%;
-    rotate: 3deg;
-  }
-
-  .s3 {
-    inset: 4% 4% 22% 32%;
-    rotate: 9deg;
-    background: var(--bookgo-blue);
+  /* Com foto, o card vira superfície escura e o texto passa a ser branco.
+     O degradê não é enfeite: é o que garante contraste de leitura sobre uma
+     fotografia que muda de claro para escuro ao longo do quadro. */
+  .category.has-cover {
     border-color: transparent;
   }
 
+  .category-cover {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .category.has-cover::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+      to top,
+      color-mix(in srgb, #101210 92%, transparent) 0%,
+      color-mix(in srgb, #101210 58%, transparent) 46%,
+      color-mix(in srgb, #101210 12%, transparent) 100%
+    );
+  }
+
+  .category-body {
+    padding: var(--s-6);
+  }
+
+  .category h3 {
+    font-size: var(--t-2);
+  }
+
+  .category h3 a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* O link cobre o card inteiro e mantém um só alvo de foco. */
+  .overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  .category-body p {
+    margin-top: var(--s-2);
+    color: var(--color-muted);
+    font-size: var(--t-0);
+    max-width: 42ch;
+  }
+
+  .category.has-cover,
+  .category.has-cover .category-body p {
+    color: #ffffff;
+  }
+
+  .category.has-cover .category-body p {
+    color: color-mix(in srgb, #ffffff 82%, transparent);
+  }
+
+  .count {
+    font-size: var(--t--1);
+  }
+
+  .go {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    margin-top: var(--s-5);
+    font-size: var(--t--1);
+    font-weight: var(--w-semibold);
+    color: var(--color-primary);
+  }
+
+  .go :global(.icon) {
+    --icon-size: 1rem;
+  }
+
+  .category.has-cover .go {
+    color: #ffffff;
+  }
+
+  /* ── Últimos artigos ──────────────────────────────────────── */
+  .posts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-5);
+    grid-template-columns: repeat(auto-fill, minmax(min(19rem, 100%), 1fr));
+  }
+
   @media (min-width: 60rem) {
-    .pillars {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+    .about-grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--s-7) var(--s-9);
+      align-items: start;
     }
 
-    .pillars li:first-child {
-      grid-row: span 2;
+    .about-text {
+      padding-top: var(--s-2);
     }
 
-    .category {
-      grid-template-columns: 1fr 0.85fr;
-      align-items: center;
+    .principles {
+      grid-column: 1 / -1;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--s-5);
+      margin-top: var(--s-6);
     }
+  }
 
-    .category-art {
-      min-height: 15rem;
+  @media (min-width: 76rem) {
+    .posts {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 </style>

@@ -2,46 +2,53 @@
 /**
  * Vitrine de componentes — **só existe em `astro dev`**.
  *
- * `getStaticPaths` devolve lista vazia no build de produção, então a rota
- * não gera arquivo em `dist/`: não há URL, não entra no sitemap, não entra
- * no llms.txt e não existe "página oculta" publicada. Rodar
- * `npm run dev` e abrir /dev/componentes/ é o único caminho.
+ * `getStaticPaths` devolve lista vazia no build de produção, então nenhuma
+ * destas rotas gera arquivo em `dist/`: não há URL, não entra no sitemap,
+ * não entra no llms.txt e não existe "página oculta" publicada. Rodar
+ * `npm run dev` e abrir /dev/componentes/ ou /dev/avaliacoes/ é o único
+ * caminho.
  *
- * O conteúdo abaixo é **demonstração de layout**, não depoimento. Os textos
+ * O conteúdo abaixo é **demonstração de layout**, não avaliação. Os textos
  * dizem isso de forma explícita justamente para que ninguém, nem por engano,
- * copie daqui para a LP: depoimento real só entra quando existir, escrito e
- * autorizado por uma pessoa.
+ * copie daqui para uma LP: avaliação real só entra quando existir, escrita e
+ * autorizada por uma pessoa.
+ *
+ * `/dev/avaliacoes/` existe por um motivo de engenharia: a seção precisa
+ * funcionar com qualquer quantidade, e a única forma de conferir isso é ver
+ * 0, 1, 2, 3, 6 e 10 lado a lado. Os dados são fixtures daqui, e nenhum
+ * deles toca no YAML de produto nenhum.
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/ui/Icon.astro';
-import TestimonialsSection from '../../components/testimonials/TestimonialsSection.astro';
+import ReviewsSection from '../../components/reviews/ReviewsSection.astro';
 import { ICON_NAMES } from '../../lib/icons';
 
 export function getStaticPaths() {
-  /* Em produção, nenhuma rota. Em dev, uma. */
+  /* Em produção, nenhuma rota. Em dev, duas. */
   if (import.meta.env.PROD) return [];
-  return [{ params: { page: 'componentes' } }];
+  return [{ params: { page: 'componentes' } }, { params: { page: 'avaliacoes' } }];
 }
 
-const demoPhone = {
-  type: 'phone' as const,
+const { page } = Astro.params;
+
+const demoConversa = {
   name: 'Exemplo de conversa',
   status: 'conteúdo de demonstração',
   messages: [
     {
-      side: 'incoming' as const,
+      sender: 'person' as const,
       text: 'Esta é uma mensagem de exemplo. Serve para conferir a altura da bolha, a quebra de linha e o alinhamento à esquerda.',
       time: '09:12',
       read: false,
     },
     {
-      side: 'outgoing' as const,
+      sender: 'bookgo' as const,
       text: 'Resposta de exemplo, alinhada à direita, com horário e confirmação de leitura.',
       time: '09:14',
       read: true,
     },
     {
-      side: 'incoming' as const,
+      sender: 'person' as const,
       text: 'Terceira bolha, para ver a cascata de entrada rodando uma vez só.',
       time: '09:15',
       read: false,
@@ -49,66 +56,136 @@ const demoPhone = {
   ],
 };
 
-const demoCard = {
-  type: 'card' as const,
-  name: 'Exemplo de cartão',
-  role: 'conteúdo de demonstração',
-  text: 'Este texto ocupa o lugar de um depoimento para conferir a tipografia, o avatar de iniciais e a altura do cartão na grade. Não é a fala de ninguém.',
-};
+/* Fixtures de quantidade. As conversas têm comprimentos bem diferentes de
+   propósito: é o caso que o desenho precisa aguentar sem cortar nada e sem
+   deixar um aparelho com metade da altura do vizinho. */
+const NOMES = [
+  'Ana Paula', 'Bruno', 'Carla Menezes', 'Diego', 'Elisa Fontes',
+  'Felipe', 'Giovana Alves', 'Heitor', 'Isabela Cruz', 'João',
+];
+
+const CONVERSAS = [
+  [
+    { sender: 'person' as const, text: 'curta 🙂', time: '10:00' },
+  ],
+  [
+    { sender: 'person' as const, text: 'uma pergunta de tamanho médio, com duas linhas mais ou menos', time: '11:20' },
+    { sender: 'bookgo' as const, text: 'resposta de tamanho médio também', time: '11:22', read: true },
+    { sender: 'person' as const, text: 'entendi, obrigada 💚', time: '11:25' },
+  ],
+  [
+    { sender: 'person' as const, text: 'esta é a conversa mais longa do conjunto, escrita para forçar o pior caso do carrossel: várias bolhas num aparelho só, enquanto o vizinho tem uma linha', time: '14:02' },
+    { sender: 'person' as const, text: 'a intenção é ver se alguma mensagem fica cortada no topo', time: '14:02' },
+    { sender: 'bookgo' as const, text: 'nenhuma deve ficar: a altura vem do conteúdo e o trilho iguala todos pelo mais alto', time: '14:05', read: true },
+    { sender: 'bookgo' as const, text: 'e os emojis precisam sair inteiros 👋', time: '14:05', read: true },
+    { sender: 'person' as const, text: 'mais uma bolha para esticar', time: '14:08' },
+    { sender: 'person' as const, text: 'e outra, só para garantir', time: '14:09' },
+  ],
+  [
+    { sender: 'person' as const, text: 'duas bolhas apenas', time: '16:40' },
+    { sender: 'bookgo' as const, text: 'e uma resposta', time: '16:41', read: true },
+  ],
+];
+
+const fixture = (n: number) =>
+  Array.from({ length: n }, (_, i) => ({
+    id: `fixture-${i + 1}`,
+    name: NOMES[i % NOMES.length]!,
+    messages: CONVERSAS[i % CONVERSAS.length]!.map((m) => ({ ...m })),
+  }));
+
+const QUANTIDADES = [0, 1, 2, 3, 4, 6, 10];
 ---
 
-<BaseLayout title="Componentes (dev)" description="Vitrine interna." noindex>
-  <main class="dev">
-    <p class="warn">
-      <strong>Ambiente de desenvolvimento.</strong> Esta página não é gerada no
-      build de produção. Todo o conteúdo abaixo é demonstração de layout —
-      nenhum depoimento, nome ou resultado aqui é real.
-    </p>
+{
+  page === 'componentes' && (
+    <BaseLayout title="Componentes (dev)" description="Vitrine interna." noindex>
+      <main class="dev">
+        <p class="warn">
+          <strong>Ambiente de desenvolvimento.</strong> Esta página não é gerada
+          no build de produção. Todo o conteúdo abaixo é demonstração de layout:
+          nenhuma avaliação, nome ou resultado aqui é real.
+        </p>
 
-    <h1>Componentes</h1>
+        <h1>Componentes</h1>
 
-    <h2>Ícones</h2>
-    <p>Grade 24×24, traço 1.5, pontas redondas, <code>currentColor</code>.</p>
-    <ul class="icons">
-      {
-        ICON_NAMES.map((name) => (
-          <li>
-            <Icon name={name} size="2rem" />
-            <code>{name}</code>
-          </li>
-        ))
-      }
-    </ul>
+        <h2>Ícones</h2>
+        <p>Grade 24×24, traço 1.5, pontas redondas, <code>currentColor</code>.</p>
+        <ul class="icons">
+          {ICON_NAMES.map((name) => (
+            <li>
+              <Icon name={name} size="2rem" />
+              <code>{name}</code>
+            </li>
+          ))}
+        </ul>
 
-    <h2>Ícones no tamanho de uso</h2>
-    <p>Todos herdam a cor e o tamanho do texto ao redor.</p>
-    <ul class="icons small">
-      {
-        ICON_NAMES.map((name) => (
-          <li>
-            <Icon name={name} />
-            <code>{name}</code>
-          </li>
-        ))
-      }
-    </ul>
-  </main>
+        <h2>Ícones no tamanho de uso</h2>
+        <p>Todos herdam a cor e o tamanho do texto ao redor.</p>
+        <ul class="icons small">
+          {ICON_NAMES.map((name) => (
+            <li>
+              <Icon name={name} />
+              <code>{name}</code>
+            </li>
+          ))}
+        </ul>
 
-  <TestimonialsSection
-    enabled
-    title="Depoimento — conversa (demonstração)"
-    intro="Formato type: phone. Conteúdo fictício, apenas para conferir o desenho."
-    items={[demoPhone]}
-  />
+        <p>
+          As quantidades da seção de avaliações ficam em
+          <a href="/dev/avaliacoes/"> /dev/avaliacoes/</a>.
+        </p>
+      </main>
 
-  <TestimonialsSection
-    enabled
-    tone="default"
-    title="Depoimento — cartão (demonstração)"
-    intro="Formato type: card. Conteúdo fictício, apenas para conferir o desenho."
-    items={[demoCard, { ...demoCard, name: 'Segundo exemplo', avatar: undefined }]}
-  />
-</BaseLayout>
+      <ReviewsSection
+        enabled
+        title="Avaliação: a conversa no aparelho"
+        subtitle="Uma avaliação é um celular. Conteúdo fictício, apenas para conferir o desenho."
+        items={[demoConversa]}
+      />
+    </BaseLayout>
+  )
+}
+
+{
+  page === 'avaliacoes' && (
+    <BaseLayout
+      title="Avaliações: quantidades (dev)"
+      description="Vitrine interna."
+      noindex
+    >
+      <main class="dev">
+        <p class="warn">
+          <strong>Ambiente de desenvolvimento.</strong> Esta página não é gerada
+          no build de produção. Os dados abaixo são fixtures: nenhum nome, texto
+          ou nota aqui é real, e nada disto vem do YAML de um produto.
+        </p>
+        <h1>Seção de avaliações por quantidade</h1>
+        <p>
+          A mesma peça com {QUANTIDADES.join(', ')} avaliações. Cada uma é um
+          celular. Zero não renderiza nada; daí em diante quantos aparecem
+          por vez sai da largura da tela limitada pela quantidade, e os
+          controles só existem quando há o que navegar. Não existe número
+          máximo.
+        </p>
+      </main>
+
+      {QUANTIDADES.map((n) => (
+        <ReviewsSection
+          enabled
+          tone={n % 2 === 0 ? 'warm' : 'default'}
+          title={`${n} avaliação(ões)`}
+          subtitle={
+            n === 0
+              ? 'Nada deve ser renderizado abaixo, nem título.'
+              : `Fixture com ${n} item(ns).`
+          }
+          items={fixture(n)}
+        />
+      ))}
+    </BaseLayout>
+  )
+}
 
 <style>
   .dev {

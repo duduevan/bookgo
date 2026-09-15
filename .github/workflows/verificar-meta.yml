@@ -1,0 +1,73 @@
+name: Conferir a integração com a Meta
+
+# Abre o site publicado no Chromium e observa o tráfego real para a Meta.
+#
+# Roda aqui, e não no ambiente onde o site é escrito, porque de lá o gateway
+# de saída nega o CONNECT para connect.facebook.net e graph.facebook.com: o
+# Pixel nunca carregaria e o retransmissor nunca alcançaria a Graph API, de
+# modo que o teste passaria por não observar nada.
+#
+# O relatório não imprime credencial nenhuma. O que ele lê do tráfego são
+# nomes de evento, o pixel e o event_id de deduplicação.
+
+on:
+  workflow_dispatch:
+    inputs:
+      origem:
+        description: 'Origem a conferir'
+        type: string
+        required: true
+        default: 'https://bookgo.com.br'
+
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - 'scripts/verificar-meta.mjs'
+      - '.github/workflows/verificar-meta.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verificar-meta-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  conferir:
+    name: Observar Pixel e Conversions API no site no ar
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      # `pipefail` é obrigatório aqui: sem ele o status do passo é o do `tee`,
+      # que sempre dá certo, e o job ficaria verde com o relatório cheio de
+      # problemas. Uma conferência que não sabe reprovar não é conferência.
+      - name: Conferir
+        shell: bash
+        env:
+          CHROMIUM_PATH: /usr/bin/google-chrome
+        run: |
+          set -o pipefail
+          node scripts/verificar-meta.mjs "${{ inputs.origem || 'https://bookgo.com.br' }}" | tee relatorio-meta.txt
+
+      - name: Resumo
+        if: always()
+        run: |
+          {
+            echo '### Integração com a Meta'
+            echo '```'
+            cat relatorio-meta.txt 2>/dev/null || echo '(sem relatório)'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

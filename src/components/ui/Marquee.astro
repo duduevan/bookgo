@@ -102,6 +102,8 @@ const style = duration ? `--marquee-duration:${duration}` : undefined;
   @media (prefers-reduced-motion: reduce) {
     .marquee {
       overflow-x: auto;
+      overscroll-behavior-x: contain;
+      touch-action: pan-x pinch-zoom;
       mask-image: none;
     }
 

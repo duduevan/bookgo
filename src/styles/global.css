@@ -40,6 +40,24 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
+  /* O documento nunca rola na horizontal.
+     `clip` e não `hidden`: `hidden` transformaria o html em contêiner de
+     rolagem e quebraria o `position: sticky` do cabeçalho e da coluna de
+     compra da oferta. `clip` recorta sem criar contexto de rolagem, e a
+     barra do topo continua grudando. */
+  overflow-x: clip;
+}
+
+/* Safari só passou a entender `overflow-x: clip` na versão 16. Antes
+   disso a declaração acima é ignorada e o documento volta a rolar de
+   lado, que é exatamente o defeito relatado num iPhone enquanto o
+   Chromium não reproduzia nada. `hidden` cobre esses casos: ali o
+   cabeçalho deixa de grudar, e não rolar de lado importa mais. */
+@supports not (overflow-x: clip) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
 }
 
 body {
@@ -281,4 +299,94 @@ ol {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ── Linguagem de interação dos cartões ─────────────────────
+   Um só comportamento de hover para todo cartão do site: categoria da home,
+   artigo, cartão editorial, princípio, subtópico. Mora aqui, e não em cada
+   componente, porque a consistência é o ponto: seis efeitos diferentes em
+   seis cartões parecem seis produtos.
+
+   Quem participa marca `data-card` no elemento raiz. O movimento é discreto
+   de propósito, nada de salto, inclinação ou brilho.
+
+   `prefers-reduced-motion` já zera as transições globalmente mais acima,
+   mas transformação não é transição: sem a regra do fim, o cartão ainda
+   saltaria de uma vez. */
+[data-card] {
+  transition:
+    transform var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    background-color var(--dur) var(--ease);
+}
+
+[data-card]:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--color-primary) 32%, var(--color-border));
+  box-shadow: var(--shadow);
+}
+
+/* A foto acompanha com um zoom que quase não se percebe. Precisa de
+   `overflow: hidden` no recorte, que os cartões com imagem já têm. */
+[data-card] img {
+  transition: transform calc(var(--dur) * 2) var(--ease);
+}
+
+[data-card]:hover img {
+  transform: scale(1.04);
+}
+
+/* Seta e ícone de avanço andam junto, sem virar animação própria. */
+[data-card] .icon,
+[data-card] .u-arrow {
+  transition: transform var(--dur) var(--ease);
+}
+
+[data-card]:hover .u-arrow {
+  transform: translateX(3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-card]:hover,
+  [data-card]:hover img,
+  [data-card]:hover .u-arrow {
+    transform: none;
+  }
+}
+
+/* ── Tabela larga dentro de artigo ──────────────────────────
+   Comparativo com quatro colunas não cabe em 390px, e o corpo da página
+   nunca deve rolar na horizontal. A rolagem fica presa à tabela: é a
+   única coisa que pode ser mais larga que a tela. */
+.tabela-rolavel {
+  overflow-x: auto;
+  /* Sem isto, o arrasto que chega ao fim da tabela continua na página e
+     a leva junto. Era o que fazia a notícia do comparativo "rolar de
+     lado" no celular. */
+  overscroll-behavior-x: contain;
+  margin-block: var(--s-6);
+  /* Sem isto o teclado não alcança a rolagem. */
+  scrollbar-width: thin;
+}
+
+/* ── Regra geral dos trilhos horizontais ────────────────────
+   Todo elemento que rola na horizontal prende a rolagem em si mesmo.
+   Sem `overscroll-behavior-x: contain`, o gesto que termina no fim do
+   trilho é encadeado para o documento, e no celular isso é indistinguível
+   de a página inteira deslizar para o lado. O carrossel de avaliações já
+   fazia isso; o trilho do hero, a galeria de páginas e a tabela do
+   comparativo não faziam, e são justamente os lugares relatados.
+
+   `touch-action: pan-x pinch-zoom` deixa explícito para o navegador que
+   o gesto horizontal pertence ao trilho, o que também evita a navegação
+   por gesto lateral disparar sem querer. */
+[data-trilho-x] {
+  overscroll-behavior-x: contain;
+  touch-action: pan-x pinch-zoom;
+}
+
+.tabela-rolavel table {
+  min-width: 34rem;
+  margin-block: 0;
 }

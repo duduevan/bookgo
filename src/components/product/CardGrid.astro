@@ -8,12 +8,37 @@ interface Props {
   items: Array<{ title: string; text: string; icon?: IconName }>;
   variant?: 'card' | 'plain';
   min?: string;
+  /**
+   * Faz o primeiro cartão ocupar duas colunas nas telas largas.
+   *
+   * Resolve o órfão: cinco cartões numa grade de três deixavam uma lacuna
+   * do tamanho de um cartão na segunda linha. Com o primeiro em dobro, a
+   * contagem fecha (2+1 / 1+1+1) e a hierarquia ainda melhora — o benefício
+   * de abertura ganha o peso que a ordem já sugeria.
+   */
+  feature?: boolean;
+  /**
+   * Colunas fixas nas telas largas. `auto` deixa a grade decidir pelo `min`,
+   * que é o certo quando a contagem de itens varia; um número é para quando
+   * a composição é a decisão — 2x2 se lê como quatro princípios, e a mesma
+   * lista em três colunas se lê como três mais um órfão.
+   */
+  cols?: 'auto' | 2 | 3;
 }
 
-const { items, variant = 'card', min = '17rem' } = Astro.props;
+const {
+  items,
+  variant = 'card',
+  min = '17rem',
+  feature = false,
+  cols = 'auto',
+} = Astro.props;
 ---
 
-<ul class:list={['grid', `v-${variant}`]} style={`--min:${min}`}>
+<ul
+  class:list={['grid', `v-${variant}`, { feature }, cols !== 'auto' && `c-${cols}`]}
+  style={`--min:${min}`}
+>
   {
     items.map((item) => (
       <li>
@@ -65,5 +90,79 @@ const { items, variant = 'card', min = '17rem' } = Astro.props;
   .v-plain li {
     padding-top: var(--s-4);
     border-top: 2px solid var(--color-border);
+  }
+
+  @media (min-width: 48rem) {
+    .c-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .c-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .feature {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .feature > li:first-child {
+      grid-column: span 2;
+    }
+
+    /* Dois pesos em vez de cinco cartões iguais. A largura dupla sozinha não
+       criava hierarquia: lado a lado com os outros, o cartão de abertura
+       tinha a mesma superfície e o mesmo tom, e a seção lia como uma lista
+       plana. O fundo da paleta do produto resolve sem tirar conteúdo de
+       ninguém e sem mexer nos quatro secundários. */
+    .v-card.feature > li:first-child {
+      background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface-raised));
+      border-color: color-mix(in srgb, var(--color-primary) 34%, var(--color-border));
+      padding: var(--s-6);
+    }
+
+    /* No cartão em dobro, título e texto lado a lado. Dividir o parágrafo
+       em duas colunas foi a primeira tentativa e ficou pior: um texto curto
+       quebrado ao meio parece erro de renderização, não hierarquia. */
+    .feature > li:first-child {
+      display: grid;
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
+      /* Linha curta, coluna larga: o gap do grid vale para os dois eixos, e
+         o valor que separa bem as colunas afastava o título do seu ícone. */
+      gap: var(--s-2) var(--s-6);
+      align-items: start;
+      /* Sem isto as duas linhas da coluna esquerda esticam junto com o
+         parágrafo ao lado, e o título desce para o meio do cartão, longe
+         do ícone que deveria acompanhá-lo. */
+      align-content: start;
+    }
+
+    .feature > li:first-child h3 {
+      font-size: var(--t-3);
+      text-wrap: balance;
+      line-height: 1.15;
+    }
+
+    .feature > li:first-child p {
+      margin-top: 0;
+      font-size: var(--t-0);
+    }
+
+    /* O ícone acompanha o título na coluna da esquerda. */
+    .feature > li:first-child :global(.lead) {
+      grid-column: 1;
+      --icon-size: 1.75rem;
+    }
+
+    .feature > li:first-child h3 {
+      grid-column: 1;
+      align-self: start;
+    }
+
+    .feature > li:first-child p {
+      grid-column: 2;
+      grid-row: 1 / 3;
+    }
   }
 </style>

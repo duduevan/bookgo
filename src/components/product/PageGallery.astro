@@ -1,0 +1,192 @@
+---
+/**
+ * Galeria de páginas reais do material.
+ *
+ * **Por que ela é a seção mais importante desta página.** Contra um pack
+ * barato de cem desenhos, nenhum argumento escrito vence a pergunta que a
+ * pessoa realmente tem: como são os desenhos? Dizer "traço limpo, área
+ * grande, fundo branco" é pedir para acreditar. Mostrar oito páginas é
+ * deixar ela conferir sozinha, que é o que a faz parar de comparar por
+ * preço.
+ *
+ * **São páginas de verdade.** Cada quadro é um recorte das fotos do
+ * material impresso, não amostra genérica e não ilustração de banco de
+ * imagens. É por isso que aparecem sobre a mesa, com lápis ao lado e um
+ * leve ângulo: é assim que elas saem da impressora de casa, e essa é
+ * justamente a promessa da página.
+ *
+ * **Grade no desktop, trilho no celular.** No desktop os oito quadros
+ * cabem de uma vez, e ver tudo junto é o que comunica variedade. No
+ * celular a mesma grade viraria uma coluna de oito imagens altas, com uma
+ * tela inteira de rolagem por desenho. Vira trilho com scroll-snap, que a
+ * pessoa percorre com o polegar no gesto que já usa.
+ *
+ * **Sem autoplay e sem biblioteca.** A rolagem, o arraste e o snap são do
+ * navegador. Nada de JavaScript aqui: carrossel que anda sozinho tira o
+ * controle de quem está justamente tentando olhar cada desenho com calma.
+ *
+ * Um item pode declarar `wide`, e aí ocupa duas colunas na grade. Existe
+ * para a página que foi fotografada deitada não ser recortada para caber
+ * num quadro em pé.
+ */
+import { Image } from 'astro:assets';
+import { productImage } from '../../lib/product-images';
+
+export interface GalleryItem {
+  src: string;
+  alt: string;
+  /** Rótulo do tema, exibido sob o quadro. */
+  label?: string;
+  /** Ocupa duas colunas. Para a página fotografada deitada. */
+  wide?: boolean;
+}
+
+interface Props {
+  slug: string;
+  items: GalleryItem[];
+}
+
+const { slug, items } = Astro.props;
+
+/* Arquivo que ainda não existe não vira quadro vazio: o item some e a
+   grade se fecha sozinha, como no resto do fluxo de imagem do projeto. */
+const pages = items
+  .map((i) => ({ ...i, image: productImage(slug, i.src) }))
+  .filter((i) => i.image);
+---
+
+{
+  pages.length > 0 && (
+    <ul class="gal">
+      {pages.map((p) => (
+        <li class:list={['gal-item', { wide: p.wide }]}>
+          <figure>
+            <Image
+              src={p.image!}
+              alt={p.alt}
+              widths={p.wide ? [420, 640, 840] : [280, 420, 560]}
+              sizes={
+                p.wide
+                  ? '(min-width: 60rem) 32rem, 76vw'
+                  : '(min-width: 60rem) 16rem, 62vw'
+              }
+              loading="lazy"
+              decoding="async"
+              quality={76}
+            />
+            {p.label && <figcaption>{p.label}</figcaption>}
+          </figure>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  /* ── Celular: trilho ────────────────────────────────────────
+     Oito quadros em pé, um por linha, dariam oito telas de rolagem antes
+     da próxima seção. No trilho a pessoa percorre a coleção inteira sem
+     sair do lugar, e a barra visível avisa que há mais ao lado. */
+  .gal {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 var(--s-3);
+    display: flex;
+    gap: var(--s-4);
+    overflow-x: auto;
+    /* Prende o arrasto à galeria. Era o que fazia a LP parecer rolar de
+       lado quando o dedo passava das oito páginas. */
+    overscroll-behavior-x: contain;
+    touch-action: pan-x pinch-zoom;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    /* Sangra até a borda da tela: quadro cortado na margem é o que diz
+       que o trilho rola, sem precisar de seta nem de instrução. */
+    margin-inline: calc(-1 * var(--gutter));
+    padding-inline: var(--gutter);
+  }
+
+  .gal-item {
+    flex: 0 0 62%;
+    scroll-snap-align: center;
+  }
+
+  .gal-item.wide {
+    flex-basis: 76%;
+  }
+
+  figure {
+    margin: 0;
+  }
+
+  .gal :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: 3 / 4;
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-raised);
+    box-shadow: 0 2px 10px rgb(0 0 0 / 0.07);
+  }
+
+  /* A deitada mantém a proporção dela: recortá-la em 3/4 cortaria fora
+     metade do desenho, que é exatamente o que esta seção existe para
+     mostrar. */
+  .gal-item.wide :global(img) {
+    aspect-ratio: 16 / 9;
+  }
+
+  figcaption {
+    margin-top: var(--s-2);
+    font-size: var(--t--2);
+    font-weight: var(--w-semibold);
+    letter-spacing: var(--tr-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-muted);
+    text-align: center;
+  }
+
+  /* ── Desktop: grade ─────────────────────────────────────────
+     Aqui os oito cabem de uma vez, e ver tudo junto é o que comunica
+     variedade. O trilho some. */
+  @media (min-width: 60rem) {
+    .gal {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--s-5);
+      overflow: visible;
+      margin-inline: 0;
+      padding-inline: 0;
+      padding-bottom: 0;
+    }
+
+    .gal-item.wide {
+      grid-column: span 2;
+    }
+
+    /* A deitada ocupa duas colunas e precisa da mesma altura das vizinhas
+       para a linha não ficar torta. */
+    .gal-item.wide :global(img) {
+      aspect-ratio: auto;
+      height: 100%;
+    }
+
+    .gal-item.wide figure {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .gal-item.wide figure :global(img) {
+      flex: 1;
+      min-height: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gal {
+      scroll-behavior: auto;
+    }
+  }
+</style>
